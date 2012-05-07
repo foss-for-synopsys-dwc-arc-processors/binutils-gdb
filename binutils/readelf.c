@@ -41,10 +41,9 @@
   ELF file than is provided by objdump.  In particular it can display DWARF
   debugging information which (at the moment) objdump cannot.  */
 
+#include "sysdep.h"
 #include <assert.h>
-#include <sys/types.h>
 #include <sys/stat.h>
-#include <stdio.h>
 #include <time.h>
 
 /* for PATH_MAX */
@@ -74,6 +73,8 @@
 #define BFD64
 #endif
 
+#include "bfd.h"
+#include "bucomm.h"
 #include "dwarf.h"
 
 #include "elf/common.h"
@@ -154,7 +155,6 @@
 
 #include "aout/ar.h"
 
-#include "bucomm.h"
 #include "getopt.h"
 #include "libiberty.h"
 
@@ -610,6 +610,8 @@ guess_is_rela (unsigned long e_machine)
       return FALSE;
 
       /* Targets that use RELA relocations.  */
+    case EM_ARC:
+    case EM_ARCOMPACT:
     case EM_68K:
     case EM_860:
     case EM_ALPHA:
@@ -1098,6 +1100,7 @@ dump_relocations (FILE *file,
 	  rtype = elf_arm_reloc_type (type);
 	  break;
 
+	case EM_ARCOMPACT:
 	case EM_ARC:
 	  rtype = elf_arc_reloc_type (type);
 	  break;
@@ -1713,6 +1716,7 @@ get_machine_name (unsigned e_machine)
     case EM_SPARCV9:		return "Sparc v9";
     case EM_TRICORE:		return "Siemens Tricore";
     case EM_ARC:		return "ARC";
+    case EM_ARCOMPACT:		return "ARCompact";
     case EM_H8_300:		return "Renesas H8/300";
     case EM_H8_300H:		return "Renesas H8/300H";
     case EM_H8S:		return "Renesas H8S";
@@ -1991,6 +1995,32 @@ get_machine_flags (unsigned e_flags, unsigned e_machine)
 	default:
 	  break;
 
+	case EM_ARCOMPACT:
+	  switch(e_flags & EF_ARC_MACH)
+	    {
+	    case E_ARC_MACH_A5:
+	      strcat (buf, ", A5");
+	      break;
+	    case E_ARC_MACH_ARC600:
+	      strcat (buf, ", ARC600");
+	      break;
+	    case E_ARC_MACH_ARC700:
+	      strcat (buf, ", ARC700");
+	      break;
+	    default:
+	      strcat (buf, ", Generic ARCompact");
+	      break;
+	    }
+	  break;
+	case EM_ARC:
+	  switch (e_flags & EF_ARC_MACH)
+	    {
+	    case E_ARC_MACH_A4:
+	      strcat (buf, ", A4");
+	      break;
+	    }
+	  break;
+	  
 	case EM_ARM:
 	  decode_ARM_machine_flags (e_flags, buf);
 	  break;

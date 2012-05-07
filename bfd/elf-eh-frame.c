@@ -1,5 +1,6 @@
 /* .eh_frame section optimization.
-   Copyright 2001, 2002, 2003, 2004, 2005, 2006 Free Software Foundation, Inc.
+   Copyright 2001, 2002, 2003, 2004, 2005, 2006, 2007
+   Free Software Foundation, Inc.
    Written by Jakub Jelinek <jakub@redhat.com>.
 
    This file is part of BFD, the Binary File Descriptor library.
@@ -18,8 +19,8 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 
-#include "bfd.h"
 #include "sysdep.h"
+#include "bfd.h"
 #include "libbfd.h"
 #include "elf-bfd.h"
 #include "elf/dwarf2.h"
@@ -786,6 +787,9 @@ _bfd_elf_discard_section_eh_frame
 		     don't create the binary search table,
 		     since it is affected by runtime relocations.  */
 		  hdr_info->table = FALSE;
+		  (*info->callbacks->einfo)
+		    (_("%P: fde encoding in %B(%A) prevents .eh_frame_hdr"
+		       " table being created.\n"), abfd, sec);
 		}
 	      ecie->usage_count++;
 	      hdr_info->fde_count++;
@@ -934,6 +938,9 @@ _bfd_elf_discard_section_eh_frame
   return offset != sec->rawsize;
 
 free_no_table:
+  (*info->callbacks->einfo)
+    (_("%P: error in %B(%A); no .eh_frame_hdr table will be created.\n"),
+     abfd, sec);
   if (ehbuf)
     free (ehbuf);
   if (sec_info)

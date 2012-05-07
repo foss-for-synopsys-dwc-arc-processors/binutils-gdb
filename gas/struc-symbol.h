@@ -130,6 +130,7 @@ struct local_symbol
 
   /* The value of the symbol.  */
   valueT lsy_value;
+    
 
 #ifdef TC_LOCAL_SYMFIELD_TYPE
   TC_LOCAL_SYMFIELD_TYPE lsy_tc;

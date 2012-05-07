@@ -1,5 +1,5 @@
 #   Copyright 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003,
-#   2004, 2006
+#   2004, 2006, 2007
 #   Free Software Foundation, Inc.
 
 # This program is free software; you can redistribute it and/or modify
@@ -112,6 +112,40 @@ proc objcopy_test {testname srcfile} {
 }
 
 objcopy_test "simple copy" bintest.s
+
+# Test reversing bytes in a section.
+
+set reversed ${tempfile}-reversed
+set got [binutils_run $OBJCOPY "$OBJCOPYFLAGS -j .data --reverse-bytes=4 $tempfile $reversed"]
+
+if ![string match "" $got] then {
+    fail "objcopy --reverse-bytes"
+} else {
+    if [is_remote host] {
+        remote_upload host ${reversed} tmpdir/copy-reversed.o
+        set reversed tmpdir/copy-reversed.o
+    }
+
+    set origdata [binutils_run $OBJDUMP "$OBJDUMPFLAGS -s -j .data $tempfile"]
+    set revdata [binutils_run $OBJDUMP "$OBJDUMPFLAGS -s -j .data $reversed"]
+
+    set want "^ \[0-9\]+ (\[0-9\]+)"
+    set found_orig [regexp -lineanchor $want $origdata -> origdata]
+    set found_rev [regexp -lineanchor $want $revdata -> revdata]
+
+    if {$found_orig == 0 || $found_rev == 0} then {
+        fail "objcopy --reverse-bytes"
+    } else {
+        scan $origdata "%2x%2x%2x%2x" b1 b2 b3 b4
+        scan $revdata "%2x%2x%2x%2x" c4 c3 c2 c1
+
+        if {$b1 == $c1 && $b2 == $c2 && $b3 == $c3 && $b4 == $c4} then {
+            pass "objcopy --reverse-bytes"
+        } else {
+            fail "objcopy --reverse-bytes"
+        }
+    }
+}
 
 # Test generating S records.
 
@@ -740,3 +774,22 @@ if [is_elf_format] {
     run_dump_test "strip-3"
 }
 run_dump_test "localize-hidden-2"
+
+if { [istarget "i*86-*"] || [istarget "x86_64-*-*"] } {
+    # Check to make sure we don't strip a symbol named in relocations.
+    set test "objcopy doesn't strip needed symbols"
+
+    set srcfile $srcdir/$subdir/needed-by-reloc.s
+
+    if {![binutils_assemble $srcfile tmpdir/bintest.o]} then {
+        unresolved $test
+    } else {
+        set got [binutils_run $OBJCOPY "$OBJCOPYFLAGS --strip-symbol=foo tmpdir/bintest.o ${copyfile}.o"]
+
+        if [regexp "not stripping symbol `foo' because it is named in a relocation" $got] {
+            pass $test
+        } else {
+            fail $test
+        }
+    }
+}

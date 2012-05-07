@@ -20,11 +20,12 @@
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA
    02110-1301, USA.  */
 
+#include "sysdep.h"
 #include "bfd.h"
 #include "progress.h"
-#include "bucomm.h"
 #include "getopt.h"
 #include "libiberty.h"
+#include "bucomm.h"
 #include "budbg.h"
 #include "filenames.h"
 #include "fnmatch.h"
@@ -218,6 +219,11 @@ static char *prefix_alloc_sections_string = 0;
 /* True if --extract-symbol was passed on the command line.  */
 static bfd_boolean extract_symbol = FALSE;
 
+/* If `reverse_bytes' is nonzero, then reverse the order of every chunk
+   of <reverse_bytes> bytes within each output section.  */
+static int reverse_bytes = 0;
+
+
 /* 150 isn't special; it's just an arbitrary non-ASCII char value.  */
 enum command_line_switch
   {
@@ -265,7 +271,8 @@ enum command_line_switch
     OPTION_WRITABLE_TEXT,
     OPTION_PURE,
     OPTION_IMPURE,
-    OPTION_EXTRACT_SYMBOL
+    OPTION_EXTRACT_SYMBOL,
+    OPTION_REVERSE_BYTES
   };
 
 /* Options to handle if running as "strip".  */
@@ -358,6 +365,7 @@ static struct option copy_options[] =
   {"remove-leading-char", no_argument, 0, OPTION_REMOVE_LEADING_CHAR},
   {"remove-section", required_argument, 0, 'R'},
   {"rename-section", required_argument, 0, OPTION_RENAME_SECTION},
+  {"reverse-bytes", required_argument, 0, OPTION_REVERSE_BYTES},
   {"set-section-flags", required_argument, 0, OPTION_SET_SECTION_FLAGS},
   {"set-start", required_argument, 0, OPTION_SET_START},
   {"srec-len", required_argument, 0, OPTION_SREC_LEN},
@@ -471,6 +479,7 @@ copy_usage (FILE *stream, int exit_status)
      --rename-section <old>=<new>[,<flags>] Rename section <old> to <new>\n\
      --change-leading-char         Force output format's leading character style\n\
      --remove-leading-char         Remove leading character from global symbols\n\
+     --reverse-bytes=<num>         Reverse <num> bytes at a time, in output sections with content\n\
      --redefine-sym <old>=<new>    Redefine symbol name <old> to <new>\n\
      --redefine-syms <file>        --redefine-sym for all symbol pairs \n\
                                      listed in <file>\n\
@@ -909,7 +918,8 @@ filter_symbols (bfd *abfd, bfd *obfd, asymbol **osyms,
       asymbol *sym = from[src_count];
       flagword flags = sym->flags;
       char *name = (char *) bfd_asymbol_name (sym);
-      int keep;
+      bfd_boolean keep;
+      bfd_boolean used_in_reloc = FALSE;
       bfd_boolean undefined;
       bfd_boolean rem_leading_char;
       bfd_boolean add_leading_char;
@@ -977,21 +987,24 @@ filter_symbols (bfd *abfd, bfd *obfd, asymbol **osyms,
 	}
 
       if (strip_symbols == STRIP_ALL)
-	keep = 0;
+	keep = FALSE;
       else if ((flags & BSF_KEEP) != 0		/* Used in relocation.  */
 	       || ((flags & BSF_SECTION_SYM) != 0
 		   && ((*bfd_get_section (sym)->symbol_ptr_ptr)->flags
 		       & BSF_KEEP) != 0))
-	keep = 1;
+	{
+	  keep = TRUE;
+	  used_in_reloc = TRUE;
+	}
       else if (relocatable			/* Relocatable file.  */
 	       && (flags & (BSF_GLOBAL | BSF_WEAK)) != 0)
-	keep = 1;
+	keep = TRUE;
       else if (bfd_decode_symclass (sym) == 'I')
 	/* Global symbols in $idata sections need to be retained
 	   even if relocatable is FALSE.  External users of the
 	   library containing the $idata section may reference these
 	   symbols.  */
-	keep = 1;
+	keep = TRUE;
       else if ((flags & BSF_GLOBAL) != 0	/* Global symbol.  */
 	       || (flags & BSF_WEAK) != 0
 	       || undefined
@@ -1004,7 +1017,7 @@ filter_symbols (bfd *abfd, bfd *obfd, asymbol **osyms,
       else if (bfd_coff_get_comdat_section (abfd, bfd_get_section (sym)))
 	/* COMDAT sections store special information in local
 	   symbols, so we cannot risk stripping any of them.  */
-	keep = 1;
+	keep = TRUE;
       else			/* Local symbol.  */
 	keep = (strip_symbols != STRIP_UNNEEDED
 		&& (discard_locals != LOCALS_ALL
@@ -1012,17 +1025,30 @@ filter_symbols (bfd *abfd, bfd *obfd, asymbol **osyms,
 			|| ! bfd_is_local_label (abfd, sym))));
 
       if (keep && is_specified_symbol (name, strip_specific_list))
-	keep = 0;
+	{
+	  /* There are multiple ways to set 'keep' above, but if it
+	     was the relocatable symbol case, then that's an error.  */
+	  if (used_in_reloc)
+	    {
+	      non_fatal (_("not stripping symbol `%s' because it is named in a relocation"), name);
+	      status = 1;
+	    }
+	  else
+	    keep = FALSE;
+	}
+
       if (keep
 	  && !(flags & BSF_KEEP)
 	  && is_specified_symbol (name, strip_unneeded_list))
-	keep = 0;
+	keep = FALSE;
+
       if (!keep
 	  && ((keep_file_symbols && (flags & BSF_FILE))
 	      || is_specified_symbol (name, keep_specific_list)))
-	keep = 1;
+	keep = TRUE;
+
       if (keep && is_strip_section (abfd, bfd_get_section (sym)))
-	keep = 0;
+	keep = FALSE;
 
       if (keep)
 	{
@@ -2383,6 +2409,32 @@ copy_section (bfd *ibfd, sec_ptr isection, void *obfdarg)
       if (!bfd_get_section_contents (ibfd, isection, memhunk, 0, size))
 	RETURN_NONFATAL (bfd_get_filename (ibfd));
 
+      if (reverse_bytes)
+	{
+	  /* We don't handle leftover bytes (too many possible behaviors,
+	     and we don't know what the user wants).  The section length
+	     must be a multiple of the number of bytes to swap.  */
+	  if ((size % reverse_bytes) == 0)
+	    {
+	      unsigned long i, j;
+	      bfd_byte b;
+
+	      for (i = 0; i < size; i += reverse_bytes)
+		for (j = 0; j < (unsigned long)(reverse_bytes / 2); j++)
+		  {
+		    bfd_byte *m = (bfd_byte *) memhunk;
+
+		    b = m[i + j];
+		    m[i + j] = m[(i + reverse_bytes) - (j + 1)];
+		    m[(i + reverse_bytes) - (j + 1)] = b;
+		  }
+	    }
+	  else
+	    /* User must pad the section up in order to do this.  */
+	    fatal (_("cannot reverse bytes: length of section %s must be evenly divisible by %d"),
+		   bfd_section_name (ibfd, isection), reverse_bytes);
+	}
+
       if (copy_byte >= 0)
 	{
 	  /* Keep only every `copy_byte'th byte in MEMHUNK.  */
@@ -3255,6 +3307,20 @@ copy_main (int argc, char *argv[])
 	case OPTION_EXTRACT_SYMBOL:
 	  extract_symbol = TRUE;
 	  break;
+
+	case OPTION_REVERSE_BYTES:
+          {
+            int prev = reverse_bytes;
+
+            reverse_bytes = atoi (optarg);
+            if ((reverse_bytes <= 0) || ((reverse_bytes % 2) != 0))
+              fatal (_("number of bytes to reverse must be positive and even"));
+
+            if (prev && prev != reverse_bytes)
+              non_fatal (_("Warning: ignoring previous --reverse-bytes value of %d"),
+                         prev);
+            break;
+          }
 
 	case 0:
 	  /* We've been given a long option.  */

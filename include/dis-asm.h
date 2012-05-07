@@ -282,13 +282,14 @@ extern int print_insn_z80		(bfd_vma, disassemble_info *);
 extern int print_insn_z8001		(bfd_vma, disassemble_info *);
 extern int print_insn_z8002		(bfd_vma, disassemble_info *);
 
-extern disassembler_ftype arc_get_disassembler (void *);
+extern disassembler_ftype arc_get_disassembler (bfd *);
 extern disassembler_ftype cris_get_disassembler (bfd *);
 
 extern void print_i386_disassembler_options (FILE *);
 extern void print_mips_disassembler_options (FILE *);
 extern void print_ppc_disassembler_options (FILE *);
 extern void print_arm_disassembler_options (FILE *);
+extern void print_arc_disassembler_options (FILE *);
 extern void parse_arm_disassembler_option (char *);
 extern int  get_arm_regname_num_options (void);
 extern int  set_arm_regname_option (int);

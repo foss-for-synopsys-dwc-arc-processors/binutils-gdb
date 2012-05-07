@@ -4,6 +4,9 @@ AC_PREREQ(2.57)
 AC_INIT(ldmain.c)
 
 AC_CANONICAL_SYSTEM
+
+
+
 AC_ISC_POSIX
 
 changequote(,)dnl

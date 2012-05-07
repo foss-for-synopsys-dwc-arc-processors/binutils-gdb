@@ -1,6 +1,7 @@
 /* Disassembler structures definitions for the ARC.
    Copyright 1994, 1995, 1997, 1998, 2000, 2001
    Free Software Foundation, Inc.
+   Copyright 2007 ARC International (UK) LTD
    Contributed by Doug Evans (dje@cygnus.com).
 
    This program is free software; you can redistribute it and/or modify
@@ -52,10 +53,12 @@ struct arcDisState
   
   unsigned char* instruction;
   unsigned index;
-  const char *comm[6]; /* instr name, cond, NOP, 3 operands  */
+  const char *comm[6]; /* instr name, cond, NOP, 3 operands */
   int opWidth;
   int targets[4];
-  int addresses[4];
+  /* START ARC LOCAL */
+  unsigned int addresses[4];
+  /* END ARC LOCAL */
   /* Set as a side-effect of calling the disassembler.
      Used only by the debugger.  */
   enum Flow flow;
@@ -76,6 +79,9 @@ struct arcDisState
   unsigned char acnt;
 };
 
-#define __TRANSLATION_REQUIRED(state) ((state).acnt != 0)
+int ARCTangent_decodeInstr(bfd_vma address, disassemble_info* info);
+int ARCompact_decodeInstr (bfd_vma address, disassemble_info* info);
+
+#define __TRANSLATION_REQUIRED(state)	((state).acnt != 0)
 
 #endif

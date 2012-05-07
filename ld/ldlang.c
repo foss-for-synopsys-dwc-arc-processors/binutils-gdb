@@ -20,8 +20,8 @@
    Software Foundation, 51 Franklin Street - Fifth Floor, Boston, MA
    02110-1301, USA.  */
 
-#include "bfd.h"
 #include "sysdep.h"
+#include "bfd.h"
 #include "libiberty.h"
 #include "safe-ctype.h"
 #include "obstack.h"
@@ -5269,9 +5269,17 @@ lang_one_common (struct bfd_link_hash_entry *h, void *info)
 
       name = bfd_demangle (output_bfd, h->root.string,
 			   DMGL_ANSI | DMGL_PARAMS);
-      minfo ("%s", name);
-      len = strlen (name);
-      free (name);
+      if (name == NULL)
+	{
+	  minfo ("%s", h->root.string);
+	  len = strlen (h->root.string);
+	}
+      else
+	{
+	  minfo ("%s", name);
+	  len = strlen (name);
+	  free (name);
+	}
 
       if (len >= 19)
 	{

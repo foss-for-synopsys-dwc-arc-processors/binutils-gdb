@@ -33,8 +33,8 @@ SECTION
 
 /* For sparc64-cross-sparc32.  */
 #define _SYSCALL32
-#include "bfd.h"
 #include "sysdep.h"
+#include "bfd.h"
 #include "bfdlink.h"
 #include "libbfd.h"
 #define ARCH_SIZE 0
@@ -3971,6 +3971,18 @@ _bfd_elf_map_sections_to_segments (bfd *abfd, struct bfd_link_info *info)
 		 ends precisely on a page boundary.  */
 	      new_segment = TRUE;
 	    }
+	  /* START ARC LOCAL */
+	  /* Likewise, we do not want to put a read only section into
+	     a writable segment.  */
+	  else if ((hdr->flags & SEC_READONLY) == 0
+		   /* We have to check this now because WRITABLE
+		      has not yet been set by the code below. */
+		   && last_hdr
+		   && (last_hdr->flags & SEC_READONLY) != 0)
+	  {
+	      new_segment = TRUE;
+	  }
+	  /* END ARC LOCAL */
 	  else
 	    {
 	      /* Otherwise, we can use the same segment.  */
@@ -4519,7 +4531,7 @@ assign_file_positions_for_load_sections (bfd *abfd,
 	  if (p->p_type == PT_LOAD
 	      || p->p_type == PT_TLS)
 	    {
-	      bfd_signed_vma adjust = sec->lma - (p->p_paddr + p->p_filesz);
+	      bfd_signed_vma adjust = sec->lma - (p->p_paddr + p->p_memsz);
 
 	      if ((flags & SEC_LOAD) != 0
 		  || ((flags & SEC_ALLOC) != 0

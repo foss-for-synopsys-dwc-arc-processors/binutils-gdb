@@ -1,3 +1,104 @@
+2007-04-26  Anatoly Sokolov <aesok@post.ru>
+
+	* config/tc-avr.c (mcu_types): Add support for atmega8hva and
+	atmega16hva devices. Move at90usb82 device to 'avr5' architecture.
+	* doc/c-avr.texi: Document new devices.
+
+2007-04-24  Alan Modra  <amodra@bigpond.net.au>
+
+	* Makefile.am: Run "make dep-am".
+	* Makefile.in: Regenerate.
+
+2007-04-23  Nathan Sidwell  <nathan@codesourcery.com>
+
+	* config/tc-m68k.c (mcf54455_ctrl): New.
+	(HAVE_LONG_DISP, HAVE_LONG_CALL, HAVE_LONG_COND): New.
+	(m68k_archs): Add isac.
+	(m68k_cpus): Add 54455 family.
+	(m68k_ip): Split Bg into Bb, Bs, Bg.
+	(m68k_elf_final_processing): Add ISA_C.
+	* doc/c-m68k.texi (M680x0 Options): Add isac.
+
+2007-04-22  Alan Modra  <amodra@bigpond.net.au>
+
+	* read.c (read_a_source_file): Skip multiple spaces to
+	cover hack in mmix md_start_line_hook which overwrites a
+	colon with a space.  Delete sermon and needless assertion.
+
+2007-04-21  Alan Modra  <amodra@bigpond.net.au>
+
+	* config/atof-vax.c (atof_vax_sizeof): Change return type to unsigned.
+	(md_atof): Make number_of_chars unsigned.  Revert last change.
+	* config/tc-or32.c (md_apply_fix): Delete bogus assertions.
+	* config/tc-sh.c (sh_optimize_expr): Only define for OBJ_ELF.
+	* config/tc-sh.h (md_optimize_expr): Likewise.
+	* config/tc-sh64.c (shmedia_md_pcrel_from_section): Delete bogus
+	assertion.
+	* config/tc-xtensa.c (convert_frag_immed_finish_loop): Likewise.
+
+2007-04-21  Nick Clifton  <nickc@redhat.com>
+
+	* config/atof-vax.c (md_atof): Fix comparison inside know().
+
+	* config/tc-ia64.c (emit_one_bundle): Fix typo.
+
+2007-04-21  Alan Modra  <amodra@bigpond.net.au>
+
+	* expr.c (expr): Assert on rankarg, not rank which can be unsigned.
+	* read.c (read_a_source_file): Remove buffer_limit[-1] assertion.
+	Don't skip over NUL char.
+	(pseudo_set): Set X_op for registers to O_register.
+	* symbols.c (symbol_clone): Remove assertion that sym is defined.
+	(resolve_symbol_value): Resolve O_register symbols.
+	* config/tc-i386.c (parse_real_register): Don't use i386_float_regtab.
+	Instead find st(0) by hash lookup.
+	* config/tc-ppc.c (ppc_macro): Warning fix.
+
+	* as.h (ENABLE_CHECKING): Default define to 0.
+	(know): Assert if ENABLE_CHECKING.
+	(struct relax_type): Remove superfluous declaration.
+	* configure.in (--enable-checking): New.
+	* configure: Regenerate.
+	* config.in: Regenerate.
+	* config/tc-ppc.c (ppc_setup_opcodes): Do checks when ENABLE_CHECKING.
+	Check for duplicate powerpc_operands entries.
+
+2007-04-20  Nathan Sidwell  <nathan@codesourcery.com>
+
+	* config/tc-m68k.c (mcf5253_ctrl): New.
+	(mcf52223_ctrl): New.
+	(m68k_cpus): Add 5253, 52221, 52223.
+
+	* config/m68k-parse.h (RAMBAR_ALT): New.
+	* config/tc-m68k.c (mcf5206_ctrl, mcf5307_ctrl): New.
+	(mcf_ctrl, mcf5208_ctrl, mcf5210a_ctrl, mcf5213_ctrl, mcf52235_ctrl,
+	mcf5225_ctrl, mcf5235_ctrl, mcf5271_ctrl, mcf5275_ctrl,
+	mcf5282_ctrl, mcf5329_ctrl, mcf5373_ctrl, mcfv4e_ctrl,
+	mcf5475_ctrl, mcf5485_ctrl): Add RAMBAR synonym for
+	RAMBAR1.
+	(mcf5272_ctrl): Add RAMBAR0, replace add RAMBAR with RAMBAR_ALT.
+	(m68k_cpus): Adjust 5206, 5206e & 5307 entries.
+	(m68k_ip) <Case J>: Detect when RAMBAR_ALT should be used.  Add it
+	to control register mapping.
+
+2007-04-20  Alan Modra  <amodra@bigpond.net.au>
+
+	* messages.c (as_internal_value_out_of_range): Fix typo in
+	error message.  Return after printing domain error.
+	* config/tc-ppc.c (ppc_insert_operand): Preserve low zero bits
+	in max when shifting right.
+
+2007-04-20  Alan Modra  <amodra@bigpond.net.au>
+
+	* messages.c (as_internal_value_out_of_range): Extend to report
+	errors for values with invalid low bits set.
+	* config/tc-ppc.c (ppc_setup_opcodes): Check powerpc_operands bitm
+	fields.  Check that operands and opcode fields are disjoint.
+	(ppc_insert_operand): Check operands using mask rather than bit
+	count.   Check low bits too.  Handle PPC_OPERAND_PLUS1.  Adjust
+	insertion code.
+	(md_apply_fix): Adjust for struct powerpc_operand change.
+
 2007-04-19  Paul Brook  <paul@codesourcery.com>
 
 	* config/tc-arm.c (md_assemble): Only allow 16-bit instructions on

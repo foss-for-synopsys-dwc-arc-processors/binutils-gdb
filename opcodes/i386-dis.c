@@ -50,6 +50,7 @@ static void oappend (const char *);
 static void append_seg (void);
 static void OP_indirE (int, int);
 static void print_operand_value (char *, int, bfd_vma);
+static void print_displacement (char *, bfd_vma);
 static void OP_E (int, int);
 static void OP_G (int, int);
 static bfd_vma get64 (void);
@@ -3773,6 +3774,8 @@ print_insn (bfd_vma pc, disassemble_info *info)
      order as the intel book; everything else is printed in reverse order.  */
   if (intel_syntax || two_source_ops)
     {
+      bfd_vma riprel;
+
       for (i = 0; i < MAX_OPERANDS; ++i)
         op_txt[i] = op_out[i];
 
@@ -3781,6 +3784,9 @@ print_insn (bfd_vma pc, disassemble_info *info)
           op_ad = op_index[i];
           op_index[i] = op_index[MAX_OPERANDS - 1 - i];
           op_index[MAX_OPERANDS - 1 - i] = op_ad;
+	  riprel = op_riprel[i];
+	  op_riprel[i] = op_riprel [MAX_OPERANDS - 1 - i];
+	  op_riprel[MAX_OPERANDS - 1 - i] = riprel;
 	}
     }
   else
@@ -3808,6 +3814,7 @@ print_insn (bfd_vma pc, disassemble_info *info)
 	(*info->fprintf_func) (info->stream, "        # ");
 	(*info->print_address_func) ((bfd_vma) (start_pc + codep - start_codep
 						+ op_address[op_index[i]]), info);
+	break;
       }
   return codep - priv.the_buffer;
 }
@@ -4623,6 +4630,50 @@ print_operand_value (char *buf, int hex, bfd_vma disp)
     }
 }
 
+/* Put DISP in BUF as signed hex number.  */
+
+static void
+print_displacement (char *buf, bfd_vma disp)
+{
+  bfd_signed_vma val = disp;
+  char tmp[30];
+  int i, j = 0;
+
+  if (val < 0)
+    {
+      buf[j++] = '-';
+      val = -disp;
+
+      /* Check for possible overflow.  */
+      if (val < 0)
+	{
+	  switch (address_mode)
+	    {
+	    case mode_64bit:
+	      strcpy (buf + j, "0x8000000000000000");
+	      break;
+	    case mode_32bit:
+	      strcpy (buf + j, "0x80000000");
+	      break;
+	    case mode_16bit:
+	      strcpy (buf + j, "0x8000");
+	      break;
+	    }
+	  return;
+	}
+    }
+
+  buf[j++] = '0';
+  buf[j++] = 'x';
+
+  sprintf_vma (tmp, val);
+  for (i = 0; tmp[i] == '0'; i++)
+    continue;
+  if (tmp[i] == '\0')
+    i--;
+  strcpy (buf + j, tmp + i);
+}
+
 static void
 intel_operand_size (int bytemode, int sizeflag)
 {
@@ -4773,8 +4824,10 @@ OP_E (int bytemode, int sizeflag)
     intel_operand_size (bytemode, sizeflag);
   append_seg ();
 
-  if ((sizeflag & AFLAG) || address_mode == mode_64bit) /* 32 bit address mode */
+  if ((sizeflag & AFLAG) || address_mode == mode_64bit)
     {
+      /* 32/64 bit address mode */
+      int havedisp;
       int havesib;
       int havebase;
       int base;
@@ -4823,10 +4876,15 @@ OP_E (int bytemode, int sizeflag)
 	  break;
 	}
 
+      havedisp = havebase || (havesib && (index != 4 || scale != 0));
+
       if (!intel_syntax)
 	if (modrm.mod != 0 || (base & 7) == 5)
 	  {
-	    print_operand_value (scratchbuf, !riprel, disp);
+	    if (havedisp || riprel)
+	      print_displacement (scratchbuf, disp);
+	    else
+	      print_operand_value (scratchbuf, 1, disp);
 	    oappend (scratchbuf);
 	    if (riprel)
 	      {
@@ -4835,11 +4893,14 @@ OP_E (int bytemode, int sizeflag)
 	      }
 	  }
 
-      if (havebase || (havesib && (index != 4 || scale != 0)))
+      if (havedisp || (intel_syntax && riprel))
 	{
 	  *obufp++ = open_char;
 	  if (intel_syntax && riprel)
-	    oappend ("rip + ");
+	    {
+	      set_op (disp, 1);
+	      oappend ("rip");
+	    }
 	  *obufp = '\0';
 	  if (havebase)
 	    oappend (address_mode == mode_64bit && (sizeflag & AFLAG)
@@ -4864,9 +4925,10 @@ OP_E (int bytemode, int sizeflag)
 		  oappend (scratchbuf);
 		}
 	    }
-	  if (intel_syntax && disp)
+	  if (intel_syntax
+	      && (disp || modrm.mod != 0 || (base & 7) == 5))
 	    {
-	      if ((bfd_signed_vma) disp > 0)
+	      if ((bfd_signed_vma) disp >= 0)
 		{
 		  *obufp++ = '+';
 		  *obufp = '\0';
@@ -4878,7 +4940,7 @@ OP_E (int bytemode, int sizeflag)
 		  disp = - (bfd_signed_vma) disp;
 		}
 
-	      print_operand_value (scratchbuf, modrm.mod != 1, disp);
+	      print_displacement (scratchbuf, disp);
 	      oappend (scratchbuf);
 	    }
 
@@ -4930,7 +4992,7 @@ OP_E (int bytemode, int sizeflag)
       if (!intel_syntax)
 	if (modrm.mod != 0 || modrm.rm == 6)
 	  {
-	    print_operand_value (scratchbuf, 0, disp);
+	    print_displacement (scratchbuf, disp);
 	    oappend (scratchbuf);
 	  }
 
@@ -4939,9 +5001,10 @@ OP_E (int bytemode, int sizeflag)
 	  *obufp++ = open_char;
 	  *obufp = '\0';
 	  oappend (index16[modrm.rm]);
-	  if (intel_syntax && disp)
+	  if (intel_syntax
+	      && (disp || modrm.mod != 0 || modrm.rm == 6))
 	    {
-	      if ((bfd_signed_vma) disp > 0)
+	      if ((bfd_signed_vma) disp >= 0)
 		{
 		  *obufp++ = '+';
 		  *obufp = '\0';
@@ -4953,7 +5016,7 @@ OP_E (int bytemode, int sizeflag)
 		  disp = - (bfd_signed_vma) disp;
 		}
 
-	      print_operand_value (scratchbuf, modrm.mod != 1, disp);
+	      print_displacement (scratchbuf, disp);
 	      oappend (scratchbuf);
 	    }
 

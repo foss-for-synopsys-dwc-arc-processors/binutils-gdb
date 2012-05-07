@@ -258,7 +258,7 @@ gcc(1), ld(1), and the Info entries for @file{binutils} and @file{ld}.
 @ifset ARC
 
 @emph{Target ARC options:}
-   [@b{-marc[5|6|7|8]}]
+   [@b{-A[4|5|6|7|RC600|RC700}]
    [@b{-EB}|@b{-EL}]
 @end ifset
 @ifset ARM

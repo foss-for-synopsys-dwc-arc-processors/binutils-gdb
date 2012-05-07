@@ -1,3 +1,71 @@
+2007-05-10  Richard Sandiford  <richard@codesourcery.com>
+ 
+	* elf.c (assign_file_positions_for_load_sections): Use p_memsz
+	rather than p_filesz to calculate the LMA of the end of a segment.
+
+2007-04-27  Alan Modra  <amodra@bigpond.net.au>
+
+	* cpu-rs6000.c: Write Mimi's name in ASCII.
+	* coff-rs6000.c: Likewise.
+	* rs6000-core.c: Likewise.
+
+2007-04-27  Alan Modra  <amodra@bigpond.net.au>
+
+	* sysdep.h: Include config.h first.
+	Many files: Include sysdep.h before bfd.h.
+	* Makefile.am: Run "make dep-am".
+	* Makefile.in: Regenerate.
+
+2007-04-25  Alan Modra  <amodra@bigpond.net.au>
+
+	* sysdep.h: Revert last change.
+
+2007-04-24  Nick Clifton  <nickc@redhat.com>
+
+	* coffcode.h (coff_slurp_reloc_table): Initialise dst.r_offset.
+	* coff-m68k.c (m68kcoff_rtype_to_howto): Initialize relent.howto.
+
+2007-04-24  Alan Modra  <amodra@bigpond.net.au>
+
+	* elf-eh-frame.c (_bfd_elf_discard_section_eh_frame): Warn if
+	eh_frame_hdr table won't be created.
+
+2007-04-24  Alan Modra  <amodra@bigpond.net.au>
+
+	* acinclude.m4: Include config/stdint.m4.
+	* configure.in: Invoke GCC_HEADER_STDINT.
+	* sysdep.h: Don't include ansidecl.h here.
+	* configure: Regenerate.
+	* config.in: Regenerate.
+	* Makefile.in: Regenerate.
+
+2007-04-23  Nathan Sidwell  <nathan@codesourcery.com>
+
+	* archures.c (bfd_mach_mcf_isa_c, bfd_mach_mcf_isa_c_mac,
+	bfd_mach_mcf_isa_c_emac): New.
+	* elf32-m68k.c (ISAC_PLT_ENTRY_SIZE, elf_isac_plt0_entry,
+	elf_isac_plt_entry, elf_isac_plt_info): New.
+	(elf32_m68k_object_p): Add ISA_C.
+	(elf32_m68k_print_private_bfd_data): Print ISA_C.
+	(elf32_m68k_get_plt_info): Detect ISA_C.
+	* cpu-m68k.c (arch_info): Add ISAC.
+	(m68k_arch_features): Likewise,
+	(bfd_m68k_compatible): ISAs B & C are not compatible.
+
+2007-04-21  Nick Clifton  <nickc@redhat.com>
+
+	* ecoff.c (_bfd_ecoff_write_armap): Initialise rehash.
+	(ecoff_link_add_archive_symbols): Likewise.
+	* coff-m68k.c (m68kcoff_common_addend_rtype_to_howto): Initialise
+	relent.howto.
+	* ieee.c (parse_int): Initialise x.
+	(must_parse_int): Initialise result.
+	(ieee_slurp_external_symbols): Initialise value.
+
+2007-04-21  Alan Modra  <amodra@bigpond.net.au>
+
+	* config.bfd (spu-*-elf): Delete targ_selvecs.
+
 2007-04-19  Nick Clifton  <nickc@redhat.com>
 
 	* coffcode.h (coff_rtype_to_howto): Initialise genrel.howto.

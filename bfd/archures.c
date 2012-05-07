@@ -1,6 +1,6 @@
 /* BFD library support routines for architectures.
    Copyright 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999,
-   2000, 2001, 2002, 2003, 2004, 2005, 2006
+   2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007
    Free Software Foundation, Inc.
    Hacked by John Gilmore and Steve Chamberlain of Cygnus Support.
 
@@ -20,8 +20,8 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 
-#include "bfd.h"
 #include "sysdep.h"
+#include "bfd.h"
 #include "libbfd.h"
 #include "safe-ctype.h"
 
@@ -97,6 +97,9 @@ DESCRIPTION
 .#define bfd_mach_mcf_isa_b_float 23
 .#define bfd_mach_mcf_isa_b_float_mac 24
 .#define bfd_mach_mcf_isa_b_float_emac 25
+.#define bfd_mach_mcf_isa_c 26
+.#define bfd_mach_mcf_isa_c_mac 27
+.#define bfd_mach_mcf_isa_c_emac 28
 .  bfd_arch_vax,       {* DEC Vax *}
 .  bfd_arch_i960,      {* Intel 960 *}
 .    {* The order of the following is important.
@@ -290,10 +293,10 @@ DESCRIPTION
 .#define bfd_mach_v850e 	'E'
 .#define bfd_mach_v850e1	'1'
 .  bfd_arch_arc,       {* ARC Cores *}
-.#define bfd_mach_arc_5         5
-.#define bfd_mach_arc_6         6
-.#define bfd_mach_arc_7         7
-.#define bfd_mach_arc_8         8
+.#define bfd_mach_arc_a4         0
+.#define bfd_mach_arc_a5         1
+.#define bfd_mach_arc_arc600     2
+.#define bfd_mach_arc_arc700     3
 . bfd_arch_m32c,     {* Renesas M16C/M32C.  *}
 .#define bfd_mach_m16c        0x75
 .#define bfd_mach_m32c        0x78

@@ -457,7 +457,9 @@ disassembler_usage (stream)
 #ifdef ARCH_i386
   print_i386_disassembler_options (stream);
 #endif
-
+#ifdef ARCH_arc
+  print_arc_disassembler_options (stream);
+#endif
   return;
 }
 

@@ -1,6 +1,6 @@
 /* symbols.c -symbol table-
    Copyright 1987, 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998,
-   1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006
+   1999, 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007
    Free Software Foundation, Inc.
 
    This file is part of GAS, the GNU Assembler.
@@ -187,7 +187,7 @@ static unsigned long local_symbol_conversion_count;
 
 /* Create a local symbol and insert it into the local hash table.  */
 
-static struct local_symbol *
+struct local_symbol *
 local_symbol_make (const char *name, segT section, valueT value, fragS *frag)
 {
   char *name_copy;
@@ -562,8 +562,6 @@ symbol_clone (symbolS *orgsymP, int replace)
   if (LOCAL_SYMBOL_CHECK (orgsymP))
     orgsymP = local_symbol_convert ((struct local_symbol *) orgsymP);
   bsymorg = orgsymP->bsym;
-
-  know (S_IS_DEFINED (orgsymP));
 
   newsymP = obstack_alloc (&notes, sizeof (*newsymP));
   *newsymP = *orgsymP;
@@ -1123,6 +1121,9 @@ resolve_symbol_value (symbolS *symp)
 	  final_val += symp->sy_frag->fr_address / OCTETS_PER_BYTE;
 	  if (final_seg == expr_section)
 	    final_seg = absolute_section;
+	  /* Fall through.  */
+
+	case O_register:
 	  resolved = 1;
 	  break;
 
@@ -1400,7 +1401,6 @@ resolve_symbol_value (symbolS *symp)
 		      && symbol_resolved_p (op_symbol));
 	  break;
 
-	case O_register:
 	case O_big:
 	case O_illegal:
 	  /* Give an error (below) if not in expr_section.  We don't
@@ -1505,10 +1505,7 @@ snapshot_symbol (symbolS **symbolPP, valueT *valueP, segT *segP, fragS **fragPP)
 	    }
 	}
 
-      /* Never change a defined symbol.  */
-      if (symbolP->bsym->section == undefined_section
-	  || symbolP->bsym->section == expr_section)
-	*symbolPP = symbolP;
+      *symbolPP = symbolP;
       *valueP = expr.X_add_number;
       *segP = symbolP->bsym->section;
       *fragPP = symbolP->sy_frag;

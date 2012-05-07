@@ -18,7 +18,7 @@
    along with this program; if not, write to the Free Software
    Foundation, 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 
-#include <stdio.h>
+#include "sysdep.h"
 #include "bfd.h"
 #include "bucomm.h"
 
@@ -31,7 +31,7 @@ print_version (const char *name)
   /* This output is intended to follow the GNU standards document.  */
   /* xgettext:c-format */
   printf ("GNU %s %s\n", name, BFD_VERSION_STRING);
-  printf (_("Copyright 2007 Free Software Foundation, Inc.\n"));
+  printf (_("Copyright 2008 Free Software Foundation, Inc.\n"));
   printf (_("\
 This program is free software; you may redistribute it under the terms of\n\
 the GNU General Public License.  This program has absolutely no warranty.\n"));

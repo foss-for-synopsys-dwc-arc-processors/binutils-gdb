@@ -173,67 +173,83 @@ static const enum m68k_register m68060_ctrl[] = {
 };
 static const enum m68k_register mcf_ctrl[] = {
   CACR, TC, ACR0, ACR1, ACR2, ACR3, VBR, ROMBAR,
-  RAMBAR0, RAMBAR1, MBAR,
+  RAMBAR0, RAMBAR1, RAMBAR, MBAR,
+  0
+};
+static const enum m68k_register mcf5206_ctrl[] = {
+  CACR, ACR0, ACR1,  VBR, RAMBAR0, RAMBAR_ALT, MBAR,
   0
 };
 static const enum m68k_register mcf5208_ctrl[] = {
-  CACR, ACR0, ACR1, VBR, RAMBAR1,
+  CACR, ACR0, ACR1, VBR,  RAMBAR, RAMBAR1,
   0
 };
 static const enum m68k_register mcf5210a_ctrl[] = {
-  VBR, CACR, ACR0, ACR1, ROMBAR, RAMBAR, MBAR,
+  VBR, CACR, ACR0, ACR1, ROMBAR, RAMBAR, RAMBAR1, MBAR,
   0
 };
 static const enum m68k_register mcf5213_ctrl[] = {
-  VBR, RAMBAR, FLASHBAR,
+  VBR, RAMBAR, RAMBAR1, FLASHBAR,
   0
 };
 static const enum m68k_register mcf5216_ctrl[] = {
-  VBR, CACR, ACR0, ACR1, FLASHBAR, RAMBAR,
+  VBR, CACR, ACR0, ACR1, FLASHBAR, RAMBAR, RAMBAR1,
+  0
+};
+static const enum m68k_register mcf52223_ctrl[] = {
+  VBR, CACR, ACR0, ACR1, FLASHBAR, RAMBAR, RAMBAR1,
   0
 };
 static const enum m68k_register mcf52235_ctrl[] = {
-  VBR, FLASHBAR, RAMBAR,
+  VBR, FLASHBAR, RAMBAR, RAMBAR1,
   0
 };
 static const enum m68k_register mcf5225_ctrl[] = {
-  VBR, CACR, ACR0, ACR1, FLASHBAR, RAMBAR, MBAR,
+  VBR, CACR, ACR0, ACR1, FLASHBAR, RAMBAR, MBAR, RAMBAR1,
   0
 };
 static const enum m68k_register mcf5235_ctrl[] = {
-  VBR, CACR, ACR0, ACR1, RAMBAR,
+  VBR, CACR, ACR0, ACR1, RAMBAR, RAMBAR1,
   0
 };
 static const enum m68k_register mcf5249_ctrl[] = {
-  VBR, CACR, ACR0, ACR1, RAMBAR0, RAMBAR1, MBAR, MBAR2,
+  VBR, CACR, ACR0, ACR1, RAMBAR0, RAMBAR1, RAMBAR, MBAR, MBAR2,
   0
 };
 static const enum m68k_register mcf5250_ctrl[] = {
   VBR,
   0
 };
+static const enum m68k_register mcf5253_ctrl[] = {
+  VBR, CACR, ACR0, ACR1, RAMBAR0, RAMBAR1, MBAR,
+  0
+};
 static const enum m68k_register mcf5271_ctrl[] = {
-  VBR, CACR, ACR0, ACR1, RAMBAR,
+  VBR, CACR, ACR0, ACR1, RAMBAR, RAMBAR1,
   0
 };
 static const enum m68k_register mcf5272_ctrl[] = {
-  VBR, CACR, ACR0, ACR1, ROMBAR, RAMBAR, MBAR,
+  VBR, CACR, ACR0, ACR1, ROMBAR, RAMBAR_ALT, RAMBAR0, MBAR,
   0
 };
 static const enum m68k_register mcf5275_ctrl[] = {
-  VBR, CACR, ACR0, ACR1, RAMBAR,
+  VBR, CACR, ACR0, ACR1, RAMBAR, RAMBAR1,
   0
 };
 static const enum m68k_register mcf5282_ctrl[] = {
-  VBR, CACR, ACR0, ACR1, FLASHBAR, RAMBAR,
+  VBR, CACR, ACR0, ACR1, FLASHBAR, RAMBAR, RAMBAR1,
+  0
+};
+static const enum m68k_register mcf5307_ctrl[] = {
+  CACR, ACR0, ACR1,  VBR, RAMBAR0, RAMBAR_ALT, MBAR,
   0
 };
 static const enum m68k_register mcf5329_ctrl[] = {
-  VBR, CACR, ACR0, ACR1, RAMBAR,
+  VBR, CACR, ACR0, ACR1, RAMBAR, RAMBAR1,
   0
 };
 static const enum m68k_register mcf5373_ctrl[] = {
-  VBR, CACR, ACR0, ACR1, RAMBAR,
+  VBR, CACR, ACR0, ACR1, RAMBAR, RAMBAR1,
   0
 };
 static const enum m68k_register mcfv4e_ctrl[] = {
@@ -249,7 +265,16 @@ static const enum m68k_register mcfv4e_ctrl[] = {
   TC /* ASID */, BUSCR /* MMUBAR */,
   ITT0 /* ACR0 */, ITT1 /* ACR1 */, DTT0 /* ACR2 */, DTT1 /* ACR3 */,
   MBAR1 /* MBAR */, MBAR2 /* SECMBAR */, MBAR0 /* SECMBAR */,
-  ROMBAR /* ROMBAR0 */,
+  ROMBAR /* ROMBAR0 */, RAMBAR /* RAMBAR1 */,
+  0
+};
+static const enum m68k_register mcf54455_ctrl[] = {
+  CACR, ASID, ACR0, ACR1, ACR2, ACR3, MMUBAR,
+  VBR, PC, RAMBAR1, MBAR,
+  /* Legacy names */
+  TC /* ASID */, BUSCR /* MMUBAR */,
+  ITT0 /* ACR0 */, ITT1 /* ACR1 */, DTT0 /* ACR2 */, DTT1 /* ACR3 */,
+  MBAR1 /* MBAR */,  RAMBAR /* RAMBAR1 */,
   0
 };
 static const enum m68k_register mcf5475_ctrl[] = {
@@ -258,7 +283,7 @@ static const enum m68k_register mcf5475_ctrl[] = {
   /* Legacy names */
   TC /* ASID */, BUSCR /* MMUBAR */,
   ITT0 /* ACR0 */, ITT1 /* ACR1 */, DTT0 /* ACR2 */, DTT1 /* ACR3 */,
-  MBAR1 /* MBAR */, ROMBAR /* ROMBAR0 */,
+  MBAR1 /* MBAR */, RAMBAR /* RAMBAR1 */,
   0
 };
 static const enum m68k_register mcf5485_ctrl[] = {
@@ -267,7 +292,7 @@ static const enum m68k_register mcf5485_ctrl[] = {
   /* Legacy names */
   TC /* ASID */, BUSCR /* MMUBAR */,
   ITT0 /* ACR0 */, ITT1 /* ACR1 */, DTT0 /* ACR2 */, DTT1 /* ACR3 */,
-  MBAR1 /* MBAR */, ROMBAR /* ROMBAR0 */,
+  MBAR1 /* MBAR */, RAMBAR /* RAMBAR1 */,
   0
 };
 static const enum m68k_register fido_ctrl[] = {
@@ -334,7 +359,14 @@ struct m68k_it
 #define arch_coldfire_fpu(x)	((x) & cfloat)
 
 /* Macros for determining if cpu supports a specific addressing mode.  */
-#define HAVE_LONG_BRANCH(x)     ((x) & (m68020|m68030|m68040|m68060|cpu32|fido_a|mcfisa_b))
+#define HAVE_LONG_DISP(x)	\
+	((x) & (m68020|m68030|m68040|m68060|cpu32|fido_a|mcfisa_b|mcfisa_c))
+#define HAVE_LONG_CALL(x)	\
+	((x) & (m68020|m68030|m68040|m68060|cpu32|fido_a|mcfisa_b|mcfisa_c))
+#define HAVE_LONG_COND(x)	\
+	((x) & (m68020|m68030|m68040|m68060|cpu32|fido_a|mcfisa_b|mcfisa_c))
+#define HAVE_LONG_BRANCH(x)	\
+	((x) & (m68020|m68030|m68040|m68060|cpu32|fido_a|mcfisa_b))
 
 static struct m68k_it the_ins;	/* The instruction being assembled.  */
 
@@ -468,6 +500,7 @@ static const struct m68k_cpu m68k_archs[] =
   {mcfisa_a|mcfhwdiv,				NULL, "isaa", 0},
   {mcfisa_a|mcfhwdiv|mcfisa_aa|mcfusp,		NULL, "isaaplus", 0},
   {mcfisa_a|mcfhwdiv|mcfisa_b|mcfusp,		NULL, "isab", 0},
+  {mcfisa_a|mcfhwdiv|mcfisa_c|mcfusp,		NULL, "isac", 0},
   {mcfisa_a|mcfhwdiv|mcfisa_b|mcfmac|mcfusp,	mcf_ctrl, "cfv4", 0},
   {mcfisa_a|mcfhwdiv|mcfisa_b|mcfemac|mcfusp|cfloat, mcfv4e_ctrl, "cfv4e", 0},
   {0,0,NULL, 0}
@@ -530,9 +563,9 @@ static const struct m68k_cpu m68k_cpus[] =
   {mcfisa_a,					mcf_ctrl, "5200", 0},
   {mcfisa_a,					mcf_ctrl, "5202", 1},
   {mcfisa_a,					mcf_ctrl, "5204", 1},
-  {mcfisa_a,					mcf_ctrl, "5206", 1},
+  {mcfisa_a,					mcf5206_ctrl, "5206", 1},
   
-  {mcfisa_a|mcfhwdiv|mcfmac,			mcf_ctrl, "5206e", 0},
+  {mcfisa_a|mcfhwdiv|mcfmac,			mcf5206_ctrl, "5206e", 0},
   
   {mcfisa_a|mcfisa_aa|mcfhwdiv|mcfemac|mcfusp,	mcf5208_ctrl, "5207", -1},
   {mcfisa_a|mcfisa_aa|mcfhwdiv|mcfemac|mcfusp,	mcf5208_ctrl, "5208", 0},
@@ -547,6 +580,9 @@ static const struct m68k_cpu m68k_cpus[] =
   {mcfisa_a|mcfisa_aa|mcfhwdiv|mcfemac|mcfusp,	mcf5216_ctrl, "5214", -1},
   {mcfisa_a|mcfisa_aa|mcfhwdiv|mcfemac|mcfusp,	mcf5216_ctrl, "5216", 0},
   {mcfisa_a|mcfisa_aa|mcfhwdiv|mcfemac|mcfusp,	mcf5216_ctrl, "521x", 2},
+
+  {mcfisa_a|mcfisa_aa|mcfhwdiv|mcfmac|mcfusp,   mcf52223_ctrl, "52221", -1},
+  {mcfisa_a|mcfisa_aa|mcfhwdiv|mcfmac|mcfusp,   mcf52223_ctrl, "52223", 0},
 
   {mcfisa_a|mcfisa_aa|mcfhwdiv|mcfemac|mcfusp,  mcf52235_ctrl, "52230", -1},
   {mcfisa_a|mcfisa_aa|mcfhwdiv|mcfemac|mcfusp,  mcf52235_ctrl, "52233", -1},
@@ -564,6 +600,7 @@ static const struct m68k_cpu m68k_cpus[] =
   
   {mcfisa_a|mcfhwdiv|mcfemac,			mcf5249_ctrl, "5249", 0},
   {mcfisa_a|mcfhwdiv|mcfemac,			mcf5250_ctrl, "5250", 0},
+  {mcfisa_a|mcfhwdiv|mcfemac, 			mcf5253_ctrl, "5253", 0},
   
   {mcfisa_a|mcfisa_aa|mcfhwdiv|mcfemac|mcfusp,	mcf5271_ctrl, "5270", -1},
   {mcfisa_a|mcfisa_aa|mcfhwdiv|mcfemac|mcfusp,	mcf5271_ctrl, "5271", 0},
@@ -578,7 +615,7 @@ static const struct m68k_cpu m68k_cpus[] =
   {mcfisa_a|mcfisa_aa|mcfhwdiv|mcfemac|mcfusp,	mcf5282_ctrl, "5282", -1},
   {mcfisa_a|mcfisa_aa|mcfhwdiv|mcfemac|mcfusp,	mcf5282_ctrl, "528x", 0},
   
-  {mcfisa_a|mcfhwdiv|mcfmac,			mcf_ctrl, "5307", 0},
+  {mcfisa_a|mcfhwdiv|mcfmac,			mcf5307_ctrl, "5307", 0},
   
   {mcfisa_a|mcfisa_aa|mcfhwdiv|mcfemac|mcfusp,	mcf5329_ctrl, "5327", -1},
   {mcfisa_a|mcfisa_aa|mcfhwdiv|mcfemac|mcfusp,	mcf5329_ctrl, "5328", -1},
@@ -590,6 +627,13 @@ static const struct m68k_cpu m68k_cpus[] =
   {mcfisa_a|mcfisa_aa|mcfhwdiv|mcfemac|mcfusp,	mcf5373_ctrl, "537x", 0},
   
   {mcfisa_a|mcfisa_b|mcfhwdiv|mcfmac,		mcf_ctrl, "5407",0},
+
+  {mcfisa_a|mcfisa_c|mcfhwdiv|mcfemac|mcfusp,   mcf54455_ctrl, "54450", -1},
+  {mcfisa_a|mcfisa_c|mcfhwdiv|mcfemac|mcfusp,   mcf54455_ctrl, "54451", -1},
+  {mcfisa_a|mcfisa_c|mcfhwdiv|mcfemac|mcfusp,   mcf54455_ctrl, "54452", -1},
+  {mcfisa_a|mcfisa_c|mcfhwdiv|mcfemac|mcfusp,   mcf54455_ctrl, "54453", -1},
+  {mcfisa_a|mcfisa_c|mcfhwdiv|mcfemac|mcfusp,   mcf54455_ctrl, "54454", -1},
+  {mcfisa_a|mcfisa_c|mcfhwdiv|mcfemac|mcfusp,   mcf54455_ctrl, "54455", 0},
   
   {mcfisa_a|mcfisa_b|mcfhwdiv|mcfemac|mcfusp|cfloat, mcf5475_ctrl, "5470", -1},
   {mcfisa_a|mcfisa_b|mcfhwdiv|mcfemac|mcfusp|cfloat, mcf5475_ctrl, "5471", -1},
@@ -1743,8 +1787,18 @@ m68k_ip (char *instring)
 		      const enum m68k_register *rp;
 		      
 		      for (rp = control_regs; *rp; rp++)
-			if (*rp == opP->reg)
-			  break;
+			{
+			  if (*rp == opP->reg)
+			    break;
+			  /* In most CPUs RAMBAR refers to control reg
+	     	 	     c05 (RAMBAR1), but a few CPUs have it
+	     	 	     refer to c04 (RAMBAR0).  */
+			  else if (*rp == RAMBAR_ALT && opP->reg == RAMBAR)
+			    {
+			      opP->reg = RAMBAR_ALT;
+			      break;
+			    }
+			}
 		      if (*rp == 0)
 			losing++;
 		    }
@@ -2176,6 +2230,8 @@ m68k_ip (char *instring)
 
   for (s = the_ins.args, opP = &the_ins.operands[0]; *s; s += 2, opP++)
     {
+      int have_disp = 0;
+      
       /* This switch is a doozy.
 	 Watch the first step; its a big one! */
       switch (s[0])
@@ -2835,6 +2891,7 @@ m68k_ip (char *instring)
 
 	case 'B':
 	  tmpreg = get_num (&opP->disp, 90);
+	  
 	  switch (s[1])
 	    {
 	    case 'B':
@@ -2846,23 +2903,36 @@ m68k_ip (char *instring)
 	      break;
 	    case 'L':
 	    long_branch:
-	      if (! HAVE_LONG_BRANCH (current_architecture))
-		as_warn (_("Can't use long branches on 68000/68010/5200"));
 	      the_ins.opcode[0] |= 0xff;
 	      add_fix ('l', &opP->disp, 1, 0);
 	      addword (0);
 	      addword (0);
 	      break;
-	    case 'g':
-	      if (subs (&opP->disp))	/* We can't relax it.  */
-		goto long_branch;
-
+	    case 'g': /* Conditional branch */
+	      have_disp = HAVE_LONG_CALL (current_architecture);
+	      goto var_branch;
+	      
+	    case 'b': /* Unconditional branch */
+	      have_disp = HAVE_LONG_BRANCH (current_architecture);
+	      goto var_branch;
+	      
+	    case 's': /* Unconditional subroutine */
+	      have_disp = HAVE_LONG_CALL (current_architecture);
+	      
+	      var_branch:
+	      if (subs (&opP->disp)	/* We can't relax it.  */
 #ifdef OBJ_ELF
-	      /* If the displacement needs pic relocation it cannot be
-		 relaxed.  */
-	      if (opP->disp.pic_reloc != pic_none)
-		goto long_branch;
+		  /* If the displacement needs pic relocation it cannot be
+		     relaxed.  */
+		  || opP->disp.pic_reloc != pic_none
 #endif
+		  || 0)
+		{
+		  if (!have_disp)
+		    as_warn (_("Can't use long branches on this architecture"));
+		  goto long_branch;
+		}
+	      
 	      /* This could either be a symbol, or an absolute
 		 address.  If it's an absolute address, turn it into
 		 an absolute jump right here and keep it out of the
@@ -2888,7 +2958,7 @@ m68k_ip (char *instring)
 	      /* Now we know it's going into the relaxer.  Now figure
 		 out which mode.  We try in this order of preference:
 		 long branch, absolute jump, byte/word branches only.  */
-	      if (HAVE_LONG_BRANCH (current_architecture))
+	      if (have_disp)
 		add_frag (adds (&opP->disp),
 			  SEXT (offs (&opP->disp)),
 			  TAB (BRANCHBWL, SZ_UNDEF));
@@ -2917,7 +2987,7 @@ m68k_ip (char *instring)
 		     jumps.  */
 		  if (((the_ins.opcode[0] & 0xf0f8) == 0x50c8)
 		      && (HAVE_LONG_BRANCH (current_architecture)
-			  || (! flag_keep_pcrel)))
+			  || ! flag_keep_pcrel))
 		    {
 		      if (HAVE_LONG_BRANCH (current_architecture))
 			add_frag (adds (&opP->disp),
@@ -3075,6 +3145,7 @@ m68k_ip (char *instring)
               break;
 	    case FLASHBAR:
 	    case RAMBAR0:
+	    case RAMBAR_ALT:
 	      tmpreg = 0xC04;
 	      break;
 	    case RAMBAR:
@@ -7581,11 +7652,12 @@ m68k_elf_final_processing (void)
     {
       static const unsigned isa_features[][2] =
       {
-	{EF_M68K_CF_ISA_A_NODIV, mcfisa_a},
+	{EF_M68K_CF_ISA_A_NODIV,mcfisa_a},
 	{EF_M68K_CF_ISA_A,	mcfisa_a|mcfhwdiv},
-	{EF_M68K_CF_ISA_A_PLUS,mcfisa_a|mcfisa_aa|mcfhwdiv|mcfusp},
+	{EF_M68K_CF_ISA_A_PLUS, mcfisa_a|mcfisa_aa|mcfhwdiv|mcfusp},
 	{EF_M68K_CF_ISA_B_NOUSP,mcfisa_a|mcfisa_b|mcfhwdiv},
 	{EF_M68K_CF_ISA_B,	mcfisa_a|mcfisa_b|mcfhwdiv|mcfusp},
+	{EF_M68K_CF_ISA_C,	mcfisa_a|mcfisa_c|mcfhwdiv|mcfusp},
 	{0,0},
       };
       static const unsigned mac_features[][2] =
@@ -7598,7 +7670,7 @@ m68k_elf_final_processing (void)
       unsigned pattern;
       
       pattern = (current_architecture
-		 & (mcfisa_a|mcfisa_aa|mcfisa_b|mcfhwdiv|mcfusp));
+		 & (mcfisa_a|mcfisa_aa|mcfisa_b|mcfisa_c|mcfhwdiv|mcfusp));
       for (ix = 0; isa_features[ix][1]; ix++)
 	{
 	  if (pattern == isa_features[ix][1])

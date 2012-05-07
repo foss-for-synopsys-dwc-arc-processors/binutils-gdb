@@ -1,4 +1,4 @@
-#as: -EL
+#as: -EL -mARC600
 #objdump: -dr -EL
 
 .*: +file format elf32-.*arc
@@ -6,71 +6,88 @@
 Disassembly of section .text:
 
 00000000 <text_label>:
-   0:	80 ff ff 37 	37ffff80     lp         0 <text_label>
+   0:	a8 20 80 01             	lp         c <text_label\+0xc>
 
-   4:	00 ff ff 37 	37ffff00     lp         0 <text_label>
+   4:	00 20 00 00             	add        r0,r0,r0
+   8:	4a 26 00 70             	nop        
+   c:	e8 20 20 01             	lp         14 <text_label\+0x14>
 
-   8:	80 fe ff 37 	37fffe80     lp         0 <text_label>
+  10:	00 20 00 00             	add        r0,r0,r0
+  14:	e8 20 20 01             	lp         1c <text_label\+0x1c>
 
-   c:	01 fe ff 37 	37fffe01     lpz        0 <text_label>
+  18:	00 20 00 00             	add        r0,r0,r0
+  1c:	e8 20 21 01             	lpz        24 <text_label\+0x24>
 
-  10:	81 fd ff 37 	37fffd81     lpz        0 <text_label>
+  20:	00 20 00 00             	add        r0,r0,r0
+  24:	e8 20 21 01             	lpz        2c <text_label\+0x2c>
 
-  14:	02 fd ff 37 	37fffd02     lpnz       0 <text_label>
+  28:	00 20 00 00             	add        r0,r0,r0
+  2c:	e8 20 22 01             	lpnz       34 <text_label\+0x34>
 
-  18:	82 fc ff 37 	37fffc82     lpnz       0 <text_label>
+  30:	00 20 00 00             	add        r0,r0,r0
+  34:	e8 20 22 01             	lpnz       3c <text_label\+0x3c>
 
-  1c:	03 fc ff 37 	37fffc03     lpp        0 <text_label>
+  38:	00 20 00 00             	add        r0,r0,r0
+  3c:	e8 20 23 01             	lpp        44 <text_label\+0x44>
 
-  20:	83 fb ff 37 	37fffb83     lpp        0 <text_label>
+  40:	00 20 00 00             	add        r0,r0,r0
+  44:	e8 20 23 01             	lpp        4c <text_label\+0x4c>
 
-  24:	04 fb ff 37 	37fffb04     lpn        0 <text_label>
+  48:	00 20 00 00             	add        r0,r0,r0
+  4c:	e8 20 24 01             	lpn        54 <text_label\+0x54>
 
-  28:	84 fa ff 37 	37fffa84     lpn        0 <text_label>
+  50:	00 20 00 00             	add        r0,r0,r0
+  54:	e8 20 24 01             	lpn        5c <text_label\+0x5c>
 
-  2c:	05 fa ff 37 	37fffa05     lpc        0 <text_label>
+  58:	00 20 00 00             	add        r0,r0,r0
+  5c:	e8 20 25 01             	lpc        64 <text_label\+0x64>
 
-  30:	85 f9 ff 37 	37fff985     lpc        0 <text_label>
+  60:	00 20 00 00             	add        r0,r0,r0
+  64:	e8 20 25 01             	lpc        6c <text_label\+0x6c>
 
-  34:	05 f9 ff 37 	37fff905     lpc        0 <text_label>
+  68:	00 20 00 00             	add        r0,r0,r0
+  6c:	e8 20 25 01             	lpc        74 <text_label\+0x74>
 
-  38:	86 f8 ff 37 	37fff886     lpnc       0 <text_label>
+  70:	00 20 00 00             	add        r0,r0,r0
+  74:	e8 20 26 01             	lpnc       7c <text_label\+0x7c>
 
-  3c:	06 f8 ff 37 	37fff806     lpnc       0 <text_label>
+  78:	00 20 00 00             	add        r0,r0,r0
+  7c:	e8 20 26 01             	lpnc       84 <text_label\+0x84>
 
-  40:	86 f7 ff 37 	37fff786     lpnc       0 <text_label>
+  80:	00 20 00 00             	add        r0,r0,r0
+  84:	e8 20 26 01             	lpnc       8c <text_label\+0x8c>
 
-  44:	07 f7 ff 37 	37fff707     lpv        0 <text_label>
+  88:	00 20 00 00             	add        r0,r0,r0
+  8c:	e8 20 27 01             	lpv        94 <text_label\+0x94>
 
-  48:	87 f6 ff 37 	37fff687     lpv        0 <text_label>
+  90:	00 20 00 00             	add        r0,r0,r0
+  94:	e8 20 27 01             	lpv        9c <text_label\+0x9c>
 
-  4c:	08 f6 ff 37 	37fff608     lpnv       0 <text_label>
+  98:	00 20 00 00             	add        r0,r0,r0
+  9c:	e8 20 28 01             	lpnv       a4 <text_label\+0xa4>
 
-  50:	88 f5 ff 37 	37fff588     lpnv       0 <text_label>
+  a0:	00 20 00 00             	add        r0,r0,r0
+  a4:	e8 20 28 01             	lpnv       ac <text_label\+0xac>
 
-  54:	09 f5 ff 37 	37fff509     lpgt       0 <text_label>
+  a8:	00 20 00 00             	add        r0,r0,r0
+  ac:	e8 20 29 01             	lpgt       b4 <text_label\+0xb4>
 
-  58:	8a f4 ff 37 	37fff48a     lpge       0 <text_label>
+  b0:	00 20 00 00             	add        r0,r0,r0
+  b4:	e8 20 2a 01             	lpge       bc <text_label\+0xbc>
 
-  5c:	0b f4 ff 37 	37fff40b     lplt       0 <text_label>
+  b8:	00 20 00 00             	add        r0,r0,r0
+  bc:	e8 20 2b 01             	lplt       c4 <text_label\+0xc4>
 
-  60:	8c f3 ff 37 	37fff38c     lple       0 <text_label>
+  c0:	00 20 00 00             	add        r0,r0,r0
+  c4:	e8 20 2c 01             	lple       cc <text_label\+0xcc>
 
-  64:	0d f3 ff 37 	37fff30d     lphi       0 <text_label>
+  c8:	00 20 00 00             	add        r0,r0,r0
+  cc:	e8 20 2d 01             	lphi       d4 <text_label\+0xd4>
 
-  68:	8e f2 ff 37 	37fff28e     lpls       0 <text_label>
+  d0:	00 20 00 00             	add        r0,r0,r0
+  d4:	e8 20 2e 01             	lpls       dc <text_label\+0xdc>
 
-  6c:	0f f2 ff 37 	37fff20f     lppnz      0 <text_label>
+  d8:	00 20 00 00             	add        r0,r0,r0
+  dc:	e8 20 2f 01             	lppnz      e4 <text_label\+0xe4>
 
-  70:	a0 f1 ff 37 	37fff1a0     lp.d       0 <text_label>
-
-  74:	00 f1 ff 37 	37fff100     lp         0 <text_label>
-
-  78:	c0 f0 ff 37 	37fff0c0     lp.jd      0 <text_label>
-
-  7c:	21 f0 ff 37 	37fff021     lpz.d      0 <text_label>
-
-  80:	82 ef ff 37 	37ffef82     lpnz       0 <text_label>
-
-  84:	46 ef ff 37 	37ffef46     lpnc.jd    0 <text_label>
-
+  e0:	00 20 00 00             	add        r0,r0,r0

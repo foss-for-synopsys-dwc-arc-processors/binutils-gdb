@@ -20,8 +20,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.  */
 
-#include "bfd.h"
 #include "sysdep.h"
+#include "bfd.h"
 #include "libbfd.h"
 #include "coff/m68k.h"
 #include "coff/internal.h"
@@ -251,11 +251,12 @@ m68kcoff_rtype_to_howto (abfd, sec, rel, h, sym, addendp)
   arelent relent;
   reloc_howto_type *howto;
 
+  relent.howto = NULL;
   RTYPE2HOWTO (&relent, rel);
 
   howto = relent.howto;
 
-  if (howto->pc_relative)
+  if (howto != NULL && howto->pc_relative)
     *addendp += sec->vma;
 
   return howto;
@@ -411,6 +412,7 @@ m68kcoff_common_addend_rtype_to_howto (abfd, sec, rel, h, sym, addendp)
   arelent relent;
   reloc_howto_type *howto;
 
+  relent.howto = NULL;
   RTYPE2HOWTO (&relent, rel);
 
   howto = relent.howto;

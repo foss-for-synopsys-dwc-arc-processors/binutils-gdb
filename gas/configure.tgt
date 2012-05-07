@@ -100,7 +100,8 @@ case ${generic_target} in
   alpha-*-netbsd*)			fmt=elf em=nbsd ;;
   alpha-*-openbsd*)			fmt=elf em=obsd ;;
 
-  arc-*-elf*)				fmt=elf ;;
+  arc-*-elf*)				fmt=elf bfd_gas=yes ;;
+  arc-*-linux-uclibc*)			fmt=elf bfd_gas=yes ;;
 
   arm-*-aout)				fmt=aout ;;
   arm-*-coff | thumb-*-coff)		fmt=coff ;;

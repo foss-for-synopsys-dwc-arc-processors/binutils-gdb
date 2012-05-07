@@ -23,8 +23,8 @@ Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA. 
    The table is used to generate cross reference reports.  It is also
    used to implement the NOCROSSREFS command in the linker script.  */
 
-#include "bfd.h"
 #include "sysdep.h"
+#include "bfd.h"
 #include "bfdlink.h"
 #include "libiberty.h"
 #include "demangle.h"
@@ -57,7 +57,7 @@ struct cref_ref {
 struct cref_hash_entry {
   struct bfd_hash_entry root;
   /* The demangled name.  */
-  char *demangled;
+  const char *demangled;
   /* References to and definitions of this symbol.  */
   struct cref_ref *refs;
 };
@@ -327,6 +327,8 @@ cref_fill_array (struct cref_hash_entry *h, void *data)
   ASSERT (h->demangled == NULL);
   h->demangled = bfd_demangle (output_bfd, h->root.string,
 			       DMGL_ANSI | DMGL_PARAMS);
+  if (h->demangled == NULL)
+    h->demangled = h->root.string;
 
   **pph = h;
 
