@@ -488,6 +488,9 @@ my_sprintf (struct arcDisState *state, char *buf, const char*format, ...)
 	    va_arg(ap,char*);
 	    inc_bp();
 	    break;
+#elif 1 /* Used for prefetch to skip an argument.  */
+	    va_arg(ap,int);
+	    break;
 #else
 	    extern void abort (void);
 

@@ -1,3 +1,7 @@
+2012-06-05  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* arcompact-dis.c (my_sprintf): Don't abort for "%*".
+
 2011-06-15  Brendan Kehoe  <brendan@zen.org>
 
 	* arc-dis.c (BITS): Use sizeof(word)*8-1 instead of 31 to
