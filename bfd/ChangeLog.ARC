@@ -1,3 +1,16 @@
+2012-06-22  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+Adapt 2002/12/04 elf32-m68k.c change:
+	* elf32-arc.c (struct elf_ARC_link_hash_table): Add sym_sec
+	member.
+	(elf_ARC_link_hash_table_create): Initialize it.
+	(elf_ARC_discard_copies) : Handle symbols that are forced to be
+	local due to visibility changes.
+	(elf_arc_check_relocs) : Likewise.
+	(elf_arc_relocate_section): Likewise.
+	(elf_arc_adjust_dynamic_symbol): Likewise.
+	(elf_arc_size_dynamic_sections): Likewise.
+
 2012-04-27  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* configure.in (AM_INIT_AUTOMAKE): Change ARC suffix to ARC_4.4 .

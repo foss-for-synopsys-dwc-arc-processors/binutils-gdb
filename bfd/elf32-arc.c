@@ -125,6 +125,9 @@ struct elf_ARC_link_hash_entry
 struct elf_ARC_link_hash_table
 {
   struct elf_link_hash_table root;
+
+  /* Small local sym to section mapping cache.  */
+  struct sym_sec_cache sym_sec;
 };
 
 /* Declare this now that the above structures are defined.  */
@@ -196,6 +199,8 @@ elf_ARC_link_hash_table_create (bfd * abfd)
       return NULL;
     }
 
+  ret->sym_sec.abfd = NULL;
+
   return &ret->root.root;
 }
 
@@ -208,14 +213,19 @@ elf_ARC_link_hash_table_create (bfd * abfd)
 
 /*ARGSUSED*/
 static bfd_boolean
-elf_ARC_discard_copies (struct elf_ARC_link_hash_entry * h,
-                        void *ignore ATTRIBUTE_UNUSED)
+elf_ARC_discard_copies (struct elf_ARC_link_hash_entry * h, void *inf)
 {
+  struct bfd_link_info *info = (struct bfd_link_info *) inf;
   struct elf_ARC_pcrel_relocs_copied *s;
   
   /* We only discard relocs for symbols defined in a regular object.  */
-  if (!h->root.def_regular)
-    return TRUE;
+  if (!h->root.def_regular || (!info->symbolic && !h->root.forced_local))
+    {
+      /* m68k / bfin set DT_TEXTREL here, but we have a different way to
+	 control add_dynamic_entry.  */
+
+      return TRUE;
+    }
 
   for (s = h->pcrel_relocs_copied; s != NULL; s = s->next)
     s->section->size -= 
@@ -1484,7 +1494,7 @@ elf_arc_check_relocs (bfd *abfd,
 				    h->got.offset));
 
 	      /* Make sure this symbol is output as a dynamic symbol.  */
-	      if (h->dynindx == -1)
+	      if (h->dynindx == -1 && !h->forced_local)
 		{
 		  if (! bfd_elf_link_record_dynamic_symbol (info, h))
 		    return FALSE;
@@ -1612,23 +1622,42 @@ elf_arc_check_relocs (bfd *abfd,
 
 	      sreloc->size += sizeof (Elf32_External_Rela);
 
-	      /* If we are linking with -Bsymbolic, and this is a
-                 global symbol, we count the number of PC relative
-                 relocations we have entered for this symbol, so that
-                 we can discard them again if the symbol is later
-                 defined by a regular object.  Note that this function
-                 is only called if we are using an elf_ARC linker
-                 hash table, which means that h is really a pointer to
-                 an elf_ARC_link_hash_entry.  */
-	      if (h != NULL && info->symbolic
-		  && ELF32_R_TYPE (rel->r_info) == R_ARC_PC32)
+	      /* We count the number of PC relative relocations we have
+		 entered for this symbol, so that we can discard them
+		 again if, in the -Bsymbolic case, the symbol is later
+		 defined by a regular object, or, in the normal shared
+		 case, the symbol is forced to be local.  Note that this
+		 function is only called if we are using an elf_ARC linker
+		 hash table, which means that h is really a pointer to an
+		 an elf_ARC_link_hash_entry.  */
+
+	      if (ELF32_R_TYPE (rel->r_info) == R_ARC_PC32)
 		{
-		  struct elf_ARC_link_hash_entry *eh;
 		  struct elf_ARC_pcrel_relocs_copied *p;
+		  struct elf_ARC_pcrel_relocs_copied **head;
 
-		  eh = (struct elf_ARC_link_hash_entry *) h;
+		  if (h != NULL)
+		    {
+		      struct elf_ARC_link_hash_entry *eh
+			= (struct elf_ARC_link_hash_entry *) h;
+		      head = &eh->pcrel_relocs_copied;
+		    }
+		  else
+		    {
+		      asection *s;
+		      void *vpp;
 
-		  for (p = eh->pcrel_relocs_copied; p != NULL; p = p->next)
+		      s = (bfd_section_from_r_symndx
+			   (abfd, &elf_ARC_hash_table (info)->sym_sec,
+			    sec, r_symndx));
+		      if (s == NULL)
+			return FALSE;
+
+		      vpp = &elf_section_data (s)->local_dynrel;
+		      head = (struct elf_ARC_pcrel_relocs_copied **) vpp;
+		    }
+
+		  for (p = *head; p != NULL; p = p->next)
 		    if (p->section == sreloc)
 		      break;
 
@@ -1638,8 +1667,8 @@ elf_arc_check_relocs (bfd *abfd,
 			   bfd_alloc (dynobj, sizeof *p));
 		      if (p == NULL)
 			return FALSE;
-		      p->next = eh->pcrel_relocs_copied;
-		      eh->pcrel_relocs_copied = p;
+		      p->next = *head;
+		      *head = p;
 		      p->section = sreloc;
 		      p->count = 0;
 		    }
@@ -1815,6 +1844,7 @@ elf_arc_relocate_section (bfd *output_bfd,
 		 || h->root.type == bfd_link_hash_warning)
 	    h = (struct elf_link_hash_entry *) h->root.u.i.link;
 
+	  BFD_ASSERT ((h->dynindx == -1) >= (h->forced_local != 0));
 	  /* if we have encountered a definition for this symbol */
 	  if (h->root.type == bfd_link_hash_defined
 	      || h->root.type == bfd_link_hash_defweak)
@@ -2769,7 +2799,7 @@ elf_arc_adjust_dynamic_symbol (struct bfd_link_info *info,
 	}
 
       /* Make sure this symbol is output as a dynamic symbol.  */
-      if (h->dynindx == -1)
+      if (h->dynindx == -1 && !h->forced_local)
 	{
 	  if (! bfd_elf_link_record_dynamic_symbol (info, h))
 	    return FALSE;
@@ -2975,12 +3005,14 @@ elf_arc_size_dynamic_sections (bfd *output_bfd,
 
   /* If this is a -Bsymbolic shared link, then we need to discard all
      PC relative relocs against symbols defined in a regular object.
+     For the normal shared case we discard the PC relative relocs
+     against symbols that have become local due to visibility changes.
      We allocated space for them in the check_relocs routine, but we
      will not fill them in in the relocate_section routine.  */
-  if (info->shared && info->symbolic)
+  if (info->shared)
     elf_ARC_link_hash_traverse (elf_ARC_hash_table (info),
 				 elf_ARC_discard_copies,
-				 (void *) NULL);
+				 (void *) info);
 
   /* The check_relocs and adjust_dynamic_symbol entry points have
      determined the sizes of the various dynamic sections.  Allocate
