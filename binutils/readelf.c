@@ -50,13 +50,13 @@
 #include <zlib.h>
 #endif
 
-/* for PATH_MAX */
+/* For PATH_MAX.  */
 #ifdef HAVE_LIMITS_H
 #include <limits.h>
 #endif
 
 #ifndef PATH_MAX
-/* for MAXPATHLEN */
+/* For MAXPATHLEN.  */
 # ifdef HAVE_SYS_PARAM_H
 #  include <sys/param.h>
 # endif
@@ -373,6 +373,7 @@ byte_put_little_endian (unsigned char *field, bfd_vma value, int size)
 }
 
 /* Print a VMA value.  */
+
 static int
 print_vma (bfd_vma vma, print_mode mode)
 {
@@ -462,7 +463,7 @@ print_symbol (int width, const char *symbol)
 	{
 	  if (len > width)
 	    len = width;
-	  
+
 	  printf (format_string, len, symbol);
 
 	  width -= len;
@@ -486,7 +487,7 @@ print_symbol (int width, const char *symbol)
 	{
 	  if (width < 6)
 	    break;
-	  
+
 	  printf ("<0x%.2x>", *c);
 
 	  width -= 6;
@@ -570,6 +571,10 @@ guess_is_rela (unsigned int e_machine)
     case EM_860:
     case EM_ALPHA:
     case EM_ALTERA_NIOS2:
+    /* START ARC LOCAL */
+    case EM_ARC:
+    case EM_ARCOMPACT:
+    /* END ARC LOCAL */
     case EM_AVR:
     case EM_AVR_OLD:
     case EM_BLACKFIN:
@@ -1099,6 +1104,9 @@ dump_relocations (FILE *file,
 	  rtype = elf_arm_reloc_type (type);
 	  break;
 
+	/* START ARC LOCAL */
+	case EM_ARCOMPACT:
+	/* END ARC LOCAL */
 	case EM_ARC:
 	  rtype = elf_arc_reloc_type (type);
 	  break;
@@ -1272,7 +1280,7 @@ dump_relocations (FILE *file,
 			       && psym->st_shndx == SHN_IA_64_ANSI_COMMON)
 			sec_name = "ANSI_COM";
 		      else if (elf_header.e_machine == EM_IA_64
-			       && (elf_header.e_ident[EI_OSABI] 
+			       && (elf_header.e_ident[EI_OSABI]
 				   == ELFOSABI_OPENVMS)
 			       && psym->st_shndx == SHN_IA_64_VMS_SYMVEC)
 			sec_name = "VMS_SYMVEC";
@@ -1748,6 +1756,9 @@ get_machine_name (unsigned e_machine)
     case EM_SPARCV9:		return "Sparc v9";
     case EM_TRICORE:		return "Siemens Tricore";
     case EM_ARC:		return "ARC";
+    /* START ARC LOCAL */
+    case EM_ARCOMPACT:		return "ARCompact";
+    /* END ARC LOCAL */
     case EM_H8_300:		return "Renesas H8/300";
     case EM_H8_300H:		return "Renesas H8/300H";
     case EM_H8S:		return "Renesas H8S";
@@ -1823,7 +1834,7 @@ get_machine_name (unsigned e_machine)
     case EM_ALTERA_NIOS2:	return "Altera Nios II";
     case EM_XC16X:		return "Infineon Technologies xc16x";
     case EM_CYGNUS_MEP:         return "Toshiba MeP Media Engine";
-    case EM_CR16:		
+    case EM_CR16:
     case EM_CR16_OLD:		return "National Semiconductor's CR16";
     default:
       snprintf (buff, sizeof (buff), _("<unknown>: 0x%x"), e_machine);
@@ -2028,6 +2039,37 @@ get_machine_flags (unsigned e_flags, unsigned e_machine)
 	{
 	default:
 	  break;
+
+	/* START ARC LOCAL */
+	case EM_ARCOMPACT:
+	  switch(e_flags & EF_ARC_MACH)
+	    {
+	    case E_ARC_MACH_A5:
+	      strcat (buf, ", A5");
+	      break;
+	    case E_ARC_MACH_ARC600:
+	      strcat (buf, ", ARC600");
+	      break;
+	    case E_ARC_MACH_ARC601:
+	      strcat (buf, ", ARC601");
+	      break;
+	    case E_ARC_MACH_ARC700:
+	      strcat (buf, ", ARC700");
+	      break;
+	    default:
+	      strcat (buf, ", Generic ARCompact");
+	      break;
+	    }
+	  break;
+	case EM_ARC:
+	  switch (e_flags & EF_ARC_MACH)
+	    {
+	    case E_ARC_MACH_A4:
+	      strcat (buf, ", A4");
+	      break;
+	    }
+	  break;
+	/* END ARC LOCAL */
 
 	case EM_ARM:
 	  decode_ARM_machine_flags (e_flags, buf);
@@ -4279,8 +4321,8 @@ process_section_headers (FILE *file)
       else if (section->sh_type == SHT_RELA)
 	CHECK_ENTSIZE (section, i, Rela);
       else if ((do_debugging || do_debug_info || do_debug_abbrevs
-		|| do_debug_lines || do_debug_lines_decoded || do_debug_pubnames 
-		|| do_debug_aranges || do_debug_frames || do_debug_macinfo 
+		|| do_debug_lines || do_debug_lines_decoded || do_debug_pubnames
+		|| do_debug_aranges || do_debug_frames || do_debug_macinfo
 		|| do_debug_str || do_debug_loc || do_debug_ranges)
 	       && (const_strneq (name, ".debug_")
                    || const_strneq (name, ".zdebug_")))
@@ -4293,7 +4335,7 @@ process_section_headers (FILE *file)
 	  if (do_debugging
 	      || (do_debug_info     && streq (name, "info"))
 	      || (do_debug_abbrevs  && streq (name, "abbrev"))
-	      || ((do_debug_lines || do_debug_lines_decoded) 
+	      || ((do_debug_lines || do_debug_lines_decoded)
 		  && streq (name, "line"))
 	      || (do_debug_pubnames && streq (name, "pubnames"))
 	      || (do_debug_aranges  && streq (name, "aranges"))
@@ -4375,7 +4417,8 @@ process_section_headers (FILE *file)
 		    get_section_type_name (section->sh_type));
 	}
       else
-	printf ("  [%2u] %-17.17s %-15.15s ",
+	printf ((do_wide ? "  [%2u] %-17s %-15s "
+			 : "  [%2u] %-17.17s %-15.15s "),
 		i,
 		SECTION_NAME (section),
 		get_section_type_name (section->sh_type));
@@ -8024,10 +8067,13 @@ is_32bit_abs_reloc (unsigned int reloc_type)
     case EM_ALPHA:
       return reloc_type == 1; /* XXX Is this right ?  */
     case EM_ARC:
+    /* START ARC LOCAL */
+    case EM_ARCOMPACT:
+    /* END ARC LOCAL */
       return reloc_type == 1; /* R_ARC_32.  */
     case EM_ARM:
       return reloc_type == 2; /* R_ARM_ABS32 */
-    case EM_AVR_OLD: 
+    case EM_AVR_OLD:
     case EM_AVR:
       return reloc_type == 1;
     case EM_BLACKFIN:
@@ -8257,6 +8303,11 @@ is_16bit_abs_reloc (unsigned int reloc_type)
 {
   switch (elf_header.e_machine)
     {
+    /* START ARC LOCAL */
+    case EM_ARC:
+    case EM_ARCOMPACT:
+      return reloc_type == 2; /* R_ARC_16.  */
+    /* END ARC LOCAL */
     case EM_AVR_OLD:
     case EM_AVR:
       return reloc_type == 4; /* R_AVR_16.  */
@@ -8292,47 +8343,36 @@ is_none_reloc (unsigned int reloc_type)
 {
   switch (elf_header.e_machine)
     {
-    case EM_68K:
-      return reloc_type == 0; /* R_68K_NONE.  */
-    case EM_386:
-      return reloc_type == 0; /* R_386_NONE.  */
+    case EM_68K:     /* R_68K_NONE.  */
+    case EM_386:     /* R_386_NONE.  */
     case EM_SPARC32PLUS:
     case EM_SPARCV9:
-    case EM_SPARC:
-      return reloc_type == 0; /* R_SPARC_NONE.  */
-    case EM_MIPS:
-      return reloc_type == 0; /* R_MIPS_NONE.  */
-    case EM_PARISC:
-      return reloc_type == 0; /* R_PARISC_NONE.  */
-    case EM_ALPHA:
-      return reloc_type == 0; /* R_ALPHA_NONE.  */
-    case EM_PPC:
-      return reloc_type == 0; /* R_PPC_NONE.  */
-    case EM_PPC64:
-      return reloc_type == 0; /* R_PPC64_NONE.  */
-    case EM_ARM:
-      return reloc_type == 0; /* R_ARM_NONE.  */
-    case EM_IA_64:
-      return reloc_type == 0; /* R_IA64_NONE.  */
-    case EM_SH:
-      return reloc_type == 0; /* R_SH_NONE.  */
+    case EM_SPARC:   /* R_SPARC_NONE.  */
+    case EM_MIPS:    /* R_MIPS_NONE.  */
+    case EM_PARISC:  /* R_PARISC_NONE.  */
+    case EM_ALPHA:   /* R_ALPHA_NONE.  */
+    case EM_PPC:     /* R_PPC_NONE.  */
+    case EM_PPC64:   /* R_PPC64_NONE.  */
+    /* START ARC LOCAL */
+    case EM_ARC:     /* R_ARC_NONE.  */
+    case EM_ARCOMPACT: /* R_ARC_NONE.  */
+    /* END ARC LOCAL */
+    case EM_ARM:     /* R_ARM_NONE.  */
+    case EM_IA_64:   /* R_IA64_NONE.  */
+    case EM_SH:      /* R_SH_NONE.  */
     case EM_S390_OLD:
-    case EM_S390:
-      return reloc_type == 0; /* R_390_NONE.  */
-    case EM_CRIS:
-      return reloc_type == 0; /* R_CRIS_NONE.  */
-    case EM_X86_64:
-      return reloc_type == 0; /* R_X86_64_NONE.  */
-    case EM_MN10300:
-      return reloc_type == 0; /* R_MN10300_NONE.  */
-    case EM_M32R:
-      return reloc_type == 0; /* R_M32R_NONE.  */
+    case EM_S390:    /* R_390_NONE.  */
+    case EM_CRIS:    /* R_CRIS_NONE.  */
+    case EM_X86_64:  /* R_X86_64_NONE.  */
+    case EM_MN10300: /* R_MN10300_NONE.  */
+    case EM_M32R:    /* R_M32R_NONE.  */
+      return reloc_type == 0;
     }
   return FALSE;
 }
 
 /* Uncompresses a section that was compressed using zlib, in place.
- * This is a copy of bfd_uncompress_section_contents, in bfd/compress.c  */
+   This is a copy of bfd_uncompress_section_contents, in bfd/compress.c  */
 
 static int
 uncompress_section_contents (unsigned char **buffer, dwarf_size_type *size)
@@ -8344,9 +8384,9 @@ uncompress_section_contents (unsigned char **buffer, dwarf_size_type *size)
   return FALSE;
 #else
   dwarf_size_type compressed_size = *size;
-  unsigned char* compressed_buffer = *buffer;
+  unsigned char * compressed_buffer = *buffer;
   dwarf_size_type uncompressed_size;
-  unsigned char* uncompressed_buffer;
+  unsigned char * uncompressed_buffer;
   z_stream strm;
   int rc;
   dwarf_size_type header_size = 12;
@@ -8354,8 +8394,9 @@ uncompress_section_contents (unsigned char **buffer, dwarf_size_type *size)
   /* Read the zlib header.  In this case, it should be "ZLIB" followed
      by the uncompressed section size, 8 bytes in big-endian order.  */
   if (compressed_size < header_size
-      || ! streq ((char*) compressed_buffer, "ZLIB"))
+      || ! streq ((char *) compressed_buffer, "ZLIB"))
     return 0;
+
   uncompressed_size = compressed_buffer[4]; uncompressed_size <<= 8;
   uncompressed_size += compressed_buffer[5]; uncompressed_size <<= 8;
   uncompressed_size += compressed_buffer[6]; uncompressed_size <<= 8;
@@ -8371,23 +8412,23 @@ uncompress_section_contents (unsigned char **buffer, dwarf_size_type *size)
   strm.zfree = NULL;
   strm.opaque = NULL;
   strm.avail_in = compressed_size - header_size;
-  strm.next_in = (Bytef*) compressed_buffer + header_size;
+  strm.next_in = (Bytef *) compressed_buffer + header_size;
   strm.avail_out = uncompressed_size;
   uncompressed_buffer = xmalloc (uncompressed_size);
 
-  rc = inflateInit (&strm);
+  rc = inflateInit (& strm);
   while (strm.avail_in > 0)
     {
       if (rc != Z_OK)
         goto fail;
-      strm.next_out = ((Bytef*) uncompressed_buffer
+      strm.next_out = ((Bytef *) uncompressed_buffer
                        + (uncompressed_size - strm.avail_out));
       rc = inflate (&strm, Z_FINISH);
       if (rc != Z_STREAM_END)
         goto fail;
-      rc = inflateReset (&strm);
+      rc = inflateReset (& strm);
     }
-  rc = inflateEnd (&strm);
+  rc = inflateEnd (& strm);
   if (rc != Z_OK
       || strm.avail_out != 0)
     goto fail;
@@ -8516,7 +8557,7 @@ debug_apply_relocations (void *file,
 	    }
 
 	  addend = is_rela ? rp->r_addend : byte_get (loc, reloc_size);
-	  
+
 	  if (is_32bit_pcrel_reloc (reloc_type)
 	      || is_64bit_pcrel_reloc (reloc_type))
 	    {
@@ -9061,6 +9102,29 @@ display_power_gnu_attribute (unsigned char *p, int tag)
 	}
       return p;
    }
+
+  if (tag == Tag_GNU_Power_ABI_Struct_Return)
+    {
+      val = read_uleb128 (p, &len);
+      p += len;
+      printf ("  Tag_GNU_Power_ABI_Struct_Return: ");
+      switch (val)
+       {
+       case 0:
+         printf ("Any\n");
+         break;
+       case 1:
+         printf ("r3/r4\n");
+         break;
+       case 2:
+         printf ("Memory\n");
+         break;
+       default:
+         printf ("??? (%d)\n", val);
+         break;
+       }
+      return p;
+    }
 
   if (tag & 1)
     type = 1; /* String.  */
@@ -10680,7 +10744,7 @@ process_archive (char *file_name, FILE *file)
 	  size -= index_num * SIZEOF_AR_INDEX_NUMBERS;
 
 	  /* Convert the index numbers into the host's numeric format.  */
-	  index_array = malloc (index_num * sizeof (* index_array));	  
+	  index_array = malloc (index_num * sizeof (* index_array));
 	  if (index_array == NULL)
 	    {
 	      free (index_buffer);
@@ -10714,7 +10778,7 @@ process_archive (char *file_name, FILE *file)
 	      error (_("%s: failed to read archive index symbol table\n"), file_name);
 	      ret = 1;
 	      goto out;
-	    }	  
+	    }
   	}
       else
 	{
@@ -10836,7 +10900,7 @@ process_archive (char *file_name, FILE *file)
 		{
 		  error (_("%s: end of the symbol table reached before the end of the index\n"),
 			 file_name);
-		  break;			 
+		  break;
 		}
 	      printf ("\t%s\n", sym_table + l);
 	      l += strlen (sym_table + l) + 1;

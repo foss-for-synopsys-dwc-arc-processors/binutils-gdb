@@ -43,6 +43,9 @@ lappend cpus_expected mips mn10200 mn10300 msp ns32k pj powerpc pyramid
 lappend cpus_expected romp rs6000 s390 sh sparc
 lappend cpus_expected tahoe tic54x tic80 tms320c30 tms320c4x tms320c54x v850
 lappend cpus_expected vax we32k x86-64 xscale xtensa z8k z8001 z8002
+# START ARC LOCAL
+lappend cpus_expected A4 A5 ARC600 ARC700
+# END ARC LOCAL
 
 # Make sure the target CPU shows up in the list.
 lappend cpus_expected ${target_cpu}

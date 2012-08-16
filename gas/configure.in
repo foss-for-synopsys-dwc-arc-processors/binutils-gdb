@@ -24,6 +24,7 @@ AM_INIT_AUTOMAKE(gas, ${BFD_VERSION})
 AC_PROG_CC
 AC_GNU_SOURCE
 AC_USE_SYSTEM_EXTENSIONS
+AC_SYS_LARGEFILE
 
 LT_INIT
 
@@ -603,7 +604,7 @@ AC_DEFINE_UNQUOTED(TARGET_OS,		"${target_os}",    [Target OS.])
 AC_PROG_YACC
 AM_PROG_LEX
 
-ALL_LINGUAS="fr tr es rw"
+ALL_LINGUAS="fr tr es rw id"
 ZW_GNU_GETTEXT_SISTER_DIR
 AM_PO_SUBDIRS
 
@@ -712,7 +713,7 @@ dnl the build directory which include the right .h file.  Make sure
 dnl the old symlinks don't exist, so that a reconfigure in an existing
 dnl directory behaves reasonably.
 
-AC_CONFIG_FILES(Makefile doc/Makefile po/Makefile.in:po/Make-in)
+AC_CONFIG_FILES(Makefile config/extlib/Makefile doc/Makefile po/Makefile.in:po/Make-in)
 AC_CONFIG_COMMANDS([default],
 [rm -f targ-cpu.c targ-cpu.h obj-format.h obj-format.c targ-env.h atof-targ.c itbl-cpu.h
  echo '#include "tc-'"${target_cpu_type}"'.h"' > targ-cpu.h

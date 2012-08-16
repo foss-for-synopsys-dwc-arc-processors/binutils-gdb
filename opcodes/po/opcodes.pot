@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: bug-binutils@gnu.org\n"
-"POT-Creation-Date: 2008-09-09 15:56+0930\n"
+"POT-Creation-Date: 2008-11-12 14:11+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -458,47 +458,47 @@ msgstr ""
 msgid "  suffix      Always display instruction suffix in AT&T syntax\n"
 msgstr ""
 
-#: i386-gen.c:411 ia64-gen.c:307
+#: i386-gen.c:412 ia64-gen.c:307
 #, c-format
 msgid "%s: Error: "
 msgstr ""
 
-#: i386-gen.c:510
+#: i386-gen.c:514
 #, c-format
 msgid "%s: %d: Unknown bitfield: %s\n"
 msgstr ""
 
-#: i386-gen.c:674
+#: i386-gen.c:802
 #, c-format
 msgid "can't find i386-opc.tbl for reading, errno = %s\n"
 msgstr ""
 
-#: i386-gen.c:851
+#: i386-gen.c:929
 #, c-format
 msgid "can't find i386-reg.tbl for reading, errno = %s\n"
 msgstr ""
 
-#: i386-gen.c:943
+#: i386-gen.c:1006
 #, c-format
 msgid "can't create i386-init.h, errno = %s\n"
 msgstr ""
 
-#: i386-gen.c:1032 ia64-gen.c:2850
+#: i386-gen.c:1095 ia64-gen.c:2850
 #, c-format
 msgid "unable to change directory to \"%s\", errno = %s\n"
 msgstr ""
 
-#: i386-gen.c:1039
+#: i386-gen.c:1102
 #, c-format
 msgid "%d unused bits in i386_cpu_flags.\n"
 msgstr ""
 
-#: i386-gen.c:1046
+#: i386-gen.c:1109
 #, c-format
 msgid "%d unused bits in i386_operand_type.\n"
 msgstr ""
 
-#: i386-gen.c:1060
+#: i386-gen.c:1123
 #, c-format
 msgid "can't create i386-tbl.h, errno = %s\n"
 msgstr ""

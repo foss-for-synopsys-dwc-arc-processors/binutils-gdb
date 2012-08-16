@@ -1788,6 +1788,16 @@ read_rangelist (struct comp_unit *unit, struct arange *arange, bfd_uint64_t offs
   bfd_byte *ranges_ptr;
   bfd_vma base_address = unit->base_address;
 
+  if ((offset & 3) || offset >= unit->stash->dwarf_ranges_size)
+    {
+      static struct comp_unit *last_warn_unit = NULL;
+
+      if (last_warn_unit != unit)
+	fprintf (stderr, "DW_AT_ranges inconsistency for unit %s\n",
+		 unit->name);
+      last_warn_unit = unit;
+      return;
+    }
   if (! unit->stash->dwarf_ranges_buffer)
     {
       if (! read_debug_ranges (unit))
