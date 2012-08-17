@@ -62,6 +62,10 @@
 
 #include "memory-map.h"
 
+// begin ARC
+#include "arc-aux-registers.h"
+// end ARC
+
 /* The size to align memory write packets, when practical.  The protocol
    does not guarantee any alignment, and gdb will generate short
    writes and unaligned writes, but even as a best-effort attempt this
@@ -4094,6 +4098,11 @@ store_register_using_P (const struct regcache *regcache, struct packet_reg *reg)
   xsnprintf (buf, get_remote_packet_size (), "P%s=", phex_nz (reg->pnum, 0));
   p = buf + strlen (buf);
   regcache_raw_collect (regcache, reg->regnum, regp);
+
+// begin ARC
+  arc_convert_aux_contents_for_write(reg->regnum, regp);
+// end ARC
+
   bin2hex (regp, p, register_size (gdbarch, reg->regnum));
   remote_send (&rs->buf, &rs->buf_size);
 
@@ -4132,7 +4141,13 @@ store_registers_using_G (const struct regcache *regcache)
       {
 	struct packet_reg *r = &rsa->regs[i];
 	if (r->in_g_packet)
+        {
 	  regcache_raw_collect (regcache, r->regnum, regs + r->offset);
+
+// begin ARC
+          arc_convert_aux_contents_for_write(r->regnum, regs + r->offset);
+// end ARC
+        }
       }
   }
 

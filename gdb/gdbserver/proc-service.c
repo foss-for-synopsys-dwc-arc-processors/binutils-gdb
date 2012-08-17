@@ -28,6 +28,7 @@
 #include "linux-low.h"
 
 #include "gdb_proc_service.h"
+typedef unsigned long paddr_t;
 
 typedef struct ps_prochandle *gdb_ps_prochandle_t;
 typedef void *gdb_ps_read_buf_t;
@@ -61,14 +62,36 @@ gregset_info(void)
 
 ps_err_e
 ps_pglobal_lookup (gdb_ps_prochandle_t ph, const char *obj,
-		   const char *name, psaddr_t *sym_addr)
+		   const char *name, paddr_t *sym_addr)
 {
   CORE_ADDR addr;
+  char *uscorename;
+
+  /* First try name, then the name with an underscore prepended.  Older ARC
+     toolchains prepend an underscore to all symbol names.  */
 
   if (look_up_one_symbol (name, &addr) == 0)
-    return PS_NOSYM;
+    {
+      int err;
 
-  *sym_addr = (psaddr_t) (unsigned long) addr;
+      uscorename = (char *)malloc (strlen(name)+2);
+      if (!uscorename)
+	{
+	  fatal ("%s: malloc failed", __FUNCTION__);
+	}
+
+      /* Prepend underscore.  */
+      uscorename[0] = '_';
+      strcpy(uscorename+1, name);
+
+      err = look_up_one_symbol (uscorename, &addr);
+      free (uscorename);
+      if (err == 0)
+	return PS_NOSYM;
+    }
+
+  *sym_addr = (paddr_t) (unsigned long) addr;
+
   return PS_OK;
 }
 

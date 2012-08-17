@@ -685,7 +685,7 @@ target_mark_exited (struct target_ops *ops)
       break;
   if (t == NULL)
     internal_error (__FILE__, __LINE__,
-		    "Attempted to mark unpushed target \"%s\" as running",
+		    "Attempted to mark unpushed target \"%s\" as non-running",   // ARC 17/11/08 correct message
 		    ops->to_shortname);
 
   ops->to_has_execution = 0;

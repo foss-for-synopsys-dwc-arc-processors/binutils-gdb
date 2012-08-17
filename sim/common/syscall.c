@@ -109,7 +109,7 @@ get_string (cb, sc, buf, buflen, addr)
    simulator_sysroot if the string starts with '/'.
    If an error occurs, no buffer is left malloc'd.  */
 
-static int
+int
 get_path (cb, sc, addr, bufp)
      host_callback *cb;
      CB_SYSCALL *sc;
@@ -291,7 +291,11 @@ cb_syscall (cb, sc)
 
 	while (count > 0)
 	  {
-	    if (cb_is_stdin (cb, fd))
+	    /* ??? Actually making target descriptors 0 / 1 / 2 map directly
+	       to stdin / stdout / stderr gets the semantics of freopen
+	       wrong.  When using default callbacks, this is re-mapped
+	       in callback.c */
+	    if (fd == 0)
 	      result = (int) (*cb->read_stdin) (cb, buf,
 						(count < FILE_XFR_SIZE
 						 ? count : FILE_XFR_SIZE));
@@ -344,12 +348,20 @@ cb_syscall (cb, sc)
 		errcode = EINVAL;
 		goto FinishSyscall;
 	      }
-	    if (cb_is_stdout(cb, fd))
+        /* Don't treat descriptors 0 / 1 / 2 specially, as their
+	   meaning might have been changed by freopen, as in
+           27_io/objects/char/12048-[1-4].cc .  */
+
+	    /* ??? Actually making target descriptors 0 / 1 / 2 map directly
+	       to stdin / stdout / stderr gets the semantics of freopen
+	       wrong.  When using default callbacks, this is re-mapped
+	       in callback.c */
+	    if (fd == 1)
 	      {
 		result = (int) (*cb->write_stdout) (cb, buf, bytes_read);
 		(*cb->flush_stdout) (cb);
 	      }
-	    else if (cb_is_stderr(cb, fd))
+	    else if (fd == 2)
 	      {
 		result = (int) (*cb->write_stderr) (cb, buf, bytes_read);
 		(*cb->flush_stderr) (cb);

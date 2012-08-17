@@ -24,7 +24,7 @@
 #include "gdb/fileio.h"
 
 #include <fcntl.h>
-#include <limits.h>
+#include <linux/limits.h>
 #include <unistd.h>
 
 extern int remote_debug;

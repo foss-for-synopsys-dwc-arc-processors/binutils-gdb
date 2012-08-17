@@ -1697,6 +1697,13 @@ linux_read_memory (CORE_ADDR memaddr, unsigned char *myaddr, int len)
 static int
 linux_write_memory (CORE_ADDR memaddr, const unsigned char *myaddr, int len)
 {
+  /*  2-Feb-12: Jeremy Bennett. We have a problem if myaddr is nil. Detect and
+                just return an error value. */
+  if (NULL == myaddr)
+    {
+      return  ENOMEM;
+    }
+
   register int i;
   /* Round starting address down to longword boundary.  */
   register CORE_ADDR addr = memaddr & -(CORE_ADDR) sizeof (PTRACE_XFER_TYPE);

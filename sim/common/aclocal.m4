@@ -18,7 +18,11 @@
 #
 # SIM_AC_OUTPUT
 
-AC_DEFUN(SIM_AC_COMMON,
+# Include global overrides and fixes for Autoconf.
+m4_include(../../config/override.m4)
+sinclude([../../config/zlib.m4])
+
+AC_DEFUN([SIM_AC_COMMON],
 [
 # autoconf.info says this should be called right after AC_INIT.
 AC_CONFIG_HEADER(ifelse([$1],,config.h,[$1]):config.in)
