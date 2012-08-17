@@ -381,9 +381,12 @@ AC_CHECK_TOOL(MIG, mig)
 # We might need to link with -lm; most simulators need it.
 AC_CHECK_LIB(m, main)
 
+AC_CHECK_FUNC(inflate, [],
+  [AC_CHECK_LIB(z, inflate)])
+
 # We need to link with -lw to get `wctype' on Solaris before Solaris
 # 2.6.  Solaris 2.6 and beyond have this function in libc, and have a
-# libw that some versions of the GNU linker cannot hanle (GNU ld 2.9.1
+# libw that some versions of the GNU linker cannot handle (GNU ld 2.9.1
 # is known to have this problem).  Therefore we avoid libw if we can.
 AC_CHECK_FUNC(wctype, [],
   [AC_CHECK_LIB(w, wctype)])
@@ -1414,7 +1417,7 @@ OLD_LIBS=$LIBS
 CFLAGS="$CFLAGS -I${srcdir}/../include -I../bfd -I${srcdir}/../bfd"
 LDFLAGS="$LDFLAGS -L../bfd -L../libiberty"
 intl=`echo $LIBINTL | sed 's,${top_builddir}/,,g'`
-LIBS="$LIBS -lbfd -liberty $intl"
+LIBS="$LIBS -lbfd -liberty $intl -lz"
 AC_CACHE_CHECK([for ELF support in BFD], gdb_cv_var_elf,
 [AC_TRY_LINK(
 [#include <stdlib.h>

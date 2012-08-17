@@ -744,6 +744,22 @@ proceed (CORE_ADDR addr, enum target_signal siggnal, int step)
 {
   int oneproc = 0;
 
+// ARC
+  {
+    extern void arc_check_pc_defined(struct gdbarch* gdbarch);
+    /* Definitions of the ARC auxiliary registers (which includes the PC!)
+     * are read from an XML file; it is possible that no file has yet been
+     * read (or that no PC definition was in the file) - so it is necessary
+     * to check here that the register number of the PC has been defined
+     * before we attempt to read the PC!
+     *
+     * We really need to find a better way of doing this, so that ARC-specific
+     * code is not added to the gdb core...
+     */
+    arc_check_pc_defined(current_gdbarch);
+  }
+// ARC
+
   if (step > 0)
     step_start_function = find_pc_function (read_pc ());
   if (step < 0)

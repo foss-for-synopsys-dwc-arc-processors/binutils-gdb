@@ -42,6 +42,13 @@
 #include "arch-utils.h"
 #include "readline/readline.h"
 
+#include "objfiles.h"
+
+// begin ARC
+#include "arc-aux-registers.h"
+#include "arc-architecture.h"
+// end ARC
+
 /* Prototypes */
 
 extern void _initialize_remote_sim (void);
@@ -359,6 +366,11 @@ gdbsim_store_register (struct regcache *regcache, int regno)
       char tmp[MAX_REGISTER_SIZE];
       int nr_bytes;
       regcache_cooked_read (regcache, regno, tmp);
+
+// begin ARC
+      arc_convert_aux_contents_for_write(regno, tmp);
+// end ARC
+
       nr_bytes = sim_store_register (gdbsim_desc,
 				     gdbarch_register_sim_regno
 				       (gdbarch, regno),
@@ -469,13 +481,17 @@ gdbsim_create_inferior (char *exec_file, char *args, char **env, int from_tty)
     }
   else
     argv = NULL;
-  sim_create_inferior (gdbsim_desc, exec_bfd, argv, env);
 
-  inferior_ptid = pid_to_ptid (42);
-  target_mark_running (&gdbsim_ops);
-  insert_breakpoints ();	/* Needed to get correct instruction in cache */
+  // ARC 12/01/09 check return status
+  // GDB Bug #9734
+  if (sim_create_inferior (gdbsim_desc, exec_bfd, argv, env) == SIM_RC_OK)
+    {
+      inferior_ptid = pid_to_ptid (42);
+      target_mark_running (&gdbsim_ops);
+      insert_breakpoints ();	/* Needed to get correct instruction in cache */
 
-  clear_proceed_status ();
+      clear_proceed_status ();
+    }
 }
 
 /* The open routine takes the rest of the parameters from the command,
@@ -553,6 +569,19 @@ gdbsim_open (char *args, int from_tty)
      "run".  */
   inferior_ptid = null_ptid;
   target_mark_exited (&gdbsim_ops);
+
+  // ARC
+  /* Definitions of the ARC auxiliary registers are read from an XML file;
+   * it is possible that the ARC architectural variant which is described
+   * by that file is different from the variant for which the executable
+   * file was compiled (and which the simulator will simulate) - so it is
+   * necessary to check here, and warn the user if there is a mismatch!
+   *
+   * We really need to find a better way of doing this, so that ARC-specific
+   * code is not added to the gdb core...
+   */
+  arc_check_architecture(current_gdbarch, (current_objfile) ? current_objfile->obfd : NULL );
+  // ARC
 }
 
 /* Does whatever cleanup is required for a target that we are no longer

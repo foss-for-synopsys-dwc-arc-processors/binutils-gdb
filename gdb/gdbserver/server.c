@@ -1304,7 +1304,19 @@ main (int argc, char *argv[])
 	      if (decode_X_packet (&own_buf[1], packet_len - 1,
 				   &mem_addr, &len, mem_buf) < 0
 		  || write_inferior_memory (mem_addr, mem_buf, len) != 0)
-		write_enn (own_buf);
+		{
+		  // 14-Apr-12: Jeremy Bennett. Writing zero length is used as
+		  //            a test for support, so not an error, even if
+		  //            not supported.
+		  if (0 == len)
+		    {
+		      own_buf[0] = '\0';	// Not supported
+		    }
+		  else
+		    {
+		      write_enn (own_buf);
+		    }
+		}
 	      else
 		write_ok (own_buf);
 	      break;

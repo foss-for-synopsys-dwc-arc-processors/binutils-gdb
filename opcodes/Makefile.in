@@ -185,8 +185,11 @@ USE_NLS = @USE_NLS@
 VERSION = @VERSION@
 WARN_CFLAGS = @WARN_CFLAGS@
 XGETTEXT = @XGETTEXT@
+ac_ct_AR = @ac_ct_AR@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_DUMPBIN = @ac_ct_DUMPBIN@
+ac_ct_RANLIB = @ac_ct_RANLIB@
+ac_ct_STRIP = @ac_ct_STRIP@
 am__fastdepCC_FALSE = @am__fastdepCC_FALSE@
 am__fastdepCC_TRUE = @am__fastdepCC_TRUE@
 am__include = @am__include@
@@ -205,9 +208,6 @@ build_os = @build_os@
 build_vendor = @build_vendor@
 cgendir = @cgendir@
 datadir = @datadir@
-datarootdir = @datarootdir@
-docdir = @docdir@
-dvidir = @dvidir@
 exec_prefix = @exec_prefix@
 host = @host@
 host_alias = @host_alias@
@@ -215,22 +215,18 @@ host_cpu = @host_cpu@
 host_noncanonical = @host_noncanonical@
 host_os = @host_os@
 host_vendor = @host_vendor@
-htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
 libdir = @libdir@
 libexecdir = @libexecdir@
-localedir = @localedir@
 localstatedir = @localstatedir@
 lt_ECHO = @lt_ECHO@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
-pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
-psdir = @psdir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
@@ -257,6 +253,7 @@ LIBIBERTY = ../libiberty/libiberty.a
 
 # Header files.
 HFILES = \
+	arc-desc.h arc-opc.h \
 	cgen-ops.h cgen-types.h \
 	fr30-desc.h fr30-opc.h \
 	frv-desc.h frv-opc.h \
@@ -288,8 +285,15 @@ HFILES = \
 CFILES = \
 	alpha-dis.c \
 	alpha-opc.c \
+	arcompact-dis.c \
+	arc-asm.c \
+	arc-desc.c \
 	arc-dis.c \
+	arc-dis-cgen.c \
+	arc-ibld.c \
 	arc-opc.c \
+	arc-opinst.c \
+	arc-opc-cgen.c \
 	arc-ext.c \
 	arm-dis.c \
 	avr-dis.c \
@@ -442,8 +446,14 @@ CFILES = \
 ALL_MACHINES = \
 	alpha-dis.lo \
 	alpha-opc.lo \
+	arc-asm.lo \
+	arc-desc.lo \
 	arc-dis.lo \
+	arc-dis-cgen.lo \
+	arc-ibld.lo \
+	arc-opinst.lo \
 	arc-opc.lo \
+	arc-opc-cgen.lo \
 	arc-ext.lo \
 	arm-dis.lo \
 	avr-dis.lo \
@@ -604,7 +614,7 @@ libopcodes_la_LDFLAGS = -release `cat ../bfd/libtool-soversion` @SHARED_LDFLAGS@
 noinst_LIBRARIES = libopcodes.a
 POTFILES = $(HFILES) $(CFILES)
 CLEANFILES = \
-	stamp-ip2k stamp-m32c stamp-m32r stamp-fr30 stamp-frv \
+	stamp-arc stamp-ip2k stamp-m32c stamp-m32r stamp-fr30 stamp-frv \
 	stamp-openrisc stamp-iq2000 stamp-mep stamp-mt stamp-xstormy16 stamp-xc16x\
 	libopcodes.a stamp-lib dep.sed DEP DEPA DEP1 DEP2
 
@@ -619,7 +629,9 @@ CGENDEPS = \
 	$(CGENDIR)/opc-opinst.scm \
 	cgen-asm.in cgen-dis.in cgen-ibld.in
 
-CGEN_CPUS = fr30 frv ip2k m32c m32r mep mt openrisc xc16x xstormy16
+CGEN_CPUS = arc fr30 frv ip2k m32c m32r mep mt openrisc xc16x xstormy16
+@CGEN_MAINT_FALSE@ARC_DEPS = 
+@CGEN_MAINT_TRUE@ARC_DEPS = stamp-arc
 @CGEN_MAINT_FALSE@IP2K_DEPS = 
 @CGEN_MAINT_TRUE@IP2K_DEPS = stamp-ip2k
 @CGEN_MAINT_FALSE@M32C_DEPS = 
@@ -654,15 +666,15 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
-	      echo ' cd $(srcdir) && $(AUTOMAKE) --cygnus '; \
-	      cd $(srcdir) && $(AUTOMAKE) --cygnus  \
+	      echo ' cd $(srcdir) && $(AUTOMAKE) --foreign '; \
+	      cd $(srcdir) && $(AUTOMAKE) --foreign  \
 		&& exit 0; \
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --cygnus  Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --cygnus  Makefile
+	  $(AUTOMAKE) --foreign  Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -1035,6 +1047,12 @@ run-cgen-all:
 .PHONY: run-cgen-all
 
 # For now, require developers to configure with --enable-cgen-maint.
+$(srcdir)/arc-desc.h $(srcdir)/arc-desc.c $(srcdir)/arc-opc.h $(srcdir)/arc-opc.c $(srcdir)/arc-ibld.c $(srcdir)/arc-opinst.c $(srcdir)/arc-asm.c $(srcdir)/arc-dis.c: $(ARC_DEPS)
+	@true
+stamp-arc: $(CGENDEPS) $(srcdir)/../cpu/arc.cpu $(srcdir)/../cpu/arc.opc
+	$(MAKE) run-cgen arch=arc prefix=arc options=opinst \
+		archfile=$(srcdir)/../cpu/arc.cpu \
+		opcfile=$(srcdir)/../cpu/arc.opc extrafiles=opinst
 $(srcdir)/ip2k-desc.h $(srcdir)/ip2k-desc.c $(srcdir)/ip2k-opc.h $(srcdir)/ip2k-opc.c $(srcdir)/ip2k-ibld.c $(srcdir)/ip2k-asm.c $(srcdir)/ip2k-dis.c: $(IP2K_DEPS)
 	@true
 stamp-ip2k: $(CGENDEPS) $(CPUDIR)/ip2k.cpu $(CPUDIR)/ip2k.opc
@@ -1208,15 +1226,52 @@ alpha-dis.lo: alpha-dis.c sysdep.h config.h $(INCDIR)/ansidecl.h \
 alpha-opc.lo: alpha-opc.c sysdep.h config.h $(INCDIR)/ansidecl.h \
   $(INCDIR)/opcode/alpha.h $(BFD_H) $(INCDIR)/ansidecl.h \
   $(INCDIR)/symcat.h opintl.h
+arc-asm.lo: arc-asm.c sysdep.h config.h $(INCDIR)/ansidecl.h \
+  $(BFD_H) $(INCDIR)/ansidecl.h $(INCDIR)/symcat.h $(INCDIR)/symcat.h \
+  arc-desc.h $(INCDIR)/opcode/cgen-bitset.h $(INCDIR)/opcode/cgen.h \
+  $(INCDIR)/symcat.h $(INCDIR)/opcode/cgen-bitset.h arc-opc.h \
+  opintl.h $(INCDIR)/xregex.h $(INCDIR)/xregex2.h $(INCDIR)/libiberty.h \
+  $(INCDIR)/ansidecl.h $(INCDIR)/safe-ctype.h
+arc-desc.lo: arc-desc.c sysdep.h config.h $(INCDIR)/ansidecl.h \
+  $(BFD_H) $(INCDIR)/ansidecl.h $(INCDIR)/symcat.h $(INCDIR)/symcat.h \
+  arc-desc.h $(INCDIR)/opcode/cgen-bitset.h $(INCDIR)/opcode/cgen.h \
+  $(INCDIR)/symcat.h $(INCDIR)/opcode/cgen-bitset.h arc-opc.h \
+  opintl.h $(INCDIR)/libiberty.h $(INCDIR)/ansidecl.h \
+  $(INCDIR)/xregex.h $(INCDIR)/xregex2.h
+arcompact-dis.lo: arcompact-dis.c $(INCDIR)/ansidecl.h $(INCDIR)/libiberty.h \
+  $(INCDIR)/dis-asm.h $(BFD_H) $(INCDIR)/symcat.h $(INCDIR)/opcode/arc.h \
+  $(BFDDIR)/elf-bfd.h $(INCDIR)/elf/common.h $(INCDIR)/elf/internal.h \
+  $(INCDIR)/elf/external.h $(INCDIR)/bfdlink.h $(INCDIR)/elf/arc.h \
+  $(INCDIR)/elf/reloc-macros.h opintl.h arc-dis.h arc-ext.h
 arc-dis.lo: arc-dis.c $(INCDIR)/ansidecl.h $(INCDIR)/libiberty.h \
   $(INCDIR)/ansidecl.h $(INCDIR)/dis-asm.h $(BFD_H) $(INCDIR)/ansidecl.h \
   $(INCDIR)/symcat.h $(INCDIR)/opcode/arc.h $(BFDDIR)/elf-bfd.h \
   $(INCDIR)/elf/common.h $(INCDIR)/elf/internal.h $(INCDIR)/elf/external.h \
   $(INCDIR)/bfdlink.h $(INCDIR)/elf/arc.h $(INCDIR)/elf/reloc-macros.h \
   opintl.h arc-dis.h arc-ext.h
-arc-opc.lo: arc-opc.c sysdep.h config.h $(INCDIR)/ansidecl.h \
+arc-dis-cgen.lo: arc-dis-cgen.c sysdep.h config.h $(INCDIR)/ansidecl.h \
+  $(INCDIR)/dis-asm.h $(BFD_H) $(INCDIR)/ansidecl.h $(INCDIR)/symcat.h \
+  $(BFD_H) $(INCDIR)/symcat.h $(INCDIR)/libiberty.h $(INCDIR)/ansidecl.h \
+  arc-desc.h $(INCDIR)/opcode/cgen-bitset.h $(INCDIR)/opcode/cgen.h \
+  $(INCDIR)/symcat.h $(INCDIR)/opcode/cgen-bitset.h arc-opc.h \
+  opintl.h
+arc-opco.lo: arc-opc_codito.c sysdep.h config.h $(INCDIR)/ansidecl.h \
   $(BFD_H) $(INCDIR)/ansidecl.h $(INCDIR)/symcat.h $(INCDIR)/opcode/arc.h \
   opintl.h
+arc-ibld.lo: arc-ibld.c sysdep.h config.h $(INCDIR)/ansidecl.h \
+  $(INCDIR)/dis-asm.h $(BFD_H) $(INCDIR)/ansidecl.h $(INCDIR)/symcat.h \
+  $(BFD_H) $(INCDIR)/symcat.h arc-desc.h $(INCDIR)/opcode/cgen-bitset.h \
+  $(INCDIR)/opcode/cgen.h $(INCDIR)/symcat.h $(INCDIR)/opcode/cgen-bitset.h \
+  arc-opc.h opintl.h $(INCDIR)/safe-ctype.h
+arc-opc-cgen.lo: arc-opc.c sysdep.h config.h $(INCDIR)/ansidecl.h \
+  $(BFD_H) $(INCDIR)/ansidecl.h $(INCDIR)/symcat.h $(INCDIR)/symcat.h \
+  arc-desc.h $(INCDIR)/opcode/cgen-bitset.h $(INCDIR)/opcode/cgen.h \
+  $(INCDIR)/symcat.h $(INCDIR)/opcode/cgen-bitset.h arc-opc.h \
+  $(INCDIR)/libiberty.h $(INCDIR)/ansidecl.h
+arc-opinst.lo: arc-opinst.c sysdep.h config.h $(INCDIR)/ansidecl.h \
+  $(BFD_H) $(INCDIR)/ansidecl.h $(INCDIR)/symcat.h $(INCDIR)/symcat.h \
+  arc-desc.h $(INCDIR)/opcode/cgen-bitset.h $(INCDIR)/opcode/cgen.h \
+  $(INCDIR)/symcat.h $(INCDIR)/opcode/cgen-bitset.h arc-opc.h
 arc-ext.lo: arc-ext.c sysdep.h config.h $(INCDIR)/ansidecl.h \
   $(BFD_H) $(INCDIR)/ansidecl.h $(INCDIR)/symcat.h arc-ext.h \
   $(INCDIR)/libiberty.h $(INCDIR)/ansidecl.h

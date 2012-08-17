@@ -175,6 +175,9 @@ enum target_hw_bp_type
 
 struct bp_target_info
 {
+  /* Range breakpoints added */
+  unsigned int range;
+
   /* Address at which the breakpoint was placed.  This is normally the
      same as ADDRESS from the bp_location, except when adjustment
      happens in gdbarch_breakpoint_from_pc.  The most common form of
@@ -272,8 +275,8 @@ struct bp_location
      is not a special value for this field.  Valid for all types except
      bp_loc_other.  */
   CORE_ADDR address;
-
-  /* For hardware watchpoints, the size of data ad ADDRESS being watches.  */
+  
+  /* For hardware watchpoints, the size of data at ADDRESS being watched.  */
   int length;
 
   /* Type of hardware watchpoint. */
@@ -701,6 +704,8 @@ extern void breakpoint_auto_delete (bpstat);
 extern void breakpoint_clear_ignore_counts (void);
 
 extern void break_command (char *, int);
+
+extern void watch_range_command (unsigned int, unsigned int, int, int);
 
 extern void hbreak_command_wrapper (char *, int);
 extern void thbreak_command_wrapper (char *, int);
