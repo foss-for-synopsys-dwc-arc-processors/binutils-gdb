@@ -107,7 +107,9 @@ END_RELOC_NUMBERS (R_ARC_max)
 /* Processor specific flags for the ELF header e_flags field.  */
 
 /* Four bit ARC machine type field.  */
-#define EF_ARC_MACH		0x0000000f
+#define EF_ARC_MACH_MSK		0x0000000f
+#define EF_ARC_OSABI_MSK	0x000000f0
+#define EF_ARC_ALL_MSK		(EF_ARC_MACH_MSK|EF_ARC_OSABI_MSK)
 
 /* Various CPU types.  */
 #define E_ARC_MACH_A4		0x00000000
@@ -116,5 +118,9 @@ END_RELOC_NUMBERS (R_ARC_max)
 #define E_ARC_MACH_ARC601	0x00000004
 #define E_ARC_MACH_ARC700	0x00000003
 
+/* ARC Linux specific ABIs */
+#define E_ARC_OSABI_ORIG	0x00000000   /* MUST be zero for back-compat */
+#define E_ARC_OSABI_V2		0x00000020
+#define E_ARC_OSABI_CURRENT	E_ARC_OSABI_V2
 
 #endif /* _ELF_ARC_H */

@@ -2042,7 +2042,7 @@ get_machine_flags (unsigned e_flags, unsigned e_machine)
 
 	/* START ARC LOCAL */
 	case EM_ARCOMPACT:
-	  switch(e_flags & EF_ARC_MACH)
+	  switch(e_flags & EF_ARC_MACH_MSK)
 	    {
 	    case E_ARC_MACH_A5:
 	      strcat (buf, ", A5");
@@ -2060,9 +2060,19 @@ get_machine_flags (unsigned e_flags, unsigned e_machine)
 	      strcat (buf, ", Generic ARCompact");
 	      break;
 	    }
+	  switch(e_flags & EF_ARC_OSABI_MSK)
+	    {
+	    case E_ARC_OSABI_ORIG:
+	      strcat (buf, ", legacy syscall ABI");
+	      break;
+	    case E_ARC_OSABI_V2:
+	      /* For 3.2+ Linux kernels which use asm-generic hdrs */
+	      strcat (buf, ", v2 syscall ABI");
+	      break;
+	    }
 	  break;
 	case EM_ARC:
-	  switch (e_flags & EF_ARC_MACH)
+	  switch (e_flags & EF_ARC_MACH_MSK)
 	    {
 	    case E_ARC_MACH_A4:
 	      strcat (buf, ", A4");

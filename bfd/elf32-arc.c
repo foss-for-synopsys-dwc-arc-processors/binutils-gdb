@@ -671,7 +671,7 @@ arc_elf_object_p (bfd *abfd)
       bfd_default_set_arch_mach().  */
   int mach = 0;
 
-  unsigned long arch = elf_elfheader (abfd)->e_flags & EF_ARC_MACH;
+  unsigned long arch = elf_elfheader (abfd)->e_flags & EF_ARC_MACH_MSK;
 
   switch (arch)
     {
@@ -741,8 +741,11 @@ arc_elf_final_write_processing (bfd *abfd,
       abort();
     }
 
-  elf_elfheader (abfd)->e_flags &=~ EF_ARC_MACH;
+  elf_elfheader (abfd)->e_flags &=~ EF_ARC_ALL_MSK;
   elf_elfheader (abfd)->e_flags |= val;
+
+  /* Record whatever is the current syscall ABI version */
+  elf_elfheader (abfd)->e_flags |= E_ARC_OSABI_CURRENT;
 }
 
 /* Handle an ARCompact 'middle-endian' relocation.  */
