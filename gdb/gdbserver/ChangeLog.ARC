@@ -1,3 +1,8 @@
+2012-08-17  Vineet Gupta  <vgupta@synopsys.com>
+
+	* linux-arc-low.c: <arc_regmap> updated per Linux 3.2 kernel pt_regs
+	layout change
+
 2012-04-14  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* server.c (main): Response to 'X' for zero length packet should
