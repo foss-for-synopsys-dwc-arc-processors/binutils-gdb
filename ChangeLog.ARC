@@ -1,3 +1,10 @@
+2012-08-18  Vineet Gupta <vgupta@synopsys.com>
+
+	* include/elf/arc.h: Extended "machine" bit-field in e_flags to	8-bits,
+	to make it more future safe. Thus EF_ARC_MACH_MSK changed (0xf => 0xff).
+	Corollarily, syscall ABI ver place-holder is now at 8:11, thus
+	E_ARC_OSABI_V2 value adjustment (0x20 => 0x200)
+
 2012-08-17  Vineet Gupta <vgupta@synopsys.com>
 
 	* include/elf/arc.h: Introduced EF_ARC_OSABI_MSK as placeholder for
