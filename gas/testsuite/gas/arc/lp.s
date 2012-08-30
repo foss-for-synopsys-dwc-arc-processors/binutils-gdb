@@ -1,40 +1,104 @@
 # lp test
 	
+; note ARCompact cannot reference labels with negative offsets, only
+; labels ahead of them.
 text_label:
 
-	lp	text_label
-	lpal	text_label
-	lpra	text_label
-	lpeq	text_label
-	lpz	text_label
-	lpne	text_label
-	lpnz	text_label
-	lppl	text_label
-	lpp	text_label
-	lpmi	text_label
-	lpn	text_label
-	lpcs	text_label
-	lpc	text_label
-	lplo	text_label
-	lpcc	text_label
-	lpnc	text_label
-	lphs	text_label
-	lpvs	text_label
-	lpv	text_label
-	lpvc	text_label
-	lpnv	text_label
-	lpgt	text_label
-	lpge	text_label
-	lplt	text_label
-	lple	text_label
-	lphi	text_label
-	lpls	text_label
-	lppnz	text_label
+	lp	.L0
+	; Note ARCompact need an actual instructin to execute
+	add r0, r0, r0
+	nop ; required in this instance
+.L0:
+	lpal	.L1
+	add r0, r0, r0
+.L1:
+	lpra	.L2
+	add r0, r0, r0
+.L2:
+	lpeq	.L3
+	add r0, r0, r0
+.L3:
+	lpz	.L4
+	add r0, r0, r0
+.L4:
+	lpne	.L5
+	add r0, r0, r0
+.L5:
+	lpnz	.L6
+	add r0, r0, r0
+.L6:
+	lppl	.L7
+	add r0, r0, r0
+.L7:
+	lpp	.L8
+	add r0, r0, r0
+.L8:
+	lpmi	.L9
+	add r0, r0, r0
+.L9:
+	lpn	.L10
+	add r0, r0, r0
+.L10:
+	lpcs	.L11
+	add r0, r0, r0
+.L11:
+	lpc	.L12
+	add r0, r0, r0
+.L12:
+	lplo	.L13
+	add r0, r0, r0
+.L13:
+	lpcc	.L14
+	add r0, r0, r0
+.L14:
+	lpnc	.L15
+	add r0, r0, r0
+.L15:
+	lphs	.L16
+	add r0, r0, r0
+.L16:
+	lpvs	.L17
+	add r0, r0, r0
+.L17:
+	lpv	.L18
+	add r0, r0, r0
+.L18:
+	lpvc	.L19
+	add r0, r0, r0
+.L19:
+	lpnv	.L20
+	add r0, r0, r0
+.L20:
+	lpgt	.L21
+	add r0, r0, r0
+.L21:
+	lpge	.L22
+	add r0, r0, r0
+.L22:
+	lplt	.L23
+	add r0, r0, r0
+.L23:
+	lple	.L24
+	add r0, r0, r0
+.L24:
+	lphi	.L25
+	add r0, r0, r0
+.L25:
+	lpls	.L26
+	add r0, r0, r0
+.L26:
+	lppnz	.L27
+	add r0, r0, r0
+.L27:
 
-	lp.d	text_label
-	lp.nd	text_label
-	lp.jd	text_label
+; Note ARCompact does not have a delay slot to LP
+;	lp.d	.L
+;	lp.nd	.L
+; No such ARCxxx 'j':
+;	lp.jd	.L
 
-	lpeq.d	text_label
-	lpne.nd	text_label
-	lpcc.jd	text_label
+;	lpeq.d	.L
+;	lpne.nd	.L
+; No such ARCxxx 'j':
+;	lpcc.jd	.L
+	

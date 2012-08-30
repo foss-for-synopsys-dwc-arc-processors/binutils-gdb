@@ -3,6 +3,8 @@
    2010, 2012 Free Software Foundation, Inc.
    Contributed by Doug Evans (dje@cygnus.com).
 
+   Copyright 2008-2012 Synopsys Inc.
+
    This file is part of libopcodes.
 
    This library is free software; you can redistribute it and/or modify
@@ -31,6 +33,14 @@
 #include <stdarg.h>
 #include "arc-dis.h"
 #include "arc-ext.h"
+#include "arcompact-dis.h"
+
+#include <stdlib.h>
+  /*
+    warning: implicit declaration of function `printf_unfiltered'
+    if dbg is 1 then this definition is required
+  */
+  void printf_unfiltered (const char *,...);
 
 #ifndef dbg
 #define dbg (0)
@@ -59,7 +69,10 @@ typedef enum
 } a4_decoding_class;
 
 #define BIT(word,n)	((word) & (1 << n))
-#define BITS(word,s,e)  (((word) >> s) & ((1 << (e + 1 - s)) - 1))
+/* START ARC LOCAL */
+#define BITS(word,s,e)  (((word) << (sizeof(word)*8-1 - e)) >> (s + (sizeof(word)*8-1 - e)))
+/* END ARC LOCAL */
+//#define BITS(word,s,e)  (((word) >> s) & ((1 << (e + 1 - s)) - 1))
 #define OPCODE(word)	(BITS ((word), 27, 31))
 #define FIELDA(word)	(BITS ((word), 21, 26))
 #define FIELDB(word)	(BITS ((word), 15, 20))
@@ -214,7 +227,7 @@ static const char *
 post_address (struct arcDisState * state, int addr)
 {
   static char id[3 * ARRAY_SIZE (state->addresses)];
-  int j, i = state->acnt;
+  unsigned int j, i = state->acnt;
 
   if (i < ((int) ARRAY_SIZE (state->addresses)))
     {
@@ -483,6 +496,8 @@ write_instr_name_(struct arcDisState * state,
     case BR_exec_when_jump:
       strcat (state->instrBuffer, ".jd");
       break;
+    case BR_exec_when_no_jump:
+      break;
     }
 
   if (signExtend)
@@ -538,7 +553,7 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState * state)
   int is_linked = 0;
   int offset = 0;
   int usesAuxReg = 0;
-  int flags;
+  int flags = E_ARC_MACH_A4;
   int ignoreFirstOpd;
   char formatString[60];
 
@@ -785,7 +800,9 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState * state)
     case op_XOR:
       if (state->words[0] == 0x7fffffff)
 	{
-	  /* NOP encoded as xor -1, -1, -1.   */
+	/*
+	 * Official encoding for NOP (there are many possibilities
+	   with ARC).  This encoding says: xor -1, -1, -1.  */
 	  instrName = "nop";
 	  decodingClass = CLASS_A4_OP3_SUBOPC3F;
 	}
@@ -992,8 +1009,8 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState * state)
       fieldC = FIELDD (state->words[0]);
 
       if (dbg)
-	printf ("6:b reg %d %d c 0x%x  \n",
-		fieldBisReg, fieldB, fieldC);
+	printf_unfiltered ("6:b reg %d %d c 0x%x  \n",
+			   fieldBisReg, fieldB, fieldC);
       state->_ea_present = 1;
       state->_offset = fieldC;
       state->_mem_load = 1;
@@ -1038,8 +1055,8 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState * state)
       fieldA = FIELDD(state->words[0]); /* shimm  */
 
       /* [B,A offset]  */
-      if (dbg) printf("7:b reg %d %x off %x\n",
-		      fieldBisReg,fieldB,fieldA);
+      if (dbg) printf_unfiltered("7:b reg %d %x off %x\n",
+				 fieldBisReg,fieldB,fieldA);
       state->_ea_present = 1;
       state->_offset = fieldA;
       if (fieldBisReg)
@@ -1122,31 +1139,37 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState * state)
 }
 
 
-/* Returns the name the user specified core extension register.  */
+/* Return the name of the user specified core extension register REGNUM.
+   CPP_THIS is the C++ this pointer.  */
 
 static const char *
-_coreRegName(void * arg ATTRIBUTE_UNUSED, int regval)
+_coreRegName (void *cpp_this ATTRIBUTE_UNUSED, int regnum)
 {
-  return arcExtMap_coreRegName (regval);
+  return arcExtMap_coreRegName (regnum);
 }
 
-/* Returns the name the user specified AUX extension register.  */
+/* Return the name of the user specified AUX extension register REGNUM.
+   CPP_THIS is the C++ this pointer.  */
 
 static const char *
-_auxRegName(void *_this ATTRIBUTE_UNUSED, int regval)
+_auxRegName (void *cpp_this ATTRIBUTE_UNUSED, int regnum)
 {
-  return arcExtMap_auxRegName(regval);
+  return arcExtMap_auxRegName (regnum);
 }
 
-/* Returns the name the user specified condition code name.  */
+/* Return the name of the user specified condition code with encoding NUM.
+   CPP_THIS is the C++ this pointer.  */
 
 static const char *
-_condCodeName(void *_this ATTRIBUTE_UNUSED, int regval)
+_condCodeName (void *cpp_this ATTRIBUTE_UNUSED, int num)
 {
-  return arcExtMap_condCodeName(regval);
+  return arcExtMap_condCodeName (num);
 }
 
-/* Returns the name the user specified extension instruction.  */
+/* Return the name of the user specified extension instruction
+   with major opcode MAJOP and minor opcode MINOP.
+   CPP_THIS is the C++ this pointer.
+   FLAGS are the instruction flags.  */
 
 static const char *
 _instName (void *_this ATTRIBUTE_UNUSED, int majop, int minop, int *flags)
@@ -1154,12 +1177,12 @@ _instName (void *_this ATTRIBUTE_UNUSED, int majop, int minop, int *flags)
   return arcExtMap_instName(majop, minop, flags);
 }
 
-/* Decode an instruction returning the size of the instruction
-   in bytes or zero if unrecognized.  */
+/* Decode an ARCtangent instruction returning the size of the instruction
+   in bytes or zero if unrecognized.
+   ADDRESS is the address of this instruction.  */
 
 static int
-decodeInstr (bfd_vma            address, /* Address of this instruction.  */
-	     disassemble_info * info)
+ARCTangent_decodeInstr (bfd_vma address, disassemble_info *info)
 {
   int status;
   bfd_byte buffer[4];
@@ -1174,7 +1197,7 @@ decodeInstr (bfd_vma            address, /* Address of this instruction.  */
   if (status != 0)
     {
       (*info->memory_error_func) (status, address, info);
-      return 0;
+      return -1;
     }
   if (info->endian == BFD_ENDIAN_LITTLE)
     s.words[0] = bfd_getl32(buffer);
@@ -1220,9 +1243,22 @@ decodeInstr (bfd_vma            address, /* Address of this instruction.  */
    Side effect: load (possibly empty) extension section  */
 
 disassembler_ftype
-arc_get_disassembler (void *ptr)
+arc_get_disassembler (bfd *abfd)
 {
-  if (ptr)
-    build_ARC_extmap ((struct bfd *) ptr);
-  return decodeInstr;
+  unsigned short mach_abfd = elf_elfheader(abfd)->e_machine;
+  build_ARC_extmap (abfd);
+
+  switch(mach_abfd)
+    {
+    case EM_ARC:
+      return ARCTangent_decodeInstr;
+    case EM_ARCOMPACT:
+      return ARCompact_decodeInstr;
+    default:
+      if (bfd_get_mach (abfd) ==  E_ARC_MACH_A4)
+	return ARCTangent_decodeInstr;
+      else 
+	return ARCompact_decodeInstr;
+      abort();			/* never reached */
+    }
 }

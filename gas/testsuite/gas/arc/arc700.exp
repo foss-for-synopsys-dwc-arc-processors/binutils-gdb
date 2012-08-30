@@ -1,0 +1,186 @@
+# ARC700 gas testsuite
+# 
+# Copyright 2007-2012 Synopsys Inc.
+# 
+# This file is free software# you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the
+# Free Software Foundation# either version 3, or (at your option) any
+# later version.
+# 
+# This file is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY# without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+# 
+# You should have received a copy of the GNU General Public License
+# along with this program# see the file COPYING3.  If not see
+# <http://www.gnu.org/licenses/>.  */
+#
+# Test an insn from a template .s/.d.
+# The best way to create the .d file is to run the tests without it, let
+# dejagnu crash, run as.new on the just built .s file, run objdump -dr on
+# the result of that, copy the result into the .d file, and edit in the
+# necessary patterns (@OC@, etc.).  Sounds complicated but it's easy.  The
+# catch is that we assume a working assembler is used to build it.  That's
+# obviously not entirely kosher, but once the .d file is created one can
+# verify it's contents over time.
+#
+# Template patterns:
+# @OC@ - placeholder for the opcode
+# @IC+?@ - place holder for the insn code
+# @I3+??@ - place holder for the operation code of code 3 insns.
+
+proc test_template_insn { cpu tmpl opcode icode } {
+    global srcdir subdir objdir
+
+    # Change @OC@ in the template file to $opcode
+
+    set in_fd [open $srcdir/$subdir/$tmpl.s r]
+    set out_fd [open $objdir/$opcode.s w]
+    # FIXME: check return codes
+
+    puts $out_fd "\t.cpu $cpu\n"
+
+    while { [gets $in_fd line] >= 0 } {
+	regsub "@OC@" $line $opcode line
+	puts $out_fd $line
+    }
+
+    close $in_fd
+    close $out_fd
+
+    # Create output template.
+
+    set in_fd [open $srcdir/$subdir/$tmpl.d r]
+    set out_fd [open $objdir/$opcode.d w]
+    # FIXME: check return codes
+
+    while { [gets $in_fd line] >= 0 } {
+	regsub "@OC@" $line $opcode line
+
+        #adjust the spaces
+	if [string match "*@sp+?@*" $line] {
+	   regexp  "^(.*)@sp\\+(.)@(.*)$" $line junk leftpart n rightpart
+	   if { [string length $opcode] == $n } {
+		   regsub "@sp\\+(.)@" $line "" line
+	   } elseif {[string length $opcode] == [expr $n - 1]} {
+		   regsub "@sp\\+(.)@" $line " " line
+	   } elseif {[string length $opcode] == [expr $n - 2]} {
+		   regsub "@sp\\+(.)@" $line "  " line
+	   } elseif {[string length $opcode] == [expr $n - 3]} {
+		   regsub "@sp\\+(.)@" $line "   " line
+	   }
+	   
+	 }
+
+	#send_user "$line\n"
+	if [string match "*@IC+?@*" $line] {
+	    # Insert the opcode.  It occupies the top 5 bits.
+	    regexp "^(.*)@IC\\+(.)@(.*)$" $line junk leftpart n rightpart
+	    set n [expr ($icode << 3) + $n]
+	    set n [format "%02x" $n]
+	    puts $out_fd "$leftpart$n$rightpart"
+
+	} elseif [string match "*@I3+??@*" $line] {
+
+	    # Insert insn 3 code (register C field)
+	    # b15=8/0, b8=1/0 (their respective hex values in the objdump)
+	    regexp "^(.*)@I3\\+(.)(.)@(.*)$" $line junk leftpart b15 b8 rightpart
+	    set n [expr ($icode << 1) + ($b15 << 4) + ($b8 << 0)]
+	    set n [format "%02x" $n]
+	    puts $out_fd "$leftpart$n$rightpart"
+
+	} elseif [string match "*@DSP2IC+?@*" $line] {
+
+	    # insert the dual source dsp instructions opcode
+	    regexp "^(.*)@DSP2IC\\+(.)@(.*)$" $line junk leftpart n rightpart
+	    set n [expr ($icode) + ($n<<6)]
+	    set n [format "%02x" $n]
+	    puts $out_fd "$leftpart$n$rightpart"
+
+	} elseif [string match "*@DSP1IC+?@*" $line] {
+
+	    # insert the dual source dsp instructions opcode
+	    regexp "^(.*)@DSP1IC\\+(.)@(.*)$" $line junk leftpart n rightpart
+	    set n [expr ($icode) + ($n<<6)]
+	    set n [format "%02x" $n]
+	    puts $out_fd "$leftpart$n$rightpart"
+
+	} elseif [string match "*@MUL_IC+?@*" $line] {
+
+	    # insert the dual source dsp instructions opcode
+	    regexp "^(.*)@MUL_IC\\+(.)@(.*)$" $line junk leftpart n rightpart
+	    set n [expr ($icode) + ($n<<6)]
+	    set n [format "%02x" $n]
+	    puts $out_fd "$leftpart$n$rightpart"
+
+	} else {
+
+	    puts $out_fd $line
+
+	}
+    }
+
+    close $in_fd
+    close $out_fd
+
+    # Finally, run the test.
+
+    run_dump_test $objdir/$opcode
+
+    # "make clean" won't delete these, so for now we must.
+    catch "exec rm -f $objdir/$opcode.s $objdir/$opcode.d"
+}
+
+# Run the tests.
+
+if [istarget arc*-*-*] then {
+
+# test the arc700 base case instructions
+    test_template_insn ARC700 dsp2 adds 6 
+    test_template_insn ARC700 dsp2 subs 7 
+    test_template_insn ARC700 dsp2 divaw 8 
+    test_template_insn ARC700 dsp2 asls 10 
+    test_template_insn ARC700 dsp2 asrs 11 
+    test_template_insn ARC700 dsp2 addsdw 40 
+    test_template_insn ARC700 dsp2 subsdw 41
+    test_template_insn ARC700 dsp1 negs 7
+    test_template_insn ARC700 dsp1 negsw 6
+    test_template_insn ARC700 dsp1 abss 5
+    test_template_insn ARC700 dsp1 abssw 4
+    test_template_insn ARC700 dsp1 rnd16 3
+    test_template_insn ARC700 dsp1 sat16 2
+
+#    test_template_insn ARC700 general_a700 a700general 0
+
+    test_template_insn ARC700 mpy_a700 mpy 26
+    test_template_insn ARC700 mpy_a700 mpyu 29
+    test_template_insn ARC700 mpy_a700 mpyh 27
+    test_template_insn ARC700 mpy_a700 mpyhu 28
+ 
+    run_dump_test "general_a700"   
+    run_dump_test "flag"
+    run_dump_test "prefetch"
+    run_dump_test "sub_s"
+    run_dump_test "reloctest"
+    run_dump_test "gen_simd"
+ 
+    # START ARC LOCAL   
+    # ARC700 v4.10 extension instructions
+    run_dump_test "llock"
+    run_dump_test "scond"
+    run_dump_test "swape"
+    run_dump_test "rtsc"
+    # END ARC LOCAL
+
+    load_lib gas-dg.exp
+
+    dg-init
+
+    dg-test $srcdir/$subdir/ld_arc700.s "-mARC700" ""
+    dg-test $srcdir/$subdir/ex_arc700.s "-mARC700" ""
+
+    dg-finish
+
+
+}

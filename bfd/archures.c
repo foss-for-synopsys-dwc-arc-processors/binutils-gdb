@@ -329,10 +329,11 @@ DESCRIPTION
 .#define bfd_mach_v850e2        0x4532
 .#define bfd_mach_v850e2v3      0x45325633
 .  bfd_arch_arc,       {* ARC Cores *}
-.#define bfd_mach_arc_5         5
-.#define bfd_mach_arc_6         6
-.#define bfd_mach_arc_7         7
-.#define bfd_mach_arc_8         8
+.#define bfd_mach_arc_a4        0
+.#define bfd_mach_arc_a5        1
+.#define bfd_mach_arc_arc600    2
+.#define bfd_mach_arc_arc601    4
+.#define bfd_mach_arc_arc700    3
 . bfd_arch_m32c,     {* Renesas M16C/M32C.  *}
 .#define bfd_mach_m16c        0x75
 .#define bfd_mach_m32c        0x78

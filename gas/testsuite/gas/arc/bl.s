@@ -31,10 +31,17 @@ text_label:
 	blls	text_label
 	blpnz	text_label
 
+	; note each delay slot cannot be a branch or jump
 	bl.d	text_label
+	nop
 	bl.nd	text_label
-	bl.jd	text_label
+	nop
+; No such ARCxxx 'j':
+;	bl.jd	text_label
 
 	bleq.d	text_label
+	nop
 	blne.nd	text_label
-	blcc.jd	text_label
+	nop
+; No such ARCxxx 'j':
+;	blcc.jd	text_label
