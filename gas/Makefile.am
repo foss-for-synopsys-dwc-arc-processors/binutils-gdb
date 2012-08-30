@@ -3,7 +3,7 @@
 AUTOMAKE_OPTIONS = 1.11 dejagnu foreign no-dist
 ACLOCAL_AMFLAGS = -I .. -I ../config -I ../bfd
 
-SUBDIRS = doc po
+SUBDIRS = doc po config/extlib
 
 tooldir = $(exec_prefix)/$(target_alias)
 

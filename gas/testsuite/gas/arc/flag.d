@@ -1,4 +1,4 @@
-#as: -EL
+#as: -EL -mARC600
 #objdump: -dr -EL
 
 .*: +file format elf32-.*arc
@@ -6,33 +6,23 @@
 Disassembly of section .text:
 
 00000000 <.text>:
-   0:	00 00 a0 1f 	1fa00000     flag       r0
-   4:	01 80 bf 1f 	1fbf8001     flag       1
-   8:	02 80 bf 1f 	1fbf8002     flag       2
-   c:	04 80 bf 1f 	1fbf8004     flag       4
-  10:	08 80 bf 1f 	1fbf8008     flag       8
-  14:	10 80 bf 1f 	1fbf8010     flag       16
-  18:	20 80 bf 1f 	1fbf8020     flag       32
-  1c:	40 80 bf 1f 	1fbf8040     flag       64
-  20:	80 80 bf 1f 	1fbf8080     flag       128
-  24:	00 00 bf 1f 	1fbf0000     flag       0x8000_0001
-  28:	01 00 00 80 
-  2c:	0b 00 a0 1f 	1fa0000b     flag.lt    r0
-  30:	09 00 bf 1f 	1fbf0009     flag.gt    1
-  34:	01 00 00 00 
-  38:	09 00 bf 1f 	1fbf0009     flag.gt    2
-  3c:	02 00 00 00 
-  40:	09 00 bf 1f 	1fbf0009     flag.gt    4
-  44:	04 00 00 00 
-  48:	09 00 bf 1f 	1fbf0009     flag.gt    8
-  4c:	08 00 00 00 
-  50:	09 00 bf 1f 	1fbf0009     flag.gt    16
-  54:	10 00 00 00 
-  58:	09 00 bf 1f 	1fbf0009     flag.gt    32
-  5c:	20 00 00 00 
-  60:	09 00 bf 1f 	1fbf0009     flag.gt    64
-  64:	40 00 00 00 
-  68:	09 00 bf 1f 	1fbf0009     flag.gt    128
-  6c:	80 00 00 00 
-  70:	0a 00 bf 1f 	1fbf000a     flag.ge    0x8000_0001
-  74:	01 00 00 80 
+   0:	29 20 00 00             	flag       r0
+   4:	69 20 40 00             	flag       1
+   8:	69 20 80 00             	flag       2
+   c:	69 20 00 01             	flag       4
+  10:	69 20 00 02             	flag       8
+  14:	69 20 00 04             	flag       16
+  18:	69 20 00 08             	flag       32
+  1c:	a9 20 01 00             	flag       64
+  20:	a9 20 02 00             	flag       128
+  24:	29 20 80 0f 00 80 01 00 	flag       0x80000001
+  2c:	e9 20 0b 00             	flag.lt    r0
+  30:	e9 20 69 00             	flag.gt    1
+  34:	e9 20 a9 00             	flag.gt    2
+  38:	e9 20 29 01             	flag.gt    4
+  3c:	e9 20 29 02             	flag.gt    8
+  40:	e9 20 29 04             	flag.gt    16
+  44:	e9 20 29 08             	flag.gt    32
+  48:	e9 20 89 0f 00 00 40 00 	flag.gt    64
+  50:	e9 20 89 0f 00 00 80 00 	flag.gt    128
+  58:	e9 20 8a 0f 00 80 01 00 	flag.ge    0x80000001
