@@ -1,4 +1,4 @@
-#as: -EL
+#as: -EL -mARC600
 #objdump: -dr -EL
 
 .*: +file format elf32-.*arc
@@ -6,71 +6,71 @@
 Disassembly of section .text:
 
 00000000 <text_label>:
-   0:	80 ff ff 2f 	2fffff80     bl         0 <text_label>
+   0:	02 08 00 00             	bl         0 <text_label>
 
-   4:	00 ff ff 2f 	2fffff00     bl         0 <text_label>
+   4:	fc 0f c0 ff             	bl         0 <text_label>
 
-   8:	80 fe ff 2f 	2ffffe80     bl         0 <text_label>
+   8:	f8 0f c0 ff             	bl         0 <text_label>
 
-   c:	01 fe ff 2f 	2ffffe01     blz        0 <text_label>
+   c:	f4 0f c1 ff             	blz        0 <text_label>
 
-  10:	81 fd ff 2f 	2ffffd81     blz        0 <text_label>
+  10:	f0 0f c1 ff             	blz        0 <text_label>
 
-  14:	02 fd ff 2f 	2ffffd02     blnz       0 <text_label>
+  14:	ec 0f c2 ff             	blnz       0 <text_label>
 
-  18:	82 fc ff 2f 	2ffffc82     blnz       0 <text_label>
+  18:	e8 0f c2 ff             	blnz       0 <text_label>
 
-  1c:	03 fc ff 2f 	2ffffc03     blp        0 <text_label>
+  1c:	e4 0f c3 ff             	blp        0 <text_label>
 
-  20:	83 fb ff 2f 	2ffffb83     blp        0 <text_label>
+  20:	e0 0f c3 ff             	blp        0 <text_label>
 
-  24:	04 fb ff 2f 	2ffffb04     bln        0 <text_label>
+  24:	dc 0f c4 ff             	bln        0 <text_label>
 
-  28:	84 fa ff 2f 	2ffffa84     bln        0 <text_label>
+  28:	d8 0f c4 ff             	bln        0 <text_label>
 
-  2c:	05 fa ff 2f 	2ffffa05     blc        0 <text_label>
+  2c:	d4 0f c5 ff             	blc        0 <text_label>
 
-  30:	85 f9 ff 2f 	2ffff985     blc        0 <text_label>
+  30:	d0 0f c5 ff             	blc        0 <text_label>
 
-  34:	05 f9 ff 2f 	2ffff905     blc        0 <text_label>
+  34:	cc 0f c5 ff             	blc        0 <text_label>
 
-  38:	86 f8 ff 2f 	2ffff886     blnc       0 <text_label>
+  38:	c8 0f c6 ff             	blnc       0 <text_label>
 
-  3c:	06 f8 ff 2f 	2ffff806     blnc       0 <text_label>
+  3c:	c4 0f c6 ff             	blnc       0 <text_label>
 
-  40:	86 f7 ff 2f 	2ffff786     blnc       0 <text_label>
+  40:	c0 0f c6 ff             	blnc       0 <text_label>
 
-  44:	07 f7 ff 2f 	2ffff707     blv        0 <text_label>
+  44:	bc 0f c7 ff             	blv        0 <text_label>
 
-  48:	87 f6 ff 2f 	2ffff687     blv        0 <text_label>
+  48:	b8 0f c7 ff             	blv        0 <text_label>
 
-  4c:	08 f6 ff 2f 	2ffff608     blnv       0 <text_label>
+  4c:	b4 0f c8 ff             	blnv       0 <text_label>
 
-  50:	88 f5 ff 2f 	2ffff588     blnv       0 <text_label>
+  50:	b0 0f c8 ff             	blnv       0 <text_label>
 
-  54:	09 f5 ff 2f 	2ffff509     blgt       0 <text_label>
+  54:	ac 0f c9 ff             	blgt       0 <text_label>
 
-  58:	8a f4 ff 2f 	2ffff48a     blge       0 <text_label>
+  58:	a8 0f ca ff             	blge       0 <text_label>
 
-  5c:	0b f4 ff 2f 	2ffff40b     bllt       0 <text_label>
+  5c:	a4 0f cb ff             	bllt       0 <text_label>
 
-  60:	8c f3 ff 2f 	2ffff38c     blle       0 <text_label>
+  60:	a0 0f cc ff             	blle       0 <text_label>
 
-  64:	0d f3 ff 2f 	2ffff30d     blhi       0 <text_label>
+  64:	9c 0f cd ff             	blhi       0 <text_label>
 
-  68:	8e f2 ff 2f 	2ffff28e     blls       0 <text_label>
+  68:	98 0f ce ff             	blls       0 <text_label>
 
-  6c:	0f f2 ff 2f 	2ffff20f     blpnz      0 <text_label>
+  6c:	94 0f cf ff             	blpnz      0 <text_label>
 
-  70:	a0 f1 ff 2f 	2ffff1a0     bl.d       0 <text_label>
+  70:	92 0f ef ff             	bl.d       0 <text_label>
 
-  74:	00 f1 ff 2f 	2ffff100     bl         0 <text_label>
+  74:	4a 26 00 70             	nop        
+  78:	8a 0f cf ff             	bl         0 <text_label>
 
-  78:	c0 f0 ff 2f 	2ffff0c0     bl.jd      0 <text_label>
+  7c:	4a 26 00 70             	nop        
+  80:	80 0f e1 ff             	blz.d      0 <text_label>
 
-  7c:	21 f0 ff 2f 	2ffff021     blz.d      0 <text_label>
+  84:	4a 26 00 70             	nop        
+  88:	78 0f c2 ff             	blnz       0 <text_label>
 
-  80:	82 ef ff 2f 	2fffef82     blnz       0 <text_label>
-
-  84:	46 ef ff 2f 	2fffef46     blnc.jd    0 <text_label>
-
+  8c:	4a 26 00 70             	nop        
