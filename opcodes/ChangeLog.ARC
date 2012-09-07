@@ -1,3 +1,8 @@
+2012-09-07  Simon Cook  <simon.cook@embecosm.com>
+
+	* arc-opc.c (arc_reg_names_a700): Correct TSCH register
+	register number and type.
+
 2012-08-30  Simon Cook  <simon.cook@embecosm.com>
 
 	* arc-ext.c: Moved inclusion of "sysdep.h".
