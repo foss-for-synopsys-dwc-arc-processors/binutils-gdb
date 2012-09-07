@@ -1,3 +1,8 @@
+2012-09-07  Simon Cook  <simon.cook@embecosm.com>
+
+	* arc-opc.c (arc_reg_names_a700): Correct TSCH register
+	register number and type.
+
 2012-06-05  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* arcompact-dis.c (my_sprintf): Don't abort for "%*".
