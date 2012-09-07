@@ -8080,7 +8080,7 @@ is_32bit_abs_reloc (unsigned int reloc_type)
     /* START ARC LOCAL */
     case EM_ARCOMPACT:
     /* END ARC LOCAL */
-      return reloc_type == 1; /* R_ARC_32.  */
+      return reloc_type == 4; /* R_ARC_32.  */
     case EM_ARM:
       return reloc_type == 2; /* R_ARM_ABS32 */
     case EM_AVR_OLD:
