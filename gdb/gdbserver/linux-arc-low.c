@@ -31,7 +31,7 @@
    sp, efa, ret, orig_r8, stop_pc) and yields the offset of the register.
 
    PTRACE doesn't save all registers, but we know that the arrangement is
-   that after sp, there are orig_r8, orig_r0, a word of space, then r25-r13
+   that after sp, there are orig_r0, orig_r8, a word of space, then r25-r13
    (in that order) followed by efa and stop_pc. */
 static int arc_regmap[] = {
   PT_r0,       PT_r1,       PT_r2,       PT_r3,

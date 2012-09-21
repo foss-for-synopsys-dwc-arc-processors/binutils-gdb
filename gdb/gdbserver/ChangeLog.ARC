@@ -1,3 +1,9 @@
+2012-09-21  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* linux-arc-low.c: Fix comment typo.
+	* linux-low.c: Backport fix for debug of writing to show up to 4
+	bytes.
+
 2012-08-17  Vineet Gupta  <vgupta@synopsys.com>
 
 	* linux-arc-low.c: <arc_regmap> updated per Linux 3.2 kernel pt_regs
