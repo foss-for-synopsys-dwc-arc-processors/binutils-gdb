@@ -342,14 +342,12 @@ my_sprintf (struct arcDisState *state, char *buf, const char*format, ...)
   char *bp;
   const char *p;
   int size, leading_zero, regMap[2];
-  long auxNum;
   va_list ap;
 
   va_start(ap,format);
   bp = buf;
   *bp = 0;
   p = format;
-  auxNum = -1;
   regMap[0] = 0;
   regMap[1] = 0;
   while (1)
@@ -992,7 +990,6 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 	  case 5: instrName = "abss"; decodingClass = 1; break;
 	  case 6: instrName = "negsw"; decodingClass = 1; break;
 	  case 7: instrName = "negs"; decodingClass = 1; break;
-
 
 	  case 8: instrName = "normw"; decodingClass = 1; break;
 
@@ -2090,12 +2087,20 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 		    instrName = "j_s [blink]";
 		  state->isBranch = 1;
 		  state->nullifyMode = BR_exec_when_no_jump;
+		  /* 25-sep-12: Jeremy Bennett <jeremy.bennett@embecosm.com>.
+		                Implicit register number for BLINK won't be
+		                picked up below. */
+		  state->register_for_indirect_jump = 31;
 		  break;
 		case 7:
 		  if (!instrName)
 		    instrName = "j_s.d [blink]";
 		  state->isBranch = 1;
 		  state->nullifyMode = BR_exec_always;
+		  /* 25-sep-12: Jeremy Bennett <jeremy.bennett@embecosm.com>.
+		                Implicit register number for BLINK won't be
+		                picked up below. */
+		  state->register_for_indirect_jump = 31;
 		  break;
                 default:
 		  instrName = "??? (2[3])";
