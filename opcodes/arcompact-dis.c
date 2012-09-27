@@ -870,6 +870,10 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
       case 23: instrName = "sub1"; break;
       case 24: instrName = "sub2"; break;
       case 25: instrName = "sub3"; break;
+      case 26: instrName = "mpy"; break;
+      case 27: instrName = "mpyh"; break;
+      case 28: instrName = "mpyhu"; break;
+      case 29: instrName = "mpyu"; break;
       case 30: instrName = "mpyw"; break;
       case 31: instrName = "mpyuw"; break;
         case 32:
