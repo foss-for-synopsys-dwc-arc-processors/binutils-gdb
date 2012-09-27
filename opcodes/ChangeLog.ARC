@@ -1,3 +1,10 @@
+2012-09-27  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* arcompact-dis.c (dsmOneArcInst): Remove blank line to match
+	version in binutils. Set register_for_indirect_jump even where
+	implicit BLINK.
+	(my_sprintf): Remove unused variable auxNum.
+
 2012-09-27  Simon Cook  <simon.cook@embecosm.com>
 
 	* arcompact-dis.c (dsmOneArcInst): Added disassembler
