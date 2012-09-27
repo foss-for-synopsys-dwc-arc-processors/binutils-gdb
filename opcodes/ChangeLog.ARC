@@ -1,3 +1,8 @@
+2012-09-27  Simon Cook  <simon.cook@embecosm.com>
+
+	* arcompact-dis.c (dsmOneArcInst): Added disassembler
+	support for MPY, MPYH, MPYHU, MPYU instructions.
+
 2012-09-07  Simon Cook  <simon.cook@embecosm.com>
 
 	* arc-opc.c (arc_reg_names_a700): Correct TSCH register
