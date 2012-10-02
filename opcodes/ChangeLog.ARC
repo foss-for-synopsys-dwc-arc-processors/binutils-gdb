@@ -1,3 +1,8 @@
+2012-10-02  Simon Cook  <simon.cook@embecosm.com>
+
+	* arcompact-dis.c (dsmOneArcInst): Patch applied for supporting disassembly
+	of instructions with 2 operands where one is a u6 operand.
+
 2012-09-27  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* arcompact-dis.c (dsmOneArcInst): Remove blank line to match
