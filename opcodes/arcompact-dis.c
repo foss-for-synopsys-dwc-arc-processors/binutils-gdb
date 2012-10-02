@@ -2510,13 +2510,17 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 
       /* For ARCtangent 32-bit instructions with 2 operands */
 
-      /* field C is either a register or limm (different!) */
-      CHECK_FIELD_C();
+      /* field C is either a register or limm (different!) or u6 */
+      if (BITS(state->words[0],22,23) == 1 ) {
+             fieldCisReg = 0;
+             FIELD_C();
+      }
+      else {
+          CHECK_FIELD_C();
+      }
       FIELD_B();
       CHECK_FLAG();
 
-      if (BITS(state->words[0],22,23) == 1 )
-	fieldCisReg = 0;
       if (fieldCisReg) state->ea_reg1 = fieldC;
       /* field C is either a shimm (same as fieldC) or limm (different!) */
       /* Say ea is not present, so only one of us will do the name lookup. */
