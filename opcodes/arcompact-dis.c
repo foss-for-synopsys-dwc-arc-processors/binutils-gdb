@@ -3524,15 +3524,18 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
     */
 
 
-    /* field C is either a register or limm (different!) */
+    /* field C is either a register or limm (different!) or u6 */
 
-    CHECK_FIELD_C();
     FIELD_B();
     directMem = BIT(state->words[0],15);
+	if (BITS(state->words[0],22,23) == 1 ) {
+	    fieldCisReg = 0;
+	    FIELD_C();
+	}
+	else {
+        CHECK_FIELD_C();
+    }
 
-
-    if (BITS(state->words[0],22,23) == 1 )
-      fieldCisReg = 0;
     if (fieldCisReg)
       state->ea_reg1 = fieldC;
 
