@@ -1,3 +1,9 @@
+2012-10-08  Simon Cook  <simon.cook@embecosm.com>
+
+	* arcompact-dis.c (dsmOneArcInst): Patch applied for diassembly of
+	ex instruction with u6 operands.
+
+
 2012-10-02  Simon Cook  <simon.cook@embecosm.com>
 
 	* arcompact-dis.c (dsmOneArcInst): Patch applied for supporting disassembly
