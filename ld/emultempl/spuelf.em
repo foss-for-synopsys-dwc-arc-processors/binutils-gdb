@@ -488,7 +488,7 @@ embedded_spu_file (lang_input_statement_type *entry, const char *flags)
   if (lang_add_input_file (oname, lang_input_file_is_file_enum, NULL) == NULL)
     return FALSE;
 
-  /* lang_add_input_file put the new list entry at the end of the statement
+  /* lang_add_input_file puts the new list entry at the end of the statement
      and input file lists.  Move it to just after the current entry.  */
   new_ent = *old_stat_tail;
   *old_stat_tail = NULL;

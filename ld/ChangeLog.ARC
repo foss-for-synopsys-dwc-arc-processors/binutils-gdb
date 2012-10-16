@@ -1,3 +1,16 @@
+2012-10-16  Simon Cook <simon.cook@embecosm.com>
+
+	* ChangeLog: Applied patch from 2009-02-16 by Alan Modra to solve
+	segfaults.
+	* emultempl/beos.em: Likewise.
+	* emultempl/pe.em: Likewise.
+	* emultempl/pep.em: Likewise.
+	* emultempl/spuelf.em: Likewise.
+	* emultempl/xtensaelf.em: Likewise.
+	* ld/ldctor.c: Likewise.
+	* ld/ldlang.c: Likewise.
+	* ld/ldlang.h: Likewise.
+
 2012-04-03  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* configure.tgt (arc*-*-linux-uclibc*): New configurations.
