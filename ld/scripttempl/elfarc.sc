@@ -396,7 +396,6 @@ cat <<EOF
   .stab.indexstr 0 : { *(.stab.indexstr) }
 
   .comment       0 : { *(.comment) }
-  .arcextmap 0 : { *(.arcextmap) }
 
   /* DWARF debug sections.
      Symbols in the DWARF debugging sections are relative to the beginning
@@ -430,10 +429,7 @@ cat <<EOF
   .debug_varnames  0 : { *(.debug_varnames) }
 
   /* ARC Extension Sections */
-  .arcextmap 0 : 
-  { 
-   ${RELOCATING+ *(.gnu.linkonce.arcextmap.*) }
-  }
+  .arcextmap	  0 : { *(.gnu.linkonce.arcextmap.*) }
 
   ${STACK_ADDR+${STACK}}
   ${OTHER_SECTIONS}
