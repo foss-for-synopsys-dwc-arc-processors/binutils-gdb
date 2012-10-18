@@ -1,3 +1,9 @@
+2012-10-18  Simon Cook <simon.cook@embecosm.com>
+
+	* scripttempl/arclinux.sc: Applied patch from Vineet to solve
+	aggregation of of .arcextmap sections.
+	* scripttempl/elfarc.sc: Likewise.
+
 2012-04-03  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* configure.tgt (arc*-*-linux-uclibc*): New configurations.
