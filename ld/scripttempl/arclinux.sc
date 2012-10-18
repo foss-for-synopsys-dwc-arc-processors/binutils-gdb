@@ -392,7 +392,6 @@ cat <<EOF
   .stab.indexstr 0 : { *(.stab.indexstr) }
 
   .comment       0 : { *(.comment) }
-  .arcextmap 0 : { *(.arcextmap) }
 
   /* DWARF debug sections.
      Symbols in the DWARF debugging sections are relative to the beginning

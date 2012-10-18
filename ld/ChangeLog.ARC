@@ -1,3 +1,9 @@
+2012-10-18  Simon Cook <simon.cook@embecosm.com>
+
+	* scripttempl/arclinux.sc: Applied patch from Vineet to solve
+	aggregation of of .arcextmap sections.
+	* scripttempl/elfarc.sc: Likewise.
+
 2012-10-16  Simon Cook <simon.cook@embecosm.com>
 
 	* ChangeLog: Applied patch from 2009-02-16 by Alan Modra to solve
