@@ -1,3 +1,8 @@
+2012-10-19  Simon Cook  <simon.cook@embecosm.com>
+
+	* config/tc-arc.h: Set default assembler endianness based on
+	compiled target.
+
 2012-05-06  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* config/tc-arc.c (arc_optimize_expr): Fix test for negative
