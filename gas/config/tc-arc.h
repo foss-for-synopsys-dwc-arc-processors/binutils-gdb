@@ -24,8 +24,6 @@
 
 #define TC_ARC 1
 
-#define TARGET_BYTES_BIG_ENDIAN 0
-
 #define LOCAL_LABELS_FB 1
 
 #define TARGET_ARCH bfd_arch_arc
@@ -49,11 +47,20 @@
    line arguments.  */
 extern const char * arc_target_format;
 
+#ifdef TARGET_BYTES_BIG_ENDIAN
+#define DEFAULT_TARGET_FORMAT  "elf32-bigarc"
+#define DEFAULT_BYTE_ORDER     BIG_ENDIAN
+#else
 #define DEFAULT_TARGET_FORMAT  "elf32-littlearc"
-#define TARGET_FORMAT          arc_target_format
 #define DEFAULT_BYTE_ORDER     LITTLE_ENDIAN
+#endif
+#define TARGET_FORMAT          arc_target_format
 #define WORKING_DOT_WORD
 #define LISTING_HEADER         "ARC GAS "
+
+#ifndef TARGET_BYTES_BIG_ENDIAN
+#define TARGET_BYTES_BIG_ENDIAN 0
+#endif
 
 /* The ARC needs to parse reloc specifiers in .word.  */
 

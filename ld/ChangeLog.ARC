@@ -1,3 +1,8 @@
+2012-10-19  Simon Cook  <simon.cook@embecosm.com>
+
+	* scripttempl/arclinux.sc: Set default linker endianness based on
+	configured target.
+
 2012-10-18  Simon Cook <simon.cook@embecosm.com>
 
 	* scripttempl/arclinux.sc: Applied patch from Vineet to solve

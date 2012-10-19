@@ -1,3 +1,8 @@
+2012-10-19  Simon Cook  <simon.cook@embecosm.com>
+
+	* config/tc-arc.h: Set default assembler endianness based on
+	compiled target.
+
 2012-08-30  Simon Cook  <simon.cook@embecosm.com>
 
 	* config/tc-arc.c: Replace references to assert macro with gas_assert.
