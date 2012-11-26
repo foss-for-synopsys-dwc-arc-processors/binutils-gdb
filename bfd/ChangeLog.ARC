@@ -1,3 +1,7 @@
+2012-11-26  Vineet Gupta <vgupta@synopsys.com>
+
+	* elf32-arc.c: ELF_MAXPAGESIZE set to 8k
+
 2012-06-22  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 Adapt 2002/12/04 elf32-m68k.c change:
