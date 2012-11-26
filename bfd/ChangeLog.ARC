@@ -1,3 +1,7 @@
+2012-11-26  Vineet Gupta <vgupta@synopsys.com>
+
+	* elf32-arc.c: ELF_MAXPAGESIZE set to 8k
+
 2012-08-30  Simon Cook  <simon.cook@embecosm.com>
 
 	* bfd-in2.h: Rebuilt.
