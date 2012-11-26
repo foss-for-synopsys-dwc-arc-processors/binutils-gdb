@@ -3179,7 +3179,7 @@ elf_arc_size_dynamic_sections (bfd *output_bfd,
 #define ELF_ARCH		bfd_arch_arc
 #define ELF_MACHINE_CODE	EM_ARC
 #define ELF_MACHINE_ALT1	EM_ARCOMPACT
-#define ELF_MAXPAGESIZE		0x1000
+#define ELF_MAXPAGESIZE		0x2000
 
 #define elf_info_to_howto                    arc_info_to_howto_rel
 #define elf_info_to_howto_rel                arc_info_to_howto_rel
