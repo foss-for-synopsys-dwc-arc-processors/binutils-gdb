@@ -1,3 +1,8 @@
+2012-12-04  Simon Cook  <simon.cook@embecosm.com>
+
+	* arc-opc.c: Increase size of arc_operand_map_a4 and arc_operand_map_ac
+	to support '+' operand prefix.
+
 2012-10-08  Simon Cook  <simon.cook@embecosm.com>
 
 	* arcompact-dis.c (dsmOneArcInst): Patch applied for diassembly of
