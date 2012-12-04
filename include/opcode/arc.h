@@ -206,9 +206,13 @@ struct arc_ext_operand_value {
    Calls to gas/config/tc-arc.c:arc_extoper built up this list.  */
 extern struct arc_ext_operand_value *arc_ext_operands;
 
+/* Macros for defining which character prefixes the operand.  */
+#define ARC_OP_AT(a)   ((0<<8)|a)  /* @ */
+#define ARC_OP_PLUS(a) ((1<<8)|a)  /* + */
+
 struct arc_operand {
   /* One of the insn format chars.  */
-  unsigned char fmt;
+  unsigned short fmt;
 
   /* The number of bits in the operand (may be unused for a modifier).  */
   unsigned char bits;
@@ -435,7 +439,7 @@ extern int                       arc_suffixes_count;
 extern const struct arc_operand_value *arc_reg_names;
 extern int                       arc_reg_names_count;
 
-extern unsigned char *arc_operand_map;
+extern unsigned short *arc_operand_map;
 
 /* Nonzero if we've seen a 'q' suffix (condition code).
  *   'Q'        FORCELIMM       set `arc_cond_p' to 1 to ensure a constant is a limm */
