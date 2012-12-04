@@ -4740,6 +4740,10 @@ static struct arc_operand_value zer_rega={"ZEROV",62,'*',0};
 static struct arc_operand_value zer_regb={"ZEROV",62,'(',0};
 static struct arc_operand_value zer_regc={"ZEROV",62,')',0};
 
+/* These variables control valid operand prefixes.  */
+static const char arc_operand_prefixes[] = "%+";
+static const int  arc_operand_prefix_num = 2;
+
 /* This routine is called for each instruction to be assembled.  */
 
 void
@@ -4761,6 +4765,8 @@ md_assemble (char *str)
   unsigned int insn_name_idx = 0;
   /* Non-zero if the insn being encoded is 16-bit ARCompact instruction */
   int compact_insn_16;
+  /* Index into arc_operand_prefixes array */
+  unsigned char opindex = 0;
 
   assembling_instruction = 1;
 
@@ -4865,27 +4871,31 @@ fprintf (stdout, "Trying syntax %s\n", opcode->syntax);
 #if DEBUG_INST_PATTERN
 printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 #endif
+          for(opindex = 0; opindex < arc_operand_prefix_num; opindex++) {
+                if (*syn == arc_operand_prefixes[opindex])
+                        break;
+          }
 	  /* Non operand chars must match exactly.  */
-	  if (*syn != '%' || *++syn == '%')
-	    {
-	      if (*str == *syn || (*syn=='.'&&*str=='!'))
-		{
-                if (*syn == ' '){
-		    past_opcode_p = 1;
-                    }
-		  ++syn;
-		  ++str;
-		}
-	      else
-		break;
-	      continue;
-	    }
+	    if (*syn != arc_operand_prefixes[opindex] || *++syn == arc_operand_prefixes[opindex])
+	      {
+	        if (*str == *syn || (*syn=='.'&&*str=='!'))
+		  {
+                  if (*syn == ' '){
+		      past_opcode_p = 1;
+                      }
+		    ++syn;
+		    ++str;
+		  }
+	        else
+		  break;
+	        continue;
+	      }
           if(firstsuf==0)firstsuf = syn-1;
 	  /* We have an operand.  Pick out any modifiers.  */
 	  mods = 0;
-	  while (ARC_MOD_P (arc_operands[arc_operand_map[(int) *syn]].flags))
+	  while (ARC_MOD_P (arc_operands[arc_operand_map[(int) ((opindex<<8)|*syn)]].flags))
 	    {
-	      if (arc_operands[arc_operand_map[(int) *syn]].insert)
+	      if (arc_operands[arc_operand_map[(int) ((opindex<<8)|*syn)]].insert)
 #if 1
 		/* FIXME: Need 'operand' parameter which is uninitialized.  */
 		abort ();
@@ -4893,13 +4903,13 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		(arc_operands[arc_operand_map[(int) *syn]].insert) (insn, operand, mods, NULL, 0, NULL);
 #endif
 
-	      mods |= (arc_operands[arc_operand_map[(int) *syn]].flags
+	      mods |= (arc_operands[arc_operand_map[(int) ((opindex<<8)|*syn)]].flags
 		       & ARC_MOD_BITS);
 	      ++syn;
 	    } /* end while(ARC_MOD_P(...)) */
-	  operand = arc_operands + arc_operand_map[(int) *syn];
+	  operand = arc_operands + arc_operand_map[(int) ((opindex<<8)|*syn)];
 	  if (operand->fmt == 0){
-	    as_fatal ("unknown syntax format character `%c'", *syn);
+	    as_fatal ("unknown syntax format characters `%c%c'", arc_operand_prefixes[opindex], *syn);
               }
 
 	  if (operand->flags & ARC_OPERAND_FAKE)

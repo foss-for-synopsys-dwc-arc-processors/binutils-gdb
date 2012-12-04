@@ -144,8 +144,8 @@ static int cpu_type;
 
 /* Given a format letter, yields the index into `arc_operands'.
    eg: arc_operand_map['a'] = REGA, for ARCtangent-A4.  */
-static unsigned char arc_operand_map_a4[256];
-static unsigned char arc_operand_map_ac[256];
+static unsigned short arc_operand_map_a4[512];
+static unsigned short arc_operand_map_ac[512];
 
 
 #define OPERANDS 3
