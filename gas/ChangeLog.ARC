@@ -1,3 +1,7 @@
+2012-12-04  Simon Cook  <simon.cook@embecosm.com>
+
+	* config/tc-arc.c (md_assemble): Support for non-@ operand types.
+
 2012-10-19  Simon Cook  <simon.cook@embecosm.com>
 
 	* config/tc-arc.h: Set default assembler endianness based on
