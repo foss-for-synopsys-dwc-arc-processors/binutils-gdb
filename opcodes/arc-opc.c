@@ -886,7 +886,7 @@ struct arc_ext_operand_value *arc_ext_operands;
 
 /* By default, the pointer 'arc_operand_map' points to the operand map table
    used for ARCtangent-A4 (i.e arc_operand_map_a4[]) .  */
-unsigned char *arc_operand_map = arc_operand_map_a4;
+unsigned short *arc_operand_map = arc_operand_map_a4;
 
 /* By default, the pointer 'arc_operands' points to the operand table
    used for 32-bit instructions (i.e arc_operands_a4[]) */
