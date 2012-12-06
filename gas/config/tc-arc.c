@@ -4821,7 +4821,7 @@ fprintf (stdout, "Matching ****** %s *************\n", str);
     {
       int past_opcode_p, fc, num_suffixes;
       int fix_up_at = 0;
-      char *syn;
+      unsigned char *syn;
       struct arc_fixup fixups[MAX_FIXUPS];
       int mods=0;
 
