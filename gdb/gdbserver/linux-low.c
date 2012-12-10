@@ -4859,15 +4859,18 @@ linux_write_memory (CORE_ADDR memaddr, const unsigned char *myaddr, int len)
   if (debug_threads)
     {
       /* Dump up to four bytes.  */
-      unsigned int val = * (unsigned int *) myaddr;
+      unsigned int val;
       if (len == 1)
-	val = val & 0xff;
+        val = *((unsigned char *) myaddr);
       else if (len == 2)
-	val = val & 0xffff;
-      else if (len == 3)
-	val = val & 0xffffff;
+        val = *((unsigned short *) myaddr);
+      else
+        /* this may give funny results when len==3, but at least
+         * this works OK for both endiannesses when len=={1, 2, 4} */
+        val = *((unsigned int *) myaddr);
+
       debug_printf ("Writing %0*x to 0x%08lx\n", 2 * ((len < 4) ? len : 4),
-		    val, (long)memaddr);
+	       val, (long)memaddr);
     }
 
   /* Fill start and end extra bytes of buffer with existing memory data.  */
