@@ -1,3 +1,8 @@
+2012-12-10  Mischa Jonker  <mischa.jonker@synopsys.com>
+
+	* arcompact-dis.c (dsmOneArcInst): Fix single stepping over J_S.D [r]
+	state->nullifyMode was set incorrectly
+
 2012-12-04  Simon Cook  <simon.cook@embecosm.com>
 
 	* arc-opc.c: Increase size of arc_operand_map_a4 and arc_operand_map_ac
