@@ -1,3 +1,7 @@
+2012-12-10  Noam Camus  <noamc@ezchip.com>
+	* arc-linux-tdep.c (next_pc): Use regcache_cooked_read_unsigned
+	instead of regcache_cooked_read. This fixes endianness issues.
+
 2012-12-10  Mischa Jonker  <mischa.jonker@synopsys.com>
 	* arc-linux-tdep.c (arc_linux_software_single_step): Fix single
 	stepping when jumping to next instruction
