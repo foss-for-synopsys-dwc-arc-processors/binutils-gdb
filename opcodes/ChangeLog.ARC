@@ -1,3 +1,8 @@
+2012-12-10  Mischa Jonker  <mischa.jonker@synopsys.com>
+
+	* arcompact-dis.c (dsmOneArcInst): Fix single stepping over J_S.D [r]
+	state->nullifyMode was set incorrectly
+
 2012-10-08  Simon Cook  <simon.cook@embecosm.com>
 
 	* arcompact-dis.c (dsmOneArcInst): Patch applied for diassembly of
