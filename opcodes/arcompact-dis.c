@@ -2385,7 +2385,6 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 
   fieldAisReg = fieldBisReg = fieldCisReg = 1; /* assume regs for now */
   flag = cond = is_shimm = is_limm = 0;
-  state->nullifyMode = BR_exec_when_no_jump;	/* 0 */
   signExtend = addrWriteBack = directMem = 0;
   usesAuxReg = 0;
 
