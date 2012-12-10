@@ -1,3 +1,7 @@
+2012-12-10  Mischa Jonker  <mischa.jonker@synopsys.com>
+	* linux-low.c: Adapt debug print for writing up to 4 bytes to
+	handle big endian as well. (support for 3 bytes dropped)
+
 2012-09-21  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* linux-arc-low.c: Fix comment typo.
