@@ -665,7 +665,7 @@ static int arc_linux_software_single_step(struct frame_info *frame)
 
     if (two_breakpoints)
     {
-       if (pc != branch_target)
+       if ((pc != branch_target) && (fall_thru != branch_target))
            insert_single_step_breakpoint (branch_target);
     }
 

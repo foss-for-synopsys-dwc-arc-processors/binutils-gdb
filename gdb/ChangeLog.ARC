@@ -1,3 +1,7 @@
+2012-12-10  Mischa Jonker  <mischa.jonker@synopsys.com>
+	* arc-linux-tdep.c (arc_linux_software_single_step): Fix single
+	stepping when jumping to next instruction
+
 2012-04-14  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* arc-linux-tdep.c (arc_linux_init_abi): Swap over breakpoint
