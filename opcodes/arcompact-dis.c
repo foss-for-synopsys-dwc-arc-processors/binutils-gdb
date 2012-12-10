@@ -2093,11 +2093,16 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
             case 2 : if (!instrName) instrName = "jl_s";
 	             state->isBranch = 1;
 		     state->nullifyMode = BR_exec_when_no_jump;
+		     /* MJ: map 0..7 to r0..3, r12..15 by doing regno = b2b1b0 | b2 << 3 */
+		     state->register_for_indirect_jump = (BITS(state->words[0],8,10))
+						       | (BITS(state->words[0],10,10) << 3);
 		     break;
             case 1 : if (!instrName) instrName = "j_s.d";
             case 3 : if (!instrName) instrName = "jl_s.d";
           	     state->isBranch = 1;
 		     state->nullifyMode = BR_exec_always;
+		     state->register_for_indirect_jump = (BITS(state->words[0],8,10))
+						       | (BITS(state->words[0],10,10) << 3);
 		     break;
             case 6 : instrName = "sub_s.ne";
 	             decodingClass = 35;
