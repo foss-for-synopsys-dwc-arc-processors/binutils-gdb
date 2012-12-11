@@ -86,13 +86,13 @@ arc_set_pc (CORE_ADDR pc)
 
 /* trap_s 1 */
 /* FIXME: dependent on target endianness */
-static const unsigned long arc_breakpoint = 0x783E;
+static const unsigned short arc_breakpoint = 0x783E;
 #define arc_breakpoint_len 2
 
 static int
 arc_breakpoint_at (CORE_ADDR where)
 {
-  unsigned long insn;
+  unsigned short insn;
 
   (*the_target->read_memory) (where, (unsigned char *) &insn, arc_breakpoint_len);
   if (insn == arc_breakpoint)

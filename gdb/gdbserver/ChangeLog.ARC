@@ -1,4 +1,10 @@
+2012-12-11  Noam Camus  <noamc@ezchip.com>
+
+	* linux-arc-low.c <arc_breakpoint>: Define as short not long.
+	(arc_breakpoint_at): Use short for insn, not long.
+
 2012-12-10  Mischa Jonker  <mischa.jonker@synopsys.com>
+
 	* linux-low.c: Adapt debug print for writing up to 4 bytes to
 	handle big endian as well. (support for 3 bytes dropped)
 
