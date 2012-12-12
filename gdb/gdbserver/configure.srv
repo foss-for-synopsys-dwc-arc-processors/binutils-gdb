@@ -58,6 +58,18 @@ case "${target}" in
 			srv_linux_regsets=yes
 			srv_linux_thread_db=yes
 			;;
+  arc*-*-linux*)
+			srv_regobj=reg-arc.o
+			srv_tgtobj="linux-low.o linux-arc-low.o"
+			srv_linux_usrregs=yes
+			srv_linux_thread_db=yes
+			;;
+  arc*-*)
+			srv_regobj=reg-arc.o
+			srv_tgtobj="linux-low.o linux-arc-low.o"
+			srv_linux_usrregs=yes
+			srv_linux_thread_db=yes
+			;;
   arm*-*-linux*)	srv_regobj="reg-arm.o arm-with-iwmmxt.o"
 			srv_regobj="${srv_regobj} arm-with-vfpv2.o"
 			srv_regobj="${srv_regobj} arm-with-vfpv3.o"

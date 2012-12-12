@@ -1,0 +1,48 @@
+2012-12-12  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	Manual merge from GDB 6.8 branch.
+
+	* ChangeLog.ARC, arc-architecture.c, arc-architecture.h,
+	* arc-aux-registers.c, arc-aux-registers.h, arc-board.c,
+	* arc-board.h, arc-embed.c, arc-gpio.c, arc-gpio.h,
+	* arc-jtag-actionpoints.c, arc-jtag-actionpoints.h,
+	* arc-jtag-fileio.c, arc-jtag-fileio.h, arc-jtag-ops.c,
+	* arc-jtag-ops.h, arc-jtag-tdep.c, arc-jtag-tdep.h, arc-jtag.c,
+	* arc-jtag.h, arc-linux-tdep.c, arc-linux-tdep.h,
+	* arc-regnums-defs.h, arc-support.h, arc-tdep.c, arc-tdep.h,
+	* features/arc-a5-cpu.xml, features/arc-aux-registers.dtd,
+	* features/arc600-cpu.xml, features/arc700-cpu.xml,
+	* regformats/reg-arc.dat: Merged as new files.
+	* configure.tgt: Merged.
+
+2012-12-10  Noam Camus  <noamc@ezchip.com>
+	* arc-linux-tdep.c (next_pc): Use regcache_cooked_read_unsigned
+	instead of regcache_cooked_read. This fixes endianness issues.
+
+2012-12-10  Mischa Jonker  <mischa.jonker@synopsys.com>
+	* arc-linux-tdep.c (arc_linux_software_single_step): Fix single
+	stepping when jumping to next instruction
+
+2012-04-14  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* arc-linux-tdep.c (arc_linux_init_abi): Swap over breakpoint
+	variables for endianness - wrong way round.
+
+2012-04-03  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* arc-linux-tdep.c (be_breakpoint_instruction): New variable.
+	(arc_linux_init_abi): Use it.
+
+2010-03-02  Brendan Kehoe  <brendan@zen.org>
+
+	* arc-embed.c (arc_jtag_show_stack_frame_command): Init
+	PREVIOUS_WORD.
+
+2010-09-28  Brendan Kehoe  <brendan@zen.org>
+
+	* arc-tdep.c (arc_initialize_disassembler): Revert pre-2008 change
+	which gave init_disassemble_info a NULL pointer for the
+	fprintf_func member of struct disassemble_info, which can lead
+	to a crash.
+	* ChangeLog.ARC: New file.
+
