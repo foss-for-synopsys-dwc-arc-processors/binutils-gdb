@@ -1,4 +1,7 @@
 2012-12-12  Mischa Jonker  <mischa.jonker@synopsys.com>
+	* arc-tdep.c: Fix warning uninitialized 'previous_word'
+
+2012-12-12  Mischa Jonker  <mischa.jonker@synopsys.com>
 	* arc-tdep.c: Fix printf format %llx to work correctly for both 32
 	and 64 bit architectures (by using PRIx64 from inttypes.h)
 

@@ -2217,7 +2217,7 @@ arc_jtag_show_stack_frame_command(char *arg, int from_tty)
             unsigned int the_same   = 0;
             Boolean      first_word = TRUE;
             Boolean      is_following_element;
-            unsigned int previous_word;
+            unsigned int previous_word = 0;
 
             addr = old_sp - BYTES_IN_WORD;
 
