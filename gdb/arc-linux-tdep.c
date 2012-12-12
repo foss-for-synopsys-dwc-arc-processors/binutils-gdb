@@ -274,14 +274,6 @@ next_pc(CORE_ADDR pc, CORE_ADDR *fall_thru, CORE_ADDR *target)
     /* by default, the next instruction is the one immediately after the one at pc */
     *fall_thru = pc + instr.instructionLen;
 
-    DEBUG("--- next_pc(%x) = %x, isBranch = %d, tcnt = %d [%x], flow = %s (%d), "
-          "reg for indirect jump = %d, nullifyMode = %s\n",
-          (unsigned int) pc, (unsigned int) *fall_thru, instr.isBranch, instr.tcnt, instr.targets[0],
-          (instr.flow == direct_jump || instr.flow == direct_call) ? "direct" : "indirect",
-          instr.flow,
-          instr.register_for_indirect_jump,
-          ((instr.nullifyMode == (char) BR_exec_always) ? "delay slot" : "no delay"));
-
     /* OK, it's a branch */
     if ((Boolean) instr.isBranch)
     {
@@ -331,6 +323,16 @@ next_pc(CORE_ADDR pc, CORE_ADDR *fall_thru, CORE_ADDR *target)
             *target     = lp_start;
         }
     }
+
+    DEBUG("--- next_pc(%x) = %x (or %x), isBranch = %d, tcnt = %d [%x], flow = %s (%d), "
+          "reg for indirect jump = %d, nullifyMode = %s, targets = %d\n",
+          (unsigned int) pc, (unsigned int) *fall_thru, (unsigned int) *target,
+          instr.isBranch, instr.tcnt, instr.targets[0],
+          (instr.flow == direct_jump || instr.flow == direct_call) ? "direct" : "indirect",
+          instr.flow,
+          instr.register_for_indirect_jump,
+          ((instr.nullifyMode == (char) BR_exec_always) ? "delay slot" : "no delay"),
+          two_targets ? 2 : 1);
 
     return two_targets;
 }

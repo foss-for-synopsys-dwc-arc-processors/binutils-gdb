@@ -1,3 +1,6 @@
+2012-12-11  Mischa Jonker  <mischa.jonker@synopsys.com>
+	* arc-linux-tdep.c (next_pc): Let debug print output both jump targets
+
 2012-12-10  Noam Camus  <noamc@ezchip.com>
 	* arc-linux-tdep.c (next_pc): Use regcache_cooked_read_unsigned
 	instead of regcache_cooked_read. This fixes endianness issues.
