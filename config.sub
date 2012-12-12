@@ -255,7 +255,6 @@ case $basic_machine in
 	| arc | arceb \
 	| arm | arm[bl]e | arme[lb] | armv[2-8] | armv[3-8][lb] | armv7[arm] \
 	| avr | avr32 \
-	| be32 | be64 \
 	| bfin \
 	| c4x | c8051 | clipper \
 	| d10v | d30v | dlx | dsp16xx \

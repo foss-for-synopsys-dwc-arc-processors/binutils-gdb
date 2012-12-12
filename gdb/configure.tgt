@@ -81,6 +81,20 @@ am33_2.0*-*-linux*)
 			solib-svr4.o"
 	;;
 
+arc*-*-linux*)
+	# Target: ARC Linux based targets
+	gdb_target_obs="arc-tdep.o arc-linux-tdep.o solib.o solib-svr4.o corelow.o"
+	build_gdbserver=yes
+	;;
+
+arc*-*-*)
+	# Target: ARC elf32 based target
+	gdb_target_obs="arc-embed.o arc-jtag.o arc-jtag-tdep.o arc-jtag-ops.o \
+			arc-jtag-actionpoints.o arc-jtag-fileio.o \
+			arc-aux-registers.o arc-architecture.o arc-board.o arc-gpio.o"
+	gdb_sim=../sim/arc/libsim.a
+	;;
+
 arm*-wince-pe | arm*-*-mingw32ce*)
 	# Target: ARM based machine running Windows CE (win32)
 	gdb_target_obs="arm-tdep.o arm-wince-tdep.o windows-tdep.o"

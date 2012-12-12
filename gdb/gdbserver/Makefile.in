@@ -621,6 +621,8 @@ linux-namespaces.o: ../nat/linux-namespaces.c
 
 aarch64.c : $(srcdir)/../regformats/aarch64.dat $(regdat_sh)
 	$(SHELL) $(regdat_sh) $(srcdir)/../regformats/aarch64.dat aarch64.c
+reg-arc.c : $(srcdir)/../regformats/reg-arc.dat $(regdat_sh)
+	$(SHELL) $(regdat_sh) $(srcdir)/../regformats/reg-arc.dat reg-arc.c
 reg-arm.c : $(srcdir)/../regformats/reg-arm.dat $(regdat_sh)
 	$(SHELL) $(regdat_sh) $(srcdir)/../regformats/reg-arm.dat reg-arm.c
 arm-with-iwmmxt.c : $(srcdir)/../regformats/arm-with-iwmmxt.dat $(regdat_sh)
