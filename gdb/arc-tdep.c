@@ -164,6 +164,8 @@
 /* system header files */
 #include <string.h>
 #include <stdio.h>
+#define __STDC_FORMAT_MACROS
+#include <inttypes.h>
 #include <ctype.h>
 
 /* gdb header files */
@@ -988,7 +990,7 @@ extract_return_value (struct type     *type,
             regcache_cooked_read_unsigned (regcache, ARC_ABI_RETURN_REGNUM, &val);
             store_unsigned_integer (valbuf, (int) len, val);
 
-            DEBUG("returning 0x%08llX\n", val);
+            DEBUG("returning 0x%08" PRIX64 "\n", val);
         }
         else if (len <= BYTES_IN_REGISTER * 2)
         {
@@ -1001,7 +1003,7 @@ extract_return_value (struct type     *type,
             store_unsigned_integer (valbuf,                     BYTES_IN_REGISTER,             low);
             store_unsigned_integer (valbuf + BYTES_IN_REGISTER, (int) len - BYTES_IN_REGISTER, high);
 
-            DEBUG("returning 0x%08llX%08llX\n", high, low);
+            DEBUG("returning 0x%08" PRIX64 "%08" PRIX64 "\n", high, low);
         }
         else
             error(_("%s: type length %u too large"), __FUNCTION__, len);
@@ -1030,7 +1032,7 @@ store_return_value (struct type     *type,
             val = extract_unsigned_integer (valbuf, (int) len);
             regcache_cooked_write_unsigned (regcache, ARC_ABI_RETURN_REGNUM, val);
 
-            DEBUG("storing 0x%08llX\n", val);
+            DEBUG("storing 0x%08" PRIX64 "\n", val);
         }
         else if (len <= BYTES_IN_REGISTER * 2)
         {
@@ -1043,7 +1045,7 @@ store_return_value (struct type     *type,
             regcache_cooked_write_unsigned (regcache, ARC_ABI_RETURN_LOW_REGNUM,  low);
             regcache_cooked_write_unsigned (regcache, ARC_ABI_RETURN_HIGH_REGNUM, high);
 
-            DEBUG("storing 0x%08llX%08llX\n", high, low);
+            DEBUG("storing 0x%08" PRIX64 "%08" PRIX64 "\n", high, low);
         }
         else
             error(_("arc_store_return_value: type length too large."));
@@ -1323,7 +1325,7 @@ arc_unwind_pc (struct gdbarch *gdbarch, struct frame_info *next_frame)
 {
     ULONGEST pc = frame_unwind_register_unsigned (next_frame, ARC_PC_REGNUM);
 
-    DEBUG("unwind PC: 0x%08llx\n", pc);
+    DEBUG("unwind PC: 0x%08" PRIx64 "\n", pc);
 
     return (CORE_ADDR) pc;
 }
@@ -1336,7 +1338,7 @@ arc_unwind_sp (struct gdbarch *gdbarch, struct frame_info *next_frame)
 
     sp  = frame_unwind_register_unsigned (next_frame, ARC_SP_REGNUM);
 
-    DEBUG("unwind SP: 0x%08llx\n", sp);
+    DEBUG("unwind SP: 0x%08" PRIx64 "\n", sp);
 
     return (CORE_ADDR) sp;
 }
