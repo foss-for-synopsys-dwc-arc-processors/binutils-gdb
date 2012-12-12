@@ -286,11 +286,16 @@ next_pc(CORE_ADDR pc, CORE_ADDR *fall_thru, CORE_ADDR *target)
          */
         if (instr.flow == direct_jump || instr.flow == direct_call)
             *target = (CORE_ADDR) instr.targets[0];
-        else
+        else {
+            ULONGEST target_reg;
+
             regcache_cooked_read_unsigned(regcache,
                                  arc_linux_binutils_reg_to_regnum(current_gdbarch,
                                  instr.register_for_indirect_jump),
-                                 target);
+                                 &target_reg);
+
+            *target = (CORE_ADDR) target_reg;
+        }
 
         /* for instructions with delay slots, the fall thru is not the instruction
          * immediately after the branch instruction, but the one after that
@@ -309,7 +314,7 @@ next_pc(CORE_ADDR pc, CORE_ADDR *fall_thru, CORE_ADDR *target)
      *        next_pc = lp_start;
      */
     {
-        unsigned int lp_end, lp_start, lp_count, status32;
+        ULONGEST lp_end, lp_start, lp_count, status32;
 
         regcache_cooked_read_unsigned(regcache, ARC_LP_START_REGNUM, &lp_start);
         regcache_cooked_read_unsigned(regcache, ARC_LP_END_REGNUM,   &lp_end);
@@ -320,7 +325,7 @@ next_pc(CORE_ADDR pc, CORE_ADDR *fall_thru, CORE_ADDR *target)
         {
             /* the instruction is in effect a jump back to the start of the loop */
             two_targets = TRUE;
-            *target     = lp_start;
+            *target     = (CORE_ADDR) lp_start;
         }
     }
 

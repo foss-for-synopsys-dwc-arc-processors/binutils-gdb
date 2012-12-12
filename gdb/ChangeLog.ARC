@@ -1,3 +1,8 @@
+2012-12-12  Mischa Jonker  <mischa.jonker@synopsys.com>
+	* arc-linux-tdep.c (next_pc): Fix regression for 32 bit architectures.
+	regcache_cooked_read_unsigned writes a ULONGEST instead of CORE_ADDR.
+	On 32 bit hosts, CORE_ADDR is 32 bit, but ULONGEST is not.
+
 2012-12-11  Mischa Jonker  <mischa.jonker@synopsys.com>
 	* arc-linux-tdep.c (next_pc): Let debug print output both jump targets
 
