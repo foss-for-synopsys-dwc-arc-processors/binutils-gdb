@@ -1,0 +1,31 @@
+2012-12-12  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	Manual merge from GDB 6.8 branch.
+
+	* ChangeLog.ARC, Makefile.in, arc-sim-registers.c,
+	* arc-sim-registers.h, arc-sim.h, arc5.c, arc6.c, arc7.c, arch.c,
+	* arch.h, config.in, configure, configure.ac, cpu5.c, cpu5.h,
+	* cpu6.c, cpu6.h, cpu7.c, cpu7.h, cpuall.h, decode5.c, decode5.h,
+	* decode6.c, decode6.h, decode7.c, decode7.h, devices.c, mloop5.in,
+	* mloop6.in, mloop7.in, model5.c, model6.c, model7.c, sem5-switch.c,
+	* sem5.c, sem6-switch.c, sem6.c, sem7-switch.c, sem7.c, sim-if.c,
+	* sim-main.h, syscall.h, tconfig.in, traps-linux.c, traps.c: Merge
+	as new files.
+
+2011-11-25  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* configure: Regenerate - with a temporary copy of
+	../common/aclocal.m4 to get the right autom4te.cache.
+
+2011-06-28  Brendan Kehoe  <brendan@zen.org>
+
+	* Makefile.in (stamp-{5,6,7}mloop): Add new '-shell $(SHELL)'
+	argument to each invocation.
+
+2010-04-02  Brendan Kehoe <brendan@zen.org>
+
+	* Makefile.in (cpu5.o, decode5.o, sem5.o, model5.o): Fix
+	dependency to use ARC5_INCLUDE_DEPS.
+
+	* ChangeLog.ARC: New file.
+
