@@ -1,3 +1,13 @@
+2012-12-13  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* arc-opc.c <arc_opcodes>: Initialize first agument cast to
+	unsigned char *.
+
+2012-12-12  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* arc-ext.c (arcExtMap_instName): set but unused variables
+	removed.
+
 2012-12-10  Mischa Jonker  <mischa.jonker@synopsys.com>
 
 	* arcompact-dis.c (dsmOneArcInst): Fix single stepping over J_S.D [r]
