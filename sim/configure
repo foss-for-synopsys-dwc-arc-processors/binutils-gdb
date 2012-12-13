@@ -635,6 +635,7 @@ LDFLAGS
 LIBS
 CPPFLAGS'
 ac_subdirs_all='aarch64
+arc
 arm
 avr
 bfin
@@ -3632,6 +3633,16 @@ case "${target}" in
 subdirs="$subdirs aarch64"
 
 
+       ;;
+   arc*-*-*)
+
+  sim_arch=arc
+
+
+subdirs="$subdirs arc"
+
+
+       sim_testsuite=yes
        ;;
    arm*-*-*)
 
