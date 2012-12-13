@@ -1829,6 +1829,10 @@ case "${target}" in
    aarch64*-*-*)
        sim_arch=aarch64
        ;;
+   arc*-*-*)
+       sim_arch=arc
+       sim_testsuite=yes
+       ;;
    arm*-*-*)
        sim_arch=arm
        ;;
