@@ -634,7 +634,8 @@ CFLAGS
 LDFLAGS
 LIBS
 CPPFLAGS'
-ac_subdirs_all='arm
+ac_subdirs_all='arc
+arm
 avr
 bfin
 cr16
@@ -3625,12 +3626,20 @@ sim_common=yes
 sim_igen=no
 sim_arch=
 case "${target}" in
+   arc*-*-*)
+
+  sim_arch=arc
+
+
+subdirs="$subdirs arc"
+
+
+       sim_testsuite=yes
+       ;;
    arm*-*-*)
 
   sim_arch=arm
-
-
-subdirs="$subdirs arm"
+  subdirs="$subdirs arm"
 
 
        ;;
