@@ -17,6 +17,10 @@ case "${target}" in
    aarch64*-*-*)
        SIM_ARCH(aarch64)
        ;;
+   arc*-*-*)
+       SIM_ARCH(arc)
+       sim_testsuite=yes
+       ;;
    arm*-*-*)
        SIM_ARCH(arm)
        ;;
