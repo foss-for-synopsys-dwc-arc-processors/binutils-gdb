@@ -2215,12 +2215,12 @@ elf_arc_relocate_section (bfd *output_bfd,
 	case R_ARC_SDA16_LD2:
 	  {
 	    /* Get the base of .sdata section */
-	    struct elf_link_hash_entry *h;
+	    struct elf_link_hash_entry *h2;
 	    
-	    h = elf_link_hash_lookup (elf_hash_table (info), "__SDATA_BEGIN__",
+	    h2 = elf_link_hash_lookup (elf_hash_table (info), "__SDATA_BEGIN__",
 				      FALSE, FALSE, TRUE);
 	    
-	    if (h == NULL || h->root.type == bfd_link_hash_undefined)
+	    if (h2 == NULL || h2->root.type == bfd_link_hash_undefined)
 	    {
 	      (*_bfd_error_handler)("Error: Linker symbol __SDATA_BEGIN__ not found");
 	      bfd_set_error (bfd_error_bad_value);
@@ -2229,8 +2229,8 @@ elf_arc_relocate_section (bfd *output_bfd,
 
 	    /* Subtract the address of __SDATA_BEGIN__ from the relocation value */
 	    ///	    fprintf (stderr, "relocation BEFORE = 0x%x SDATA_BEGIN = 0x%x\n", relocation, h->root.u.def.value);
-	    relocation -= (h->root.u.def.value + h->root.u.def.section->output_section->vma);
-	    //	    fprintf (stderr, "relocation AFTER = 0x%x SDATA_BEGIN = 0x%x\n", relocation, h->root.u.def.value);
+	    relocation -= (h2->root.u.def.value + h2->root.u.def.section->output_section->vma);
+	    //	    fprintf (stderr, "relocation AFTER = 0x%x SDATA_BEGIN = 0x%x\n", relocation, h2->root.u.def.value);
 	    break;
 	  }
 	default:
@@ -2560,7 +2560,7 @@ elf_arc_finish_dynamic_sections (bfd *output_bfd,struct bfd_link_info *info)
   bfd *dynobj;
   asection *sgot;
   asection *sdyn;
-  asection *sec_ptr;
+  asection *asec_ptr;
   char * oldname;
 
   dynobj = elf_hash_table (info)->dynobj;
@@ -2613,10 +2613,10 @@ elf_arc_finish_dynamic_sections (bfd *output_bfd,struct bfd_link_info *info)
 			|| h->root.type == bfd_link_hash_defweak))
 		  {
 		    dyn.d_un.d_val = h->root.u.def.value;
-		    sec_ptr = h->root.u.def.section;
-		    if (sec_ptr->output_section != NULL)
-		      dyn.d_un.d_val += (sec_ptr->output_section->vma
-					 + sec_ptr->output_offset);
+		    asec_ptr = h->root.u.def.section;
+		    if (asec_ptr->output_section != NULL)
+		      dyn.d_un.d_val += (asec_ptr->output_section->vma
+					 + asec_ptr->output_offset);
 		    else
 		      {
 			/* The symbol is imported from another shared
@@ -2642,10 +2642,10 @@ elf_arc_finish_dynamic_sections (bfd *output_bfd,struct bfd_link_info *info)
 			    || h->root.type == bfd_link_hash_defweak))
 		      {
 			dyn.d_un.d_val = h->root.u.def.value;
-			sec_ptr = h->root.u.def.section;
-			if (sec_ptr->output_section != NULL)
-			  dyn.d_un.d_val += (sec_ptr->output_section->vma
-					     + sec_ptr->output_offset);
+			asec_ptr = h->root.u.def.section;
+			if (asec_ptr->output_section != NULL)
+			  dyn.d_un.d_val += (asec_ptr->output_section->vma
+					     + asec_ptr->output_offset);
 			else
 			  {
 			    /* The symbol is imported from another shared
