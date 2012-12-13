@@ -1,3 +1,10 @@
+2012-12-13  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	* aclocal.m4: New file generated.
+	* config.in, configure: Regenerated.
+	* configure.ac: Updated for autoconf 2.64. Use
+	common/acinclude.m4.
+
 2012-12-12  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	Manual merge from GDB 6.8 branch.

@@ -1823,6 +1823,10 @@ sim_common=yes
 sim_igen=no
 sim_arch=
 case "${target}" in
+   arc*-*-*)
+       sim_arch=arc
+       sim_testsuite=yes
+       ;;
    arm*-*-*)
        sim_arch=arm
        sim_testsuite=yes
