@@ -16,6 +16,10 @@ sim_common=yes
 sim_igen=no
 sim_arch=
 case "${target}" in
+   arc*-*-*)
+       SIM_ARCH(arc)
+       sim_testsuite=yes
+       ;;
    arm*-*-*)
        SIM_ARCH(arm)
        sim_testsuite=yes
