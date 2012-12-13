@@ -1,3 +1,8 @@
+2012-12-12  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	* elf32-arc.c (elf_arc_relocate_section)
+	(elf_arf_finish_dynamic_sections): Shadowed variables renamed.
+
 2012-11-26  Vineet Gupta <vgupta@synopsys.com>
 
 	* elf32-arc.c: ELF_MAXPAGESIZE set to 8k
