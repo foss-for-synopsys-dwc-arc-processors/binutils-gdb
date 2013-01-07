@@ -1,3 +1,7 @@
+2013-01-07  Simon Cook  <simon.cook@embecosm.com>
+
+	* elf32-arc.c: elf_backend_can_gc_sections.
+
 2012-04-17  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* dwarf2.c (read_rangelist): Apply sanity check to offset.
