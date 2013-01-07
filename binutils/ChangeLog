@@ -1,3 +1,8 @@
+2013-01-07  Patrice Dumas  <pertusus@free.fr>
+
+	* doc/binutils.texi: Fix ordering of top level nodes.
+	Replace erroneous uses of @itemx with @item.
+
 2013-01-22  Alan Modra  <amodra@gmail.com>
 
 	Apply mainline patches
