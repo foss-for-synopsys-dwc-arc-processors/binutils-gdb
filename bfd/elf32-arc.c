@@ -3172,6 +3172,70 @@ elf_arc_size_dynamic_sections (bfd *output_bfd,
   return TRUE;
 }
 
+/* Update the got entry reference counts for the section being removed.  */
+
+static bfd_boolean
+elf32_arc_gc_sweep_hook (bfd *                     abfd,
+			 struct bfd_link_info *    info,
+			 asection *                sec,
+			 const Elf_Internal_Rela * relocs)
+{
+  Elf_Internal_Shdr *symtab_hdr;
+  struct elf_link_hash_entry **sym_hashes;
+  bfd_signed_vma *local_got_refcounts;
+  const Elf_Internal_Rela *rel, *relend;
+
+  if (info->relocatable)
+    return TRUE;
+
+  elf_section_data (sec)->local_dynrel = NULL;
+
+  symtab_hdr = & elf_symtab_hdr (abfd);
+  sym_hashes = elf_sym_hashes (abfd);
+  local_got_refcounts = elf_local_got_refcounts (abfd);
+
+  relend = relocs + sec->reloc_count;
+  for (rel = relocs; rel < relend; rel++)
+    {
+      unsigned long r_symndx;
+      struct elf_link_hash_entry *h = NULL;
+      int r_type;
+
+      r_symndx = ELF32_R_SYM (rel->r_info);
+      if (r_symndx >= symtab_hdr->sh_info)
+	{
+	  h = sym_hashes[r_symndx - symtab_hdr->sh_info];
+	  while (h->root.type == bfd_link_hash_indirect
+		 || h->root.type == bfd_link_hash_warning)
+	    h = (struct elf_link_hash_entry *) h->root.u.i.link;
+	}
+
+      r_type = ELF32_R_TYPE (rel->r_info);
+
+      switch (r_type)
+	{
+	  /* FIXME: Do we need other relocs here? */
+	  case R_ARC_GOT32:
+	    if (h != NULL)
+	      {
+	        if (h->got.refcount > 0)
+	  	  h->got.refcount--;
+	      }
+	    else
+	      {
+	        if (local_got_refcounts && local_got_refcounts[r_symndx] > 0)
+		  local_got_refcounts[r_symndx]--;
+	      }
+	    break;
+
+	  default:
+	    break;
+	}
+    }
+
+  return TRUE;
+}
+
 #define TARGET_LITTLE_SYM	bfd_elf32_littlearc_vec
 #define TARGET_LITTLE_NAME	"elf32-littlearc"
 #define TARGET_BIG_SYM		bfd_elf32_bigarc_vec
@@ -3200,6 +3264,8 @@ elf_arc_size_dynamic_sections (bfd *output_bfd,
 
 #define elf_backend_size_dynamic_sections    elf_arc_size_dynamic_sections
 
+#define elf_backend_gc_sweep_hook	elf32_arc_gc_sweep_hook
+#define elf_backend_can_gc_sections    1
 #define elf_backend_want_got_plt 1
 #define elf_backend_plt_readonly 1
 #define elf_backend_want_plt_sym 0
