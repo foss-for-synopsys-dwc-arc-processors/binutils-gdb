@@ -1030,9 +1030,29 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
         {
 	case 26: /* 0x1a */ instrName = "rtsc"; break;
         default:
-	  instrName = "??? (2[3])";
-	  state->flow = invalid_instr;
-	  break;
+          decodingClass = 0;
+          subopcode = BITS(state->words[0],16,21);
+          switch (subopcode)
+            {
+            case 32: instrName = "pkqb"; break;
+            case 33: instrName = "upkqb"; break;
+            case 34: instrName = "xpkqb"; break;
+            case 35: instrName = "avgqb"; break;
+            case 36: instrName = "addqbs"; break;
+            case 37: instrName = "mpyqb"; break;
+            case 38: instrName = "fxtr"; break;
+            case 39: instrName = "iaddr"; break;
+            case 40: instrName = "acm"; break;
+            case 41: instrName = "sfxtr"; break;
+            case 42: instrName = "clamp"; break;
+            case 43: instrName = "mpyu16"; break;
+            case 44: instrName = "mpy16"; break;
+            default:
+	      instrName = "??? (2[3])";
+	      state->flow = invalid_instr;
+	      break;
+          }
+          break;
 	}
     break;
   /* END ARC LOCAL */

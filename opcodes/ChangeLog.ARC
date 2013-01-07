@@ -1,3 +1,9 @@
+2013-01-07  Simon Cook  <simon.cook@embecosm.com>
+
+	* arc-opc.c (arc_opcodes): Added assembly of Android instructions.
+	* arcompact-dis.c (dsmOneArcInst): Added disassembly of Android
+	instructions.
+
 2012-12-10  Mischa Jonker  <mischa.jonker@synopsys.com>
 
 	* arcompact-dis.c (dsmOneArcInst): Fix single stepping over J_S.D [r]
