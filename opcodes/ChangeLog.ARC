@@ -1,3 +1,9 @@
+2013-01-07  Simon Cook  <simon.cook@embecosm.com>
+
+	* arc-opc.c (arc_opcodes): Added assembly of Android instructions.
+	* arcompact-dis.c (dsmOneArcInst): Added disassembly of Android
+	instructions.
+
 2012-12-13  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* arc-opc.c <arc_opcodes>: Initialize first agument cast to
