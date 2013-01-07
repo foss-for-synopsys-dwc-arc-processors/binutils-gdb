@@ -1,3 +1,7 @@
+2013-01-07  Simon Cook  <simon.cook@embecosm.com>
+
+	* elf32-arc.c: elf_backend_can_gc_sections.
+
 2012-11-26  Vineet Gupta <vgupta@synopsys.com>
 
 	* elf32-arc.c: ELF_MAXPAGESIZE set to 8k

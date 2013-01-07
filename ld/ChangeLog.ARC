@@ -1,3 +1,9 @@
+2013-01-07  Simon Cook  <simon.cook@embecosm.com>
+
+	* testsuite/ld-selective/sel-dump.exp: Remove arc from xfail.
+	* testsuite/ld-selective/selective.exp: Likewise.
+
+
 2012-10-19  Simon Cook  <simon.cook@embecosm.com>
 
 	* scripttempl/arclinux.sc: Set default linker endianness based on

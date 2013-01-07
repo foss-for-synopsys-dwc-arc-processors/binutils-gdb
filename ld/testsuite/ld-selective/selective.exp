@@ -29,7 +29,7 @@ if ![is_elf_format] {
 
 # These targets do not support selective linking
 if {[istarget "alpha*-*-*"] || [istarget "am33*-*-*"] ||
-    [istarget "arc-*-*"] || [istarget "d30v-*-*"] ||
+    [istarget "d30v-*-*"] ||
     [istarget "dlx-*-*"] || [istarget "hppa*64*-*-*"] ||
     [istarget "i370-*-*"] || [istarget "i860-*-*"] ||
     [istarget "i960-*-*"] || [istarget "ia64-*-*"] ||
@@ -101,7 +101,7 @@ foreach testitem $seltests {
     foreach xfail_target $xfails {
 	setup_xfail $xfail_target
     }
-    setup_xfail "arc*-*" "d30v*-*" "dlx*-*" "i370*-*" "i860*-*"
+    setup_xfail "d30v*-*" "dlx*-*" "i370*-*" "i860*-*"
     setup_xfail "i960*-*" "mn10200-*" "or32-*" "pj-*"
 
     # It's either C or C++ at the moment.
