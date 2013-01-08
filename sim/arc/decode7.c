@@ -14343,7 +14343,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
     SI f_rel10;
 
     f_cond_i2 = EXTRACT_MSB0_UINT (insn, 32, 5, 2);
-    f_rel10 = ((((EXTRACT_MSB0_INT (insn, 32, 7, 9)) << (1))) + (((pc) & (-4))));
+    f_rel10 = ((((EXTRACT_MSB0_SINT (insn, 32, 7, 9)) << (1))) + (((pc) & (-4))));
 
   /* Record the fields for the semantic handler.  */
   FLD (f_cond_i2) = f_cond_i2;
@@ -14369,7 +14369,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
     SI f_rel7;
 
     f_cond_i3 = EXTRACT_MSB0_UINT (insn, 32, 7, 3);
-    f_rel7 = ((((EXTRACT_MSB0_INT (insn, 32, 10, 6)) << (1))) + (((pc) & (-4))));
+    f_rel7 = ((((EXTRACT_MSB0_SINT (insn, 32, 10, 6)) << (1))) + (((pc) & (-4))));
 
   /* Record the fields for the semantic handler.  */
   FLD (f_cond_i3) = f_cond_i3;
@@ -14397,7 +14397,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
 
     f_op__b = EXTRACT_MSB0_UINT (insn, 32, 5, 3);
     f_brscond = EXTRACT_MSB0_UINT (insn, 32, 8, 1);
-    f_rel8 = ((((EXTRACT_MSB0_INT (insn, 32, 9, 7)) << (1))) + (((pc) & (-4))));
+    f_rel8 = ((((EXTRACT_MSB0_SINT (insn, 32, 9, 7)) << (1))) + (((pc) & (-4))));
 
   /* Record the fields for the semantic handler.  */
   FLD (f_op__b) = f_op__b;
@@ -14426,7 +14426,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
     INT f_rel21;
 
     f_d21l = EXTRACT_MSB0_UINT (insn, 32, 5, 10);
-    f_d21h = EXTRACT_MSB0_INT (insn, 32, 16, 10);
+    f_d21h = EXTRACT_MSB0_SINT (insn, 32, 16, 10);
     f_cond_Q = EXTRACT_MSB0_UINT (insn, 32, 27, 5);
 {
   f_rel21 = ((((((f_d21l) << (1))) | (((f_d21h) << (11))))) + (((pc) & (-4))));
@@ -14459,7 +14459,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
 
     f_d21l = EXTRACT_MSB0_UINT (insn, 32, 5, 10);
     f_d25m = EXTRACT_MSB0_UINT (insn, 32, 16, 10);
-    f_d25h = EXTRACT_MSB0_INT (insn, 32, 28, 4);
+    f_d25h = EXTRACT_MSB0_SINT (insn, 32, 28, 4);
 {
   f_rel25 = ((((((((f_d21l) << (1))) | (((f_d25m) << (11))))) | (((f_d25h) << (21))))) + (((pc) & (-4))));
 }
@@ -14494,7 +14494,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
 
     f_op__b = EXTRACT_MSB0_UINT (insn, 32, 5, 3);
     f_d9l = EXTRACT_MSB0_UINT (insn, 32, 8, 7);
-    f_d9h = EXTRACT_MSB0_INT (insn, 32, 16, 1);
+    f_d9h = EXTRACT_MSB0_SINT (insn, 32, 16, 1);
     f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
     f_op_C = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
     f_brcond = EXTRACT_MSB0_UINT (insn, 32, 28, 4);
@@ -14538,7 +14538,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
 
     f_op__b = EXTRACT_MSB0_UINT (insn, 32, 5, 3);
     f_d9l = EXTRACT_MSB0_UINT (insn, 32, 8, 7);
-    f_d9h = EXTRACT_MSB0_INT (insn, 32, 16, 1);
+    f_d9h = EXTRACT_MSB0_SINT (insn, 32, 16, 1);
     f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
     f_u6 = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
     f_brcond = EXTRACT_MSB0_UINT (insn, 32, 28, 4);
@@ -14573,7 +14573,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
 #define FLD(f) abuf->fields.sfmt_bl_s.f
     SI f_rel13bl;
 
-    f_rel13bl = ((((EXTRACT_MSB0_INT (insn, 32, 5, 11)) << (2))) + (((pc) & (-4))));
+    f_rel13bl = ((((EXTRACT_MSB0_SINT (insn, 32, 5, 11)) << (2))) + (((pc) & (-4))));
 
   /* Record the fields for the semantic handler.  */
   FLD (i_label13a) = f_rel13bl;
@@ -14600,7 +14600,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
     INT f_rel21bl;
 
     f_d21bl = EXTRACT_MSB0_UINT (insn, 32, 5, 9);
-    f_d21h = EXTRACT_MSB0_INT (insn, 32, 16, 10);
+    f_d21h = EXTRACT_MSB0_SINT (insn, 32, 16, 10);
     f_cond_Q = EXTRACT_MSB0_UINT (insn, 32, 27, 5);
 {
   f_rel21bl = ((((((f_d21bl) << (2))) | (((f_d21h) << (11))))) + (((pc) & (-4))));
@@ -14633,7 +14633,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
 
     f_d21bl = EXTRACT_MSB0_UINT (insn, 32, 5, 9);
     f_d25m = EXTRACT_MSB0_UINT (insn, 32, 16, 10);
-    f_d25h = EXTRACT_MSB0_INT (insn, 32, 28, 4);
+    f_d25h = EXTRACT_MSB0_SINT (insn, 32, 28, 4);
 {
   f_rel25bl = ((((((((f_d21bl) << (2))) | (((f_d25m) << (11))))) | (((f_d25h) << (21))))) + (((pc) & (-4))));
 }
@@ -14664,7 +14664,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
 
     f_d21bl = EXTRACT_MSB0_UINT (insn, 32, 5, 9);
     f_d25m = EXTRACT_MSB0_UINT (insn, 32, 16, 10);
-    f_d25h = EXTRACT_MSB0_INT (insn, 32, 28, 4);
+    f_d25h = EXTRACT_MSB0_SINT (insn, 32, 28, 4);
 {
   f_rel25bl = ((((((((f_d21bl) << (2))) | (((f_d25m) << (11))))) | (((f_d25h) << (21))))) + (((pc) & (-4))));
 }
@@ -14698,7 +14698,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
 
     f_op__b = EXTRACT_MSB0_UINT (insn, 32, 5, 3);
     f_u8 = EXTRACT_MSB0_UINT (insn, 32, 8, 8);
-    f_d9h = EXTRACT_MSB0_INT (insn, 32, 16, 1);
+    f_d9h = EXTRACT_MSB0_SINT (insn, 32, 16, 1);
     f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
     f_op_A = EXTRACT_MSB0_UINT (insn, 32, 26, 6);
 {
@@ -14739,7 +14739,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
 
     f_op__b = EXTRACT_MSB0_UINT (insn, 32, 5, 3);
     f_u8 = EXTRACT_MSB0_UINT (insn, 32, 8, 8);
-    f_d9h = EXTRACT_MSB0_INT (insn, 32, 16, 1);
+    f_d9h = EXTRACT_MSB0_SINT (insn, 32, 16, 1);
     f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
     f_op_A = EXTRACT_MSB0_UINT (insn, 32, 26, 6);
 {
@@ -14908,7 +14908,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
 #define FLD(f) abuf->fields.sfmt_ld_s_gprel.f
     SI f_s9x4;
 
-    f_s9x4 = ((EXTRACT_MSB0_INT (insn, 32, 7, 9)) << (2));
+    f_s9x4 = ((EXTRACT_MSB0_SINT (insn, 32, 7, 9)) << (2));
 
   /* Record the fields for the semantic handler.  */
   FLD (f_s9x4) = f_s9x4;
@@ -14959,7 +14959,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
 
     f_op__b = EXTRACT_MSB0_UINT (insn, 32, 5, 3);
     f_u8 = EXTRACT_MSB0_UINT (insn, 32, 8, 8);
-    f_d9h = EXTRACT_MSB0_INT (insn, 32, 16, 1);
+    f_d9h = EXTRACT_MSB0_SINT (insn, 32, 16, 1);
     f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
     f_op_A = EXTRACT_MSB0_UINT (insn, 32, 26, 6);
 {
@@ -15000,7 +15000,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
 
     f_op__b = EXTRACT_MSB0_UINT (insn, 32, 5, 3);
     f_u8 = EXTRACT_MSB0_UINT (insn, 32, 8, 8);
-    f_d9h = EXTRACT_MSB0_INT (insn, 32, 16, 1);
+    f_d9h = EXTRACT_MSB0_SINT (insn, 32, 16, 1);
     f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
     f_op_A = EXTRACT_MSB0_UINT (insn, 32, 26, 6);
 {
@@ -15236,7 +15236,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
 #define FLD(f) abuf->fields.sfmt_ldb_s_gprel.f
     INT f_s9x1;
 
-    f_s9x1 = EXTRACT_MSB0_INT (insn, 32, 7, 9);
+    f_s9x1 = EXTRACT_MSB0_SINT (insn, 32, 7, 9);
 
   /* Record the fields for the semantic handler.  */
   FLD (f_s9x1) = f_s9x1;
@@ -15261,7 +15261,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
 
     f_op__b = EXTRACT_MSB0_UINT (insn, 32, 5, 3);
     f_u8 = EXTRACT_MSB0_UINT (insn, 32, 8, 8);
-    f_d9h = EXTRACT_MSB0_INT (insn, 32, 16, 1);
+    f_d9h = EXTRACT_MSB0_SINT (insn, 32, 16, 1);
     f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
     f_op_A = EXTRACT_MSB0_UINT (insn, 32, 26, 6);
 {
@@ -15302,7 +15302,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
 
     f_op__b = EXTRACT_MSB0_UINT (insn, 32, 5, 3);
     f_u8 = EXTRACT_MSB0_UINT (insn, 32, 8, 8);
-    f_d9h = EXTRACT_MSB0_INT (insn, 32, 16, 1);
+    f_d9h = EXTRACT_MSB0_SINT (insn, 32, 16, 1);
     f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
     f_op_A = EXTRACT_MSB0_UINT (insn, 32, 26, 6);
 {
@@ -15451,7 +15451,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
 #define FLD(f) abuf->fields.sfmt_ldw_s_gprel.f
     SI f_s9x2;
 
-    f_s9x2 = ((EXTRACT_MSB0_INT (insn, 32, 7, 9)) << (1));
+    f_s9x2 = ((EXTRACT_MSB0_SINT (insn, 32, 7, 9)) << (1));
 
   /* Record the fields for the semantic handler.  */
   FLD (f_s9x2) = f_s9x2;
@@ -15476,7 +15476,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
 
     f_op__b = EXTRACT_MSB0_UINT (insn, 32, 5, 3);
     f_u8 = EXTRACT_MSB0_UINT (insn, 32, 8, 8);
-    f_d9h = EXTRACT_MSB0_INT (insn, 32, 16, 1);
+    f_d9h = EXTRACT_MSB0_SINT (insn, 32, 16, 1);
     f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
     f_op_C = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
 {
@@ -15517,7 +15517,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
 
     f_op__b = EXTRACT_MSB0_UINT (insn, 32, 5, 3);
     f_u8 = EXTRACT_MSB0_UINT (insn, 32, 8, 8);
-    f_d9h = EXTRACT_MSB0_INT (insn, 32, 16, 1);
+    f_d9h = EXTRACT_MSB0_SINT (insn, 32, 16, 1);
     f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
     f_op_C = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
 {
@@ -15601,7 +15601,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
 
     f_op__b = EXTRACT_MSB0_UINT (insn, 32, 5, 3);
     f_u8 = EXTRACT_MSB0_UINT (insn, 32, 8, 8);
-    f_d9h = EXTRACT_MSB0_INT (insn, 32, 16, 1);
+    f_d9h = EXTRACT_MSB0_SINT (insn, 32, 16, 1);
     f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
     f_op_C = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
 {
@@ -15642,7 +15642,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
 
     f_op__b = EXTRACT_MSB0_UINT (insn, 32, 5, 3);
     f_u8 = EXTRACT_MSB0_UINT (insn, 32, 8, 8);
-    f_d9h = EXTRACT_MSB0_INT (insn, 32, 16, 1);
+    f_d9h = EXTRACT_MSB0_SINT (insn, 32, 16, 1);
     f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
     f_op_C = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
 {
@@ -15758,7 +15758,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
 
     f_op__b = EXTRACT_MSB0_UINT (insn, 32, 5, 3);
     f_u8 = EXTRACT_MSB0_UINT (insn, 32, 8, 8);
-    f_d9h = EXTRACT_MSB0_INT (insn, 32, 16, 1);
+    f_d9h = EXTRACT_MSB0_SINT (insn, 32, 16, 1);
     f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
     f_op_C = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
 {
@@ -15799,7 +15799,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
 
     f_op__b = EXTRACT_MSB0_UINT (insn, 32, 5, 3);
     f_u8 = EXTRACT_MSB0_UINT (insn, 32, 8, 8);
-    f_d9h = EXTRACT_MSB0_INT (insn, 32, 16, 1);
+    f_d9h = EXTRACT_MSB0_SINT (insn, 32, 16, 1);
     f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
     f_op_C = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
 {
@@ -15865,7 +15865,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
     f_F = EXTRACT_MSB0_UINT (insn, 32, 16, 1);
     f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
     f_u6 = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
-    f_s12h = EXTRACT_MSB0_INT (insn, 32, 26, 6);
+    f_s12h = EXTRACT_MSB0_SINT (insn, 32, 26, 6);
 {
   f_op_B = ((f_op__b) | (((f_B_5_3) << (3))));
 }
@@ -16163,7 +16163,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
 #define FLD(f) abuf->fields.sfmt_ld_s_gprel.f
     SI f_s9x4;
 
-    f_s9x4 = ((EXTRACT_MSB0_INT (insn, 32, 7, 9)) << (2));
+    f_s9x4 = ((EXTRACT_MSB0_SINT (insn, 32, 7, 9)) << (2));
 
   /* Record the fields for the semantic handler.  */
   FLD (f_s9x4) = f_s9x4;
@@ -16210,7 +16210,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
     f_F = EXTRACT_MSB0_UINT (insn, 32, 16, 1);
     f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
     f_u6 = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
-    f_s12h = EXTRACT_MSB0_INT (insn, 32, 26, 6);
+    f_s12h = EXTRACT_MSB0_SINT (insn, 32, 26, 6);
 {
   f_op_B = ((f_op__b) | (((f_B_5_3) << (3))));
 }
@@ -16460,7 +16460,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
     f_F = EXTRACT_MSB0_UINT (insn, 32, 16, 1);
     f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
     f_u6 = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
-    f_s12h = EXTRACT_MSB0_INT (insn, 32, 26, 6);
+    f_s12h = EXTRACT_MSB0_SINT (insn, 32, 26, 6);
 {
   f_op_B = ((f_op__b) | (((f_B_5_3) << (3))));
 }
@@ -16653,7 +16653,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
     f_F = EXTRACT_MSB0_UINT (insn, 32, 16, 1);
     f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
     f_u6 = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
-    f_s12h = EXTRACT_MSB0_INT (insn, 32, 26, 6);
+    f_s12h = EXTRACT_MSB0_SINT (insn, 32, 26, 6);
 {
   f_op_B = ((f_op__b) | (((f_B_5_3) << (3))));
 }
@@ -16898,7 +16898,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
     f_op__b = EXTRACT_MSB0_UINT (insn, 32, 5, 3);
     f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
     f_u6 = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
-    f_s12h = EXTRACT_MSB0_INT (insn, 32, 26, 6);
+    f_s12h = EXTRACT_MSB0_SINT (insn, 32, 26, 6);
 {
   f_op_B = ((f_op__b) | (((f_B_5_3) << (3))));
 }
@@ -17090,7 +17090,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
     f_op__b = EXTRACT_MSB0_UINT (insn, 32, 5, 3);
     f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
     f_u6 = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
-    f_s12h = EXTRACT_MSB0_INT (insn, 32, 26, 6);
+    f_s12h = EXTRACT_MSB0_SINT (insn, 32, 26, 6);
 {
   f_op_B = ((f_op__b) | (((f_B_5_3) << (3))));
 }
@@ -17336,7 +17336,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
     f_F = EXTRACT_MSB0_UINT (insn, 32, 16, 1);
     f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
     f_u6 = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
-    f_s12h = EXTRACT_MSB0_INT (insn, 32, 26, 6);
+    f_s12h = EXTRACT_MSB0_SINT (insn, 32, 26, 6);
 {
   f_op_B = ((f_op__b) | (((f_B_5_3) << (3))));
 }
@@ -17687,7 +17687,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
     f_F = EXTRACT_MSB0_UINT (insn, 32, 16, 1);
     f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
     f_u6 = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
-    f_s12h = EXTRACT_MSB0_INT (insn, 32, 26, 6);
+    f_s12h = EXTRACT_MSB0_SINT (insn, 32, 26, 6);
 {
   f_op_B = ((f_op__b) | (((f_B_5_3) << (3))));
 }
@@ -17860,7 +17860,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
     f_op__b = EXTRACT_MSB0_UINT (insn, 32, 5, 3);
     f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
     f_u6 = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
-    f_s12h = EXTRACT_MSB0_INT (insn, 32, 26, 6);
+    f_s12h = EXTRACT_MSB0_SINT (insn, 32, 26, 6);
 {
   f_op_B = ((f_op__b) | (((f_B_5_3) << (3))));
 }
@@ -18032,7 +18032,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
     f_op__b = EXTRACT_MSB0_UINT (insn, 32, 5, 3);
     f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
     f_u6 = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
-    f_s12h = EXTRACT_MSB0_INT (insn, 32, 26, 6);
+    f_s12h = EXTRACT_MSB0_SINT (insn, 32, 26, 6);
 {
   f_op_B = ((f_op__b) | (((f_B_5_3) << (3))));
 }
@@ -18323,7 +18323,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
     f_op__b = EXTRACT_MSB0_UINT (insn, 32, 5, 3);
     f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
     f_u6 = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
-    f_s12h = EXTRACT_MSB0_INT (insn, 32, 26, 6);
+    f_s12h = EXTRACT_MSB0_SINT (insn, 32, 26, 6);
 {
   f_op_B = ((f_op__b) | (((f_B_5_3) << (3))));
 }
@@ -18396,7 +18396,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
     f_op__b = EXTRACT_MSB0_UINT (insn, 32, 5, 3);
     f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
     f_u6 = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
-    f_s12h = EXTRACT_MSB0_INT (insn, 32, 26, 6);
+    f_s12h = EXTRACT_MSB0_SINT (insn, 32, 26, 6);
 {
   f_op_B = ((f_op__b) | (((f_B_5_3) << (3))));
 }
@@ -18600,7 +18600,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
     f_op__b = EXTRACT_MSB0_UINT (insn, 32, 5, 3);
     f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
     f_u6 = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
-    f_s12h = EXTRACT_MSB0_INT (insn, 32, 26, 6);
+    f_s12h = EXTRACT_MSB0_SINT (insn, 32, 26, 6);
 {
   f_op_B = ((f_op__b) | (((f_B_5_3) << (3))));
 }
@@ -18702,7 +18702,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
     f_op__b = EXTRACT_MSB0_UINT (insn, 32, 5, 3);
     f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
     f_u6 = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
-    f_s12h = EXTRACT_MSB0_INT (insn, 32, 26, 6);
+    f_s12h = EXTRACT_MSB0_SINT (insn, 32, 26, 6);
 {
   f_op_B = ((f_op__b) | (((f_B_5_3) << (3))));
 }
@@ -19395,7 +19395,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
     f_F = EXTRACT_MSB0_UINT (insn, 32, 16, 1);
     f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
     f_u6 = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
-    f_s12h = EXTRACT_MSB0_INT (insn, 32, 26, 6);
+    f_s12h = EXTRACT_MSB0_SINT (insn, 32, 26, 6);
 {
   f_op_B = ((f_op__b) | (((f_B_5_3) << (3))));
 }
@@ -19586,7 +19586,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
     f_op__b = EXTRACT_MSB0_UINT (insn, 32, 5, 3);
     f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
     f_u6 = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
-    f_s12h = EXTRACT_MSB0_INT (insn, 32, 26, 6);
+    f_s12h = EXTRACT_MSB0_SINT (insn, 32, 26, 6);
 {
   f_op_B = ((f_op__b) | (((f_B_5_3) << (3))));
 }
@@ -19780,7 +19780,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
     f_F = EXTRACT_MSB0_UINT (insn, 32, 16, 1);
     f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
     f_u6 = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
-    f_s12h = EXTRACT_MSB0_INT (insn, 32, 26, 6);
+    f_s12h = EXTRACT_MSB0_SINT (insn, 32, 26, 6);
 {
   f_op_B = ((f_op__b) | (((f_B_5_3) << (3))));
 }
@@ -19973,7 +19973,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
     f_F = EXTRACT_MSB0_UINT (insn, 32, 16, 1);
     f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
     f_u6 = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
-    f_s12h = EXTRACT_MSB0_INT (insn, 32, 26, 6);
+    f_s12h = EXTRACT_MSB0_SINT (insn, 32, 26, 6);
 {
   f_op_B = ((f_op__b) | (((f_B_5_3) << (3))));
 }
@@ -20166,7 +20166,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
     f_F = EXTRACT_MSB0_UINT (insn, 32, 16, 1);
     f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
     f_u6 = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
-    f_s12h = EXTRACT_MSB0_INT (insn, 32, 26, 6);
+    f_s12h = EXTRACT_MSB0_SINT (insn, 32, 26, 6);
 {
   f_op_B = ((f_op__b) | (((f_B_5_3) << (3))));
 }
@@ -20712,7 +20712,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
     f_F = EXTRACT_MSB0_UINT (insn, 32, 16, 1);
     f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
     f_u6 = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
-    f_s12h = EXTRACT_MSB0_INT (insn, 32, 26, 6);
+    f_s12h = EXTRACT_MSB0_SINT (insn, 32, 26, 6);
 {
   f_op_B = ((f_op__b) | (((f_B_5_3) << (3))));
 }
@@ -20905,7 +20905,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
     f_F = EXTRACT_MSB0_UINT (insn, 32, 16, 1);
     f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
     f_u6 = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
-    f_s12h = EXTRACT_MSB0_INT (insn, 32, 26, 6);
+    f_s12h = EXTRACT_MSB0_SINT (insn, 32, 26, 6);
 {
   f_op_B = ((f_op__b) | (((f_B_5_3) << (3))));
 }
@@ -21098,7 +21098,7 @@ arc700f_decode (SIM_CPU *current_cpu, IADDR pc,
     f_F = EXTRACT_MSB0_UINT (insn, 32, 16, 1);
     f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
     f_u6 = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
-    f_s12h = EXTRACT_MSB0_INT (insn, 32, 26, 6);
+    f_s12h = EXTRACT_MSB0_SINT (insn, 32, 26, 6);
 {
   f_op_B = ((f_op__b) | (((f_B_5_3) << (3))));
 }
