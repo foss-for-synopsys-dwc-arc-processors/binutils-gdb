@@ -1,3 +1,8 @@
+2013-01-08  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	* common/gennltvals.sh: Add "arc" as a target.
+	* common/nltvals.sh: Regenerated.
+
 2012-12-13  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* configure: Regenerated

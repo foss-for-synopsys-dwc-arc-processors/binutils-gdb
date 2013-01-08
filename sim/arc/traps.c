@@ -21,7 +21,7 @@
 #include "targ-vals.h"
 #include <sys/stat.h>
 #include <sys/time.h>
-#include "gdb/target-io/arc.h"
+#include "target-io.h"
 
 #define TRAP_FLUSH_CACHE 12
 
@@ -266,25 +266,33 @@ arc_syscall (host_callback *cb, CB_SYSCALL *s)
 	char *path;
 
       case TARGET_SYS_stat:
-	errcode = get_path (cb, s, s->arg1, &path);
-	if (errcode)
-	  {
-	    s->result = -1;
-	    s->errcode = cb_host_to_target_errno (cb, errcode);
-	    break;
-	  }
-	retval = stat (path, &st);
-	free (path);
+	/* 08-Jan-13: Jeremy Bennett. This doesn't link with the latest
+	              Simulator stuff. If we come here, just abort. Comment
+	              out the offending code. */
+	abort();
+	/* errcode = get_path (cb, s, s->arg1, &path); */
+	/* if (errcode) */
+	/*   { */
+	/*     s->result = -1; */
+	/*     s->errcode = cb_host_to_target_errno (cb, errcode); */
+	/*     break; */
+	/*   } */
+	/* retval = stat (path, &st); */
+	/* free (path); */
 	goto do_stat;
       case TARGET_SYS_fstat:
-	retval = fdbad (cb, s->arg1);
-	if (retval)
-	  {
-	    s->result = -1;
-	    s->errcode = TARGET_EINVAL;
-	    break;
-	  }
-	retval = fstat (fdmap (cb, s->arg1), &st);
+	/* 08-Jan-13: Jeremy Bennett. This doesn't link with the latest
+	              Simulator stuff. If we come here, just abort. Comment
+	              out the offending code. */
+	abort();
+	/* retval = fdbad (cb, s->arg1); */
+	/* if (retval) */
+	/*   { */
+	/*     s->result = -1; */
+	/*     s->errcode = TARGET_EINVAL; */
+	/*     break; */
+	/*   } */
+	/* retval = fstat (fdmap (cb, s->arg1), &st); */
       do_stat:
 
 	s->result = retval;
