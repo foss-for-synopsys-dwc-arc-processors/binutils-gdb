@@ -29,6 +29,14 @@ $shell ${srccom}/gentvals.sh "" open ${srcroot}/newlib/libc/include \
 # Note that there is a standard syscall.h file (libgloss/syscall.h) now which
 # hopefully more targets can use.
 
+# The ARC 4.4 version of this line is commented out. It can never have worked,
+# since the ARC newlib port does not use libgloss!
+
+#dir=libgloss/arc target=arc
+dir=newlib/libc/sys/arc/sys target=arc
+$shell ${srccom}/gentvals.sh $target sys ${srcroot}/$dir \
+        "syscall.h" 'SYS_[_A-Za-z0-9]*' "${cpp}"
+
 dir=libgloss target=bfin
 $shell ${srccom}/gentvals.sh $target sys ${srcroot}/$dir \
 	"syscall.h" 'SYS_[_[:alnum:]]*' "${cpp}"

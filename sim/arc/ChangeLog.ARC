@@ -1,3 +1,16 @@
+2013-01-08  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	* decode5.c, decode6.c, decode7.c: Replace EXTRACT_MSB0_INT with
+	EXTRACT_MSB0_SINT throughout.
+	* devices.c (device_error): Match function prototype to common
+	declaration.
+	* sim-main.h <CGEN_INSN_WORD>: Define type.
+	* target-io.h: New file (based on old gdb/target-io/arc.h).
+	* traps.c: Include local target-io.h instead of
+	gdb/target-io/arc.h.
+	(arc_syscall): Comment out unlinkable code for stat and fstat and
+	abort instead (temporary workaround).
+
 2012-12-13  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* aclocal.m4: New file generated.
