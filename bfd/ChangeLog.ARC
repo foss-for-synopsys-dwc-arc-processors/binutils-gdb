@@ -4,6 +4,11 @@
 	* elf32-arc.c: added ARCv2 machine number for an ARC elf file
 	* cpu-arc.c : added the new EM bfd definition.
 
+2013-01-16  Simon Cook  <simon.cook@embecosm.com>
+
+	* cpu-arc.c (bfd_arc_arch): Make A5 default architecture to solve
+	incorrect architecture outputs.
+
 2013-01-07  Simon Cook  <simon.cook@embecosm.com>
 
 	* elf32-arc.c: elf_backend_can_gc_sections.
