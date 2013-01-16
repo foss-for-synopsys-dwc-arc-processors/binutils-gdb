@@ -1,27 +1,3 @@
-2013-03-18  Simon Cook  <simon.cook@embecosm.com>
-
-	* elf32-arc.c (bfd_arc_arch): Make ARC600 the default architecture.
-
-2013-02-25  Simon Cook  <simon.cook@embecosm.com>
-
-	* bfd/config.bfd: Make arc*-*-elf* valid for big endian ARC.
-
-2013-02-05  Simon Cook  <simon.cook@embecosm.com>
-
-	* elf32-arc.c (elf_arc_check_relocs): Change
-	R_ARC_32/R_ARC_32_ME/R_ARC_PC32 to use
-	_bfd_elf_make_dynamic_reloc_section.
-	(elf_arc_relocate_section): Change R_ARC_32/R_ARC_32_ME/R_ARC_PC32 to use 
-	_bfd_elf_section_offset.
-	(ELF_TARGET_ID): Define.
-
-2013-01-30 Claudiu Zissulescu <claziss@synopsys.com>
-
-	* archures.c : defined bfd_mach_arc_arcv2
-	* elf32-arc.c: added ARCv2 machine number for an ARC elf file
-	* cpu-arc.c : added the new EM bfd definition.
-
-
 2013-01-16  Simon Cook  <simon.cook@embecosm.com>
 
 	* cpu-arc.c (bfd_arc_arch): Make A5 default architecture to solve
