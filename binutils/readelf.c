@@ -1886,6 +1886,7 @@ get_machine_name (unsigned e_machine)
     case EM_ARC:		return "ARC";
     /* START ARC LOCAL */
     case EM_ARCOMPACT:		return "ARCompact";
+    case EM_ARCOMPACT2:		return "ARCompact2";
     /* END ARC LOCAL */
     case EM_H8_300:		return "Renesas H8/300";
     case EM_H8_300H:		return "Renesas H8/300H";
@@ -2247,6 +2248,9 @@ get_machine_flags (unsigned e_flags, unsigned e_machine)
 	      break;
 	    case E_ARC_MACH_ARC700:
 	      strcat (buf, ", ARC700");
+	      break;
+	    case E_ARC_MACH_ARCV2:
+	      strcat (buf, ", ARC_V2");
 	      break;
 	    default:
 	      strcat (buf, ", Generic ARCompact");
