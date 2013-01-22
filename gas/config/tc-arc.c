@@ -5554,6 +5554,8 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 			    match_failed = 1;
 			  break;
 			case 'O':
+			  if ((value % 2))
+			    as_warn ("The constant must be 2-byte aligned");
 			  if ((value % 2) || (value < -512) || (value > 511))
 			    match_failed = 1;
 			  break;
