@@ -4144,7 +4144,7 @@ static struct arc_opcode arc_opcodes[] = {
   { (unsigned char *) "iaddr %#,%B,%K%F",     0x0, 0x30a70000, ARCOMPACT, 0, 0, 0, 0},
 
   /*ARC v2 extensions*/
-  /*#include "arc-em.h"*/
+  #include "arc-em.h"
 
 };
 

@@ -13,75 +13,75 @@
 { (unsigned char *) "asr16%.f 0,%u%F",                       0xFFFF703F, 0x2E6F700C, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "asr16%.f%Q 0,%L%F",                     0xFFFF7FFF, 0x2E2F7F8C, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*FFS */
+{ (unsigned char *) "ffs%.f %#,%u%F",                        0xF8FF003F, 0x286F0012, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "ffs%.f 0,%u%F",                         0xFFFF703F, 0x2E6F7012, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "ffs%.f %#,%C%F",                        0xF8FF003F, 0x282F0012, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "ffs%.f%Q %#,%L%F",                      0xF8FF0FFF, 0x282F0F92, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "ffs%.f 0,%C%F",                         0xFFFF703F, 0x2E2F7012, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "ffs%.f%Q 0,%L%F",                       0xFFFF7FFF, 0x2E2F7F92, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "ffs%.f %#,%u%F",                        0xF8FF003F, 0x286F0012, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "ffs%.f 0,%u%F",                         0xFFFF703F, 0x2E6F7012, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*FLS */
+{ (unsigned char *) "fls%.f %#,%u%F",                        0xF8FF003F, 0x286F0013, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "fls%.f 0,%u%F",                         0xFFFF703F, 0x2E6F7013, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "fls%.f %#,%C%F",                        0xF8FF003F, 0x282F0013, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "fls%.f%Q %#,%L%F",                      0xF8FF0FFF, 0x282F0F93, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "fls%.f 0,%C%F",                         0xFFFF703F, 0x2E2F7013, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "fls%.f%Q 0,%L%F",                       0xFFFF7FFF, 0x2E2F7F93, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "fls%.f %#,%u%F",                        0xF8FF003F, 0x286F0013, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "fls%.f 0,%u%F",                         0xFFFF703F, 0x2E6F7013, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*KFLAG */
 { (unsigned char *) "kflag %C",                              0xFFFFF03F, 0x20298000, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "kflag%Q %L",                            0xFFFFFFFF, 0x20298F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "kflag %u",                              0xFFFFF03F, 0x20698000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "kflag %K",                              0xFFFFF000, 0x20A98000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "kflag%Q %L",                            0xFFFFFFFF, 0x20298F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "kflag%.q %C",                           0xFFFFF020, 0x20E98000, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "kflag%.q%Q %L",                         0xFFFFFFE0, 0x20E98F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "kflag%.q %u",                           0xFFFFF020, 0x20E98020, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "kflag%.q%Q %L",                         0xFFFFFFE0, 0x20E98F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*LSL16 */
 { (unsigned char *) "lsl16%.f %#,%C%F",                      0xF8FF003F, 0x282F000A, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "lsl16%.f%Q %#,%L%F",                    0xF8FF0FFF, 0x282F0F8A, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "lsl16%.f 0,%C%F",                       0xFFFF703F, 0x2E2F700A, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "lsl16%.f%Q 0,%L%F",                     0xFFFF7FFF, 0x2E2F7F8A, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "lsl16%.f %#,%u%F",                      0xF8FF003F, 0x286F000A, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "lsl16%.f 0,%u%F",                       0xFFFF703F, 0x2E6F700A, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "lsl16%.f%Q %#,%L%F",                    0xF8FF0FFF, 0x282F0F8A, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "lsl16%.f%Q 0,%L%F",                     0xFFFF7FFF, 0x2E2F7F8A, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*LSL8 */
 { (unsigned char *) "lsl8%.f %#,%C%F",                       0xF8FF003F, 0x282F000F, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "lsl8%.f%Q %#,%L%F",                     0xF8FF0FFF, 0x282F0F8F, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "lsl8%.f 0,%C%F",                        0xFFFF703F, 0x2E2F700F, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "lsl8%.f%Q 0,%L%F",                      0xFFFF7FFF, 0x2E2F7F8F, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "lsl8%.f %#,%u%F",                       0xF8FF003F, 0x286F000F, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "lsl8%.f 0,%u%F",                        0xFFFF703F, 0x2E6F700F, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "lsl8%.f%Q %#,%L%F",                     0xF8FF0FFF, 0x282F0F8F, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "lsl8%.f%Q 0,%L%F",                      0xFFFF7FFF, 0x2E2F7F8F, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*LSR16 */
 { (unsigned char *) "lsr16%.f %#,%C%F",                      0xF8FF003F, 0x282F000B, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "lsr16%.f%Q %#,%L%F",                    0xF8FF0FFF, 0x282F0F8B, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "lsr16%.f 0,%C%F",                       0xFFFF703F, 0x2E2F700B, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "lsr16%.f%Q 0,%L%F",                     0xFFFF7FFF, 0x2E2F7F8B, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "lsr16%.f %#,%u%F",                      0xF8FF003F, 0x286F000B, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "lsr16%.f 0,%u%F",                       0xFFFF703F, 0x2E6F700B, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "lsr16%.f%Q %#,%L%F",                    0xF8FF0FFF, 0x282F0F8B, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "lsr16%.f%Q 0,%L%F",                     0xFFFF7FFF, 0x2E2F7F8B, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*LSR8 */
 { (unsigned char *) "lsr8%.f %#,%C%F",                       0xF8FF003F, 0x282F000E, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "lsr8%.f%Q %#,%L%F",                     0xF8FF0FFF, 0x282F0F8E, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "lsr8%.f 0,%C%F",                        0xFFFF703F, 0x2E2F700E, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "lsr8%.f%Q 0,%L%F",                      0xFFFF7FFF, 0x2E2F7F8E, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "lsr8%.f %#,%u%F",                       0xF8FF003F, 0x286F000E, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "lsr8%.f 0,%u%F",                        0xFFFF703F, 0x2E6F700E, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "lsr8%.f%Q %#,%L%F",                     0xF8FF0FFF, 0x282F0F8E, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "lsr8%.f%Q 0,%L%F",                      0xFFFF7FFF, 0x2E2F7F8E, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*ROL */
 { (unsigned char *) "rol%.f %#,%C%F",                        0xF8FF003F, 0x202F000D, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "rol%.f%Q %#,%L%F",                      0xF8FF0FFF, 0x202F0F8D, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "rol%.f 0,%C%F",                         0xFFFF703F, 0x262F700D, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "rol%.f%Q 0,%L%F",                       0xFFFF7FFF, 0x262F7F8D, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "rol%.f %#,%u%F",                        0xF8FF003F, 0x206F000D, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "rol%.f 0,%u%F",                         0xFFFF703F, 0x266F700D, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "rol8%.f %#,%C%F",                       0xF8FF003F, 0x282F0010, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "rol8%.f%Q %#,%L%F",                     0xF8FF0FFF, 0x282F0F90, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "rol8%.f 0,%C%F",                        0xFFFF703F, 0x2E2F7010, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "rol8%.f%Q 0,%L%F",                      0xFFFF7FFF, 0x2E2F7F90, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "rol8%.f %#,%u%F",                       0xF8FF003F, 0x286F0010, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "rol8%.f 0,%u%F",                        0xFFFF703F, 0x2E6F7010, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "rol%.f%Q %#,%L%F",                      0xF8FF0FFF, 0x202F0F8D, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "rol%.f%Q 0,%L%F",                       0xFFFF7FFF, 0x262F7F8D, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "rol8%.f%Q %#,%L%F",                     0xF8FF0FFF, 0x282F0F90, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "rol8%.f%Q 0,%L%F",                      0xFFFF7FFF, 0x2E2F7F90, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*ROR8 */
 { (unsigned char *) "ror8%.f %#,%C%F",                       0xF8FF003F, 0x282F0011, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "ror8%.f%Q %#,%L%F",                     0xF8FF0FFF, 0x282F0F91, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "ror8%.f 0,%C%F",                        0xFFFF703F, 0x2E2F7011, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "ror8%.f%Q 0,%L%F",                      0xFFFF7FFF, 0x2E2F7F91, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "ror8%.f %#,%u%F",                       0xF8FF003F, 0x286F0011, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "ror8%.f 0,%u%F",                        0xFFFF703F, 0x2E6F7011, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "ror8%.f%Q %#,%L%F",                     0xF8FF0FFF, 0x282F0F91, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "ror8%.f%Q 0,%L%F",                      0xFFFF7FFF, 0x2E2F7F91, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*SETEQ */
 /* seteq<.cc><.f>    b,b,u6 	0010 0bbb 1111 1000 FBBB uuuu uu1Q QQQQ  */
 { (unsigned char *) "seteq%.q%.f %#,%B,%u%F",                0xF8FF0020, 0x20F80020, ARC_MACH_ARCV2, 0, 0, 0, 0},
@@ -126,20 +126,6 @@
 /*SETNE */
 /* setne<.f>    a,b,c   	0010 0bbb 0011 1001 FBBB CCCC CCAA AAAA  */
 { (unsigned char *) "setne%.f %A,%B,%C%F",                   0xF8FF0000, 0x20390000, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setne<.f>    a,limm,c 	0010 0110 0011 1001 F111 CCCC CCAA AAAA  */
-{ (unsigned char *) "setne%.f%Q %A,%L,%C%F",                 0xFFFF7000, 0x26397000, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setne<.f>    a,b,limm 	0010 0bbb 0011 1001 FBBB 1111 10AA AAAA  */
-{ (unsigned char *) "setne%.f%Q %A,%B,%L%F",                 0xF8FF0FC0, 0x20390F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setne<.f>    a,limm,limm 	0010 0110 0011 1001 F111 1111 10AA AAAA  */
-{ (unsigned char *) "setne%.f%Q %A,%L,%L%F",                 0xFFFF7FC0, 0x26397F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setne<.f>    0,b,c   	0010 0bbb 0011 1001 FBBB CCCC CC11 1110  */
-{ (unsigned char *) "setne%.f 0,%B,%C%F",                    0xF8FF003F, 0x2039003E, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setne<.f>    0,limm,c 	0010 0110 0011 1001 F111 CCCC CC11 1110  */
-{ (unsigned char *) "setne%.f%Q 0,%L,%C%F",                  0xFFFF703F, 0x2639703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setne<.f>    0,b,limm 	0010 0bbb 0011 1001 FBBB 1111 1011 1110  */
-{ (unsigned char *) "setne%.f%Q 0,%B,%L%F",                  0xF8FF0FFF, 0x20390FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setne<.f>    0,limm,limm 	0010 0110 0011 1001 F111 1111 1011 1110  */
-{ (unsigned char *) "setne%.f%Q 0,%L,%L%F",                  0xFFFF7FFF, 0x26397FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setne<.f>    a,b,u6  	0010 0bbb 0111 1001 FBBB uuuu uuAA AAAA  */
 { (unsigned char *) "setne%.f %A,%B,%u%F",                   0xF8FF0000, 0x20790000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setne<.f>    a,limm,u6 	0010 0110 0111 1001 F111 uuuu uuAA AAAA  */
@@ -152,35 +138,37 @@
 { (unsigned char *) "setne%.f %#,%B,%K%F",                   0xF8FF0000, 0x20B90000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setne<.f>    0,limm,s12 	0010 0110 1011 1001 F111 ssss ssSS SSSS  */
 { (unsigned char *) "setne%.f%Q 0,%L,%K%F",                  0xFFFF7000, 0x26B97000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setne<.f>    0,b,c   	0010 0bbb 0011 1001 FBBB CCCC CC11 1110  */
+{ (unsigned char *) "setne%.f 0,%B,%C%F",                    0xF8FF003F, 0x2039003E, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setne<.f>    0,limm,c 	0010 0110 0011 1001 F111 CCCC CC11 1110  */
+{ (unsigned char *) "setne%.f%Q 0,%L,%C%F",                  0xFFFF703F, 0x2639703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setne<.f>    0,b,limm 	0010 0bbb 0011 1001 FBBB 1111 1011 1110  */
+{ (unsigned char *) "setne%.f%Q 0,%B,%L%F",                  0xF8FF0FFF, 0x20390FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setne<.f>    0,limm,limm 	0010 0110 0011 1001 F111 1111 1011 1110  */
+{ (unsigned char *) "setne%.f%Q 0,%L,%L%F",                  0xFFFF7FFF, 0x26397FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setne<.cc><.f>    b,b,c 	0010 0bbb 1111 1001 FBBB CCCC CC0Q QQQQ  */
 { (unsigned char *) "setne%.q%.f %#,%B,%C%F",                0xF8FF0020, 0x20F90000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setne<.cc><.f>    b,b,u6 	0010 0bbb 1111 1001 FBBB uuuu uu1Q QQQQ  */
+{ (unsigned char *) "setne%.q%.f %#,%B,%u%F",                0xF8FF0020, 0x20F90020, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setne<.cc><.f>    0,limm,u6 	0010 0110 1111 1001 F111 uuuu uu1Q QQQQ  */
+{ (unsigned char *) "setne%.q%.f%Q 0,%L,%u%F",               0xFFFF7020, 0x26F97020, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setne<.cc><.f>    b,b,limm 	0010 0bbb 1111 1001 FBBB 1111 100Q QQQQ  */
 { (unsigned char *) "setne%.q%.f%Q %#,%B,%L%F",              0xF8FF0FE0, 0x20F90F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setne<.cc><.f>    0,limm,c 	0010 0110 1111 1001 F111 CCCC CC0Q QQQQ  */
 { (unsigned char *) "setne%.q%.f%Q 0,%L,%C%F",               0xFFFF7020, 0x26F97000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setne<.cc><.f>    0,limm,limm 	0010 0110 1111 1001 F111 1111 100Q QQQQ  */
 { (unsigned char *) "setne%.q%.f%Q 0,%L,%L%F",               0xFFFF7FE0, 0x26F97F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setne<.cc><.f>    b,b,u6 	0010 0bbb 1111 1001 FBBB uuuu uu1Q QQQQ  */
-{ (unsigned char *) "setne%.q%.f %#,%B,%u%F",                0xF8FF0020, 0x20F90020, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setne<.cc><.f>    0,limm,u6 	0010 0110 1111 1001 F111 uuuu uu1Q QQQQ  */
-{ (unsigned char *) "setne%.q%.f%Q 0,%L,%u%F",               0xFFFF7020, 0x26F97020, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setne<.f>    a,limm,c 	0010 0110 0011 1001 F111 CCCC CCAA AAAA  */
+{ (unsigned char *) "setne%.f%Q %A,%L,%C%F",                 0xFFFF7000, 0x26397000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setne<.f>    a,b,limm 	0010 0bbb 0011 1001 FBBB 1111 10AA AAAA  */
+{ (unsigned char *) "setne%.f%Q %A,%B,%L%F",                 0xF8FF0FC0, 0x20390F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setne<.f>    a,limm,limm 	0010 0110 0011 1001 F111 1111 10AA AAAA  */
+{ (unsigned char *) "setne%.f%Q %A,%L,%L%F",                 0xFFFF7FC0, 0x26397F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*SETLT */
 /* setlt<.f>    a,b,c   	0010 0bbb 0011 1010 FBBB CCCC CCAA AAAA  */
 { (unsigned char *) "setlt%.f %A,%B,%C%F",                   0xF8FF0000, 0x203A0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setlt<.f>    a,limm,c 	0010 0110 0011 1010 F111 CCCC CCAA AAAA  */
-{ (unsigned char *) "setlt%.f%Q %A,%L,%C%F",                 0xFFFF7000, 0x263A7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setlt<.f>    a,b,limm 	0010 0bbb 0011 1010 FBBB 1111 10AA AAAA  */
-{ (unsigned char *) "setlt%.f%Q %A,%B,%L%F",                 0xF8FF0FC0, 0x203A0F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setlt<.f>    a,limm,limm 	0010 0110 0011 1010 F111 1111 10AA AAAA  */
-{ (unsigned char *) "setlt%.f%Q %A,%L,%L%F",                 0xFFFF7FC0, 0x263A7F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setlt<.f>    0,b,c   	0010 0bbb 0011 1010 FBBB CCCC CC11 1110  */
 { (unsigned char *) "setlt%.f 0,%B,%C%F",                    0xF8FF003F, 0x203A003E, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setlt<.f>    0,limm,c 	0010 0110 0011 1010 F111 CCCC CC11 1110  */
-{ (unsigned char *) "setlt%.f%Q 0,%L,%C%F",                  0xFFFF703F, 0x263A703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setlt<.f>    0,b,limm 	0010 0bbb 0011 1010 FBBB 1111 1011 1110  */
-{ (unsigned char *) "setlt%.f%Q 0,%B,%L%F",                  0xF8FF0FFF, 0x203A0FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setlt<.f>    0,limm,limm 	0010 0110 0011 1010 F111 1111 1011 1110  */
-{ (unsigned char *) "setlt%.f%Q 0,%L,%L%F",                  0xFFFF7FFF, 0x263A7FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setlt<.f>    a,b,u6  	0010 0bbb 0111 1010 FBBB uuuu uuAA AAAA  */
 { (unsigned char *) "setlt%.f %A,%B,%u%F",                   0xF8FF0000, 0x207A0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setlt<.f>    a,limm,u6 	0010 0110 0111 1010 F111 uuuu uuAA AAAA  */
@@ -195,33 +183,33 @@
 { (unsigned char *) "setlt%.f%Q 0,%L,%K%F",                  0xFFFF7000, 0x26BA7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setlt<.cc><.f>    b,b,c 	0010 0bbb 1111 1010 FBBB CCCC CC0Q QQQQ  */
 { (unsigned char *) "setlt%.q%.f %#,%B,%C%F",                0xF8FF0020, 0x20FA0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setlt<.cc><.f>    b,b,u6 	0010 0bbb 1111 1010 FBBB uuuu uu1Q QQQQ  */
+{ (unsigned char *) "setlt%.q%.f %#,%B,%u%F",                0xF8FF0020, 0x20FA0020, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setlt<.cc><.f>    0,limm,u6 	0010 0110 1111 1010 F111 uuuu uu1Q QQQQ  */
+{ (unsigned char *) "setlt%.q%.f%Q 0,%L,%u%F",               0xFFFF7020, 0x26FA7020, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setlt<.cc><.f>    b,b,limm 	0010 0bbb 1111 1010 FBBB 1111 100Q QQQQ  */
 { (unsigned char *) "setlt%.q%.f%Q %#,%B,%L%F",              0xF8FF0FE0, 0x20FA0F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setlt<.cc><.f>    0,limm,c 	0010 0110 1111 1010 F111 CCCC CC0Q QQQQ  */
 { (unsigned char *) "setlt%.q%.f%Q 0,%L,%C%F",               0xFFFF7020, 0x26FA7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setlt<.cc><.f>    0,limm,limm 	0010 0110 1111 1010 F111 1111 100Q QQQQ  */
 { (unsigned char *) "setlt%.q%.f%Q 0,%L,%L%F",               0xFFFF7FE0, 0x26FA7F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setlt<.cc><.f>    b,b,u6 	0010 0bbb 1111 1010 FBBB uuuu uu1Q QQQQ  */
-{ (unsigned char *) "setlt%.q%.f %#,%B,%u%F",                0xF8FF0020, 0x20FA0020, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setlt<.cc><.f>    0,limm,u6 	0010 0110 1111 1010 F111 uuuu uu1Q QQQQ  */
-{ (unsigned char *) "setlt%.q%.f%Q 0,%L,%u%F",               0xFFFF7020, 0x26FA7020, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setlt<.f>    a,limm,c 	0010 0110 0011 1010 F111 CCCC CCAA AAAA  */
+{ (unsigned char *) "setlt%.f%Q %A,%L,%C%F",                 0xFFFF7000, 0x263A7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setlt<.f>    a,b,limm 	0010 0bbb 0011 1010 FBBB 1111 10AA AAAA  */
+{ (unsigned char *) "setlt%.f%Q %A,%B,%L%F",                 0xF8FF0FC0, 0x203A0F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setlt<.f>    a,limm,limm 	0010 0110 0011 1010 F111 1111 10AA AAAA  */
+{ (unsigned char *) "setlt%.f%Q %A,%L,%L%F",                 0xFFFF7FC0, 0x263A7F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setlt<.f>    0,limm,c 	0010 0110 0011 1010 F111 CCCC CC11 1110  */
+{ (unsigned char *) "setlt%.f%Q 0,%L,%C%F",                  0xFFFF703F, 0x263A703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setlt<.f>    0,b,limm 	0010 0bbb 0011 1010 FBBB 1111 1011 1110  */
+{ (unsigned char *) "setlt%.f%Q 0,%B,%L%F",                  0xF8FF0FFF, 0x203A0FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setlt<.f>    0,limm,limm 	0010 0110 0011 1010 F111 1111 1011 1110  */
+{ (unsigned char *) "setlt%.f%Q 0,%L,%L%F",                  0xFFFF7FFF, 0x263A7FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*SETGT */
 /* setgt<.f>    a,b,c   	0010 0bbb 0011 1111 FBBB CCCC CCAA AAAA  */
 { (unsigned char *) "setgt%.f %A,%B,%C%F",                   0xF8FF0000, 0x203F0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setgt<.f>    a,limm,c 	0010 0110 0011 1111 F111 CCCC CCAA AAAA  */
-{ (unsigned char *) "setgt%.f%Q %A,%L,%C%F",                 0xFFFF7000, 0x263F7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setgt<.f>    a,b,limm 	0010 0bbb 0011 1111 FBBB 1111 10AA AAAA  */
-{ (unsigned char *) "setgt%.f%Q %A,%B,%L%F",                 0xF8FF0FC0, 0x203F0F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setgt<.f>    a,limm,limm 	0010 0110 0011 1111 F111 1111 10AA AAAA  */
-{ (unsigned char *) "setgt%.f%Q %A,%L,%L%F",                 0xFFFF7FC0, 0x263F7F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setgt<.f>    0,b,c   	0010 0bbb 0011 1111 FBBB CCCC CC11 1110  */
 { (unsigned char *) "setgt%.f 0,%B,%C%F",                    0xF8FF003F, 0x203F003E, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setgt<.f>    0,limm,c 	0010 0110 0011 1111 F111 CCCC CC11 1110  */
-{ (unsigned char *) "setgt%.f%Q 0,%L,%C%F",                  0xFFFF703F, 0x263F703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setgt<.f>    0,b,limm 	0010 0bbb 0011 1111 FBBB 1111 1011 1110  */
-{ (unsigned char *) "setgt%.f%Q 0,%B,%L%F",                  0xF8FF0FFF, 0x203F0FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setgt<.f>    0,limm,limm 	0010 0110 0011 1111 F111 1111 1011 1110  */
-{ (unsigned char *) "setgt%.f%Q 0,%L,%L%F",                  0xFFFF7FFF, 0x263F7FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setgt<.f>    a,b,u6  	0010 0bbb 0111 1111 FBBB uuuu uuAA AAAA  */
 { (unsigned char *) "setgt%.f %A,%B,%u%F",                   0xF8FF0000, 0x207F0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setgt<.f>    a,limm,u6 	0010 0110 0111 1111 F111 uuuu uuAA AAAA  */
@@ -236,33 +224,34 @@
 { (unsigned char *) "setgt%.f%Q 0,%L,%K%F",                  0xFFFF7000, 0x26BF7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setgt<.cc><.f>    b,b,c 	0010 0bbb 1111 1111 FBBB CCCC CC0Q QQQQ  */
 { (unsigned char *) "setgt%.q%.f %#,%B,%C%F",                0xF8FF0020, 0x20FF0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setgt<.cc><.f>    b,b,u6 	0010 0bbb 1111 1111 FBBB uuuu uu1Q QQQQ  */
+{ (unsigned char *) "setgt%.q%.f %#,%B,%u%F",                0xF8FF0020, 0x20FF0020, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setgt<.cc><.f>    0,limm,u6 	0010 0110 1111 1111 F111 uuuu uu1Q QQQQ  */
+{ (unsigned char *) "setgt%.q%.f%Q 0,%L,%u%F",               0xFFFF7020, 0x26FF7020, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setgt<.cc><.f>    b,b,limm 	0010 0bbb 1111 1111 FBBB 1111 100Q QQQQ  */
 { (unsigned char *) "setgt%.q%.f%Q %#,%B,%L%F",              0xF8FF0FE0, 0x20FF0F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setgt<.cc><.f>    0,limm,c 	0010 0110 1111 1111 F111 CCCC CC0Q QQQQ  */
 { (unsigned char *) "setgt%.q%.f%Q 0,%L,%C%F",               0xFFFF7020, 0x26FF7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setgt<.cc><.f>    0,limm,limm 	0010 0110 1111 1111 F111 1111 100Q QQQQ  */
 { (unsigned char *) "setgt%.q%.f%Q 0,%L,%L%F",               0xFFFF7FE0, 0x26FF7F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setgt<.cc><.f>    b,b,u6 	0010 0bbb 1111 1111 FBBB uuuu uu1Q QQQQ  */
-{ (unsigned char *) "setgt%.q%.f %#,%B,%u%F",                0xF8FF0020, 0x20FF0020, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setgt<.cc><.f>    0,limm,u6 	0010 0110 1111 1111 F111 uuuu uu1Q QQQQ  */
-{ (unsigned char *) "setgt%.q%.f%Q 0,%L,%u%F",               0xFFFF7020, 0x26FF7020, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setgt<.f>    a,limm,c 	0010 0110 0011 1111 F111 CCCC CCAA AAAA  */
+{ (unsigned char *) "setgt%.f%Q %A,%L,%C%F",                 0xFFFF7000, 0x263F7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setgt<.f>    a,b,limm 	0010 0bbb 0011 1111 FBBB 1111 10AA AAAA  */
+{ (unsigned char *) "setgt%.f%Q %A,%B,%L%F",                 0xF8FF0FC0, 0x203F0F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setgt<.f>    a,limm,limm 	0010 0110 0011 1111 F111 1111 10AA AAAA  */
+{ (unsigned char *) "setgt%.f%Q %A,%L,%L%F",                 0xFFFF7FC0, 0x263F7F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setgt<.f>    0,limm,c 	0010 0110 0011 1111 F111 CCCC CC11 1110  */
+{ (unsigned char *) "setgt%.f%Q 0,%L,%C%F",                  0xFFFF703F, 0x263F703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setgt<.f>    0,b,limm 	0010 0bbb 0011 1111 FBBB 1111 1011 1110  */
+{ (unsigned char *) "setgt%.f%Q 0,%B,%L%F",                  0xF8FF0FFF, 0x203F0FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setgt<.f>    0,limm,limm 	0010 0110 0011 1111 F111 1111 1011 1110  */
+{ (unsigned char *) "setgt%.f%Q 0,%L,%L%F",                  0xFFFF7FFF, 0x263F7FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
+
 /*SETGE */
 /* setge<.f>    a,b,c   	0010 0bbb 0011 1011 FBBB CCCC CCAA AAAA  */
 { (unsigned char *) "setge%.f %A,%B,%C%F",                   0xF8FF0000, 0x203B0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setge<.f>    a,limm,c 	0010 0110 0011 1011 F111 CCCC CCAA AAAA  */
-{ (unsigned char *) "setge%.f%Q %A,%L,%C%F",                 0xFFFF7000, 0x263B7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setge<.f>    a,b,limm 	0010 0bbb 0011 1011 FBBB 1111 10AA AAAA  */
-{ (unsigned char *) "setge%.f%Q %A,%B,%L%F",                 0xF8FF0FC0, 0x203B0F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setge<.f>    a,limm,limm 	0010 0110 0011 1011 F111 1111 10AA AAAA  */
-{ (unsigned char *) "setge%.f%Q %A,%L,%L%F",                 0xFFFF7FC0, 0x263B7F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setge<.f>    0,b,c   	0010 0bbb 0011 1011 FBBB CCCC CC11 1110  */
 { (unsigned char *) "setge%.f 0,%B,%C%F",                    0xF8FF003F, 0x203B003E, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setge<.f>    0,limm,c 	0010 0110 0011 1011 F111 CCCC CC11 1110  */
-{ (unsigned char *) "setge%.f%Q 0,%L,%C%F",                  0xFFFF703F, 0x263B703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setge<.f>    0,b,limm 	0010 0bbb 0011 1011 FBBB 1111 1011 1110  */
-{ (unsigned char *) "setge%.f%Q 0,%B,%L%F",                  0xF8FF0FFF, 0x203B0FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setge<.f>    0,limm,limm 	0010 0110 0011 1011 F111 1111 1011 1110  */
-{ (unsigned char *) "setge%.f%Q 0,%L,%L%F",                  0xFFFF7FFF, 0x263B7FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setge<.f>    a,b,u6  	0010 0bbb 0111 1011 FBBB uuuu uuAA AAAA  */
 { (unsigned char *) "setge%.f %A,%B,%u%F",                   0xF8FF0000, 0x207B0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setge<.f>    a,limm,u6 	0010 0110 0111 1011 F111 uuuu uuAA AAAA  */
@@ -277,33 +266,34 @@
 { (unsigned char *) "setge%.f%Q 0,%L,%K%F",                  0xFFFF7000, 0x26BB7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setge<.cc><.f>    b,b,c 	0010 0bbb 1111 1011 FBBB CCCC CC0Q QQQQ  */
 { (unsigned char *) "setge%.q%.f %#,%B,%C%F",                0xF8FF0020, 0x20FB0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setge<.cc><.f>    b,b,u6 	0010 0bbb 1111 1011 FBBB uuuu uu1Q QQQQ  */
+{ (unsigned char *) "setge%.q%.f %#,%B,%u%F",                0xF8FF0020, 0x20FB0020, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setge<.cc><.f>    0,limm,u6 	0010 0110 1111 1011 F111 uuuu uu1Q QQQQ  */
+{ (unsigned char *) "setge%.q%.f%Q 0,%L,%u%F",               0xFFFF7020, 0x26FB7020, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setge<.cc><.f>    b,b,limm 	0010 0bbb 1111 1011 FBBB 1111 100Q QQQQ  */
 { (unsigned char *) "setge%.q%.f%Q %#,%B,%L%F",              0xF8FF0FE0, 0x20FB0F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setge<.cc><.f>    0,limm,c 	0010 0110 1111 1011 F111 CCCC CC0Q QQQQ  */
 { (unsigned char *) "setge%.q%.f%Q 0,%L,%C%F",               0xFFFF7020, 0x26FB7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setge<.cc><.f>    0,limm,limm 	0010 0110 1111 1011 F111 1111 100Q QQQQ  */
 { (unsigned char *) "setge%.q%.f%Q 0,%L,%L%F",               0xFFFF7FE0, 0x26FB7F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setge<.cc><.f>    b,b,u6 	0010 0bbb 1111 1011 FBBB uuuu uu1Q QQQQ  */
-{ (unsigned char *) "setge%.q%.f %#,%B,%u%F",                0xF8FF0020, 0x20FB0020, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setge<.cc><.f>    0,limm,u6 	0010 0110 1111 1011 F111 uuuu uu1Q QQQQ  */
-{ (unsigned char *) "setge%.q%.f%Q 0,%L,%u%F",               0xFFFF7020, 0x26FB7020, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setge<.f>    a,limm,c 	0010 0110 0011 1011 F111 CCCC CCAA AAAA  */
+{ (unsigned char *) "setge%.f%Q %A,%L,%C%F",                 0xFFFF7000, 0x263B7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setge<.f>    a,b,limm 	0010 0bbb 0011 1011 FBBB 1111 10AA AAAA  */
+{ (unsigned char *) "setge%.f%Q %A,%B,%L%F",                 0xF8FF0FC0, 0x203B0F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setge<.f>    a,limm,limm 	0010 0110 0011 1011 F111 1111 10AA AAAA  */
+{ (unsigned char *) "setge%.f%Q %A,%L,%L%F",                 0xFFFF7FC0, 0x263B7F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setge<.f>    0,limm,c 	0010 0110 0011 1011 F111 CCCC CC11 1110  */
+{ (unsigned char *) "setge%.f%Q 0,%L,%C%F",                  0xFFFF703F, 0x263B703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setge<.f>    0,b,limm 	0010 0bbb 0011 1011 FBBB 1111 1011 1110  */
+{ (unsigned char *) "setge%.f%Q 0,%B,%L%F",                  0xF8FF0FFF, 0x203B0FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setge<.f>    0,limm,limm 	0010 0110 0011 1011 F111 1111 1011 1110  */
+{ (unsigned char *) "setge%.f%Q 0,%L,%L%F",                  0xFFFF7FFF, 0x263B7FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
+
 /*SETLO */
 /* setlo<.f>    a,b,c   	0010 0bbb 0011 1100 FBBB CCCC CCAA AAAA  */
 { (unsigned char *) "setlo%.f %A,%B,%C%F",                   0xF8FF0000, 0x203C0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setlo<.f>    a,limm,c 	0010 0110 0011 1100 F111 CCCC CCAA AAAA  */
-{ (unsigned char *) "setlo%.f%Q %A,%L,%C%F",                 0xFFFF7000, 0x263C7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setlo<.f>    a,b,limm 	0010 0bbb 0011 1100 FBBB 1111 10AA AAAA  */
-{ (unsigned char *) "setlo%.f%Q %A,%B,%L%F",                 0xF8FF0FC0, 0x203C0F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setlo<.f>    a,limm,limm 	0010 0110 0011 1100 F111 1111 10AA AAAA  */
-{ (unsigned char *) "setlo%.f%Q %A,%L,%L%F",                 0xFFFF7FC0, 0x263C7F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setlo<.f>    0,b,c   	0010 0bbb 0011 1100 FBBB CCCC CC11 1110  */
 { (unsigned char *) "setlo%.f 0,%B,%C%F",                    0xF8FF003F, 0x203C003E, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setlo<.f>    0,limm,c 	0010 0110 0011 1100 F111 CCCC CC11 1110  */
-{ (unsigned char *) "setlo%.f%Q 0,%L,%C%F",                  0xFFFF703F, 0x263C703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setlo<.f>    0,b,limm 	0010 0bbb 0011 1100 FBBB 1111 1011 1110  */
-{ (unsigned char *) "setlo%.f%Q 0,%B,%L%F",                  0xF8FF0FFF, 0x203C0FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setlo<.f>    0,limm,limm 	0010 0110 0011 1100 F111 1111 1011 1110  */
-{ (unsigned char *) "setlo%.f%Q 0,%L,%L%F",                  0xFFFF7FFF, 0x263C7FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setlo<.f>    a,b,u6  	0010 0bbb 0111 1100 FBBB uuuu uuAA AAAA  */
 { (unsigned char *) "setlo%.f %A,%B,%u%F",                   0xF8FF0000, 0x207C0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setlo<.f>    a,limm,u6 	0010 0110 0111 1100 F111 uuuu uuAA AAAA  */
@@ -318,33 +308,34 @@
 { (unsigned char *) "setlo%.f%Q 0,%L,%K%F",                  0xFFFF7000, 0x26BC7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setlo<.cc><.f>    b,b,c 	0010 0bbb 1111 1100 FBBB CCCC CC0Q QQQQ  */
 { (unsigned char *) "setlo%.q%.f %#,%B,%C%F",                0xF8FF0020, 0x20FC0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setlo<.cc><.f>    b,b,u6 	0010 0bbb 1111 1100 FBBB uuuu uu1Q QQQQ  */
+{ (unsigned char *) "setlo%.q%.f %#,%B,%u%F",                0xF8FF0020, 0x20FC0020, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setlo<.cc><.f>    0,limm,u6 	0010 0110 1111 1100 F111 uuuu uu1Q QQQQ  */
+{ (unsigned char *) "setlo%.q%.f%Q 0,%L,%u%F",               0xFFFF7020, 0x26FC7020, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setlo<.cc><.f>    b,b,limm 	0010 0bbb 1111 1100 FBBB 1111 100Q QQQQ  */
 { (unsigned char *) "setlo%.q%.f%Q %#,%B,%L%F",              0xF8FF0FE0, 0x20FC0F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setlo<.cc><.f>    0,limm,c 	0010 0110 1111 1100 F111 CCCC CC0Q QQQQ  */
 { (unsigned char *) "setlo%.q%.f%Q 0,%L,%C%F",               0xFFFF7020, 0x26FC7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setlo<.cc><.f>    0,limm,limm 	0010 0110 1111 1100 F111 1111 100Q QQQQ  */
 { (unsigned char *) "setlo%.q%.f%Q 0,%L,%L%F",               0xFFFF7FE0, 0x26FC7F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setlo<.cc><.f>    b,b,u6 	0010 0bbb 1111 1100 FBBB uuuu uu1Q QQQQ  */
-{ (unsigned char *) "setlo%.q%.f %#,%B,%u%F",                0xF8FF0020, 0x20FC0020, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setlo<.cc><.f>    0,limm,u6 	0010 0110 1111 1100 F111 uuuu uu1Q QQQQ  */
-{ (unsigned char *) "setlo%.q%.f%Q 0,%L,%u%F",               0xFFFF7020, 0x26FC7020, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setlo<.f>    a,limm,c 	0010 0110 0011 1100 F111 CCCC CCAA AAAA  */
+{ (unsigned char *) "setlo%.f%Q %A,%L,%C%F",                 0xFFFF7000, 0x263C7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setlo<.f>    a,b,limm 	0010 0bbb 0011 1100 FBBB 1111 10AA AAAA  */
+{ (unsigned char *) "setlo%.f%Q %A,%B,%L%F",                 0xF8FF0FC0, 0x203C0F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setlo<.f>    a,limm,limm 	0010 0110 0011 1100 F111 1111 10AA AAAA  */
+{ (unsigned char *) "setlo%.f%Q %A,%L,%L%F",                 0xFFFF7FC0, 0x263C7F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setlo<.f>    0,limm,c 	0010 0110 0011 1100 F111 CCCC CC11 1110  */
+{ (unsigned char *) "setlo%.f%Q 0,%L,%C%F",                  0xFFFF703F, 0x263C703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setlo<.f>    0,b,limm 	0010 0bbb 0011 1100 FBBB 1111 1011 1110  */
+{ (unsigned char *) "setlo%.f%Q 0,%B,%L%F",                  0xF8FF0FFF, 0x203C0FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setlo<.f>    0,limm,limm 	0010 0110 0011 1100 F111 1111 1011 1110  */
+{ (unsigned char *) "setlo%.f%Q 0,%L,%L%F",                  0xFFFF7FFF, 0x263C7FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
+
 /*SETHS */
 /* seths<.f>    a,b,c   	0010 0bbb 0011 1101 FBBB CCCC CCAA AAAA  */
 { (unsigned char *) "seths%.f %A,%B,%C%F",                   0xF8FF0000, 0x203D0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* seths<.f>    a,limm,c 	0010 0110 0011 1101 F111 CCCC CCAA AAAA  */
-{ (unsigned char *) "seths%.f%Q %A,%L,%C%F",                 0xFFFF7000, 0x263D7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* seths<.f>    a,b,limm 	0010 0bbb 0011 1101 FBBB 1111 10AA AAAA  */
-{ (unsigned char *) "seths%.f%Q %A,%B,%L%F",                 0xF8FF0FC0, 0x203D0F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* seths<.f>    a,limm,limm 	0010 0110 0011 1101 F111 1111 10AA AAAA  */
-{ (unsigned char *) "seths%.f%Q %A,%L,%L%F",                 0xFFFF7FC0, 0x263D7F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* seths<.f>    0,b,c   	0010 0bbb 0011 1101 FBBB CCCC CC11 1110  */
 { (unsigned char *) "seths%.f 0,%B,%C%F",                    0xF8FF003F, 0x203D003E, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* seths<.f>    0,limm,c 	0010 0110 0011 1101 F111 CCCC CC11 1110  */
-{ (unsigned char *) "seths%.f%Q 0,%L,%C%F",                  0xFFFF703F, 0x263D703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* seths<.f>    0,b,limm 	0010 0bbb 0011 1101 FBBB 1111 1011 1110  */
-{ (unsigned char *) "seths%.f%Q 0,%B,%L%F",                  0xF8FF0FFF, 0x203D0FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* seths<.f>    0,limm,limm 	0010 0110 0011 1101 F111 1111 1011 1110  */
-{ (unsigned char *) "seths%.f%Q 0,%L,%L%F",                  0xFFFF7FFF, 0x263D7FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* seths<.f>    a,b,u6  	0010 0bbb 0111 1101 FBBB uuuu uuAA AAAA  */
 { (unsigned char *) "seths%.f %A,%B,%u%F",                   0xF8FF0000, 0x207D0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* seths<.f>    a,limm,u6 	0010 0110 0111 1101 F111 uuuu uuAA AAAA  */
@@ -359,33 +350,34 @@
 { (unsigned char *) "seths%.f%Q 0,%L,%K%F",                  0xFFFF7000, 0x26BD7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* seths<.cc><.f>    b,b,c 	0010 0bbb 1111 1101 FBBB CCCC CC0Q QQQQ  */
 { (unsigned char *) "seths%.q%.f %#,%B,%C%F",                0xF8FF0020, 0x20FD0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* seths<.cc><.f>    b,b,u6 	0010 0bbb 1111 1101 FBBB uuuu uu1Q QQQQ  */
+{ (unsigned char *) "seths%.q%.f %#,%B,%u%F",                0xF8FF0020, 0x20FD0020, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* seths<.cc><.f>    0,limm,u6 	0010 0110 1111 1101 F111 uuuu uu1Q QQQQ  */
+{ (unsigned char *) "seths%.q%.f%Q 0,%L,%u%F",               0xFFFF7020, 0x26FD7020, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* seths<.cc><.f>    b,b,limm 	0010 0bbb 1111 1101 FBBB 1111 100Q QQQQ  */
 { (unsigned char *) "seths%.q%.f%Q %#,%B,%L%F",              0xF8FF0FE0, 0x20FD0F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* seths<.cc><.f>    0,limm,c 	0010 0110 1111 1101 F111 CCCC CC0Q QQQQ  */
 { (unsigned char *) "seths%.q%.f%Q 0,%L,%C%F",               0xFFFF7020, 0x26FD7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* seths<.cc><.f>    0,limm,limm 	0010 0110 1111 1101 F111 1111 100Q QQQQ  */
 { (unsigned char *) "seths%.q%.f%Q 0,%L,%L%F",               0xFFFF7FE0, 0x26FD7F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* seths<.cc><.f>    b,b,u6 	0010 0bbb 1111 1101 FBBB uuuu uu1Q QQQQ  */
-{ (unsigned char *) "seths%.q%.f %#,%B,%u%F",                0xF8FF0020, 0x20FD0020, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* seths<.cc><.f>    0,limm,u6 	0010 0110 1111 1101 F111 uuuu uu1Q QQQQ  */
-{ (unsigned char *) "seths%.q%.f%Q 0,%L,%u%F",               0xFFFF7020, 0x26FD7020, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* seths<.f>    a,limm,c 	0010 0110 0011 1101 F111 CCCC CCAA AAAA  */
+{ (unsigned char *) "seths%.f%Q %A,%L,%C%F",                 0xFFFF7000, 0x263D7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* seths<.f>    a,b,limm 	0010 0bbb 0011 1101 FBBB 1111 10AA AAAA  */
+{ (unsigned char *) "seths%.f%Q %A,%B,%L%F",                 0xF8FF0FC0, 0x203D0F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* seths<.f>    a,limm,limm 	0010 0110 0011 1101 F111 1111 10AA AAAA  */
+{ (unsigned char *) "seths%.f%Q %A,%L,%L%F",                 0xFFFF7FC0, 0x263D7F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* seths<.f>    0,limm,c 	0010 0110 0011 1101 F111 CCCC CC11 1110  */
+{ (unsigned char *) "seths%.f%Q 0,%L,%C%F",                  0xFFFF703F, 0x263D703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* seths<.f>    0,b,limm 	0010 0bbb 0011 1101 FBBB 1111 1011 1110  */
+{ (unsigned char *) "seths%.f%Q 0,%B,%L%F",                  0xF8FF0FFF, 0x203D0FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* seths<.f>    0,limm,limm 	0010 0110 0011 1101 F111 1111 1011 1110  */
+{ (unsigned char *) "seths%.f%Q 0,%L,%L%F",                  0xFFFF7FFF, 0x263D7FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
+
 /*SETLE */
 /* setle<.f>    a,b,c   	0010 0bbb 0011 1110 FBBB CCCC CCAA AAAA  */
 { (unsigned char *) "setle%.f %A,%B,%C%F",                   0xF8FF0000, 0x203E0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setle<.f>    a,limm,c 	0010 0110 0011 1110 F111 CCCC CCAA AAAA  */
-{ (unsigned char *) "setle%.f%Q %A,%L,%C%F",                 0xFFFF7000, 0x263E7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setle<.f>    a,b,limm 	0010 0bbb 0011 1110 FBBB 1111 10AA AAAA  */
-{ (unsigned char *) "setle%.f%Q %A,%B,%L%F",                 0xF8FF0FC0, 0x203E0F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setle<.f>    a,limm,limm 	0010 0110 0011 1110 F111 1111 10AA AAAA  */
-{ (unsigned char *) "setle%.f%Q %A,%L,%L%F",                 0xFFFF7FC0, 0x263E7F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setle<.f>    0,b,c   	0010 0bbb 0011 1110 FBBB CCCC CC11 1110  */
 { (unsigned char *) "setle%.f 0,%B,%C%F",                    0xF8FF003F, 0x203E003E, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setle<.f>    0,limm,c 	0010 0110 0011 1110 F111 CCCC CC11 1110  */
-{ (unsigned char *) "setle%.f%Q 0,%L,%C%F",                  0xFFFF703F, 0x263E703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setle<.f>    0,b,limm 	0010 0bbb 0011 1110 FBBB 1111 1011 1110  */
-{ (unsigned char *) "setle%.f%Q 0,%B,%L%F",                  0xF8FF0FFF, 0x203E0FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setle<.f>    0,limm,limm 	0010 0110 0011 1110 F111 1111 1011 1110  */
-{ (unsigned char *) "setle%.f%Q 0,%L,%L%F",                  0xFFFF7FFF, 0x263E7FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setle<.f>    a,b,u6  	0010 0bbb 0111 1110 FBBB uuuu uuAA AAAA  */
 { (unsigned char *) "setle%.f %A,%B,%u%F",                   0xF8FF0000, 0x207E0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setle<.f>    a,limm,u6 	0010 0110 0111 1110 F111 uuuu uuAA AAAA  */
@@ -400,16 +392,29 @@
 { (unsigned char *) "setle%.f%Q 0,%L,%K%F",                  0xFFFF7000, 0x26BE7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setle<.cc><.f>    b,b,c 	0010 0bbb 1111 1110 FBBB CCCC CC0Q QQQQ  */
 { (unsigned char *) "setle%.q%.f %#,%B,%C%F",                0xF8FF0020, 0x20FE0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setle<.cc><.f>    b,b,u6 	0010 0bbb 1111 1110 FBBB uuuu uu1Q QQQQ  */
+{ (unsigned char *) "setle%.q%.f %#,%B,%u%F",                0xF8FF0020, 0x20FE0020, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setle<.cc><.f>    0,limm,u6 	0010 0110 1111 1110 F111 uuuu uu1Q QQQQ  */
+{ (unsigned char *) "setle%.q%.f%Q 0,%L,%u%F",               0xFFFF7020, 0x26FE7020, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setle<.cc><.f>    b,b,limm 	0010 0bbb 1111 1110 FBBB 1111 100Q QQQQ  */
 { (unsigned char *) "setle%.q%.f%Q %#,%B,%L%F",              0xF8FF0FE0, 0x20FE0F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setle<.cc><.f>    0,limm,c 	0010 0110 1111 1110 F111 CCCC CC0Q QQQQ  */
 { (unsigned char *) "setle%.q%.f%Q 0,%L,%C%F",               0xFFFF7020, 0x26FE7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* setle<.cc><.f>    0,limm,limm 	0010 0110 1111 1110 F111 1111 100Q QQQQ  */
 { (unsigned char *) "setle%.q%.f%Q 0,%L,%L%F",               0xFFFF7FE0, 0x26FE7F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setle<.cc><.f>    b,b,u6 	0010 0bbb 1111 1110 FBBB uuuu uu1Q QQQQ  */
-{ (unsigned char *) "setle%.q%.f %#,%B,%u%F",                0xF8FF0020, 0x20FE0020, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* setle<.cc><.f>    0,limm,u6 	0010 0110 1111 1110 F111 uuuu uu1Q QQQQ  */
-{ (unsigned char *) "setle%.q%.f%Q 0,%L,%u%F",               0xFFFF7020, 0x26FE7020, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setle<.f>    a,limm,c 	0010 0110 0011 1110 F111 CCCC CCAA AAAA  */
+{ (unsigned char *) "setle%.f%Q %A,%L,%C%F",                 0xFFFF7000, 0x263E7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setle<.f>    a,b,limm 	0010 0bbb 0011 1110 FBBB 1111 10AA AAAA  */
+{ (unsigned char *) "setle%.f%Q %A,%B,%L%F",                 0xF8FF0FC0, 0x203E0F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setle<.f>    a,limm,limm 	0010 0110 0011 1110 F111 1111 10AA AAAA  */
+{ (unsigned char *) "setle%.f%Q %A,%L,%L%F",                 0xFFFF7FC0, 0x263E7F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setle<.f>    0,limm,c 	0010 0110 0011 1110 F111 CCCC CC11 1110  */
+{ (unsigned char *) "setle%.f%Q 0,%L,%C%F",                  0xFFFF703F, 0x263E703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setle<.f>    0,b,limm 	0010 0bbb 0011 1110 FBBB 1111 1011 1110  */
+{ (unsigned char *) "setle%.f%Q 0,%B,%L%F",                  0xF8FF0FFF, 0x203E0FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* setle<.f>    0,limm,limm 	0010 0110 0011 1110 F111 1111 1011 1110  */
+{ (unsigned char *) "setle%.f%Q 0,%L,%L%F",                  0xFFFF7FFF, 0x263E7FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
+
 /*SWI */
 /* swi                  	0010 0010 0110 1111 0000 0000 0011 1111  */
 { (unsigned char *) "swi ",                                  0xFFFFFFFF, 0x226F003F, ARC_MACH_ARCV2, 0, 0, 0, 0},
@@ -423,10 +428,10 @@
 /*SEXH */
 { (unsigned char *) "sexh%.f %#,%C%F",                       0xF8FF003F, 0x202F0006, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "sexh%.f %#,%u%F",                       0xF8FF003F, 0x206F0006, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "sexh%.f%Q %#,%L%F",                     0xF8FF0FFF, 0x202F0F86, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "sexh%.f 0,%C%F",                        0xFFFF703F, 0x262F7006, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "sexh%.f%Q 0,%L%F",                      0xFFFF7FFF, 0x262F7F86, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "sexh%.f 0,%u%F",                        0xFFFF703F, 0x266F7006, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "sexh%.f%Q %#,%L%F",                     0xF8FF0FFF, 0x202F0F86, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "sexh%.f%Q 0,%L%F",                      0xFFFF7FFF, 0x262F7F86, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "sexh_s %b,%c",                          0xF81F, 0x780E, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*EXTH */
 { (unsigned char *) "exth%.f %#,%C%F",                       0xF8FF003F, 0x202F0008, ARC_MACH_ARCV2, 0, 0, 0, 0},
@@ -479,6 +484,12 @@
 { (unsigned char *) "divu%.q%.f%Q 0,%L,%C%F",                0xFFFF7020, 0x2EC57000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "divu%.q%.f%Q 0,%L,%L%F",                0xFFFF7FE0, 0x2EC57F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*BMSKN */
+{ (unsigned char *) "bmskn%.f %A,%B,%u%F",                   0xF8FF0000, 0x206C0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "bmskn%.f%Q %A,%L,%u%F",                 0xFFFF7000, 0x266C7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "bmskn%.f 0,%B,%u%F",                    0xF8FF003F, 0x206C003E, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "bmskn%.f%Q 0,%L,%u%F",                  0xFFFF703F, 0x266C703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "bmskn%.f %#,%B,%K%F",                   0xF8FF0000, 0x20AC0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "bmskn%.f%Q 0,%L,%K%F",                  0xFFFF7000, 0x26AC7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "bmskn%.f %A,%B,%C%F",                   0xF8FF0000, 0x202C0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "bmskn%.f%Q %A,%L,%C%F",                 0xFFFF7000, 0x262C7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "bmskn%.f%Q %A,%B,%L%F",                 0xF8FF0FC0, 0x202C0F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
@@ -487,18 +498,12 @@
 { (unsigned char *) "bmskn%.f%Q 0,%L,%C%F",                  0xFFFF703F, 0x262C703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "bmskn%.f%Q 0,%B,%L%F",                  0xF8FF0FFF, 0x202C0FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "bmskn%.f%Q 0,%L,%L%F",                  0xFFFF7FFF, 0x262C7FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "bmskn%.f %A,%B,%u%F",                   0xF8FF0000, 0x206C0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "bmskn%.f%Q %A,%L,%u%F",                 0xFFFF7000, 0x266C7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "bmskn%.f 0,%B,%u%F",                    0xF8FF003F, 0x206C003E, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "bmskn%.f%Q 0,%L,%u%F",                  0xFFFF703F, 0x266C703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "bmskn%.f %#,%B,%K%F",                   0xF8FF0000, 0x20AC0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "bmskn%.f%Q 0,%L,%K%F",                  0xFFFF7000, 0x26AC7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "bmskn%.q%.f %#,%B,%C%F",                0xF8FF0020, 0x20EC0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "bmskn%.q%.f %#,%B,%u%F",                0xF8FF0020, 0x20EC0020, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "bmskn%.q%.f%Q 0,%L,%u%F",               0xFFFF7020, 0x26EC7020, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "bmskn%.q%.f%Q %#,%B,%L%F",              0xF8FF0FE0, 0x20EC0F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "bmskn%.q%.f%Q 0,%L,%C%F",               0xFFFF7020, 0x26EC7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "bmskn%.q%.f%Q 0,%L,%L%F",               0xFFFF7FE0, 0x26EC7F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "bmskn%.q%.f %#,%B,%u%F",                0xF8FF0020, 0x20EC0020, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "bmskn%.q%.f%Q 0,%L,%u%F",               0xFFFF7020, 0x26EC7020, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*BI */
 { (unsigned char *) "bi [%C]",                               0xFFFFF03F, 0x20240000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*BIH */
@@ -511,13 +516,7 @@
 { (unsigned char *) "mpy_s %b,%b,%c",                        0xF81F, 0x780C, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*MPYM */
 { (unsigned char *) "mpym%.f %A,%B,%C%F",                    0xF8FF0000, 0x201B0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "mpym%.f%Q %A,%L,%C%F",                  0xFFFF7000, 0x261B7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "mpym%.f%Q %A,%B,%L%F",                  0xF8FF0FC0, 0x201B0F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "mpym%.f%Q %A,%L,%L%F",                  0xFFFF7FC0, 0x261B7F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpym%.f 0,%B,%C%F",                     0xF8FF003F, 0x201B003E, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "mpym%.f%Q 0,%L,%C%F",                   0xFFFF703F, 0x261B703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "mpym%.f%Q 0,%B,%L%F",                   0xF8FF0FFF, 0x201B0FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "mpym%.f%Q 0,%L,%L%F",                   0xFFFF7FFF, 0x261B7FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpym%.f %A,%B,%u%F",                    0xF8FF0000, 0x205B0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpym%.f%Q %A,%L,%u%F",                  0xFFFF7000, 0x265B7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpym%.f 0,%B,%u%F",                     0xF8FF003F, 0x205B003E, ARC_MACH_ARCV2, 0, 0, 0, 0},
@@ -525,20 +524,20 @@
 { (unsigned char *) "mpym%.f %#,%B,%K%F",                    0xF8FF0000, 0x209B0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpym%.f%Q 0,%L,%K%F",                   0xFFFF7000, 0x269B7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpym%.q%.f %#,%B,%C%F",                 0xF8FF0020, 0x20DB0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "mpym%.q%.f %#,%B,%u%F",                 0xF8FF0020, 0x20DB0020, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpym%.q%.f%Q %#,%B,%L%F",               0xF8FF0FE0, 0x20DB0F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpym%.q%.f%Q 0,%L,%C%F",                0xFFFF7020, 0x26DB7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpym%.q%.f%Q 0,%L,%L%F",                0xFFFF7FE0, 0x26DB7F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "mpym%.q%.f %#,%B,%u%F",                 0xF8FF0020, 0x20DB0020, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpym%.q%.f%Q 0,%L,%u%F",                0xFFFF7020, 0x26DB7020, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "mpym%.f%Q %A,%L,%C%F",                  0xFFFF7000, 0x261B7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "mpym%.f%Q %A,%B,%L%F",                  0xF8FF0FC0, 0x201B0F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "mpym%.f%Q %A,%L,%L%F",                  0xFFFF7FC0, 0x261B7F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "mpym%.f%Q 0,%L,%C%F",                   0xFFFF703F, 0x261B703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "mpym%.f%Q 0,%B,%L%F",                   0xF8FF0FFF, 0x201B0FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "mpym%.f%Q 0,%L,%L%F",                   0xFFFF7FFF, 0x261B7FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*MPYMU */
 { (unsigned char *) "mpymu%.f %A,%B,%C%F",                   0xF8FF0000, 0x201C0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "mpymu%.f%Q %A,%L,%C%F",                 0xFFFF7000, 0x261C7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "mpymu%.f%Q %A,%B,%L%F",                 0xF8FF0FC0, 0x201C0F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "mpymu%.f%Q %A,%L,%L%F",                 0xFFFF7FC0, 0x261C7F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpymu%.f 0,%B,%C%F",                    0xF8FF003F, 0x201C003E, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "mpymu%.f%Q 0,%L,%C%F",                  0xFFFF703F, 0x261C703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "mpymu%.f%Q 0,%B,%L%F",                  0xF8FF0FFF, 0x201C0FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "mpymu%.f%Q 0,%L,%L%F",                  0xFFFF7FFF, 0x261C7FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpymu%.f %A,%B,%u%F",                   0xF8FF0000, 0x205C0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpymu%.f%Q %A,%L,%u%F",                 0xFFFF7000, 0x265C7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpymu%.f 0,%B,%u%F",                    0xF8FF003F, 0x205C003E, ARC_MACH_ARCV2, 0, 0, 0, 0},
@@ -546,20 +545,20 @@
 { (unsigned char *) "mpymu%.f %#,%B,%K%F",                   0xF8FF0000, 0x209C0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpymu%.f%Q 0,%L,%K%F",                  0xFFFF7000, 0x269C7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpymu%.q%.f %#,%B,%C%F",                0xF8FF0020, 0x20DC0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "mpymu%.q%.f %#,%B,%u%F",                0xF8FF0020, 0x20DC0020, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpymu%.q%.f%Q %#,%B,%L%F",              0xF8FF0FE0, 0x20DC0F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpymu%.q%.f%Q 0,%L,%C%F",               0xFFFF7020, 0x26DC7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpymu%.q%.f%Q 0,%L,%L%F",               0xFFFF7FE0, 0x26DC7F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "mpymu%.q%.f %#,%B,%u%F",                0xF8FF0020, 0x20DC0020, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpymu%.q%.f%Q 0,%L,%u%F",               0xFFFF7020, 0x26DC7020, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "mpymu%.f%Q %A,%L,%C%F",                 0xFFFF7000, 0x261C7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "mpymu%.f%Q %A,%B,%L%F",                 0xF8FF0FC0, 0x201C0F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "mpymu%.f%Q %A,%L,%L%F",                 0xFFFF7FC0, 0x261C7F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "mpymu%.f%Q 0,%L,%C%F",                  0xFFFF703F, 0x261C703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "mpymu%.f%Q 0,%B,%L%F",                  0xF8FF0FFF, 0x201C0FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "mpymu%.f%Q 0,%L,%L%F",                  0xFFFF7FFF, 0x261C7FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*MPYUW */
 { (unsigned char *) "mpyuw%.f %A,%B,%C%F",                   0xF8FF0000, 0x201F0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "mpyuw%.f%Q %A,%L,%C%F",                 0xFFFF7000, 0x261F7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "mpyuw%.f%Q %A,%B,%L%F",                 0xF8FF0FC0, 0x201F0F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "mpyuw%.f%Q %A,%L,%L%F",                 0xFFFF7FC0, 0x261F7F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpyuw%.f 0,%B,%C%F",                    0xF8FF003F, 0x201F003E, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "mpyuw%.f%Q 0,%L,%C%F",                  0xFFFF703F, 0x261F703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "mpyuw%.f%Q 0,%B,%L%F",                  0xF8FF0FFF, 0x201F0FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "mpyuw%.f%Q 0,%L,%L%F",                  0xFFFF7FFF, 0x261F7FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpyuw%.f %A,%B,%u%F",                   0xF8FF0000, 0x205F0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpyuw%.f%Q %A,%L,%u%F",                 0xFFFF7000, 0x265F7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpyuw%.f 0,%B,%u%F",                    0xF8FF003F, 0x205F003E, ARC_MACH_ARCV2, 0, 0, 0, 0},
@@ -567,24 +566,24 @@
 { (unsigned char *) "mpyuw%.f %#,%B,%K%F",                   0xF8FF0000, 0x209F0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpyuw%.f%Q 0,%L,%K%F",                  0xFFFF7000, 0x269F7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpyuw%.q%.f %#,%B,%C%F",                0xF8FF0020, 0x20DF0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "mpyuw%.q%.f %#,%B,%u%F",                0xF8FF0020, 0x20DF0020, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpyuw%.q%.f%Q %#,%B,%L%F",              0xF8FF0FE0, 0x20DF0F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpyuw%.q%.f%Q 0,%L,%C%F",               0xFFFF7020, 0x26DF7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpyuw%.q%.f%Q 0,%L,%L%F",               0xFFFF7FE0, 0x26DF7F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "mpyuw%.q%.f %#,%B,%u%F",                0xF8FF0020, 0x20DF0020, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpyuw%.q%.f%Q 0,%L,%u%F",               0xFFFF7020, 0x26DF7020, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "mpyuw%.f%Q %A,%L,%C%F",                 0xFFFF7000, 0x261F7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "mpyuw%.f%Q %A,%B,%L%F",                 0xF8FF0FC0, 0x201F0F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "mpyuw%.f%Q %A,%L,%L%F",                 0xFFFF7FC0, 0x261F7F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "mpyuw%.f%Q 0,%L,%C%F",                  0xFFFF703F, 0x261F703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "mpyuw%.f%Q 0,%B,%L%F",                  0xF8FF0FFF, 0x201F0FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "mpyuw%.f%Q 0,%L,%L%F",                  0xFFFF7FFF, 0x261F7FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*MPYUW_S */
 { (unsigned char *) "mpyuw_s %b,%b,%c",                      0xF81F, 0x780A, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*MPYW_S */
 { (unsigned char *) "mpyw_s %b,%b,%c",                       0xF81F, 0x7809, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*MPYW */
 { (unsigned char *) "mpyw%.f %A,%B,%C%F",                    0xF8FF0000, 0x201E0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "mpyw%.f%Q %A,%L,%C%F",                  0xFFFF7000, 0x261E7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "mpyw%.f%Q %A,%B,%L%F",                  0xF8FF0FC0, 0x201E0F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "mpyw%.f%Q %A,%L,%L%F",                  0xFFFF7FC0, 0x261E7F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpyw%.f 0,%B,%C%F",                     0xF8FF003F, 0x201E003E, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "mpyw%.f%Q 0,%L,%C%F",                   0xFFFF703F, 0x261E703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "mpyw%.f%Q 0,%B,%L%F",                   0xF8FF0FFF, 0x201E0FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "mpyw%.f%Q 0,%L,%L%F",                   0xFFFF7FFF, 0x261E7FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpyw%.f %A,%B,%u%F",                    0xF8FF0000, 0x205E0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpyw%.f%Q %A,%L,%u%F",                  0xFFFF7000, 0x265E7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpyw%.f 0,%B,%u%F",                     0xF8FF003F, 0x205E003E, ARC_MACH_ARCV2, 0, 0, 0, 0},
@@ -592,27 +591,27 @@
 { (unsigned char *) "mpyw%.f %#,%B,%K%F",                    0xF8FF0000, 0x209E0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpyw%.f%Q 0,%L,%K%F",                   0xFFFF7000, 0x269E7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpyw%.q%.f %#,%B,%C%F",                 0xF8FF0020, 0x20DE0000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "mpyw%.q%.f %#,%B,%u%F",                 0xF8FF0020, 0x20DE0020, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpyw%.q%.f%Q %#,%B,%L%F",               0xF8FF0FE0, 0x20DE0F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpyw%.q%.f%Q 0,%L,%C%F",                0xFFFF7020, 0x26DE7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpyw%.q%.f%Q 0,%L,%L%F",                0xFFFF7FE0, 0x26DE7F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "mpyw%.q%.f %#,%B,%u%F",                 0xF8FF0020, 0x20DE0020, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "mpyw%.q%.f%Q 0,%L,%u%F",                0xFFFF7020, 0x26DE7020, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "mpyw%.f%Q %A,%L,%C%F",                  0xFFFF7000, 0x261E7000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "mpyw%.f%Q %A,%B,%L%F",                  0xF8FF0FC0, 0x201E0F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "mpyw%.f%Q %A,%L,%L%F",                  0xFFFF7FC0, 0x261E7F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "mpyw%.f%Q 0,%L,%C%F",                   0xFFFF703F, 0x261E703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "mpyw%.f%Q 0,%B,%L%F",                   0xF8FF0FFF, 0x201E0FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "mpyw%.f%Q 0,%L,%L%F",                   0xFFFF7FFF, 0x261E7FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*NORMH */
 { (unsigned char *) "normh%.f %#,%C%F",                      0xF8FF003F, 0x282F0008, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "normh%.f%Q %#,%L%F",                    0xF8FF0FFF, 0x282F0F88, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "normh%.f 0,%C%F",                       0xFFFF703F, 0x2E2F7008, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "normh%.f%Q 0,%L%F",                     0xFFFF7FFF, 0x2E2F7F88, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "normh%.f %#,%u%F",                      0xF8FF003F, 0x286F0008, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "normh%.f 0,%u%F",                       0xFFFF703F, 0x2E6F7008, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "normh%.f%Q %#,%L%F",                    0xF8FF0FFF, 0x282F0F88, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "normh%.f%Q 0,%L%F",                     0xFFFF7FFF, 0x2E2F7F88, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*REM */
 { (unsigned char *) "rem%.f %A,%B,%C%F",                     0xF8FF0000, 0x28080000, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "rem%.f%Q %A,%L,%C%F",                   0xFFFF7000, 0x2E087000, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "rem%.f%Q %A,%B,%L%F",                   0xF8FF0FC0, 0x28080F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "rem%.f%Q %A,%L,%L%F",                   0xFFFF7FC0, 0x2E087F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "rem%.f 0,%B,%C%F",                      0xF8FF003F, 0x2808003E, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "rem%.f%Q 0,%L,%C%F",                    0xFFFF703F, 0x2E08703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "rem%.f%Q 0,%B,%L%F",                    0xF8FF0FFF, 0x28080FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "rem%.f%Q 0,%L,%L%F",                    0xFFFF7FFF, 0x2E087FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "rem%.f %A,%B,%u%F",                     0xF8FF0000, 0x28480000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "rem%.f%Q %A,%L,%u%F",                   0xFFFF7000, 0x2E487000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "rem%.f 0,%B,%u%F",                      0xF8FF003F, 0x2848003E, ARC_MACH_ARCV2, 0, 0, 0, 0},
@@ -620,20 +619,20 @@
 { (unsigned char *) "rem%.f %#,%B,%K%F",                     0xF8FF0000, 0x28880000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "rem%.f%Q 0,%L,%K%F",                    0xFFFF7000, 0x2E887000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "rem%.q%.f %#,%B,%C%F",                  0xF8FF0020, 0x28C80000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "rem%.q%.f %#,%B,%u%F",                  0xF8FF0020, 0x28C80020, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "rem%.q%.f%Q %#,%B,%L%F",                0xF8FF0FE0, 0x28C80F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "rem%.q%.f%Q 0,%L,%C%F",                 0xFFFF7020, 0x2EC87000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "rem%.q%.f%Q 0,%L,%L%F",                 0xFFFF7FE0, 0x2EC87F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "rem%.q%.f %#,%B,%u%F",                  0xF8FF0020, 0x28C80020, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "rem%.q%.f%Q 0,%L,%u%F",                 0xFFFF7020, 0x2EC87020, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "rem%.f%Q %A,%L,%C%F",                   0xFFFF7000, 0x2E087000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "rem%.f%Q %A,%B,%L%F",                   0xF8FF0FC0, 0x28080F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "rem%.f%Q %A,%L,%L%F",                   0xFFFF7FC0, 0x2E087F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "rem%.f%Q 0,%L,%C%F",                    0xFFFF703F, 0x2E08703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "rem%.f%Q 0,%B,%L%F",                    0xF8FF0FFF, 0x28080FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "rem%.f%Q 0,%L,%L%F",                    0xFFFF7FFF, 0x2E087FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*REMU */
 { (unsigned char *) "remu%.f %A,%B,%C%F",                    0xF8FF0000, 0x28090000, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "remu%.f%Q %A,%L,%C%F",                  0xFFFF7000, 0x2E097000, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "remu%.f%Q %A,%B,%L%F",                  0xF8FF0FC0, 0x28090F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "remu%.f%Q %A,%L,%L%F",                  0xFFFF7FC0, 0x2E097F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "remu%.f 0,%B,%C%F",                     0xF8FF003F, 0x2809003E, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "remu%.f%Q 0,%L,%C%F",                   0xFFFF703F, 0x2E09703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "remu%.f%Q 0,%B,%L%F",                   0xF8FF0FFF, 0x28090FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "remu%.f%Q 0,%L,%L%F",                   0xFFFF7FFF, 0x2E097FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "remu%.f %A,%B,%u%F",                    0xF8FF0000, 0x28490000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "remu%.f%Q %A,%L,%u%F",                  0xFFFF7000, 0x2E497000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "remu%.f 0,%B,%u%F",                     0xF8FF003F, 0x2849003E, ARC_MACH_ARCV2, 0, 0, 0, 0},
@@ -641,11 +640,17 @@
 { (unsigned char *) "remu%.f %#,%B,%K%F",                    0xF8FF0000, 0x28890000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "remu%.f%Q 0,%L,%K%F",                   0xFFFF7000, 0x2E897000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "remu%.q%.f %#,%B,%C%F",                 0xF8FF0020, 0x28C90000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "remu%.q%.f %#,%B,%u%F",                 0xF8FF0020, 0x28C90020, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "remu%.q%.f%Q %#,%B,%L%F",               0xF8FF0FE0, 0x28C90F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "remu%.q%.f%Q 0,%L,%C%F",                0xFFFF7020, 0x2EC97000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "remu%.q%.f%Q 0,%L,%L%F",                0xFFFF7FE0, 0x2EC97F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "remu%.q%.f %#,%B,%u%F",                 0xF8FF0020, 0x28C90020, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "remu%.q%.f%Q 0,%L,%u%F",                0xFFFF7020, 0x2EC97020, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "remu%.f%Q %A,%L,%C%F",                  0xFFFF7000, 0x2E097000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "remu%.f%Q %A,%B,%L%F",                  0xF8FF0FC0, 0x28090F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "remu%.f%Q %A,%L,%L%F",                  0xFFFF7FC0, 0x2E097F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "remu%.f%Q 0,%L,%C%F",                   0xFFFF703F, 0x2E09703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "remu%.f%Q 0,%B,%L%F",                   0xF8FF0FFF, 0x28090FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "remu%.f%Q 0,%L,%L%F",                   0xFFFF7FFF, 0x2E097FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*LDH_S */
 { (unsigned char *) "ldh_s %a,[%b,%c]",                      0xF818, 0x6010, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "ldh_s %c,[%b,%k]",                      0xF800, 0x9000, ARC_MACH_ARCV2, 0, 0, 0, 0},
@@ -691,7 +696,7 @@
 { (unsigned char *) "lp %Y",                                 0xFFFFF000, 0x20A80000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*SETI */
 { (unsigned char *) "seti %C",                               0xFFFFF03F, 0x262F003F, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "seti %u",                               0xFFFFF03F, 0x266F003F, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "seti [%u]",                               0xFFFFF03F, 0x266F003F, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*ADD_S */
 /* add_s    a,b,c       	0110 0bbb ccc1 1aaa  */
 { (unsigned char *) "add_s %a,%b,%c",                        0xF818, 0x6018, ARC_MACH_ARCV2, 0, 0, 0, 0},
@@ -777,14 +782,14 @@
 /* st_s    R0,[GP,Ss11] 	0101 0SSS SSS1 0sss  */
 { (unsigned char *) "st_s %4,[%5,%ç]",                       0xF818, 0x5010, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*ST */
+{ (unsigned char *) "st%z%.w%.D %Ñ,[%B]%0",                  0xF8FF8001, 0x18000001, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "st%z%.w%.D %Ñ,[%B,%o]%0",               0xF8000001, 0x18000001, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "st%z%.w%.D %C,[%B]%0",                  0xF8FF8001, 0x18000000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "st%z%.w%.D %C,[%B,%o]%0",               0xF8000001, 0x18000000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "st%z%.D%Q %C,[%L]%0",                   0xFFFFF019, 0x1E007000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "st%z%.w%.D%Q %Ñ,[%L,%o]%0",             0xFF007001, 0x1E007001, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "st%z%.w%.D%Q %L,[%B,%o]%0",             0xF8000FC1, 0x18000F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "st%z%.w%.D%Q %L,[%L,%o]%0",             0xFF007FC1, 0x1E007F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "st%z%.w%.D %Ñ,[%B]%0",                  0xF8FF8001, 0x18000001, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "st%z%.w%.D %Ñ,[%B,%o]%0",               0xF8000001, 0x18000001, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "st%z%.w%.D%Q %Ñ,[%L,%o]%0",             0xFF007001, 0x1E007001, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*LD_S */
 /* ld_s    R0,[h,u5]    	0100 0U00 hhhu u1HH  */
 { (unsigned char *) "ld_s %4,[%Ä,%E]",                       0xFB04, 0x4004, ARC_MACH_ARCV2, 0, 0, 0, 0},
