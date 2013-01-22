@@ -7,6 +7,7 @@
    Contributor: Brendon Kehoe <brendan@zen.org>
    Contributor: Michael Eager <eager@eagercon.com>
    Contributor: Joern Rennecke <joern.rennecke@embecosm.com>
+   Contributor: Claudiu Zissulescu <claziss@synopsys.com>
 
    This file is part of libopcodes.
 
@@ -29,7 +30,7 @@
 #include "ansidecl.h"
 #include "opcode/arc.h"
 #include "opintl.h"
-
+#include <assert.h>
 
 /* -------------------------------------------------------------------------- */
 /*                                  local types                               */
@@ -86,6 +87,10 @@ INSERT_FN (insert_absaddr);
 INSERT_FN (insert_jumpflags);
 INSERT_FN (insert_unopmacro);
 
+INSERT_FN(insert_v2_16);
+INSERT_FN(insert_v2_Tflag);
+INSERT_FN(insert_v2_Tflagfinish);
+
 EXTRACT_FN (extract_reg);
 EXTRACT_FN (extract_ld_offset);
 EXTRACT_FN (extract_ld_syntax);
@@ -103,6 +108,7 @@ EXTRACT_FN (extract_unopmacro);
 /* -------------------------------------------------------------------------- */
 
 /* Nonzero if we've seen an 'f' suffix (in certain insns).  */
+
 static int flag_p;
 
 /* Nonzero if we've finished processing the 'f' suffix.  */
@@ -135,6 +141,9 @@ static int limm_p;
    appear multiple times.  */
 static long limm;
 
+/*Nonzero if we've seen an <.T> flag*/
+static enum { NONE, SEEN, PLUS, MINUS} tflag_p = NONE;
+static unsigned char brpredict = 0;
 
 /* Configuration flags.  */
 
@@ -477,7 +486,16 @@ static const struct arc_operand arc_operands_a4[] =
  '\24' SIMD_I_S15          simd 15 bit signed field 
  '\25' SIMD_I_ZR           zero constant value field
    
+ The following operands are specific to the ARCv2 architecture
 
+ '\128' ARCV2_REGH         5-bit h-register base address
+ '\129' ARCV2_REG_R1       'r1' register indicator
+ '\130' ARCV2_REG_R2       'r2' register indicator
+ '\131' ARCV2_REG_R3       'r3' register indicator
+ '\132' ARCV2_REGW         6-bit w-register base address
+
+ ArcV2 constants:
+ '\133' ARCV2_SIGNS3       3-bit signed constant [26:24]
 
    Fields are:
 
@@ -843,8 +861,76 @@ static const struct arc_operand arc_operands_ac[] =
   { '\23', 6, ARC_SHIFT_REGC_AC, ARC_OPERAND_SIGNED|ARC_OPERAND_ERROR, insert_null, 0 },
 #define SIMD_I_S15   (SIMD_DISCARDED+1)
   { '\24', 6, ARC_SHIFT_REGC_AC, ARC_OPERAND_SIGNED|ARC_OPERAND_ERROR, insert_s15, 0 },
-#define SIMD_I_ZERO   (SIMD_SIMD_I_S15+1)
+#define SIMD_I_ZERO   (SIMD_I_S15+1)
   { '\25', 6, ARC_SHIFT_REGC_AC, ARC_OPERAND_SIGNED|ARC_OPERAND_ERROR, 0, 0 },
+
+  /* ARCv2 modchars*/
+#define ARCV2_REGH ( SIMD_I_ZERO+1)
+  { 128, 5, 5, ARC_OPERAND_SIGNED | ARC_OPERAND_ERROR, insert_reg, extract_reg },
+
+  /*r1 register indicator*/
+#define ARCV2_REG_R1 ( ARCV2_REGH+1)
+  { 129, 0, 0, 0, 0, 0 },
+
+  /*r2 register indicator*/
+#define ARCV2_REG_R2 (ARCV2_REG_R1+1)
+  { 130, 0, 0, 0, 0, 0 },
+
+  /*r3 register indicator*/
+#define ARCV2_REG_R3 (ARCV2_REG_R2+1)
+  { 131, 0, 0, 0, 0, 0 },
+
+  /*w6 6bit signed store immediate*/
+#define ARCV2_SIGNW6 (ARCV2_REG_R3+1)
+  { 132, 6, 6, ARC_OPERAND_SIGNED | ARC_OPERAND_ERROR, 0, 0 },
+
+  /*s3 3-bit signed immediate*/
+#define ARCV2_SIGNS3 (ARCV2_SIGNW6+1)
+  { 133, 3, 8, ARC_OPERAND_SIGNED | ARC_OPERAND_ERROR, 0, 0 },
+
+  /*Au6 6-bit unsigned immediate as used in ADD_S*/
+#define ARCV2_UIMM6 (ARCV2_SIGNS3+1)
+  { 134, 6, 0, ARC_OPERAND_UNSIGNED  | ARC_OPERAND_ERROR, insert_v2_16, 0 },
+
+  /*Eu6 6-bit unsigned immediate as used in ENTER_S*/
+#define ARCV2_ENTERU6 ( ARCV2_UIMM6+1)
+  { 135, 6, 1, ARC_OPERAND_UNSIGNED  | ARC_OPERAND_ERROR, insert_v2_16, 0 },
+
+  /*u10 10-bit unsigned immediate as used in EI_S*/
+#define ARCV2_EIU10 ( ARCV2_ENTERU6+1)
+  { 136, 10, 0, ARC_OPERAND_UNSIGNED  | ARC_OPERAND_ERROR, 0, 0 },
+
+  /*Lu7 7-bit unsigned immediate as used in LDI_S*/
+#define ARCV2_LDIU7 ( ARCV2_EIU10+1)
+  { 137, 7, 0, ARC_OPERAND_UNSIGNED  | ARC_OPERAND_ERROR, insert_v2_16, 0 },
+
+  /*u7 7-bit unsigned immediate as used in LEAVE_S*/
+#define ARCV2_LVSU7 ( ARCV2_LDIU7+1)
+  { 138, 7, 1, ARC_OPERAND_UNSIGNED  | ARC_OPERAND_ERROR, insert_v2_16, 0 },
+
+  /*g5 register indicator*/
+#define ARCV2_REGG (ARCV2_LVSU7+1)
+  { 140, 5, 8, ARC_OPERAND_SIGNED | ARC_OPERAND_ERROR, insert_reg, extract_reg },
+
+  /*s11 9-bit signed immediate as used in ST_S*/
+#define ARCV2_STS11 (ARCV2_REGG+1)
+  { 141, 11, 0, ARC_OPERAND_SIGNED | ARC_OPERAND_ERROR, insert_v2_16, 0 },
+
+  /*u5 3-bit unsigned immediate as used in LD_S*/
+#define ARCV2_LDU5 (ARCV2_STS11+1)
+  { 142, 5, 3, ARC_OPERAND_UNSIGNED | ARC_OPERAND_ERROR, insert_v2_16, 0 },
+
+  /**/
+#define ARCV2_TFLAG (ARCV2_LDU5+1)
+  { 143, 1, 3, ARC_OPERAND_SUFFIX, insert_v2_Tflag, 0 },
+
+#define ARCV2_TFLAGFINBBIT (ARCV2_TFLAG+1)
+  { 144, 1, 3, ARC_OPERAND_FAKE | ARC_OPERAND_ERROR, insert_v2_Tflagfinish, 0 },
+
+  /*u5 3-bit unsigned immediate as used in LD_S*/
+#define ARCV2_TFLAGFINBR (ARCV2_TFLAGFINBBIT+1)
+  { 145, 1, 3, ARC_OPERAND_FAKE | ARC_OPERAND_ERROR, insert_v2_Tflagfinish, 0 },
+
 /* end of list place holder */
   { 0, 0, 0, 0, 0, 0 }
 };
@@ -898,6 +984,136 @@ const struct arc_operand *arc_operands = arc_operands_a4;
 /* -------------------------------------------------------------------------- */
 
 /* Insertion functions.  */
+
+/**** ARC V2 specific insert functions *****/
+
+/* Insert a number into a 16 bit instruction.
+ *
+ * insn    Top half of instruction.
+ * ex      Bottom half of instruction.
+ * operand unused.
+ * reg     irrevent, only used for register operands.
+ * value   Signed twelve bit number.
+ * errmsg  error message.
+ */
+static arc_insn
+insert_v2_16  (arc_insn insn,  long *ex ATTRIBUTE_UNUSED,
+	      const struct arc_operand *operand,
+	      int mods ATTRIBUTE_UNUSED,
+	      const struct arc_operand_value *reg ATTRIBUTE_UNUSED,
+	      long value,
+	      const char **errmsg
+	      )
+{
+  arc_insn msb = 0;
+  arc_insn lsb = 0;
+
+  switch (operand->fmt)
+    {
+    case 134: /* ADD_S u6 */
+      msb = (value & 0x38) << 1;
+      lsb = (value & 0x07);
+      break;
+    case 135: /* enter_s u6 */
+      msb = (value & 0x30) << 4;
+      lsb = (value & 0x0F) << 1;
+      break;
+    case 137: /* ldi_s u7 */
+      msb = (value & 0x78) << 1;
+      lsb = (value & 0x07);
+      break;
+    case 138: /* leave_s u7 */
+      msb = (value & 0x70) << 4;
+      lsb = (value & 0x0F) << 1;
+      break;
+    case 141: /* st_s s11 */
+      value = value >> 2; /* truncate last 2 bits*/
+      msb = (value & 0x1F8) << 2;
+      lsb = (value & 0x07);
+      break;
+    case 142: /* ld_s u5 */
+      value = value >> 2; /* truncate last 2 bits*/
+      msb = (value & 0x04) << 8;
+      lsb = (value & 0x03) << 3;
+      break;
+    default:
+      *errmsg = _("unknown type of 6-bit unsigned constant");
+    }
+
+  insn |= msb;
+  insn |= lsb;
+
+  return insn;
+}
+
+/* Called when we see an <.T> flag.  */
+
+static arc_insn
+insert_v2_Tflag (arc_insn insn, long *ex ATTRIBUTE_UNUSED,
+	     const struct arc_operand *operand ATTRIBUTE_UNUSED,
+	     int mods ATTRIBUTE_UNUSED,
+	     const struct arc_operand_value *reg ATTRIBUTE_UNUSED,
+	     long value ATTRIBUTE_UNUSED,
+	     const char **errmsg ATTRIBUTE_UNUSED)
+{
+  /* We can't store anything in the insn until we've parsed the registers.
+     Just record the fact that we've got this flag.  */
+  tflag_p = SEEN;
+  brpredict = value;
+  return insn;
+}
+
+
+static arc_insn
+insert_v2_Tflagfinish (arc_insn insn, long *ex ATTRIBUTE_UNUSED,
+		       const struct arc_operand *operand,
+		       int mods ATTRIBUTE_UNUSED,
+		       const struct arc_operand_value *reg ATTRIBUTE_UNUSED,
+		       long value ATTRIBUTE_UNUSED,
+		       const char **errmsg)
+{
+  arc_insn bitY = brpredict;
+
+  /*144 => BBIT, 145=>BR*/
+
+  /* value is '1' for TAKEN*/
+  switch(tflag_p)
+    {
+    case PLUS:
+      if (operand->fmt == 144)
+	{
+	  /*BBIT*/
+	  bitY ^= 0x01; /*Positive => {TAKEN =(1^1 = 0), NOT_TAKEN = (0 ^1 =1)}*/
+	}
+      else
+	{
+	  /*BR*/
+	  bitY &= 0x01; /*Negative => {TAKEN =(1), NOT_TAKEN = (0)}*/
+	}
+      break;
+    case MINUS:
+      if (operand->fmt == 144)
+	{
+	  /*BBIT*/
+	  bitY &= 0x01; /*Negative => {TAKEN =(1), NOT_TAKEN = (0)}*/
+	}
+      else
+	{
+	  /*BR*/
+	  bitY ^= 0x01; /*Positive => {TAKEN =(1^1 = 0), NOT_TAKEN = (0 ^1 =1)}*/
+	}
+      break;
+    default:
+      *errmsg = _("unknown type of <.T> flag");
+    }
+
+  insn |= (bitY) << 3;
+
+  tflag_p = NONE;
+  brpredict = 0;
+
+  return insn;
+}
 
 /********Insertion function for some SIMD operands***************/
 static arc_insn
@@ -1259,7 +1475,7 @@ insert_reg (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
 	      insn |= (reg->value & 0x7) << operand->shift;
 	      insn |= (reg->value >> 3) << ARC_SHIFT_REGB_HIGH_AC;
 	    }
-          else if (!arc_mach_a4 && ('U' == operand->fmt))
+          else if (!arc_mach_a4 && 'U' == operand->fmt)
             {
 	      insn |= (reg->value & 0x7) << operand->shift;
 	      insn |= reg->value >> 3;
@@ -1274,7 +1490,19 @@ insert_reg (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
 	      if ((insn & 0xFF) == 0xFF)
 		*errmsg = _("attempt to set readonly register");
             }
-          else
+          else if (!arc_mach_a4 && operand->fmt == 128)
+	    {
+	      /* H5 class*/
+	      insn |= (reg->value & 0x7) << operand->shift;
+	      insn |= reg->value >> 3;
+	    }
+	  else if (!arc_mach_a4 && operand->fmt == 140)
+	    {
+	      /* G5 class*/
+	      insn |= (reg->value & 0x07) << operand->shift;
+	      insn |= (reg->value & 0x18);
+	    }
+	  else
 	    insn |= reg->value << operand->shift;
           op_type = OP_REG;
 	}
@@ -2053,6 +2281,15 @@ insert_reladdr (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
     }
   else if (!arc_mach_a4 && ('d' == operand->fmt))
     {
+      /*ARCv2: I ndeed to know the sign of the displacement to compute the Y bit*/
+      if (value > 0)
+	{
+	  tflag_p = PLUS;
+	}
+      else
+	{
+	  tflag_p = MINUS;
+	}
       /* Insert least significant 7-bits.  */
       insn |= ((value >> 1) & 0x7f) << operand->shift;
       /* Insert most significant bit.  */
@@ -3905,6 +4142,10 @@ static struct arc_opcode arc_opcodes[] = {
   { (unsigned char *) "iaddr%.q %#,%B,%u%F",  0x0, 0x30e70020, ARCOMPACT, 0, 0, 0, 0},
   { (unsigned char *) "iaddr%.q %#,%B,%L%F",  0x0, 0x30e70f80, ARCOMPACT, 0, 0, 0, 0},
   { (unsigned char *) "iaddr %#,%B,%K%F",     0x0, 0x30a70000, ARCOMPACT, 0, 0, 0, 0},
+
+  /*ARC v2 extensions*/
+  /*#include "arc-em.h"*/
+
 };
 
 
@@ -4352,7 +4593,10 @@ static const struct arc_operand_value arc_suffixes_ac[] =
   { "as", 3, ADDRESS22S_AC, 0 },
   { "di", 1, CACHEBYPASS5_AC, 0 },
   { "di", 1, CACHEBYPASS11_AC, 0 },
-  { "di", 1, CACHEBYPASS15_AC, 0 }
+  { "di", 1, CACHEBYPASS15_AC, 0 },
+  /*ARCv2 specific*/
+  { "nt", 0, ARCV2_TFLAG, 0},
+  { "t", 1, ARCV2_TFLAG, 0}
 };
 
 
@@ -4382,7 +4626,8 @@ arc_get_opcode_mach (int bfd_mach, int big_p)
       ARC_MACH_ARC5,
       ARC_MACH_ARC6,
       ARC_MACH_ARC7,
-      ARC_MACH_ARC601
+      ARC_MACH_ARC601,
+      ARC_MACH_ARCV2
     };
 
   return mach_type_map[bfd_mach] | (big_p ? ARC_MACH_BIG : 0);
@@ -4423,7 +4668,11 @@ arc_opcode_init_tables (int flags)
           memset (arc_operand_map_a4, 0, sizeof (arc_operand_map_a4));
 
           for (i = 0; i < (int) ELEMENTS_IN (arc_operands_a4); ++i)
-	    arc_operand_map_a4[arc_operands_a4[i].fmt] = i;
+	    {
+	      /*Just make sure that no strange number is comming through*/
+	      assert(arc_operands_a4[i].fmt < 512);
+	      arc_operand_map_a4[arc_operands_a4[i].fmt] = i;
+	    }
 
           /* Set the pointers to operand table, operand map table */
           arc_operands        = arc_operands_a4;
@@ -4439,7 +4688,11 @@ arc_opcode_init_tables (int flags)
           memset (arc_operand_map_ac, 0, sizeof (arc_operand_map_ac));
 
           for (i = 0; i < (int) ELEMENTS_IN (arc_operands_ac); ++i)
-	    arc_operand_map_ac[arc_operands_ac[i].fmt] = i;
+	    {
+	      /*Just make sure that no strange number is comming through*/
+	      assert(arc_operands_ac[i].fmt < 512);
+	      arc_operand_map_ac[arc_operands_ac[i].fmt] = i;
+	    }
 
           /* Set the pointers to operand table, operand map table */
           arc_operands = arc_operands_ac;
@@ -4450,7 +4703,8 @@ arc_opcode_init_tables (int flags)
 	     to be the case for A4. Would have to check that and test
 	     it at some point in time.
 	  */
-	  if (ARC_OPCODE_CPU(flags) == ARC_MACH_ARC7)
+	  if (ARC_OPCODE_CPU(flags) == ARC_MACH_ARC7 ||
+	      ARC_OPCODE_CPU(flags) == ARC_MACH_ARCV2)
 	    {
 	      arc_reg_names       = arc_reg_names_a700;
 	      arc_reg_names_count = ELEMENTS_IN(arc_reg_names_a700);
@@ -4823,31 +5077,42 @@ ac_constant_operand (const struct arc_operand *op)
     {
     case '@': /* This is valid only for A700 . The checks in the instruction patterns would take care of other checks.*/
 
-      case 'u':
-      case 'K':
-      case 'L':
-      case 'o':
-      case 'e':
-      case 'E':
-      case 'j':
-      case 'J':
-      case 'k':
-      case 'l':
-      case 'm':
-      case 'M':
-      case 'O':
-      case 'R':
-	/* Operands for the Aurora SIMD ISA*/
-      case '?':
-      case '\14':
-      case '\20':
-      case '\21':
-      case '\22':
-      case '\23':
-      case '\24':
-      case '\25':
+    case 'u':
+    case 'K':
+    case 'L':
+    case 'o':
+    case 'd':
+    case 'e':
+    case 'E':
+    case 'j':
+    case 'J':
+    case 'k':
+    case 'l':
+    case 'm':
+    case 'M':
+    case 'O':
+    case 'R':
+      /* Operands for the Aurora SIMD ISA*/
+    case '?':
+    case '\14':
+    case '\20':
+    case '\21':
+    case '\22':
+    case '\23':
+    case '\24':
+    case '\25':
+      /* ARCv2 */
+    case 132: /* W6 */
+    case 133:
+    case 134:
+    case 135:
+    case 136: /*u10 as in EI_S*/
+    case 137: /*u7 as in LDI_S*/
+    case 138: /*u7 as in LEAVE_S*/
+    case 141: /*s11 as in ST_S*/
+    case 142: /*u6 as in LD_S*/
 
-        return 1;
+      return 1;
     }
     return 0;
 }
@@ -4905,6 +5170,12 @@ ac_register_operand (const struct arc_operand *op)
       case '8':
       case '9':
       case '!':
+	/*ARCv2 specific FIXME! fix U*/
+      case 128: /* H5 */
+      case 129: /* R1 */
+      case 130: /* R2 */
+      case 131: /* R3 */
+      case 140: /* G5 */
         return 1;
     }
     return 0;
@@ -5023,9 +5294,11 @@ get_ext_suffix (char *s, char field)
   default : 
       ctype = arc_mach_a4 ? COND : COND_AC;
       break;
-      } /* end switch(field) */
+  } /* end switch(field) */
+
   if(ctype == 0)
       ctype = arc_mach_a4 ? COND : COND_AC;
+
   while (suffix){
     if ((suffix->operand.type == ctype)
         && !strcmp(s,suffix->operand.name)){
