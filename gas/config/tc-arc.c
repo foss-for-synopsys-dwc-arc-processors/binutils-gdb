@@ -8,6 +8,7 @@
    Contributor: Brendon Kehoe <brendan@zen.org>
    Contributor: Michael Eager <eager@eagercon.com>
    Contributor: Joern Rennecke <joern.rennecke@embecosm.com>
+   Contributor: Claudiu Zissulescu <claziss@synopsys.com>
 
    GAS is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -198,6 +199,7 @@ enum options
   OPTION_ARC600,
   OPTION_ARC601,
   OPTION_ARC700,
+  OPTION_ARCEM,
   OPTION_USER_MODE,
   OPTION_LD_EXT_MASK,
   OPTION_SWAP,
@@ -236,6 +238,7 @@ struct option md_longopts[] =
   { "mARC601", no_argument, NULL, OPTION_ARC601 },
   { "mARC700", no_argument, NULL, OPTION_ARC700 },
   { "mA7", no_argument, NULL, OPTION_ARC700 },
+  { "mEM", no_argument, NULL, OPTION_ARCEM },
   { "muser-mode-only", no_argument, NULL, OPTION_USER_MODE },
   { "mld-extension-reg-mask", required_argument, NULL, OPTION_LD_EXT_MASK },
 
@@ -450,6 +453,7 @@ instruction slot.");
 
       break;
 
+    case bfd_mach_arc_arcv2:
     case bfd_mach_arc_arc700:
 
       if (lt->prev_two_insns[PREV_INSN_1].delay_slot)
@@ -547,6 +551,11 @@ md_parse_option (int c, char *arg ATTRIBUTE_UNUSED)
     case OPTION_ARC700:
       mach_type_specified_p = 1;
       arc_mach_type = bfd_mach_arc_arc700;
+      arc_mach_a4= 0;
+      break;
+    case OPTION_ARCEM:
+      mach_type_specified_p = 1;
+      arc_mach_type = bfd_mach_arc_arcv2;
       arc_mach_a4= 0;
       break;
     case OPTION_USER_MODE:
@@ -745,11 +754,16 @@ arc_process_extinstr_options (void)
       strcpy (temp, "__ARC700__");
       break;
 
+    case bfd_mach_arc_arcv2:
+      strcpy (temp, "__ARCv2__");
+      break;
+
     default:
       as_bad ("Oops! Something went wrong here!");
       break;
     }
 
+  /*CZI: FIXME for ARCv2*/
   if ((extinsnlib & NO_MPY_INSN) && (arc_mach_type != bfd_mach_arc_arc700))
     {
       as_bad ("-mno-mpy can only be used with ARC700");
@@ -4917,7 +4931,7 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 	    } /* end while(ARC_MOD_P(...)) */
 	  operand = arc_operands + arc_operand_map[(int) ((opindex<<8)|*syn)];
 	  if (operand->fmt == 0){
-	    as_fatal ("unknown syntax format characters `%c%c'", arc_operand_prefixes[opindex], *syn);
+	    as_fatal ("unknown syntax format characters '%c%c'", arc_operand_prefixes[opindex], *syn);
               }
 
 	  if (operand->flags & ARC_OPERAND_FAKE)
@@ -5635,6 +5649,76 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 			    match_failed = 1;
                               }
 			  break;
+			case 'd': /* 9bit signed immediate, used by bbit*/
+			  if (value % 2)
+			    {
+			      as_warn ("The constant must be 2-byte aligned");
+			      match_failed = 1;
+			    }
+			  if ((value > 255) || (value < -256))
+			    {
+			      match_failed = 1;
+			    }
+			  break;
+			  /* Not very nice: check constants for ARCv2*/
+			case 'L':
+			  break;
+			case 132: /*w6*/
+			  if ((value > 31 || value < -32))
+			    {
+			      match_failed = 1;
+			    }
+			  break;
+			case 133:
+			  if ((value > 6 || value < -1))
+			    {
+			      match_failed = 1;
+			    }
+			  break;
+			case 134:
+			case 135:
+			  if ((value > 63 || value < 0))
+			    {
+			      match_failed = 1;
+			    }
+			  break;
+			case 136: /* u10*/
+			  if ((value > 0x3FF || value < 0))
+			    {
+			      match_failed = 1;
+			    }
+			  break;
+			case 138: /*u7 as is leave_s*/
+			case 137: /*u7 as in ldi_s*/
+			  if ((value > 0x7F || value < 0))
+			    {
+			      match_failed = 1;
+			    }
+			  break;
+			case 141: /*s11 as in st_s*/
+			  if (value % 4)
+			    {
+			      as_warn ("The constant must be 4-byte aligned");
+			      match_failed = 1;
+			    }
+			  if((value < -1024) || (value > 1023))
+			    {
+			      match_failed = 1;
+			    }
+			  break;
+			case 142: /*u5 as in ld_s*/
+			  if (value % 4)
+			    {
+			      as_warn ("The constant must be 4-byte aligned");
+			      match_failed = 1;
+			    }
+			  if((value < 0) || (value > 63))
+			    {
+			      match_failed = 1;
+			    }
+			  break;
+			default:
+			  as_warn ("Unchecked constant");
 			} /* end switch(operand->fmt) */
 
 		      if (match_failed)
