@@ -3830,25 +3830,25 @@ static struct arc_opcode arc_opcodes[] = {
   { (unsigned char *) "extw_s %b,%c", 0xf81f, 0x7810, ARCOMPACT, 0, 0 ,0,0},
 
 /* j_s [b];                     01111 bbb 000 00000 */
-  { (unsigned char *) "j_s [%b]", 0xf8ff, 0x7800, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "j_s.nd [%b]", 0xf8ff, 0x7800, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "j_s [%b]", 0xf8ff, 0x7800, ARCOMPACT | ARC_MACH_ARCV2, 0, 0 ,0,0},
+  { (unsigned char *) "j_s.nd [%b]", 0xf8ff, 0x7800, ARCOMPACT | ARC_MACH_ARCV2, 0, 0 ,0,0},
 /* j_s.d [b];                   01111 bbb 001 00000 */
-  { (unsigned char *) "j_s.d [%b]", 0xf8ff, 0x7820, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "j_s.d [%b]", 0xf8ff, 0x7820, ARCOMPACT | ARC_MACH_ARCV2, 0, 0 ,0,0},
 /* j_s [blink];                 01111 110 111 00000 */
-  { (unsigned char *) "j_s [%9]", 0xffff, 0x7ee0, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "j_s.nd [%9]", 0xffff, 0x7ee0, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "j_s [%9]", 0xffff, 0x7ee0, ARCOMPACT | ARC_MACH_ARCV2, 0, 0 ,0,0},
+  { (unsigned char *) "j_s.nd [%9]", 0xffff, 0x7ee0, ARCOMPACT | ARC_MACH_ARCV2, 0, 0 ,0,0},
 /* j_s.d [blink];               01111 111 111 00000 */
-  { (unsigned char *) "j_s.d [%9]", 0xffff, 0x7fe0, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "j_s.d [%9]", 0xffff, 0x7fe0, ARCOMPACT | ARC_MACH_ARCV2, 0, 0 ,0,0},
 /* jeq_s [blink];               01111 100 111 00000 */
   { (unsigned char *) "jeq_s [%9]", 0xffff, 0x7ce0, ARCOMPACT, 0, 0 ,0,0},
 /* jne_s [blink];               01111 101 111 00000 */
   { (unsigned char *) "jne_s [%9]", 0xffff, 0x7de0, ARCOMPACT, 0, 0 ,0,0},
 
 /* jl_s [b];                    01111 bbb 010 00000 */
-  { (unsigned char *) "jl_s [%b]", 0xf8ff, 0x7840, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "jl_s.nd [%b]", 0xf8ff, 0x7840, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "jl_s [%b]", 0xf8ff, 0x7840, ARCOMPACT | ARC_MACH_ARCV2, 0, 0 ,0,0},
+  { (unsigned char *) "jl_s.nd [%b]", 0xf8ff, 0x7840, ARCOMPACT | ARC_MACH_ARCV2, 0, 0 ,0,0},
 /* jl_s.d [b];                  01111 bbb 011 00000 */
-  { (unsigned char *) "jl_s.d [%b]", 0xf8ff, 0x7860, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "jl_s.d [%b]", 0xf8ff, 0x7860, ARCOMPACT | ARC_MACH_ARCV2, 0, 0 ,0,0},
 
 /* ld_s a,[b,c];                01100 bbb ccc 00 aaa */
   { (unsigned char *) "ld_s %a,[%b,%c]", 0xf818, 0x6000, ARCOMPACT, 0, 0 ,0,0},
@@ -5110,7 +5110,7 @@ ac_constant_operand (const struct arc_operand *op)
     case 137: /*u7 as in LDI_S*/
     case 138: /*u7 as in LEAVE_S*/
     case 141: /*s11 as in ST_S*/
-    case 142: /*u6 as in LD_S*/
+    case 142: /*u5 as in LD_S*/
 
       return 1;
     }
