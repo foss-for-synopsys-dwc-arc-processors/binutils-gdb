@@ -4854,6 +4854,7 @@ fprintf (stdout, "Matching ****** %s *************\n", str);
       const struct arc_operand_value *insn_suffixes[MAX_SUFFIXES];
       int regb_p;
       const struct arc_operand_value *regb;
+      const struct arc_operand_value *regh;
 
       /* Is this opcode supported by the selected cpu?  */
       if (!arc_opcode_supported (opcode))
@@ -4881,6 +4882,7 @@ fprintf (stdout, "Matching ****** %s *************\n", str);
       ext_suffix_p = 0;
       regb_p = 0;
       regb = NULL;
+      regh = NULL;
 #if DEBUG_INST_PATTERN
 fprintf (stdout, "Trying syntax %s\n", opcode->syntax);
 #endif
@@ -5396,6 +5398,31 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		      else if (ISALNUM (*(str + 3)))
 			match_failed = 1;
 		      break;
+		      /*ARCv2 special registers*/
+		    case 129: /* R1*/
+		      if (*str == '%')
+			str++;
+		      if (strncmp(str, "r1", 2))
+			match_failed = 1;
+		      else if (ISALNUM (*(str + 2)))
+			match_failed = 1;
+		      break;
+		    case 130: /* R2 */
+		      if (*str == '%')
+			str++;
+		      if (strncmp(str, "r2", 2))
+			match_failed = 1;
+		      else if (ISALNUM (*(str + 2)))
+			match_failed = 1;
+		      break;
+		    case 131: /* R3 */
+		      if (*str == '%')
+			str++;
+		      if (strncmp(str, "r3", 2))
+			match_failed = 1;
+		      else if (ISALNUM (*(str + 2)))
+			match_failed = 1;
+		      break;
 		    } /* end switch(operand->fmt) */
 		  if (match_failed)
 		    break;
@@ -5665,20 +5692,20 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 			  /* Not very nice: check constants for ARCv2*/
 			case 'L':
 			  break;
-			case 132: /*w6*/
+			case 132: /*w6 6bit signed*/
 			  if ((value > 31 || value < -32))
 			    {
 			      match_failed = 1;
 			    }
 			  break;
-			case 133:
+			case 133: /*s3 3bit signed*/
 			  if ((value > 6 || value < -1))
 			    {
 			      match_failed = 1;
 			    }
 			  break;
-			case 134:
-			case 135:
+			case 134: /*u6 6bit unsigned as used in ADD_S*/
+			case 135: /*u6 as used in ENTER_S*/
 			  if ((value > 63 || value < 0))
 			    {
 			      match_failed = 1;
@@ -5876,6 +5903,18 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 			    {
 			      regb_p = 1;
 			      regb = reg;
+			    }
+			}
+		      /*ARCv2 Specific: h reg must be the same if appears multiple times*/
+		      if (*syn == 128)
+			{
+			  if (regh != NULL && regh != reg)
+			    {
+			      break;
+			    }
+			  else
+			    {
+			      regh = reg;
 			    }
 			}
 

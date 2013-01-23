@@ -691,9 +691,10 @@
 /* clri    u6           	0010 0111 0110 1111 0000 uuuu uu11 1111  */
 { (unsigned char *) "clri [%u]",                               0xFFFFF03F, 0x276F003F, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*LP */
-{ (unsigned char *) "lp%.q %y",                              0xFFFFF020, 0x20E80020, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "lp %y",                                 0xFFFFF03F, 0x20680000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "lp %Y",                                 0xFFFFF000, 0x20A80000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "lp%.q %y",                              0xFFFFF020, 0x20E80020, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "lp%q %y",                               0xFFFFF020, 0x20E80020, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*SETI */
 { (unsigned char *) "seti %C",                               0xFFFFF03F, 0x262F003F, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "seti [%u]",                               0xFFFFF03F, 0x266F003F, ARC_MACH_ARCV2, 0, 0, 0, 0},
@@ -707,7 +708,7 @@
 /* add_s    b,sp,u7     	1100 0bbb 100u uuuu  */
 { (unsigned char *) "add_s %b,%6,%l",                        0xF8E0, 0xC080, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* add_s    b,b,u7      	1110 0bbb 0uuu uuuu  */
-{ (unsigned char *) "add_s %b,%b,%l",                        0xF880, 0xE000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "add_s %b,%b,%j",                        0xF880, 0xE000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* add_s    c,b,u3      	0110 1bbb ccc0 0uuu  */
 { (unsigned char *) "add_s %c,%b,%e",                        0xF818, 0x6800, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* add_s    SP,SP,u7    	1100 0000 101u uuuu  */
@@ -753,10 +754,6 @@
 { (unsigned char *) "mov_s %Ä,%Ö",                           0xF81C, 0x700C, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* mov_s    0,s3        	0111 0sss 1100 1111  */
 { (unsigned char *) "mov_s 0,%Ö",                            0xF8FF, 0x70CF, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* mov_s.ne    b,h      	0111 0bbb hhh1 11HH  */
-{ (unsigned char *) "mov_s.ne %b,%Ä",                        0xF81C, 0x701C, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* mov_s.ne    b,limm   	0111 0bbb 1101 1111  */
-{ (unsigned char *) "mov_s.ne%Q %b,%L",                      0xF8FF, 0x70DF, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* mov_s    b,u8        	1101 1bbb uuuu uuuu  */
 { (unsigned char *) "mov_s %b,%J",                           0xF800, 0xD800, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* mov_s    g,h         	0100 0ggg hhhG G0HH  */
@@ -767,6 +764,12 @@
 { (unsigned char *) "mov_s 0,%Ä",                            0xFF1C, 0x4618, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* mov_s    0,limm      	0100 0110 1101 1011  */
 { (unsigned char *) "mov_s%Q 0,%L",                          0xFFFF, 0x46DB, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* mov_s.ne    b,h      	0111 0bbb hhh1 11HH  */
+{ (unsigned char *) "mov_s.ne %b,%Ä",                        0xF81C, 0x701C, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* mov_s.ne    b, 0  This is a sub_s.ne b,b,b */
+/*{ (unsigned char *) "mov_s.ne %b,0",                     0xF8FF, 0x78C0, ARC_MACH_ARCV2, 0, 0, 0, 0},*/
+/* mov_s.ne    b,limm   	0111 0bbb 1101 1111  */
+{ (unsigned char *) "mov_s.ne%Q %b,%L",                      0xF8FF, 0x70DF, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*LDI */
 { (unsigned char *) "ldi %#,[%C]",                           0xF8FF803F, 0x20260000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "ldi 0,[%C]",                            0xFFFFF03F, 0x26267000, ARC_MACH_ARCV2, 0, 0, 0, 0},
@@ -791,14 +794,14 @@
 { (unsigned char *) "st%z%.w%.D%Q %L,[%B,%o]%0",             0xF8000FC1, 0x18000F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "st%z%.w%.D%Q %L,[%L,%o]%0",             0xFF007FC1, 0x1E007F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*LD_S */
-/* ld_s    R0,[h,u5]    	0100 0U00 hhhu u1HH  */
-{ (unsigned char *) "ld_s %4,[%Ä,%E]",                       0xFB04, 0x4004, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* ld_s    R1,[h,u5]    	0100 0U01 hhhu u1HH  */
-{ (unsigned char *) "ld_s %Å,[%Ä,%E]",                       0xFB04, 0x4104, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* ld_s    R2,[h,u5]    	0100 0U10 hhhu u1HH  */
-{ (unsigned char *) "ld_s %Ç,[%Ä,%E]",                       0xFB04, 0x4204, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* ld_s    R3,[h,u5]    	0100 0U11 hhhu u1HH  */
-{ (unsigned char *) "ld_s %É,[%Ä,%E]",                       0xFB04, 0x4304, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* ld_s    R0,[h,Lu5]   	0100 0U00 hhhu u1HH  */
+{ (unsigned char *) "ld_s %4,[%Ä,%é]",                       0xFB04, 0x4004, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* ld_s    R1,[h,Lu5]   	0100 0U01 hhhu u1HH  */
+{ (unsigned char *) "ld_s %Å,[%Ä,%é]",                       0xFB04, 0x4104, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* ld_s    R2,[h,Lu5]   	0100 0U10 hhhu u1HH  */
+{ (unsigned char *) "ld_s %Ç,[%Ä,%é]",                       0xFB04, 0x4204, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* ld_s    R3,[h,Lu5]   	0100 0U11 hhhu u1HH  */
+{ (unsigned char *) "ld_s %É,[%Ä,%é]",                       0xFB04, 0x4304, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* ld_s<.aa>    a,[b,c] 	0100 1bbb ccc0 0aaa  */
 { (unsigned char *) "ld_s.as %a,[%b,%c]",                    0xF818, 0x4800, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* ld_s    R1,[GP,Ss11] 	0101 0SSS SSS0 0sss  */
