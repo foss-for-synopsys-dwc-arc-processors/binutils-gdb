@@ -89,7 +89,8 @@ INSERT_FN (insert_unopmacro);
 
 INSERT_FN(insert_v2_16);
 INSERT_FN(insert_v2_Tflag);
-INSERT_FN(insert_v2_Tflagfinish);
+INSERT_FN(insert_Ybit);
+INSERT_FN(insert_Ybit_neg);
 
 EXTRACT_FN (extract_reg);
 EXTRACT_FN (extract_ld_offset);
@@ -142,7 +143,7 @@ static int limm_p;
 static long limm;
 
 /*Nonzero if we've seen an <.T> flag*/
-static enum { NONE, SEEN, PLUS, MINUS} tflag_p = NONE;
+static enum { NONE = 0, TAKEN = 1, NTAKEN =2} tflag_p = NONE;
 static unsigned char brpredict = 0;
 
 /* Configuration flags.  */
@@ -924,12 +925,15 @@ static const struct arc_operand arc_operands_ac[] =
 #define ARCV2_TFLAG (ARCV2_LDU5+1)
   { 143, 1, 3, ARC_OPERAND_SUFFIX, insert_v2_Tflag, 0 },
 
+  /*overloads the 'd' flag*/
 #define ARCV2_TFLAGFINBBIT (ARCV2_TFLAG+1)
-  { 144, 1, 3, ARC_OPERAND_FAKE | ARC_OPERAND_ERROR, insert_v2_Tflagfinish, 0 },
+  { 144, 8, 17, ARC_OPERAND_FAKE | ARC_OPERAND_ERROR | ARC_OPERAND_RELATIVE_BRANCH | ARC_OPERAND_SIGNED | ARC_OPERAND_2BYTE_ALIGNED,
+    insert_Ybit, 0 },
 
-  /*u5 3-bit unsigned immediate as used in LD_S*/
+  /*overloads the 'd' flag*/
 #define ARCV2_TFLAGFINBR (ARCV2_TFLAGFINBBIT+1)
-  { 145, 1, 3, ARC_OPERAND_FAKE | ARC_OPERAND_ERROR, insert_v2_Tflagfinish, 0 },
+  { 145, 8, 17, ARC_OPERAND_FAKE | ARC_OPERAND_ERROR | ARC_OPERAND_RELATIVE_BRANCH | ARC_OPERAND_SIGNED | ARC_OPERAND_2BYTE_ALIGNED,
+    insert_Ybit_neg, 0 },
 
 /* end of list place holder */
   { 0, 0, 0, 0, 0, 0 }
@@ -1056,64 +1060,84 @@ insert_v2_Tflag (arc_insn insn, long *ex ATTRIBUTE_UNUSED,
 	     long value ATTRIBUTE_UNUSED,
 	     const char **errmsg ATTRIBUTE_UNUSED)
 {
-  /* We can't store anything in the insn until we've parsed the registers.
+  /* We can't store anything in the insn until we've parsed the shimm field.
      Just record the fact that we've got this flag.  */
-  tflag_p = SEEN;
-  brpredict = value;
+
+  tflag_p = NTAKEN;
+  if (value)
+    {
+      tflag_p = TAKEN;
+    }
+
   return insn;
 }
 
+unsigned char arc_get_branch_prediction(void)
+{
+  return tflag_p;
+}
+
+void arc_reset_branch_prediction(void)
+{
+  tflag_p = NONE;
+}
 
 static arc_insn
-insert_v2_Tflagfinish (arc_insn insn, long *ex ATTRIBUTE_UNUSED,
-		       const struct arc_operand *operand,
-		       int mods ATTRIBUTE_UNUSED,
-		       const struct arc_operand_value *reg ATTRIBUTE_UNUSED,
-		       long value ATTRIBUTE_UNUSED,
-		       const char **errmsg)
+insert_Ybit (arc_insn insn, long *ex ATTRIBUTE_UNUSED,
+	     const struct arc_operand *operand,
+	     int mods ATTRIBUTE_UNUSED,
+	     const struct arc_operand_value *reg ATTRIBUTE_UNUSED,
+	     long value ,
+	     const char **errmsg ATTRIBUTE_UNUSED)
 {
-  arc_insn bitY = brpredict;
+  arc_insn bitY = 0;
 
-  /*144 => BBIT, 145=>BR*/
+  if (!value)
+    return insn;
 
-  /* value is '1' for TAKEN*/
-  switch(tflag_p)
+  if (value < 0)
     {
-    case PLUS:
-      if (operand->fmt == 144)
-	{
-	  /*BBIT*/
-	  bitY ^= 0x01; /*Positive => {TAKEN =(1^1 = 0), NOT_TAKEN = (0 ^1 =1)}*/
-	}
-      else
-	{
-	  /*BR*/
-	  bitY &= 0x01; /*Negative => {TAKEN =(1), NOT_TAKEN = (0)}*/
-	}
-      break;
-    case MINUS:
-      if (operand->fmt == 144)
-	{
-	  /*BBIT*/
-	  bitY &= 0x01; /*Negative => {TAKEN =(1), NOT_TAKEN = (0)}*/
-	}
-      else
-	{
-	  /*BR*/
-	  bitY ^= 0x01; /*Positive => {TAKEN =(1^1 = 0), NOT_TAKEN = (0 ^1 =1)}*/
-	}
-      break;
-    default:
-      *errmsg = _("unknown type of <.T> flag");
+      bitY = 1;
     }
+
+  /* Insert least significant 7-bits.  */
+  insn |= ((value >> 1) & 0x7f) << operand->shift;
+  /* Insert most significant bit.  */
+  insn |= (((value >> 1) & 0x80) >> 7) << 15;
 
   insn |= (bitY) << 3;
 
-  tflag_p = NONE;
-  brpredict = 0;
+  return insn;
+}
+
+static arc_insn
+insert_Ybit_neg (arc_insn insn, long *ex ATTRIBUTE_UNUSED,
+		 const struct arc_operand *operand,
+		 int mods ATTRIBUTE_UNUSED,
+		 const struct arc_operand_value *reg ATTRIBUTE_UNUSED,
+		 long value ,
+		 const char **errmsg ATTRIBUTE_UNUSED)
+{
+  arc_insn bitY = 1;
+
+  if (!value)
+    return insn;
+
+  if (value < 0)
+    {
+      bitY = 0;
+    }
+
+  /* Insert least significant 7-bits.  */
+  insn |= ((value >> 1) & 0x7f) << operand->shift;
+  /* Insert most significant bit.  */
+  insn |= (((value >> 1) & 0x80) >> 7) << 15;
+
+  insn |= (bitY) << 3;
 
   return insn;
 }
+
 
 /********Insertion function for some SIMD operands***************/
 static arc_insn
@@ -1403,9 +1427,10 @@ insert_reg (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
 		/* insn |= value & 511; - done later.  */
 	      }
 	}
-      else{
-	*errmsg = _("unable to fit different valued constants into instruction");
-          }
+      else
+	{
+	  *errmsg = _("unable to fit different valued constants into instruction");
+	}
     }
   else
     {
@@ -2007,7 +2032,7 @@ insert_st_syntax (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
 static arc_insn
 insert_ld_syntax (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
 		  const struct arc_operand *operand ATTRIBUTE_UNUSED,
-		  int mods ATTRIBUTE_UNUSED,
+		  int mods ,
 		  const struct arc_operand_value *reg ATTRIBUTE_UNUSED,
 		  long value ATTRIBUTE_UNUSED,
 		  const char **errmsg)
@@ -2033,7 +2058,7 @@ insert_ld_syntax (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
 	{
 	  if (ls_operand[LS_BASE] != OP_REG
 	      /* .as is not actually an address write-back.  */
-	      && addrwb_p != 0xc00000)
+	      && addrwb_p != 0xc00000  && (mods & ARC_OPERAND_ERROR))
 	    *errmsg = _("address writeback not allowed");
 	  insn |= addrwb_p;
 	}
@@ -2077,8 +2102,8 @@ insert_ld_syntax (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
     *errmsg = _("ld operand error");
   if (addrwb_p)
     {
-      if (ls_operand[LS_BASE] != OP_REG)
-	*errmsg = _("address writeback not allowed");
+      if ((ls_operand[LS_BASE] != OP_REG) && (mods & ARC_OPERAND_ERROR))
+	 *errmsg = _("address writeback not allowed");
       insn |= addrwb_p;
     }
   return insn;
@@ -2281,15 +2306,6 @@ insert_reladdr (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
     }
   else if (!arc_mach_a4 && ('d' == operand->fmt))
     {
-      /*ARCv2: I ndeed to know the sign of the displacement to compute the Y bit*/
-      if (value > 0)
-	{
-	  tflag_p = PLUS;
-	}
-      else
-	{
-	  tflag_p = MINUS;
-	}
       /* Insert least significant 7-bits.  */
       insn |= ((value >> 1) & 0x7f) << operand->shift;
       /* Insert most significant bit.  */
@@ -2963,14 +2979,14 @@ static struct arc_opcode arc_opcodes[] = {
   { (unsigned char *) "asr%.f 0,%C%F", 0xffff703f, 0x262f7001, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "asr%.f 0,%u%F", 0xffff703f, 0x266f7001, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "asr%.f%Q 0,%L%F", 0xffff7fff, 0x262f7f81, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "bbit0%.n %B,%C,%d", 0xf801001f, 0x0801000e, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "bbit0%.n %B,%u,%d", 0xf801001f, 0x0801001e, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "bbit0%Q %B,%L,%d", 0xf8010fff, 0x08010f8e, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "bbit0%Q %L,%C,%d", 0xff01703f, 0x0e01700e, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "bbit1%.n %B,%C,%d", 0xf801001f, 0x0801000f, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "bbit1%.n %B,%u,%d", 0xf801001f, 0x0801001f, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "bbit1%Q %B,%L,%d", 0xf8010fff, 0x08010f8f, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "bbit1%Q %L,%C,%d", 0xff01703f, 0x0e01700f, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "bbit0%.n %B,%C,%d", 0xf801001f, 0x0801000e, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "bbit0%.n %B,%u,%d", 0xf801001f, 0x0801001e, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "bbit0%Q %B,%L,%d",  0xf8010fff, 0x08010f8e, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "bbit0%Q %L,%C,%d",  0xff01703f, 0x0e01700e, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "bbit1%.n %B,%C,%d", 0xf801001f, 0x0801000f, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "bbit1%.n %B,%u,%d", 0xf801001f, 0x0801001f, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "bbit1%Q %B,%L,%d",  0xf8010fff, 0x08010f8f, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "bbit1%Q %L,%C,%d",  0xff01703f, 0x0e01700f, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
   { (unsigned char *) "b%.n %I", 0xf8010010, 0x00010000, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "b%q%.n %i", 0xf8010000, 0x00000000, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "b%.q%.n %i", 0xf8010000, 0x00000000, ARCOMPACT, 0, 0 ,0,0},
@@ -3034,65 +3050,65 @@ static struct arc_opcode arc_opcodes[] = {
   { (unsigned char *) "bmsk%.q%.f%Q 0,%L,%C%F", 0xffff7020, 0x26d37000, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "bmsk%.q%.f%Q 0,%L,%u%F", 0xffff7020, 0x26d37020, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "bmsk%.q%.f%Q 0,%L,%L%F", 0xffff7fe0, 0x26d37f80, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "breq%.n %B,%C,%d", 0xf801003f, 0x08010000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "breq%.n %B,%u,%d", 0xf801003f, 0x08010010, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "breq%Q %B,%L,%d", 0xf8010fff, 0x08010f80, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "breq%Q %L,%C,%d", 0xff01703f, 0x0e017000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "brne%.n %B,%C,%d", 0xf801003f, 0x08010001, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "brne%.n %B,%u,%d", 0xf801003f, 0x08010011, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "brne%Q %B,%L,%d", 0xf8010fff, 0x08010f81, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "brne%Q %L,%C,%d", 0xff01703f, 0x0e017001, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "breq%.n %B,%C,%d", 0xf801003f, 0x08010000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "breq%.n %B,%u,%d", 0xf801003f, 0x08010010, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "breq%Q %B,%L,%d",  0xf8010fff, 0x08010f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "breq%Q %L,%C,%d",  0xff01703f, 0x0e017000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "brne%.n %B,%C,%d", 0xf801003f, 0x08010001, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "brne%.n %B,%u,%d", 0xf801003f, 0x08010011, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "brne%Q %B,%L,%d",  0xf8010fff, 0x08010f81, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "brne%Q %L,%C,%d",  0xff01703f, 0x0e017001, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 
   /*Pseudo mnemonics for BRcc instruction*/
-  { (unsigned char *) "brgt%.n %C,%B,%d", 0xf801003f, 0x08010002, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "brgt%.n %B,%u,%d", 0xf801003f, 0x08010013, ARCOMPACT|ARC_INCR_U6, 0, 0 ,0,0},
-  { (unsigned char *) "brgt%Q %L,%B,%d", 0xf8010fff, 0x08010f82, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "brgt%Q %C,%L,%d", 0xff01703f, 0x0e017002, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "brgt%.n %C,%B,%d", 0xf801003f, 0x08010002, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "brgt%.n %B,%u,%d", 0xf801003f, 0x08010013, ARCOMPACT & (~ARC_MACH_ARCV2)|ARC_INCR_U6, 0, 0 ,0,0},
+  { (unsigned char *) "brgt%Q %L,%B,%d",  0xf8010fff, 0x08010f82, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "brgt%Q %C,%L,%d",  0xff01703f, 0x0e017002, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 
-  { (unsigned char *) "brle%.n %C,%B,%d", 0xf801003f, 0x08010003, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "brle%.n %B,%u,%d", 0xf801003f, 0x08010012, ARCOMPACT|ARC_INCR_U6, 0, 0 ,0,0},
-  { (unsigned char *) "brle%Q %L,%B,%d", 0xf8010fff, 0x08010f83, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "brle%Q %C,%L,%d", 0xff01703f, 0x0e017003, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "brle%.n %C,%B,%d", 0xf801003f, 0x08010003, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "brle%.n %B,%u,%d", 0xf801003f, 0x08010012, ARCOMPACT & (~ARC_MACH_ARCV2)|ARC_INCR_U6, 0, 0 ,0,0},
+  { (unsigned char *) "brle%Q %L,%B,%d",  0xf8010fff, 0x08010f83, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "brle%Q %C,%L,%d",  0xff01703f, 0x0e017003, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 
-  { (unsigned char *) "brhi%.n %C,%B,%d", 0xf801003f, 0x08010004, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "brhi%.n %B,%u,%d", 0xf801003f, 0x08010015, ARCOMPACT|ARC_INCR_U6, 0, 0 ,0,0},
-  { (unsigned char *) "brhi%Q %L,%B,%d", 0xf8010fff, 0x08010f84, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "brhi%Q %C,%L,%d", 0xff01703f, 0x0e017004, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "brhi%.n %C,%B,%d", 0xf801003f, 0x08010004, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "brhi%.n %B,%u,%d", 0xf801003f, 0x08010015, ARCOMPACT & (~ARC_MACH_ARCV2)|ARC_INCR_U6, 0, 0 ,0,0},
+  { (unsigned char *) "brhi%Q %L,%B,%d",  0xf8010fff, 0x08010f84, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "brhi%Q %C,%L,%d",  0xff01703f, 0x0e017004, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 
 
-  { (unsigned char *) "brls%.n %C,%B,%d", 0xf801003f, 0x08010005, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "brls%.n %B,%u,%d", 0xf801003f, 0x08010014, ARCOMPACT|ARC_INCR_U6, 0, 0 ,0,0},
-  { (unsigned char *) "brls%Q %L,%B,%d", 0xf8010fff, 0x08010f85, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "brls%Q %C,%L,%d", 0xff01703f, 0x0e017005, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "brls%.n %C,%B,%d", 0xf801003f, 0x08010005, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "brls%.n %B,%u,%d", 0xf801003f, 0x08010014, ARCOMPACT & (~ARC_MACH_ARCV2)|ARC_INCR_U6, 0, 0 ,0,0},
+  { (unsigned char *) "brls%Q %L,%B,%d",  0xf8010fff, 0x08010f85, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "brls%Q %C,%L,%d",  0xff01703f, 0x0e017005, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 
-  { (unsigned char *) "brcc%.n %B,%C,%d", 0xff01003f, 0x08010005, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "brcc%.n %B,%u,%d", 0xff01003f, 0x08010015, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "brcc%Q %B,%L,%d", 0xf8010fff, 0x08010f85, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "brcc%Q %L,%C,%d", 0xf801003f, 0x0e017005, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "brcc%.n %B,%C,%d", 0xff01003f, 0x08010005, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "brcc%.n %B,%u,%d", 0xff01003f, 0x08010015, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "brcc%Q %B,%L,%d",  0xf8010fff, 0x08010f85, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "brcc%Q %L,%C,%d",  0xf801003f, 0x0e017005, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 
-  { (unsigned char *) "brcs%.n %B,%C,%d", 0xff01003f, 0x08010004, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "brcs%.n %B,%u,%d", 0xff01003f, 0x08010014, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "brcs%Q %B,%L,%d", 0xf8010fff, 0x08010f84, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "brcs%Q %L,%C,%d", 0xf801003f, 0x0e017004, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "brcs%.n %B,%C,%d", 0xff01003f, 0x08010004, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "brcs%.n %B,%u,%d", 0xff01003f, 0x08010014, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "brcs%Q %B,%L,%d",  0xf8010fff, 0x08010f84, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "brcs%Q %L,%C,%d",  0xf801003f, 0x0e017004, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
   /*Pseudo Mnemonics definition ends*/
 
-  { (unsigned char *) "brlt%.n %B,%C,%d", 0xf801003f, 0x08010002, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "brlt%.n %B,%u,%d", 0xf801003f, 0x08010012, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "brlt%Q %B,%L,%d", 0xf8010fff, 0x08010f82, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "brlt%Q %L,%C,%d", 0xff01703f, 0x0e017002, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "brlt%.n %B,%C,%d", 0xf801003f, 0x08010002, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "brlt%.n %B,%u,%d", 0xf801003f, 0x08010012, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "brlt%Q %B,%L,%d",  0xf8010fff, 0x08010f82, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "brlt%Q %L,%C,%d",  0xff01703f, 0x0e017002, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
   { (unsigned char *) "brk",             0xffffffff, 0x256F003F, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "brge%.n %B,%C,%d", 0xf801003f, 0x08010003, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "brge%.n %B,%u,%d", 0xf801003f, 0x08010013, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "brge%Q %B,%L,%d", 0xf8010fff, 0x08010f83, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "brge%Q %L,%C,%d", 0xff01703f, 0x0e017003, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "brlo%.n %B,%C,%d", 0xf801003f, 0x08010004, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "brlo%.n %B,%u,%d", 0xf801003f, 0x08010014, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "brlo%Q %B,%L,%d", 0xf8010fff, 0x08010f84, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "brlo%Q %L,%C,%d", 0xff01703f, 0x0e017004, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "brhs%.n %B,%C,%d", 0xf801003f, 0x08010005, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "brhs%.n %B,%u,%d", 0xf801003f, 0x08010015, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "brhs%Q %B,%L,%d", 0xf8010fff, 0x08010f85, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "brhs%Q %L,%C,%d", 0xff01703f, 0x0e017005, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "brge%.n %B,%C,%d", 0xf801003f, 0x08010003, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "brge%.n %B,%u,%d", 0xf801003f, 0x08010013, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "brge%Q %B,%L,%d",  0xf8010fff, 0x08010f83, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "brge%Q %L,%C,%d",  0xff01703f, 0x0e017003, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "brlo%.n %B,%C,%d", 0xf801003f, 0x08010004, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "brlo%.n %B,%u,%d", 0xf801003f, 0x08010014, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "brlo%Q %B,%L,%d",  0xf8010fff, 0x08010f84, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "brlo%Q %L,%C,%d",  0xff01703f, 0x0e017004, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "brhs%.n %B,%C,%d", 0xf801003f, 0x08010005, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "brhs%.n %B,%u,%d", 0xf801003f, 0x08010015, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "brhs%Q %B,%L,%d",  0xf8010fff, 0x08010f85, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "brhs%Q %L,%C,%d",  0xff01703f, 0x0e017005, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
   { (unsigned char *) "bset%.f %A,%B,%C%F", 0xf8ff0000, 0x200f0000, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "bset%.f %A,%B,%u%F", 0xf8ff0000, 0x204f0000, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "bset%.f %#,%B,%K%F", 0xf8ff0000, 0x208f0000, ARCOMPACT, 0, 0 ,0,0},
@@ -3175,9 +3191,9 @@ static struct arc_opcode arc_opcodes[] = {
   { (unsigned char *) "cmp%.q%.f%Q %L,%L", 0xffffffe0, 0x26ccff80, ARCOMPACT, 0, 0 ,0,0},
 
   /* ARC A700 extension for Atomic Exchange */
-  { (unsigned char *) "ex%.V %#,[%C]%^",0xf8ff003f,0x202f000C,ARC_MACH_ARC7,0,0,0,0},
-  { (unsigned char *) "ex%.V %#,[%u]%^",0xf8ff003f,0x206f000C,ARC_MACH_ARC7,0,0,0,0},
-  { (unsigned char *) "ex%.V %#,[%L]%^",0xf8ff0fff,0x202f0f8c,ARC_MACH_ARC7,0,0,0,0},
+  { (unsigned char *) "ex%.V %#,[%C]%^",0xf8ff003f,0x202f000C,ARC_MACH_ARC7 | ARC_MACH_ARCV2,0,0,0,0},
+  { (unsigned char *) "ex%.V %#,[%u]%^",0xf8ff003f,0x206f000C,ARC_MACH_ARC7 | ARC_MACH_ARCV2,0,0,0,0},
+  { (unsigned char *) "ex%.V %#,[%L]%^",0xf8ff0fff,0x202f0f8c,ARC_MACH_ARC7 | ARC_MACH_ARCV2,0,0,0,0},
 
   { (unsigned char *) "extb%.f %#,%C%F", 0xf8ff003f, 0x202f0007, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "extb%.f %#,%u%F", 0xf8ff003f, 0x206f0007, ARCOMPACT, 0, 0 ,0,0},
@@ -3185,12 +3201,12 @@ static struct arc_opcode arc_opcodes[] = {
   { (unsigned char *) "extb%.f 0,%C%F", 0xffff703f, 0x262f7007, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "extb%.f 0,%u%F", 0xffff703f, 0x266f7007, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "extb%.f%Q 0,%L%F", 0xffff7fff, 0x262f7f87, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "extw%.f %#,%C%F", 0xf8ff003f, 0x202f0008, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "extw%.f %#,%u%F", 0xf8ff003f, 0x206f0008, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "extw%.f%Q %#,%L%F", 0xf8ff0fff, 0x202f0f88, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "extw%.f 0,%C%F", 0xffff703f, 0x262f7008, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "extw%.f 0,%u%F", 0xffff703f, 0x266f7008, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "extw%.f%Q 0,%L%F", 0xffff7fff, 0x262f7f88, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "extw%.f %#,%C%F",   0xf8ff003f, 0x202f0008, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "extw%.f %#,%u%F",   0xf8ff003f, 0x206f0008, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "extw%.f%Q %#,%L%F", 0xf8ff0fff, 0x202f0f88, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "extw%.f 0,%C%F",    0xffff703f, 0x262f7008, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "extw%.f 0,%u%F",    0xffff703f, 0x266f7008, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "extw%.f%Q 0,%L%F",  0xffff7fff, 0x262f7f88, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 
   { (unsigned char *) "flag %u", 0xfffff020, 0x20690000, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "flag %C", 0xfffff020, 0x20290000, ARCOMPACT, 0, 0 ,0,0},
@@ -3200,90 +3216,123 @@ static struct arc_opcode arc_opcodes[] = {
   { (unsigned char *) "flag %L", 0xffffffff, 0x20290f80, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "flag%.q%Q %L", 0xffffffe0, 0x20e90f80, ARCOMPACT, 0, 0, 0, 0 },
 
-  { (unsigned char *) "j%.N [%C]", 0xfffef03f, 0x20200000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "j%.N %u", 0xfffef03f, 0x20600000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "j%.N %K", 0xfffef000, 0x20a00000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "j%Q %L", 0xffffffff, 0x20200f80, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "j%.f [%7]", 0xffffffff, 0x20208740, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "j%.f [%8]", 0xffffffff, 0x20208780, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "j%q%.N [%C]", 0xfffef020, 0x20e00000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "j%q%.N %u", 0xfffef020, 0x20e00020, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "j%q%Q %L", 0xffffffe0, 0x20e00f80, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "j%q%.f [%7]", 0xffffffe0, 0x20e08740, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "j%q%.f [%8]", 0xffffffe0, 0x20e08780, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "j%.q%.N [%C]", 0xfffef020, 0x20e00000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "j%.q%.N %u", 0xfffef020, 0x20e00020, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "j%.q%Q %L", 0xffffffe0, 0x20e00f80, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "j%.q%.f [%7]", 0xffffffe0, 0x20e08740, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "j%.q%.f [%8]", 0xffffffe0, 0x20e08780, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "jl%.N [%C]", 0xfffef03f, 0x20220000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "jl%.N %u", 0xfffef03f, 0x20620000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "jl%.N %K", 0xfffef000, 0x20a20000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "jl%Q %L", 0xffffffff, 0x20220f80, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "jl%q%.N [%C]", 0xfffef020, 0x20e20000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "jl%q%.N %u", 0xfffef020, 0x20e20020, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "jl%q%Q %L", 0xffffffe0, 0x20e20f80, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "jl%.q%.N [%C]", 0xfffef020, 0x20e20000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "jl%.q%.N %u", 0xfffef020, 0x20e20020, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "jl%.q%Q %L", 0xffffffe0, 0x20e20f80, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "j%.N [%C]",    0xfffef03f, 0x20200000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "j%.N %u",      0xfffef03f, 0x20600000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "j%.N %K",      0xfffef000, 0x20a00000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "j%Q %L",       0xffffffff, 0x20200f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "j%.f [%7]",    0xffffffff, 0x20208740, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "j%.f [%8]",    0xffffffff, 0x20208780, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "j%q%.N [%C]",  0xfffef020, 0x20e00000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "j%q%.N %u",    0xfffef020, 0x20e00020, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "j%q%Q %L",     0xffffffe0, 0x20e00f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "j%q%.f [%7]",  0xffffffe0, 0x20e08740, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "j%q%.f [%8]",  0xffffffe0, 0x20e08780, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "j%.q%.N [%C]", 0xfffef020, 0x20e00000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "j%.q%.N %u",   0xfffef020, 0x20e00020, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "j%.q%Q %L",    0xffffffe0, 0x20e00f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "j%.q%.f [%7]", 0xffffffe0, 0x20e08740, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "j%.q%.f [%8]", 0xffffffe0, 0x20e08780, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "jl%.N [%C]",    0xfffef03f, 0x20220000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "jl%.N %u",      0xfffef03f, 0x20620000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "jl%.N %K",      0xfffef000, 0x20a20000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "jl%Q %L",       0xffffffff, 0x20220f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "jl%q%.N [%C]",  0xfffef020, 0x20e20000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "jl%q%.N %u",    0xfffef020, 0x20e20020, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "jl%q%Q %L",     0xffffffe0, 0x20e20f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "jl%.q%.N [%C]", 0xfffef020, 0x20e20000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "jl%.q%.N %u",   0xfffef020, 0x20e20020, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "jl%.q%Q %L",    0xffffffe0, 0x20e20f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 
   /* Prefetch equivalent with ld<.aa> 0,[b,s9] / [b,limm] / [limm]
      / [b,c] / [limm,c]
      This is valid only in the A700
   */
 
-  { (unsigned char *) "ld%.p 0,[%g,%o]%3", 0xf80009ff, 0x1000003e, ARC_MACH_ARC7, 0, 0 ,0,0},
+  { (unsigned char *) "ld%.p 0,[%g,%o]%3",    0xf80009ff, 0x1000003e, ARC_MACH_ARC7, 0, 0 ,0,0},
   { (unsigned char *) "prefetch%.p [%g,%o]%3",0xf80009ff, 0x1000003e, ARC_MACH_ARC7, 0, 0 ,0,0},
-  { (unsigned char *) "pf%.p [%g,%o]%3",0xf80009ff, 0x1000003e, ARC_MACH_ARC7, 0, 0 ,0,0},
+  { (unsigned char *) "pf%.p [%g,%o]%3",      0xf80009ff, 0x1000003e, ARC_MACH_ARC7, 0, 0 ,0,0},
 
-  { (unsigned char *) "ld 0,[%L]%3", 0xff0079ff, 0x1600703e, ARC_MACH_ARC7, 0, 0 ,0,0},
+  { (unsigned char *) "ld 0,[%L]%3",     0xff0079ff, 0x1600703e, ARC_MACH_ARC7, 0, 0 ,0,0},
   { (unsigned char *) "prefetch [%L]%3", 0xff0079ff, 0x1600703e, ARC_MACH_ARC7, 0, 0 ,0,0},
-  { (unsigned char *) "pf [%L]%3", 0xff0079ff, 0x1600703e, ARC_MACH_ARC7, 0, 0 ,0,0},
+  { (unsigned char *) "pf [%L]%3",       0xff0079ff, 0x1600703e, ARC_MACH_ARC7, 0, 0 ,0,0},
 
 
-  { (unsigned char *) "ld%.P 0,[%g,%C]%1", 0xf83f803f, 0x2030003e, ARC_MACH_ARC7, 0, 0 ,0,0},
+  { (unsigned char *) "ld%.P 0,[%g,%C]%1",     0xf83f803f, 0x2030003e, ARC_MACH_ARC7, 0, 0 ,0,0},
   { (unsigned char *) "prefetch%.p [%g,%C]%1", 0xf83f803f, 0x2030003e, ARC_MACH_ARC7, 0, 0 ,0,0},
-  { (unsigned char *) "pf%.P [%g,%C]%1", 0xf83f803f, 0x2030003e, ARC_MACH_ARC7, 0, 0 ,0,0},
+  { (unsigned char *) "pf%.P [%g,%C]%1",       0xf83f803f, 0x2030003e, ARC_MACH_ARC7, 0, 0 ,0,0},
 
 
-  { (unsigned char *) "ld%.P 0,[%g,%L]%1", 0xf83f8fff, 0x20300fbe, ARC_MACH_ARC7, 0, 0 ,0,0},
+  { (unsigned char *) "ld%.P 0,[%g,%L]%1",     0xf83f8fff, 0x20300fbe, ARC_MACH_ARC7, 0, 0 ,0,0},
   { (unsigned char *) "prefetch%.p [%g,%L]%1", 0xf83f8fff, 0x20300fbe, ARC_MACH_ARC7, 0, 0 ,0,0},
-  { (unsigned char *) "pf%.P [%g,%L]%1", 0xf83f8fff, 0x20300fbe, ARC_MACH_ARC7, 0, 0 ,0,0},
+  { (unsigned char *) "pf%.P [%g,%L]%1",       0xf83f8fff, 0x20300fbe, ARC_MACH_ARC7, 0, 0 ,0,0},
 
-  { (unsigned char *) "ld 0,[%L,%C]%1", 0xff3ff03f, 0x2630703e, ARC_MACH_ARC7, 0, 0 ,0,0},
+  { (unsigned char *) "ld 0,[%L,%C]%1",     0xff3ff03f, 0x2630703e, ARC_MACH_ARC7, 0, 0 ,0,0},
   { (unsigned char *) "prefetch [%L,%C]%1", 0xff3ff03f, 0x2630703e, ARC_MACH_ARC7, 0, 0 ,0,0},
-  { (unsigned char *) "pf [%L,%C]%1", 0xff3ff03f, 0x2630703e, ARC_MACH_ARC7, 0, 0 ,0,0},
+  { (unsigned char *) "pf [%L,%C]%1",       0xff3ff03f, 0x2630703e, ARC_MACH_ARC7, 0, 0 ,0,0},
+
+  /*PREFETCH */
+  /* prefetch<.aa>    [b,c] 	0010 0bbb aa11 0000 0BBB CCCC CC11 1110  */
+  { (unsigned char *) "prefetch%.P [%g,%C]%3",                   0xF83F803F, 0x2030003E, ARC_MACH_ARCV2, 0, 0, 0, 0},
+  /* prefetch<.aa>    [b,s9] 	0001 0bbb ssss ssss SBBB 0aa0 0011 1110  */
+  { (unsigned char *) "prefetch%.p [%g,%o]%3",                   0xF80009FF, 0x1000003E, ARC_MACH_ARCV2, 0, 0, 0, 0},
+  /* prefetch<.aa>    [b,limm] 	0010 0bbb aa11 0000 0BBB 1111 1011 1110  */
+  { (unsigned char *) "prefetch%.P%Q [%g,%L]%3",                 0xF83F8FFF, 0x20300FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
+  /* prefetch<.aa>    [limm,c] 	0010 0110 aa11 0000 0111 CCCC CC11 1110  */
+  { (unsigned char *) "prefetch%.P%Q [%L,%C]%1",                 0xFF3FF03F, 0x2630703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
+  /* prefetch<.aa>    [limm,s9] 	0001 0110 ssss ssss S111 0aa0 0011 1110  */
+  { (unsigned char *) "prefetch%.p%Q [%L,%o]%1",                 0xFF0079FF, 0x1600703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
+  /* prefetch<.aa>    [b] 	0001 0bbb 0000 0000 0BBB 0aa0 0011 1110  */
+  { (unsigned char *) "prefetch%.p [%g]%3",                      0xF8FF89FF, 0x1000003E, ARC_MACH_ARCV2, 0, 0, 0, 0},
+  /* prefetch<.aa>    [limm] 	0001 0110 0000 0000 0111 0aa0 0011 1110  */
+  { (unsigned char *) "prefetch%.p%Q [%L]%1",                    0xFFFFF9FF, 0x1600703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
+  /*LD 0 */
+  /* ld<.aa><.di><.x><.ZZ>    0,[b,c] 	0010 0bbb aa11 0ZZX DBBB CCCC CC11 1110  */
+  { (unsigned char *) "ld%T%.X%.P%.V 0,[%g,%C]%3",             0xF838003F, 0x2030003E, ARC_MACH_ARCV2, 0, 0, 0, 0},
+  /* ld<.aa><.di><.x><.ZZ>    0,[b,s9] 	0001 0bbb ssss ssss SBBB DaaZ ZX11 1110  */
+  { (unsigned char *) "ld%t%.x%.p%.v 0,[%g,%o]%3",             0xF800003F, 0x1000003E, ARC_MACH_ARCV2, 0, 0, 0, 0},
+  /* ld<.aa><.di><.x><.ZZ>    0,[b,limm] 	0010 0bbb aa11 0ZZX DBBB 1111 1011 1110  */
+  { (unsigned char *) "ld%T%.X%.P%.V%Q 0,[%g,%L]%3",           0xF8380FFF, 0x20300FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
+  /* ld<.aa><.di><.x><.ZZ>    0,[limm,c] 	0010 0110 aa11 0ZZX D111 CCCC CC11 1110  */
+  { (unsigned char *) "ld%T%.X%.P%.V%Q 0,[%L,%C]%3",           0xFF38703F, 0x2630703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
+  /* ld<.di><.x><.ZZ>    0,[limm,c] 	0010 0110 RR11 0ZZX D111 CCCC CC11 1110  */
+  { (unsigned char *) "ld%T%.X%.V%Q 0,[%L,%C]%3",              0xFFF8703F, 0x2630703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
+  /* ld<.aa><.di><.x><.ZZ>    0,[limm,s9] 	0001 0110 ssss ssss S111 DaaZ ZX11 1110  */
+  { (unsigned char *) "ld%t%.x%.p%.v%Q 0,[%L,%o]%3",           0xFF00703F, 0x1600703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
+  /* ld<.aa><.di><.x><.ZZ>    0,[limm,limm] 	0010 0110 aa11 0ZZX D111 1111 1011 1110  */
+  { (unsigned char *) "ld%T%.X%.P%.V%Q 0,[%L,%L]%3",           0xFF387FFF, 0x26307FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
+  /* ld<.di><.x><.ZZ>    0,[limm 	0001 0110 0000 0000 0111 DRRZ ZX11 1110  */
+  { (unsigned char *) "ld%t%.x%.v%Q 0,[%L]%3",                 0xFFFFF63F, 0x1600703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
 
   /* load instruction opcodes */
-  { (unsigned char *) "ld%T%.X%.P%.V %A,[%g,%C]%1", 0xf8380000, 0x20300000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "ld%T%.P%.X%.V %A,[%g,%C]%1", 0xf8380000, 0x20300000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "ld%t%.x%.p%.v %A,[%g]%1", 0xf8ff8000, 0x10000000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "ld%t%.p%.x%.v %A,[%g]%1", 0xf8ff8000, 0x10000000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "ld%t%.x%.p%.v %A,[%g,%o]%1", 0xf8000000, 0x10000000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "ld%t%.p%.x%.v %A,[%g,%o]%1", 0xf8000000, 0x10000000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "ld%t%.x%.P%.v %A,[%g,%[L]%1", 0xf8000000, 0x10000000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "ld%t%.P%.x%.v %A,[%g,%[L]%1", 0xf8000000, 0x10000000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "ld%T%.X%.P%.V%Q %A,[%g,%L]%1", 0xf8380fc0, 0x20300f80, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "ld%T%.P%.X%.V%Q %A,[%g,%L]%1", 0xf8380fc0, 0x20300f80, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "ld%T%.X%.&%.V%Q %A,[%L,%C]%1", 0xfff87000, 0x26307000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "ld%T%.&%.X%.V%Q %A,[%L,%C]%1", 0xfff87000, 0x26307000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "ld%t%.x%.v%Q %A,[%L,%o]%1", 0xfff87000, 0x16007000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "ld%t%.v%.x%Q %A,[%L,%o]%1", 0xfff87000, 0x16007000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "ld%T%.X%.V%Q %A,[%L,%L]%1", 0xfff87fc0, 0x26307f80, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "ld%T%.V%.X%Q %A,[%L,%L]%1", 0xfff87fc0, 0x26307f80, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "ld%t%.x%.v%Q %A,[%L]%3", 0xfffff600, 0x16007000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "ld%t%.v%.x%Q %A,[%L]%3", 0xfffff600, 0x16007000, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "ld%T%.X%.P%.V %A,[%g,%C]%1",   0xf8380000, 0x20300000, ARCOMPACT , 0, 0 ,0,0},
+  { (unsigned char *) "ld%T%.P%.X%.V %A,[%g,%C]%1",   0xf8380000, 0x20300000, ARCOMPACT , 0, 0 ,0,0},
+  { (unsigned char *) "ld%t%.x%.p%.v %A,[%g]%1",      0xf8ff8000, 0x10000000, ARCOMPACT , 0, 0 ,0,0},
+  { (unsigned char *) "ld%t%.p%.x%.v %A,[%g]%1",      0xf8ff8000, 0x10000000, ARCOMPACT , 0, 0 ,0,0},
+  { (unsigned char *) "ld%t%.x%.p%.v %A,[%g,%o]%1",   0xf8000000, 0x10000000, ARCOMPACT , 0, 0 ,0,0},
+  { (unsigned char *) "ld%t%.p%.x%.v %A,[%g,%o]%1",   0xf8000000, 0x10000000, ARCOMPACT , 0, 0 ,0,0},
+  { (unsigned char *) "ld%t%.x%.P%.v %A,[%g,%[L]%1",  0xf8000000, 0x10000000, ARCOMPACT , 0, 0 ,0,0},
+  { (unsigned char *) "ld%t%.P%.x%.v %A,[%g,%[L]%1",  0xf8000000, 0x10000000, ARCOMPACT , 0, 0 ,0,0},
+  { (unsigned char *) "ld%T%.X%.P%.V%Q %A,[%g,%L]%1", 0xf8380fc0, 0x20300f80, ARCOMPACT , 0, 0 ,0,0},
+  { (unsigned char *) "ld%T%.P%.X%.V%Q %A,[%g,%L]%1", 0xf8380fc0, 0x20300f80, ARCOMPACT , 0, 0 ,0,0},
+  { (unsigned char *) "ld%T%.X%.&%.V%Q %A,[%L,%C]%1", 0xfff87000, 0x26307000, ARCOMPACT , 0, 0 ,0,0},
+  { (unsigned char *) "ld%T%.&%.X%.V%Q %A,[%L,%C]%1", 0xfff87000, 0x26307000, ARCOMPACT , 0, 0 ,0,0},
+  { (unsigned char *) "ld%t%.x%.v%Q %A,[%L,%o]%1",    0xfff87000, 0x16007000, ARCOMPACT , 0, 0 ,0,0},
+  { (unsigned char *) "ld%t%.v%.x%Q %A,[%L,%o]%1",    0xfff87000, 0x16007000, ARCOMPACT , 0, 0 ,0,0},
+  { (unsigned char *) "ld%T%.X%.V%Q %A,[%L,%L]%1",    0xfff87fc0, 0x26307f80, ARCOMPACT , 0, 0 ,0,0},
+  { (unsigned char *) "ld%T%.V%.X%Q %A,[%L,%L]%1",    0xfff87fc0, 0x26307f80, ARCOMPACT , 0, 0 ,0,0},
+  { (unsigned char *) "ld%t%.x%.v%Q %A,[%L]%3",       0xfffff600, 0x16007000, ARCOMPACT , 0, 0 ,0,0},
+  { (unsigned char *) "ld%t%.v%.x%Q %A,[%L]%3",       0xfffff600, 0x16007000, ARCOMPACT , 0, 0 ,0,0},
 
 
 
-  { (unsigned char *) "lp %Y", 0xfffff000, 0x20a80000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "lp%q %y", 0xfffff020, 0x20e80020, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "lp%.q %y", 0xfffff020, 0x20e80020, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "lp %Y",    0xfffff000, 0x20a80000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "lp%q %y",  0xfffff020, 0x20e80020, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "lp%.q %y", 0xfffff020, 0x20e80020, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 
-  { (unsigned char *) "lr %#,[%C]", 0xf8ff803f, 0x202a0000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "lr %#,[%GC]", 0xf8ff8000, 0x20aa0000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "lr %#,[%K]", 0xf8ff8000, 0x20aa0000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "lr%Q %#,[%L]", 0xf8ff8fff, 0x202a0f80, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "lr %#,[%C]",   0xf8ff803f, 0x202a0000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "lr %#,[%GC]",  0xf8ff8000, 0x20aa0000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "lr %#,[%K]",   0xf8ff8000, 0x20aa0000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "lr%Q %#,[%L]", 0xf8ff8fff, 0x202a0f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 
   { (unsigned char *) "lsl%.f %A,%B,%C%F", 0xf8ff0000, 0x28000000, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "lsl%.f %A,%B,%u%F", 0xf8ff0000, 0x28400000, ARCOMPACT, 0, 0 ,0,0},
@@ -3336,44 +3385,48 @@ static struct arc_opcode arc_opcodes[] = {
   { (unsigned char *) "lsr%.f 0,%C%F", 0xffff703f, 0x262f7002, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "lsr%.f 0,%u%F", 0xffff703f, 0x266f7002, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "lsr%.f%Q 0,%L%F", 0xffff7fff, 0x262f7f82, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "max%.f %A,%B,%C%F", 0xf8ff0000, 0x20080000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "max%.f %A,%B,%u%F", 0xf8ff0000, 0x20480000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "max%.f %#,%B,%K%F", 0xf8ff0000, 0x20880000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "max%.f%Q %A,%B,%L%F", 0xf8ff0fc0, 0x20080f80, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "max%.f%Q %A,%L,%C%F", 0xffff7000, 0x26087000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "max%.f%Q %A,%L,%u%F", 0xffff7000, 0x26487000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "max%.f%Q %A,%L,%L%F", 0xffff7fc0, 0x26087f80, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "max%.q%.f %#,%B,%C%F", 0xf8ff0020, 0x20c80000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "max%.q%.f %#,%B,%u%F", 0xf8ff0020, 0x20c80020, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "max%.q%.f%Q %#,%B,%L%F", 0xf8ff0fe0, 0x20c80f80, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "max%.f 0,%B,%C%F", 0xf8ff003f, 0x2008003e, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "max%.f 0,%B,%u%F", 0xf8ff003f, 0x2048003e, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "max%.f%Q 0,%B,%L%F", 0xf8ff0fff, 0x20080fbe, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "max%.f%Q 0,%L,%C%F", 0xffff703f, 0x2608703e, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "max%.f%Q 0,%L,%u%F", 0xffff703f, 0x2648703e, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "max%.f%Q 0,%L,%K%F", 0xffff7fff, 0x26887000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "max%.q%.f%Q 0,%L,%C%F", 0xffff7020, 0x26c87000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "max%.q%.f%Q 0,%L,%u%F", 0xffff7020, 0x26c87020, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "max%.q%.f%Q 0,%L,%K%F", 0xffff7fe0, 0x26c87f80, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "min%.f %A,%B,%C%F", 0xf8ff0000, 0x20090000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "min%.f %A,%B,%u%F", 0xf8ff0000, 0x20490000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "min%.f %#,%B,%K%F", 0xf8ff0000, 0x20890000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "min%.f%Q %A,%B,%L%F", 0xf8ff0fc0, 0x20090f80, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "min%.f%Q %A,%L,%C%F", 0xffff7000, 0x26097000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "min%.f%Q %A,%L,%u%F", 0xffff7000, 0x26497000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "min%.f%Q %A,%L,%L%F", 0xffff7fc0, 0x26097f80, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "min%.q%.f %#,%B,%C%F", 0xf8ff0020, 0x20c90000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "min%.q%.f %#,%B,%u%F", 0xf8ff0020, 0x20c90020, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "min%.q%.f%Q %#,%B,%L%F", 0xf8ff0fe0, 0x20c90f80, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "min%.f 0,%B,%C%F", 0xf8ff003f, 0x2009003e, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "min%.f 0,%B,%u%F", 0xf8ff003f, 0x2049003e, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "min%.f%Q 0,%B,%L%F", 0xf8ff0fff, 0x20090fbe, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "min%.f%Q 0,%L,%C%F", 0xffff703f, 0x2609703e, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "min%.f%Q 0,%L,%u%F", 0xffff703f, 0x2649703e, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "min%.f%Q 0,%L,%K%F", 0xffff003f, 0x26897000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "min%.q%.f%Q 0,%L,%C%F", 0xffff7020, 0x26c97000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "min%.q%.f%Q 0,%L,%u%F", 0xffff7020, 0x26c97020, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "min%.q%.f%Q 0,%L,%K%F", 0xffff7fe0, 0x26c97f80, ARCOMPACT, 0, 0 ,0,0},
+  /*MAX */
+  { (unsigned char *) "max%.f %A,%B,%C%F",      0xF8FF0000, 0x20080000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "max%.f %A,%B,%u%F",      0xF8FF0000, 0x20480000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "max%.f %#,%B,%K%F",      0xF8FF0000, 0x20880000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "max%.f%Q %A,%B,%L%F",    0xF8FF0FC0, 0x20080F80, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "max%.f%Q %A,%L,%C%F",    0xFFFF7000, 0x26087000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "max%.f%Q %A,%L,%u%F",    0xFFFF7000, 0x26487000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "max%.f%Q %A,%L,%L%F",    0xFFFF7FC0, 0x26087F80, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "max%.q%.f %#,%B,%C%F",   0xF8FF0020, 0x20C80000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "max%.q%.f %#,%B,%u%F",   0xF8FF0020, 0x20C80020, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "max%.q%.f%Q %#,%B,%L%F", 0xF8FF0FE0, 0x20C80F80, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "max%.f 0,%B,%C%F",       0xF8FF003F, 0x2008003E, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "max%.f 0,%B,%u%F",       0xF8FF003F, 0x2048003E, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "max%.f%Q 0,%B,%L%F",     0xF8FF0FFF, 0x20080FBE, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "max%.f%Q 0,%L,%C%F",     0xFFFF703F, 0x2608703E, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "max%.f%Q 0,%L,%u%F",     0xFFFF703F, 0x2648703E, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "max%.f%Q 0,%L,%K%F",     0xFFFF7000, 0x26887000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "max%.f%Q 0,%L,%L%F",     0xFFFF7FFF, 0x26087FBE, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "max%.q%.f%Q 0,%L,%C%F",  0xFFFF7020, 0x26C87000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "max%.q%.f%Q 0,%L,%u%F",  0xFFFF7020, 0x26C87020, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "max%.q%.f%Q 0,%L,%L%F",  0xFFFF7FE0, 0x26C87F80, ARCOMPACT, 0, 0, 0, 0},
+/*MIN */
+  { (unsigned char *) "min%.f %A,%B,%C%F",      0xF8FF0000, 0x20090000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "min%.f %A,%B,%u%F",      0xF8FF0000, 0x20490000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "min%.f %#,%B,%K%F",      0xF8FF0000, 0x20890000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "min%.f%Q %A,%B,%L%F",    0xF8FF0FC0, 0x20090F80, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "min%.f%Q %A,%L,%C%F",    0xFFFF7000, 0x26097000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "min%.f%Q %A,%L,%u%F",    0xFFFF7000, 0x26497000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "min%.f%Q %A,%L,%L%F",    0xFFFF7FC0, 0x26097F80, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "min%.q%.f %#,%B,%C%F",   0xF8FF0020, 0x20C90000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "min%.q%.f %#,%B,%u%F",   0xF8FF0020, 0x20C90020, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "min%.q%.f%Q %#,%B,%L%F", 0xF8FF0FE0, 0x20C90F80, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "min%.f 0,%B,%C%F",       0xF8FF003F, 0x2009003E, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "min%.f 0,%B,%u%F",       0xF8FF003F, 0x2049003E, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "min%.f%Q 0,%B,%L%F",     0xF8FF0FFF, 0x20090FBE, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "min%.f%Q 0,%L,%C%F",     0xFFFF703F, 0x2609703E, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "min%.f%Q 0,%L,%u%F",     0xFFFF703F, 0x2649703E, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "min%.f%Q 0,%L,%K%F",     0xFFFF7000, 0x26897000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "min%.f%Q 0,%L,%L%F",     0xFFFF7FFF, 0x26097FBE, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "min%.q%.f%Q 0,%L,%C%F",  0xFFFF7020, 0x26C97000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "min%.q%.f%Q 0,%L,%u%F",  0xFFFF7020, 0x26C97020, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "min%.q%.f%Q 0,%L,%L%F",  0xFFFF7FE0, 0x26C97F80, ARCOMPACT, 0, 0, 0, 0},
 
   { (unsigned char *) "mov%.f %#,%C%F", 0xf8ff003f, 0x200A0000, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "mov%.f %#,%u%F", 0xf8ff003f, 0x204a0000, ARCOMPACT, 0, 0 ,0,0},
@@ -3516,64 +3569,67 @@ static struct arc_opcode arc_opcodes[] = {
 
   /* Return from Interrupt or Exception  .New A700 instruction */
   { (unsigned char *) "rtie",0xffffffff,0x242F003F,ARC_MACH_ARC7,0,0,0,0},
+  
+  /*SBC */
+  { (unsigned char *) "sbc%.f %A,%B,%C%F",      0xF8FF0000, 0x20030000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sbc%.f %A,%B,%u%F",      0xF8FF0000, 0x20430000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sbc%.f %#,%B,%K%F",      0xF8FF0000, 0x20830000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sbc%.f%Q %A,%B,%L%F",    0xF8FF0FC0, 0x20030F80, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sbc%.f%Q %A,%L,%C%F",    0xFFFF7000, 0x26037000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sbc%.f%Q %A,%L,%u%F",    0xFFFF7000, 0x26437000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sbc%.f%Q %A,%L,%L%F",    0xFFFF7FC0, 0x26037F80, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sbc%.q%.f %#,%B,%C%F",   0xF8FF0020, 0x20C30000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sbc%.q%.f %#,%B,%u%F",   0xF8FF0020, 0x20C30020, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sbc%.q%.f%Q %#,%B,%L%F", 0xF8FF0FE0, 0x20C30F80, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sbc%.f 0,%B,%C%F",       0xF8FF003F, 0x2003003E, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sbc%.f 0,%B,%u%F",       0xF8FF003F, 0x2043003E, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sbc%.f%Q 0,%B,%L%F",     0xF8FF0FFF, 0x20030FBE, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sbc%.f%Q 0,%L,%C%F",     0xFFFF703F, 0x2603703E, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sbc%.f%Q 0,%L,%u%F",     0xFFFF703F, 0x2643703E, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sbc%.f%Q 0,%L,%K%F",     0xFFFF7000, 0x26837000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sbc%.f%Q 0,%L,%L%F",     0xFFFF7FFF, 0x26037FBE, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sbc%.q%.f%Q 0,%L,%C%F",  0xFFFF7020, 0x26C37000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sbc%.q%.f%Q 0,%L,%u%F",  0xFFFF7020, 0x26C37020, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sbc%.q%.f%Q 0,%L,%L%F",  0xFFFF7FE0, 0x26C37F80, ARCOMPACT, 0, 0, 0, 0},
 
-  { (unsigned char *) "sbc%.f %A,%B,%C%F", 0xf8ff0000, 0x20030000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sbc%.f %A,%B,%u%F", 0xf8ff0000, 0x20430000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sbc%.f %#,%B,%K%F", 0xf8ff0000, 0x20830000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sbc%.f%Q %A,%B,%L%F", 0xf8ff0fc0, 0x20030f80, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sbc%.f%Q %A,%L,%C%F", 0xffff7000, 0x26037000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sbc%.f%Q %A,%L,%u%F", 0xffff7000, 0x26437000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sbc%.f%Q %A,%L,%L%F", 0xffff7fc0, 0x26837f80, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sbc%.q%.f %#,%B,%C%F", 0xf8ff0020, 0x20c30000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sbc%.q%.f %#,%B,%u%F", 0xf8ff0020, 0x20c30020, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sbc%.q%.f%Q %#,%B,%L%F", 0xf8ff0fe0, 0x20c30f80, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sbc%.f 0,%B,%C%F", 0xf8ff003f, 0x2003003e, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sbc%.f 0,%B,%u%F", 0xf8ff003f, 0x2043003e, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sbc%.f%Q 0,%B,%L%F", 0xf8ff0fff, 0x20030fbe, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sbc%.f%Q 0,%L,%C%F", 0xffff703f, 0x2603703e, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sbc%.f%Q 0,%L,%u%F", 0xffff703f, 0x2643703e, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sbc%.f%Q 0,%L,%K%F", 0xffff7000, 0x26837000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sbc%.q%.f%Q 0,%L,%C%F", 0xffff7020, 0x26c37000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sbc%.q%.f%Q 0,%L,%u%F", 0xffff7020, 0x26c37020, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sbc%.q%.f%Q 0,%L,%L%F", 0xffff7fff, 0x26c37f80, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "sexb%.f %#,%C%F", 0xf8ff003f, 0x202f0005, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "sexb%.f %#,%u%F", 0xf8ff003f, 0x206f0005, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "sexb%.f%Q %#,%L%F", 0xf8ff0fff, 0x202f0f85, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "sexb%.f 0,%C%F", 0xffff703f, 0x262f7005, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "sexb%.f 0,%u%F", 0xffff703f, 0x266f7005, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "sexb%.f%Q 0,%L%F", 0xffff7fff, 0x262f7f85, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sexw%.f %#,%C%F", 0xf8ff003f, 0x202f0006, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sexw%.f %#,%u%F", 0xf8ff003f, 0x206f0006, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sexw%.f%Q %#,%L%F", 0xf8ff0fff, 0x202f0f86, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sexw%.f 0,%C%F", 0xffff703f, 0x262f7006, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sexw%.f 0,%u%F", 0xffff703f, 0x266f7006, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sexw%.f%Q 0,%L%F", 0xffff7fff, 0x262f7f86, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "sexw%.f %#,%C%F",   0xf8ff003f, 0x202f0006, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "sexw%.f %#,%u%F",   0xf8ff003f, 0x206f0006, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "sexw%.f%Q %#,%L%F", 0xf8ff0fff, 0x202f0f86, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "sexw%.f 0,%C%F",    0xffff703f, 0x262f7006, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "sexw%.f 0,%u%F",    0xffff703f, 0x266f7006, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "sexw%.f%Q 0,%L%F",  0xffff7fff, 0x262f7f86, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 
   /* ARC700 sleep instruction */
   { (unsigned char *) "sleep %u", 0xfffff03f, 0x216f003f, ARC_MACH_ARC7, 0, 0,0,0},
   { (unsigned char *) "sleep %C", 0xfffff03f, 0x212f003f, ARC_MACH_ARC5 | ARC_MACH_ARC6 | ARC_MACH_ARC601, 0, 0 ,0,0},
   { (unsigned char *) "sleep %u", 0xfffff03f, 0x216f003f, ARC_MACH_ARC5 | ARC_MACH_ARC6 | ARC_MACH_ARC601, 0, 0 ,0,0},
   { (unsigned char *) "sleep %L", 0xffffffff, 0x212f0fbf, ARC_MACH_ARC5 | ARC_MACH_ARC6 | ARC_MACH_ARC601, 0, 0 ,0,0},
-  { (unsigned char *) "sleep", 0xffffffff, 0x216f003f, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "sleep", 0xffffffff, 0x216f003f, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 
-  { (unsigned char *) "sr %B,[%C]", 0xf8ff803f, 0x202b0000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sr %B,[%u]", 0xf8ff8000, 0x206b0000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sr %B,[%K]", 0xf8ff8000, 0x20ab0000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sr %B,[%GC]", 0xf8ff8000, 0x20ab0000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sr%Q %B,[%L]", 0xf8ff8fff, 0x202b0f80, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sr%Q %L,[%C]", 0xfffff03f, 0x262b7000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sr%Q %L,[%u]", 0xfffff000, 0x266b7000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sr%Q %L,[%K]", 0xfffff000, 0x26ab7000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sr%Q %L,[%GC]", 0xfffff000, 0x26ab7000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "st%z%.w%.D %C,[%g]%0", 0xf8ff8001, 0x18000000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "st%z%.w%.D %C,[%g,%[L]%0", 0xf8000001, 0x18000000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "st%z%.w%.D %C,[%g,%o]%0", 0xf8000001, 0x18000000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "st%z%.D%Q %C,[%L,%o]%0", 0xff007001, 0x1e007000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "st%z%.D%Q %C,[%L]%0", 0xfffff001, 0x1e007000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "st%z%.w%.D%Q %L,[%g]%0", 0xf8ff8fc1, 0x18000f80, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "st%z%.w%.D%Q %L,[%g,%o]%0", 0xf8000fc1, 0x18000f80, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "st%z%.D%Q %L,[%L,%o]%0", 0xff007fc1, 0x1e007f80, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "st%z%.D%Q %L,[%L]%0", 0xff007fc1, 0x1e007f80, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "sr %B,[%C]",    0xf8ff803f, 0x202b0000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "sr %B,[%u]",    0xf8ff8000, 0x206b0000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "sr %B,[%K]",    0xf8ff8000, 0x20ab0000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "sr %B,[%GC]",   0xf8ff8000, 0x20ab0000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "sr%Q %B,[%L]",  0xf8ff8fff, 0x202b0f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "sr%Q %L,[%C]",  0xfffff03f, 0x262b7000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "sr%Q %L,[%u]",  0xfffff000, 0x266b7000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "sr%Q %L,[%K]",  0xfffff000, 0x26ab7000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "sr%Q %L,[%GC]", 0xfffff000, 0x26ab7000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "st%z%.w%.D %C,[%g]%0",      0xf8ff8001, 0x18000000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "st%z%.w%.D %C,[%g,%[L]%0",  0xf8000001, 0x18000000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "st%z%.w%.D %C,[%g,%o]%0",   0xf8000001, 0x18000000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "st%z%.D%Q %C,[%L,%o]%0",    0xff007001, 0x1e007000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "st%z%.D%Q %C,[%L]%0",       0xfffff001, 0x1e007000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "st%z%.w%.D%Q %L,[%g]%0",    0xf8ff8fc1, 0x18000f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "st%z%.w%.D%Q %L,[%g,%o]%0", 0xf8000fc1, 0x18000f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "st%z%.D%Q %L,[%L,%o]%0",    0xff007fc1, 0x1e007f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "st%z%.D%Q %L,[%L]%0",       0xff007fc1, 0x1e007f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
   { (unsigned char *) "sub%.f %A,%B,%C%F", 0xf8ff0000, 0x20020000, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "sub%.f %A,%B,%u%F", 0xf8ff0000, 0x20420000, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "sub%.f %#,%B,%K%F", 0xf8ff0000, 0x20820000, ARCOMPACT, 0, 0 ,0,0},
@@ -3604,7 +3660,7 @@ static struct arc_opcode arc_opcodes[] = {
   { (unsigned char *) "sub1%.f%Q %A,%B,%L%F", 0xf8ff0fc0, 0x20170f80, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "sub1%.f%Q %A,%L,%C%F", 0xffff7000, 0x26177000, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "sub1%.f%Q %A,%L,%u%F", 0xffff7000, 0x26577000, ARCOMPACT, 0, 0 ,0,0},
-   { (unsigned char *) "sub1%.q%.f %#,%B,%C%F", 0xf8ff0020, 0x20d70000, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "sub1%.q%.f %#,%B,%C%F", 0xf8ff0020, 0x20d70000, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "sub1%.q%.f %#,%B,%u%F", 0xf8ff0020, 0x20d70020, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "sub1%.q%.f%Q %#,%B,%L%F", 0xf8ff0fe0, 0x20d70f80, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "sub1%.f 0,%B,%C%F", 0xf8ff003f, 0x2017003e, ARCOMPACT, 0, 0 ,0,0},
@@ -3616,43 +3672,49 @@ static struct arc_opcode arc_opcodes[] = {
   { (unsigned char *) "sub1%.q%.f%Q 0,%L,%C%F", 0xffff7020, 0x26d77000, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "sub1%.q%.f%Q 0,%L,%u%F", 0xffff7020, 0x26d77020, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "sub1%.q%.f%Q 0,%L,%L%F", 0xffff7fff, 0x26d77f80, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sub2%.f %A,%B,%C%F", 0xf8ff0000, 0x20180000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sub2%.f %A,%B,%u%F", 0xf8ff0000, 0x20580000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sub2%.f %#,%B,%K%F", 0xf8ff0000, 0x20980000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sub2%.f%Q %A,%B,%L%F", 0xf8ff0fc0, 0x20180f80, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sub2%.f%Q %A,%L,%C%F", 0xffff7000, 0x26187000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sub2%.f%Q %A,%L,%u%F", 0xffff7000, 0x26587000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sub2%.f%Q %A,%L,%L%F", 0xffff7000, 0x26180000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sub2%.q%.f %#,%B,%C%F", 0xf8ff0020, 0x20d80000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sub2%.q%.f %#,%B,%u%F", 0xf8ff0020, 0x20d80020, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sub2%.q%.f%Q %#,%B,%L%F", 0xf8ff0fe0, 0x20d80f80, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sub2%.f 0,%B,%C%F", 0xf8ff003f, 0x2018003e, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sub2%.f 0,%B,%u%F", 0xf8ff003f, 0x2058003e, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sub2%.f%Q 0,%B,%L%F", 0xf8ff0fff, 0x20180fbe, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sub2%.f%Q 0,%L,%C%F", 0xffff703f, 0x2618703e, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sub2%.f%Q 0,%L,%u%F", 0xffff703f, 0x2658703e, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sub2%.f%Q 0,%L,%K%F", 0xffff7000, 0x26987000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sub2%.q%.f%Q 0,%L,%C%F", 0xffff7020, 0x26d87000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sub2%.q%.f%Q 0,%L,%u%F", 0xffff7020, 0x26d87020, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sub2%.q%.f%Q 0,%L,%L%F", 0xffff7fff, 0x26d87f80, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sub3%.f %A,%B,%C%F", 0xf8ff0000, 0x20190000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sub3%.f %A,%B,%u%F", 0xf8ff0000, 0x20590000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sub3%.f %#,%B,%K%F", 0xf8ff0000, 0x20990000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sub3%.f%Q %A,%B,%L%F", 0xf8ff0fc0, 0x20190f80, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sub3%.f%Q %A,%L,%C%F", 0xffff7000, 0x26197000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sub3%.f%Q %A,%L,%u%F", 0xffff7000, 0x26597000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sub3%.q%.f %#,%B,%C%F", 0xf8ff0020, 0x20d90000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sub3%.q%.f %#,%B,%u%F", 0xf8ff0020, 0x20d90020, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sub3%.q%.f%Q %#,%B,%L%F", 0xf8ff0fe0, 0x20d90f80, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sub3%.f%Q 0,%B,%L%F", 0xf8ff0fff, 0x20190fbe, ARCOMPACT, 0, 0 ,0 ,0},
-  { (unsigned char *) "sub3%.f%Q 0,%L,%C%F", 0xffff703f, 0x2619703e, ARCOMPACT, 0, 0 ,0 ,0},
-  { (unsigned char *) "sub3%.f%Q 0,%L,%u%F", 0xffff703f, 0x2659703e, ARCOMPACT, 0, 0 ,0 ,0},
-  { (unsigned char *) "sub3%.f%Q 0,%L,%K%F", 0xffff7000, 0x26997000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sub3%.f 0,%B,%C%F", 0xf8ff003f, 0x2019003e, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sub3%.f 0,%B,%u%F", 0xf8ff703f, 0x2957703e, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sub3%.q%.f%Q 0,%L,%C%F", 0xffff7020, 0x26d97000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sub3%.q%.f%Q 0,%L,%u%F", 0xffff7020, 0x26d97020, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "sub3%.q%.f%Q 0,%L,%L%F", 0xffff7fff, 0x26d97f80, ARCOMPACT, 0, 0 ,0,0},
+/*SUB2 */
+  { (unsigned char *) "sub2%.f %A,%B,%C%F",      0xF8FF0000, 0x20180000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub2%.f %A,%B,%u%F",      0xF8FF0000, 0x20580000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub2%.f %#,%B,%K%F",      0xF8FF0000, 0x20980000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub2%.f%Q %A,%B,%L%F",    0xF8FF0FC0, 0x20180F80, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub2%.f%Q %A,%L,%C%F",    0xFFFF7000, 0x26187000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub2%.f%Q %A,%L,%u%F",    0xFFFF7000, 0x26587000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub2%.f%Q %A,%L,%L%F",    0xFFFF7FC0, 0x26187F80, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub2%.q%.f %#,%B,%C%F",   0xF8FF0020, 0x20D80000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub2%.q%.f %#,%B,%u%F",   0xF8FF0020, 0x20D80020, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub2%.q%.f%Q %#,%B,%L%F", 0xF8FF0FE0, 0x20D80F80, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub2%.f 0,%B,%C%F",       0xF8FF003F, 0x2018003E, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub2%.f 0,%B,%u%F",       0xF8FF003F, 0x2058003E, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub2%.f%Q 0,%B,%L%F",     0xF8FF0FFF, 0x20180FBE, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub2%.f%Q 0,%L,%C%F",     0xFFFF703F, 0x2618703E, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub2%.f%Q 0,%L,%u%F",     0xFFFF703F, 0x2658703E, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub2%.f%Q 0,%L,%K%F",     0xFFFF7000, 0x26987000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub2%.f%Q 0,%L,%L%F",     0xFFFF7FFF, 0x26187FBE, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub2%.q%.f%Q 0,%L,%C%F",  0xFFFF7020, 0x26D87000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub2%.q%.f%Q 0,%L,%u%F",  0xFFFF7020, 0x26D87020, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub2%.q%.f%Q 0,%L,%L%F",  0xFFFF7FE0, 0x26D87F80, ARCOMPACT, 0, 0, 0, 0},
+/*SUB3 */
+  { (unsigned char *) "sub3%.f %A,%B,%C%F",      0xF8FF0000, 0x20190000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub3%.f %A,%B,%u%F",      0xF8FF0000, 0x20590000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub3%.f %#,%B,%K%F",      0xF8FF0000, 0x20990000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub3%.f 0,%B,%C%F",       0xF8FF003F, 0x2019003E, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub3%.f 0,%B,%u%F",       0xF8FF003F, 0x2059003E, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub3%.f%Q %A,%B,%L%F",    0xF8FF0FC0, 0x20190F80, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub3%.f%Q %A,%L,%C%F",    0xFFFF7000, 0x26197000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub3%.f%Q %A,%L,%u%F",    0xFFFF7000, 0x26597000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub3%.f%Q %A,%L,%L%F",    0xFFFF7FC0, 0x26197F80, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub3%.f%Q 0,%L,%C%F",     0xFFFF703F, 0x2619703E, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub3%.f%Q 0,%L,%u%F",     0xFFFF703F, 0x2659703E, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub3%.f%Q 0,%L,%K%F",     0xFFFF7000, 0x26997000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub3%.f%Q 0,%L,%L%F",     0xFFFF7FFF, 0x26197FBE, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub3%.f%Q 0,%B,%L%F",     0xF8FF0FFF, 0x20190FBE, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub3%.q%.f %#,%B,%C%F",   0xF8FF0020, 0x20D90000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub3%.q%.f %#,%B,%u%F",   0xF8FF0020, 0x20D90020, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub3%.q%.f%Q %#,%B,%L%F", 0xF8FF0FE0, 0x20D90F80, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub3%.q%.f%Q 0,%L,%C%F",  0xFFFF7020, 0x26D97000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub3%.q%.f%Q 0,%L,%u%F",  0xFFFF7020, 0x26D97020, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "sub3%.q%.f%Q 0,%L,%L%F",  0xFFFF7FE0, 0x26D97F80, ARCOMPACT, 0, 0, 0, 0},
+
   { (unsigned char *) "swap%.f %#,%C%F", 0xf8ff003f, 0x282f0000, ARC_MACH_ARC7, 0, 0 ,0,0},
   { (unsigned char *) "swap%.f %#,%u%F", 0xf8ff003f, 0x286f0000, ARC_MACH_ARC7, 0, 0 ,0,0},
   { (unsigned char *) "swap%.f%Q %#,%L%F", 0xf8ff0fff, 0x282f0f80, ARC_MACH_ARC7, 0, 0 ,0,0},
@@ -3662,7 +3724,7 @@ static struct arc_opcode arc_opcodes[] = {
   { (unsigned char *) "swi", 0xffffffff, 0x226f003f, (ARC_MACH_ARC5 | ARC_MACH_ARC6 | ARC_MACH_ARC601), 0, 0 ,0,0},
 
   /* New A700 Instructions */
-  { (unsigned char *) "sync", 0xffffffff, 0x236f003f,ARC_MACH_ARC7,0,0,0,0},
+  { (unsigned char *) "sync",  0xffffffff, 0x236f003f,ARC_MACH_ARC7 | ARC_MACH_ARCV2,0,0,0,0},
   { (unsigned char *) "trap0", 0xffffffff, 0x226f003f, ARC_MACH_ARC7, 0, 0 ,0,0},
 
   { (unsigned char *) "tst %B,%C%F", 0xf8ff803f, 0x200b8000, ARCOMPACT, 0, 0 ,0,0},
@@ -3720,21 +3782,21 @@ static struct arc_opcode arc_opcodes[] = {
   { (unsigned char *) "abs_s %b,%c", 0xf81f, 0x7811, ARCOMPACT, 0, 0 ,0,0},
 
 /* add_s a,b,c;                 01100 bbb ccc 11 aaa */
-  { (unsigned char *) "add_s %a,%b,%c", 0xf818, 0x6018, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "add_s %a,%b,%c", 0xf818, 0x6018, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 /* add_s b,b,h;                 01110 bbb hhh 00 hhh */
-  { (unsigned char *) "add_s %b,%b,%U", 0xf818, 0x7000, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "add_s %b,%b,%U", 0xf818, 0x7000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 /* add_s c,b,u3;                01101 bbb ccc 00 uuu */
-  { (unsigned char *) "add_s %c,%b,%e", 0xf818, 0x6800, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "add_s %c,%b,%e", 0xf818, 0x6800, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 /* add_s b,b,u7;                11100 bbb 0 uuuuuuu */
-  { (unsigned char *) "add_s %b,%b,%j", 0xf880, 0xe000, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "add_s %b,%b,%j", 0xf880, 0xe000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 /* add_s b,b,limm;              01110 bbb 110 00 111 [L] */
-  { (unsigned char *) "add_s%Q %b,%b,%L", 0xf8ff, 0x70c7, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "add_s%Q %b,%b,%L", 0xf8ff, 0x70c7, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 /* add_s b,sp,u7;               11000 bbb 100 uuuuu */
-  { (unsigned char *) "add_s %b,%6,%l", 0xf8e0, 0xc080, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "add_s %b,%6,%l", 0xf8e0, 0xc080, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 /* add_s sp,sp,u7;              11000 000 101 uuuuu */
-  { (unsigned char *) "add_s %6,%6,%l", 0xffe0, 0xc0a0, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "add_s %6,%6,%l", 0xffe0, 0xc0a0, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 /* add_s r0,gp,s11;             11001 11 sssssssss */
-  { (unsigned char *) "add_s %4,%5,%R", 0xfe00, 0xce00, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "add_s %4,%5,%R", 0xfe00, 0xce00, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
   //  { (unsigned char *) "add_s %4,%5,%[L", 0xfe00, 0xce00, ARCOMPACT, 0, 0 ,0,0},
 
 /* add1_s b,b,c;                01111 bbb ccc 10100 */
@@ -3817,17 +3879,17 @@ static struct arc_opcode arc_opcodes[] = {
   { (unsigned char *) "btst_s %b,%E", 0xf8e0, 0xb8e0, ARCOMPACT, 0, 0 ,0,0},
 
 /* cmp_s b,h;                   01110 bbb hhh 10 hhh */
-  { (unsigned char *) "cmp_s %b,%U", 0xf818, 0x7010, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "cmp_s %b,%U", 0xf818, 0x7010, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 /* cmp_s b,u7;                  11100 bbb 1 uuuuuuu */
-  { (unsigned char *) "cmp_s %b,%j", 0xf880, 0xe080, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "cmp_s %b,%j", 0xf880, 0xe080, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 /* cmp_s b,limm;                01110 bbb 110 10 111 [L] */
-  { (unsigned char *) "cmp_s%Q %b,%L", 0xf8ff, 0x70d7, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "cmp_s%Q %b,%L", 0xf8ff, 0x70d7, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 
 /* extb_s b,c;                  01111 bbb ccc 01111 */
   { (unsigned char *) "extb_s %b,%c", 0xf81f, 0x780f, ARCOMPACT, 0, 0 ,0,0},
 
 /* extw_s b,c;                  01111 bbb ccc 10000 */
-  { (unsigned char *) "extw_s %b,%c", 0xf81f, 0x7810, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "extw_s %b,%c", 0xf81f, 0x7810, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 
 /* j_s [b];                     01111 bbb 000 00000 */
   { (unsigned char *) "j_s [%b]", 0xf8ff, 0x7800, ARCOMPACT | ARC_MACH_ARCV2, 0, 0 ,0,0},
@@ -3840,9 +3902,9 @@ static struct arc_opcode arc_opcodes[] = {
 /* j_s.d [blink];               01111 111 111 00000 */
   { (unsigned char *) "j_s.d [%9]", 0xffff, 0x7fe0, ARCOMPACT | ARC_MACH_ARCV2, 0, 0 ,0,0},
 /* jeq_s [blink];               01111 100 111 00000 */
-  { (unsigned char *) "jeq_s [%9]", 0xffff, 0x7ce0, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "jeq_s [%9]", 0xffff, 0x7ce0, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 /* jne_s [blink];               01111 101 111 00000 */
-  { (unsigned char *) "jne_s [%9]", 0xffff, 0x7de0, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "jne_s [%9]", 0xffff, 0x7de0, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 
 /* jl_s [b];                    01111 bbb 010 00000 */
   { (unsigned char *) "jl_s [%b]", 0xf8ff, 0x7840, ARCOMPACT | ARC_MACH_ARCV2, 0, 0 ,0,0},
@@ -3855,7 +3917,7 @@ static struct arc_opcode arc_opcodes[] = {
 /* ldb_s a,[b,c];               01100 bbb ccc 01 aaa */
   { (unsigned char *) "ldb_s %a,[%b,%c]", 0xf818, 0x6008, ARCOMPACT, 0, 0 ,0,0},
 /* ldw_s a,[b,c];               01100 bbb ccc 10 aaa */
-  { (unsigned char *) "ldw_s %a,[%b,%c]", 0xf818, 0x6010, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "ldw_s %a,[%b,%c]", 0xf818, 0x6010, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 /* ld_s c,[b,u7];               10000 bbb ccc uuuuu */
   { (unsigned char *) "ld_s %c,[%b,%l]", 0xf800, 0x8000, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "ld_s %c,[%b]", 0xf800, 0x8000, ARCOMPACT, 0, 0 ,0,0},
@@ -3863,11 +3925,11 @@ static struct arc_opcode arc_opcodes[] = {
   { (unsigned char *) "ldb_s %c,[%b,%E]", 0xf800, 0x8800, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "ldb_s %c,[%b]", 0xf800, 0x8800, ARCOMPACT, 0, 0 ,0,0},
 /* ldw_s c,[b,u6];              10010 bbb ccc uuuuu */
-  { (unsigned char *) "ldw_s %c,[%b,%k]", 0xf800, 0x9000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "ldw_s %c,[%b]", 0xf800, 0x9000, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "ldw_s %c,[%b,%k]", 0xf800, 0x9000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "ldw_s %c,[%b]", 0xf800, 0x9000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 /* ldw_s.x c,[b,u6];            10011 bbb ccc uuuuu */
-  { (unsigned char *) "ldw_s.x %c,[%b,%k]", 0xf800, 0x9800, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "ldw_s.x %c,[%b]", 0xf800, 0x9800, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "ldw_s.x %c,[%b,%k]", 0xf800, 0x9800, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "ldw_s.x %c,[%b]", 0xf800, 0x9800, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 /* ld_s b,[sp,u7];              11000 bbb 000 uuuuu */
   { (unsigned char *) "ld_s %b,[%6,%l]", 0xf8e0, 0xc000, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "ld_s %b,[%6]", 0xf8e0, 0xc000, ARCOMPACT, 0, 0 ,0,0},
@@ -3907,15 +3969,15 @@ static struct arc_opcode arc_opcodes[] = {
   { (unsigned char *) "lsr_s %b,%c", 0xf81f, 0x781d, ARCOMPACT, 0, 0 ,0,0},
 
 /* mov_s b,h;                   01110 bbb hhh 01 hhh */
-  { (unsigned char *) "mov_s %b,%U", 0xf818, 0x7008, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "mov_s %b,%U", 0xf818, 0x7008, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 /* mov_s b,u8;                  11011 bbb uuuuuuuu */
-  { (unsigned char *) "mov_s %b,%J", 0xf800, 0xd800, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "mov_s %b,%J", 0xf800, 0xd800, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 /* mov_s b,limm;                01110 bbb 110 01 111 [L] */
-  { (unsigned char *) "mov_s%Q %b,%L", 0xf8ff, 0x70cf, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "mov_s%Q %b,%L", 0xf8ff, 0x70cf, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 /* mov_s h,b;                   01110 bbb hhh 11 hhh */
-  { (unsigned char *) "mov_s %U,%b", 0xf818, 0x7018, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "mov_s %U,%b", 0xf818, 0x7018, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 /* mov_s 0,b;                   01110 bbb 110 11 111 */
-  { (unsigned char *) "mov_s 0,%b", 0xf8ff, 0x70df, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "mov_s 0,%b", 0xf8ff, 0x70df, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 
 /* mul64_s 0,b,c;               01111 bbb ccc 01100 */
   { (unsigned char *) "mul64_s 0,%b,%c", 0xf81f, 0x780c, ARCOMPACT, 0, 0 ,0,0},
@@ -3931,7 +3993,7 @@ static struct arc_opcode arc_opcodes[] = {
 
 /* unimp_s ;                    01111 001 111 00000 */
 /* ARC700 addition */
-  { (unsigned char *) "unimp_s", 0xffff, 0x79e0, ARC_MACH_ARC7, 0, 0 ,0,0},
+  { (unsigned char *) "unimp_s", 0xffff, 0x79e0, ARC_MACH_ARC7 | ARC_MACH_ARCV2, 0, 0 ,0,0},
 
 /* or_s b,b,c;                  01111 bbb ccc 00101 */
   { (unsigned char *) "or_s %b,%b,%c", 0xf81f, 0x7805, ARCOMPACT, 0, 0 ,0,0},
@@ -3950,11 +4012,11 @@ static struct arc_opcode arc_opcodes[] = {
   { (unsigned char *) "sexb_s %b,%c", 0xf81f, 0x780d, ARCOMPACT, 0, 0 ,0,0},
 
 /* sexw_s b,c;                  01111 bbb ccc 01110 */
-  { (unsigned char *) "sexw_s %b,%c", 0xf81f, 0x780e, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "sexw_s %b,%c", 0xf81f, 0x780e, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 
 /* st_s b,[sp,u7];                  11000 bbb 010 uuuuu */
   { (unsigned char *) "st_s %b,[%6,%l]", 0xf8e0, 0xc040, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "st_s %b,[%6]", 0xf8e0, 0xc040, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "st_s %b,[%6]",    0xf8e0, 0xc040, ARCOMPACT, 0, 0 ,0,0},
 /* stb_s b,[sp,u7];                  11000 bbb 011 uuuuu */
   { (unsigned char *) "stb_s %b,[%6,%l]", 0xf8e0, 0xc060, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "stb_s %b,[%6]", 0xf8e0, 0xc060, ARCOMPACT, 0, 0 ,0,0},
@@ -3965,8 +4027,8 @@ static struct arc_opcode arc_opcodes[] = {
   { (unsigned char *) "stb_s %c,[%b,%E]", 0xf800, 0xa800, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "stb_s %c,[%b]", 0xf800, 0xa800, ARCOMPACT, 0, 0 ,0,0},
 /* stw_s c,[b,u6];                  10110 bbb ccc uuuuu */
-  { (unsigned char *) "stw_s %c,[%b,%k]", 0xf800, 0xb000, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "stw_s %c,[%b]", 0xf800, 0xb000, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "stw_s %c,[%b,%k]", 0xf800, 0xb000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "stw_s %c,[%b]",    0xf800, 0xb000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 
 /* sub_s b,b,c;                 01111 bbb ccc 00010 */
   { (unsigned char *) "sub_s %b,%b,%c", 0xf81f, 0x7802, ARCOMPACT, 0, 0 ,0,0},
@@ -3980,7 +4042,7 @@ static struct arc_opcode arc_opcodes[] = {
   { (unsigned char *) "sub_s.ne %b,%b,%b", 0xf8ff, 0x78c0, ARCOMPACT, 0, 0 ,0,0},
 
 /* trap_s unsigned 6 ;   ARC A700 new instruction    01111 1uuuuuu 11110*/
-  { (unsigned char *) "trap_s %@", 0xffff, 0x781E, ARC_MACH_ARC7, 0, 0 ,0,0},
+  { (unsigned char *) "trap_s %@", 0xffff, 0x781E, ARC_MACH_ARC7 | ARC_MACH_ARCV2, 0, 0 ,0,0},
 
 /* tst_s b,c;                   01111 bbb ccc 01011 */
   { (unsigned char *) "tst_s %b,%c", 0xf81f, 0x780b, ARCOMPACT, 0, 0 ,0,0},
@@ -3991,157 +4053,157 @@ static struct arc_opcode arc_opcodes[] = {
   { (unsigned char *) "nop", 0xffffffff, 0x264a7000, ARCOMPACT, 0, 0 ,0,0},
 
 /* MPYW & MPYUW -- 16-bit multiply instructions.  */
-  { (unsigned char *) "mpyw%.f %A,%B,%C%F",      0xf8ff0000, 0x201e0000, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyw%.f %A,%B,%u%F",      0xf8ff0000, 0x205e0000, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyw%.f %#,%B,%K%F",      0xf8ff0000, 0x209e0000, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyw%.f%Q %A,%B,%L%F",    0xf8ff0fc0, 0x201e0f80, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyw%.f%Q %A,%L,%C%F",    0xffff7000, 0x261e7000, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyw%.f%Q %A,%L,%u%F",    0xffff7000, 0x265e7000, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyw%.f%Q %A,%L,%L%F",    0xffff7fc0, 0x261e7f80, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyw%.q%.f %#,%B,%C%F",   0xf8ff0020, 0x20de0000, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyw%.q%.f %#,%C,%B%F",   0xf8ff0020, 0x20de0000, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyw%.q%.f %#,%B,%u%F",   0xf8ff00f0, 0x20de0020, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyw%.q%.f %#,%u,%B%F",   0xf8ff00f0, 0x20de0020, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyw%.q%.f%Q %#,%B,%L%F", 0xf8ff0fe0, 0x20de0f80, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyw%.q%.f%Q %#,%L,%B%F", 0xf8ff0fe0, 0x20de0f80, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyw%.f 0,%B,%C%F",       0xf8ff003f, 0x201e003e, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyw%.f 0,%B,%u%F",       0xf8ff003f, 0x205e003e, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyw%.f%Q 0,%B,%L%F",     0xf8ff0fff, 0x201e0fbe, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyw%.f%Q 0,%L,%C%F",     0xffff703f, 0x261e703e, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyw%.f%Q 0,%L,%u%F",     0xffff703f, 0x265e703e, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyw%.f%Q 0,%L,%K%F",     0xffff7000, 0x269e7000, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyw%.q%.f%Q 0,%L,%C%F",  0xffff7020, 0x26de7000, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyw%.q%.f%Q 0,%L,%u%F",  0xffff7020, 0x26de7020, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyw%.q%.f%Q 0,%L,%L%F",  0xffff7fff, 0x26de7f80, ARCOMPACT, 0, 0 ,0, 0},
+  { (unsigned char *) "mpyw%.f %A,%B,%C%F",      0xf8ff0000, 0x201e0000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyw%.f %A,%B,%u%F",      0xf8ff0000, 0x205e0000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyw%.f %#,%B,%K%F",      0xf8ff0000, 0x209e0000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyw%.f%Q %A,%B,%L%F",    0xf8ff0fc0, 0x201e0f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyw%.f%Q %A,%L,%C%F",    0xffff7000, 0x261e7000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyw%.f%Q %A,%L,%u%F",    0xffff7000, 0x265e7000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyw%.f%Q %A,%L,%L%F",    0xffff7fc0, 0x261e7f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyw%.q%.f %#,%B,%C%F",   0xf8ff0020, 0x20de0000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyw%.q%.f %#,%C,%B%F",   0xf8ff0020, 0x20de0000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyw%.q%.f %#,%B,%u%F",   0xf8ff00f0, 0x20de0020, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyw%.q%.f %#,%u,%B%F",   0xf8ff00f0, 0x20de0020, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyw%.q%.f%Q %#,%B,%L%F", 0xf8ff0fe0, 0x20de0f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyw%.q%.f%Q %#,%L,%B%F", 0xf8ff0fe0, 0x20de0f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyw%.f 0,%B,%C%F",       0xf8ff003f, 0x201e003e, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyw%.f 0,%B,%u%F",       0xf8ff003f, 0x205e003e, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyw%.f%Q 0,%B,%L%F",     0xf8ff0fff, 0x201e0fbe, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyw%.f%Q 0,%L,%C%F",     0xffff703f, 0x261e703e, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyw%.f%Q 0,%L,%u%F",     0xffff703f, 0x265e703e, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyw%.f%Q 0,%L,%K%F",     0xffff7000, 0x269e7000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyw%.q%.f%Q 0,%L,%C%F",  0xffff7020, 0x26de7000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyw%.q%.f%Q 0,%L,%u%F",  0xffff7020, 0x26de7020, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyw%.q%.f%Q 0,%L,%L%F",  0xffff7fff, 0x26de7f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
 
-  { (unsigned char *) "mpyuw%.f %A,%B,%C%F",     0xf8ff0000, 0x201f0000, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyuw%.f %A,%B,%u%F",     0xf8ff0000, 0x205f0000, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyuw%.f %#,%B,%K%F",     0xf8ff0000, 0x209f0000, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyuw%.f%Q %A,%B,%L%F",   0xf8ff0fc0, 0x201f0f80, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyuw%.f%Q %A,%L,%C%F",   0xffff7000, 0x261f7000, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyuw%.f%Q %A,%L,%u%F",   0xffff7000, 0x265f7000, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyuw%.f%Q %A,%L,%L%F",   0xffff7fc0, 0x261f7f80, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyuw%.q%.f %#,%B,%C%F",  0xf8ff0020, 0x20df0000, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyuw%.q%.f %#,%C,%B%F",  0xf8ff0020, 0x20df0000, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyuw%.q%.f %#,%B,%u%F",  0xf8ff00f0, 0x20df0020, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyuw%.q%.f %#,%u,%B%F",  0xf8ff00f0, 0x20df0020, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyuw%.q%.f%Q %#,%B,%L%F",0xf8ff0fe0, 0x20df0f80, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyuw%.q%.f%Q %#,%L,%B%F",0xf8ff0fe0, 0x20df0f80, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyuw%.f 0,%B,%C%F",      0xf8ff003f, 0x201f003e, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyuw%.f 0,%B,%u%F",      0xf8ff003f, 0x205f003e, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyuw%.f%Q 0,%B,%L%F",    0xf8ff0fff, 0x201f0fbe, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyuw%.f%Q 0,%L,%C%F",    0xffff703f, 0x261f703e, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyuw%.f%Q 0,%L,%u%F",    0xffff703f, 0x265f703e, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyuw%.f%Q 0,%L,%K%F",    0xffff7000, 0x269f7000, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyuw%.q%.f%Q 0,%L,%C%F", 0xffff7020, 0x26df7000, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyuw%.q%.f%Q 0,%L,%u%F", 0xffff7020, 0x26df7020, ARCOMPACT, 0, 0 ,0, 0},
-  { (unsigned char *) "mpyuw%.q%.f%Q 0,%L,%L%F", 0xffff7fff, 0x26df7f80, ARCOMPACT, 0, 0 ,0, 0},
+  { (unsigned char *) "mpyuw%.f %A,%B,%C%F",     0xf8ff0000, 0x201f0000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyuw%.f %A,%B,%u%F",     0xf8ff0000, 0x205f0000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyuw%.f %#,%B,%K%F",     0xf8ff0000, 0x209f0000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyuw%.f%Q %A,%B,%L%F",   0xf8ff0fc0, 0x201f0f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyuw%.f%Q %A,%L,%C%F",   0xffff7000, 0x261f7000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyuw%.f%Q %A,%L,%u%F",   0xffff7000, 0x265f7000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyuw%.f%Q %A,%L,%L%F",   0xffff7fc0, 0x261f7f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyuw%.q%.f %#,%B,%C%F",  0xf8ff0020, 0x20df0000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyuw%.q%.f %#,%C,%B%F",  0xf8ff0020, 0x20df0000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyuw%.q%.f %#,%B,%u%F",  0xf8ff00f0, 0x20df0020, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyuw%.q%.f %#,%u,%B%F",  0xf8ff00f0, 0x20df0020, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyuw%.q%.f%Q %#,%B,%L%F",0xf8ff0fe0, 0x20df0f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyuw%.q%.f%Q %#,%L,%B%F",0xf8ff0fe0, 0x20df0f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyuw%.f 0,%B,%C%F",      0xf8ff003f, 0x201f003e, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyuw%.f 0,%B,%u%F",      0xf8ff003f, 0x205f003e, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyuw%.f%Q 0,%B,%L%F",    0xf8ff0fff, 0x201f0fbe, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyuw%.f%Q 0,%L,%C%F",    0xffff703f, 0x261f703e, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyuw%.f%Q 0,%L,%u%F",    0xffff703f, 0x265f703e, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyuw%.f%Q 0,%L,%K%F",    0xffff7000, 0x269f7000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyuw%.q%.f%Q 0,%L,%C%F", 0xffff7020, 0x26df7000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyuw%.q%.f%Q 0,%L,%u%F", 0xffff7020, 0x26df7020, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
+  { (unsigned char *) "mpyuw%.q%.f%Q 0,%L,%L%F", 0xffff7fff, 0x26df7f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0, 0},
 
   /* Android Extension Instructions */
-  { (unsigned char *) "avgqb %A,%B,%C%F",     0x0, 0x30230000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "avgqb %A,%B,%u%F",     0x0, 0x30630000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "avgqb %A,%B,%L%F",     0x0, 0x30230f80, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "avgqb %A,%L,%C%F",     0x0, 0x36237000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "avgqb%.q %#,%B,%C%F",  0x0, 0x30e30000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "avgqb%.q %#,%B,%u%F",  0x0, 0x30e30020, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "avgqb%.q %#,%B,%L%F",  0x0, 0x30e30f80, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "avgqb %#,%B,%K%F",     0x0, 0x30a30000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "addqbs %A,%B,%C%F",    0x0, 0x30240000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "addqbs %A,%B,%u%F",    0x0, 0x30640000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "addqbs %A,%B,%L%F",    0x0, 0x30240f80, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "addqbs %A,%L,%C%F",    0x0, 0x36247000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "addqbs%.q %#,%B,%C%F", 0x0, 0x30e40000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "addqbs%.q %#,%B,%u%F", 0x0, 0x30e40020, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "addqbs%.q %#,%B,%L%F", 0x0, 0x30e40f80, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "addqbs %#,%B,%K%F",    0x0, 0x30a40000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "mpyqb %A,%B,%C%F",     0x0, 0x30250000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "mpyqb %A,%B,%u%F",     0x0, 0x30650000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "mpyqb %A,%B,%L%F",     0x0, 0x30250f80, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "mpyqb %A,%L,%C%F",     0x0, 0x36257000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "mpyqb%.q %#,%B,%C%F",  0x0, 0x30e50000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "mpyqb%.q %#,%B,%u%F",  0x0, 0x30e50020, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "mpyqb%.q %#,%B,%L%F",  0x0, 0x30e50f80, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "mpyqb %#,%B,%K%F",     0x0, 0x30a50000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "pkqb %A,%B,%C%F",      0x0, 0x30200000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "pkqb %A,%B,%u%F",      0x0, 0x30600000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "pkqb %A,%B,%L%F",      0x0, 0x30200f80, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "pkqb %A,%L,%C%F",      0x0, 0x36207000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "pkqb%.q %#,%B,%C%F",   0x0, 0x30e00000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "pkqb%.q %#,%B,%u%F",   0x0, 0x30e00020, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "pkqb%.q %#,%B,%L%F",   0x0, 0x30e00f80, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "pkqb %#,%B,%K%F",      0x0, 0x30a00000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "upkqb %A,%B,%C%F",     0x0, 0x30210000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "upkqb %A,%B,%u%F",     0x0, 0x30610000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "upkqb %A,%B,%L%F",     0x0, 0x30210f80, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "upkqb %A,%L,%C%F",     0x0, 0x36217000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "upkqb%.q %#,%B,%C%F",  0x0, 0x30e10000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "upkqb%.q %#,%B,%u%F",  0x0, 0x30e10020, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "upkqb%.q %#,%B,%L%F",  0x0, 0x30e10f80, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "upkqb %#,%B,%K%F",     0x0, 0x30a10000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "fxtr %A,%B,%C%F",      0x0, 0x30260000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "fxtr %A,%B,%u%F",      0x0, 0x30660000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "fxtr %A,%B,%L%F",      0x0, 0x30260f80, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "fxtr %A,%L,%C%F",      0x0, 0x36267000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "fxtr%.q %#,%B,%C%F",   0x0, 0x30e60000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "fxtr%.q %#,%B,%u%F",   0x0, 0x30e60020, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "fxtr%.q %#,%B,%L%F",   0x0, 0x30e60f80, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "fxtr %#,%B,%K%F",      0x0, 0x30a60000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "xpkqb %A,%B,%C%F",     0x0, 0x30220000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "xpkqb %A,%B,%u%F",     0x0, 0x30620000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "xpkqb %A,%B,%L%F",     0x0, 0x30220f80, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "xpkqb %A,%L,%C%F",     0x0, 0x36227000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "xpkqb%.q %#,%B,%C%F",  0x0, 0x30e20000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "xpkqb%.q %#,%B,%u%F",  0x0, 0x30e20020, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "xpkqb%.q %#,%B,%L%F",  0x0, 0x30e20f80, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "xpkqb %#,%B,%K%F",     0x0, 0x30a20000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "acm %A,%B,%C%F",       0x0, 0x30280000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "acm %A,%B,%u%F",       0x0, 0x30680000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "acm %A,%B,%L%F",       0x0, 0x30280f80, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "acm %A,%L,%C%F",       0x0, 0x36287000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "acm%.q %#,%B,%C%F",    0x0, 0x30e80000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "acm%.q %#,%B,%u%F",    0x0, 0x30e80020, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "acm%.q %#,%B,%L%F",    0x0, 0x30e80f80, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "acm %#,%B,%K%F",       0x0, 0x30a80000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "sfxtr %A,%B,%C%F",     0x0, 0x30290000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "sfxtr %A,%B,%u%F",     0x0, 0x30690000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "sfxtr %A,%B,%L%F",     0x0, 0x30290f80, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "sfxtr %A,%L,%C%F",     0x0, 0x36297000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "sfxtr%.q %#,%B,%C%F",  0x0, 0x30e90000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "sfxtr%.q %#,%B,%u%F",  0x0, 0x30e90020, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "sfxtr%.q %#,%B,%L%F",  0x0, 0x30e90f80, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "sfxtr %#,%B,%K%F",     0x0, 0x30a90000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "clamp %A,%B,%C%F",     0x0, 0x302a0000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "clamp %A,%B,%u%F",     0x0, 0x306a0000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "clamp %A,%B,%L%F",     0x0, 0x302a0f80, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "clamp %A,%L,%C%F",     0x0, 0x362a7000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "clamp%.q %#,%B,%C%F",  0x0, 0x30ea0000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "clamp%.q %#,%B,%u%F",  0x0, 0x30ea0020, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "clamp%.q %#,%B,%L%F",  0x0, 0x30ea0f80, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "clamp %#,%B,%K%F",     0x0, 0x30aa0000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "mpyu16 %A,%B,%C%F",    0x0, 0x302b0000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "mpyu16 %A,%B,%u%F",    0x0, 0x306b0000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "mpyu16 %A,%B,%L%F",    0x0, 0x302b0f80, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "mpyu16 %A,%L,%C%F",    0x0, 0x362b7000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "mpyu16%.q %#,%B,%C%F", 0x0, 0x30eb0000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "mpyu16%.q %#,%B,%u%F", 0x0, 0x30eb0020, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "mpyu16%.q %#,%B,%L%F", 0x0, 0x30eb0f80, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "mpyu16 %#,%B,%K%F",    0x0, 0x30ab0000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "mpy16 %A,%B,%C%F",     0x0, 0x302c0000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "mpy16 %A,%B,%u%F",     0x0, 0x306c0000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "mpy16 %A,%B,%L%F",     0x0, 0x302c0f80, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "mpy16 %A,%L,%C%F",     0x0, 0x362c7000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "mpy16%.q %#,%B,%C%F",  0x0, 0x30ec0000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "mpy16%.q %#,%B,%u%F",  0x0, 0x30ec0020, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "mpy16%.q %#,%B,%L%F",  0x0, 0x30ec0f80, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "mpy16 %#,%B,%K%F",     0x0, 0x30ac0000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "iaddr %A,%B,%C%F",     0x0, 0x30270000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "iaddr %A,%B,%u%F",     0x0, 0x30670000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "iaddr %A,%B,%L%F",     0x0, 0x30270f80, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "iaddr %A,%L,%C%F",     0x0, 0x36277000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "iaddr%.q %#,%B,%C%F",  0x0, 0x30e70000, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "iaddr%.q %#,%B,%u%F",  0x0, 0x30e70020, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "iaddr%.q %#,%B,%L%F",  0x0, 0x30e70f80, ARCOMPACT, 0, 0, 0, 0},
-  { (unsigned char *) "iaddr %#,%B,%K%F",     0x0, 0x30a70000, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "avgqb %A,%B,%C%F",     0x0, 0x30230000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "avgqb %A,%B,%u%F",     0x0, 0x30630000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "avgqb %A,%B,%L%F",     0x0, 0x30230f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "avgqb %A,%L,%C%F",     0x0, 0x36237000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "avgqb%.q %#,%B,%C%F",  0x0, 0x30e30000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "avgqb%.q %#,%B,%u%F",  0x0, 0x30e30020, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "avgqb%.q %#,%B,%L%F",  0x0, 0x30e30f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "avgqb %#,%B,%K%F",     0x0, 0x30a30000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "addqbs %A,%B,%C%F",    0x0, 0x30240000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "addqbs %A,%B,%u%F",    0x0, 0x30640000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "addqbs %A,%B,%L%F",    0x0, 0x30240f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "addqbs %A,%L,%C%F",    0x0, 0x36247000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "addqbs%.q %#,%B,%C%F", 0x0, 0x30e40000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "addqbs%.q %#,%B,%u%F", 0x0, 0x30e40020, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "addqbs%.q %#,%B,%L%F", 0x0, 0x30e40f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "addqbs %#,%B,%K%F",    0x0, 0x30a40000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "mpyqb %A,%B,%C%F",     0x0, 0x30250000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "mpyqb %A,%B,%u%F",     0x0, 0x30650000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "mpyqb %A,%B,%L%F",     0x0, 0x30250f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "mpyqb %A,%L,%C%F",     0x0, 0x36257000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "mpyqb%.q %#,%B,%C%F",  0x0, 0x30e50000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "mpyqb%.q %#,%B,%u%F",  0x0, 0x30e50020, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "mpyqb%.q %#,%B,%L%F",  0x0, 0x30e50f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "mpyqb %#,%B,%K%F",     0x0, 0x30a50000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "pkqb %A,%B,%C%F",      0x0, 0x30200000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "pkqb %A,%B,%u%F",      0x0, 0x30600000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "pkqb %A,%B,%L%F",      0x0, 0x30200f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "pkqb %A,%L,%C%F",      0x0, 0x36207000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "pkqb%.q %#,%B,%C%F",   0x0, 0x30e00000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "pkqb%.q %#,%B,%u%F",   0x0, 0x30e00020, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "pkqb%.q %#,%B,%L%F",   0x0, 0x30e00f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "pkqb %#,%B,%K%F",      0x0, 0x30a00000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "upkqb %A,%B,%C%F",     0x0, 0x30210000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "upkqb %A,%B,%u%F",     0x0, 0x30610000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "upkqb %A,%B,%L%F",     0x0, 0x30210f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "upkqb %A,%L,%C%F",     0x0, 0x36217000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "upkqb%.q %#,%B,%C%F",  0x0, 0x30e10000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "upkqb%.q %#,%B,%u%F",  0x0, 0x30e10020, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "upkqb%.q %#,%B,%L%F",  0x0, 0x30e10f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "upkqb %#,%B,%K%F",     0x0, 0x30a10000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "fxtr %A,%B,%C%F",      0x0, 0x30260000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "fxtr %A,%B,%u%F",      0x0, 0x30660000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "fxtr %A,%B,%L%F",      0x0, 0x30260f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "fxtr %A,%L,%C%F",      0x0, 0x36267000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "fxtr%.q %#,%B,%C%F",   0x0, 0x30e60000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "fxtr%.q %#,%B,%u%F",   0x0, 0x30e60020, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "fxtr%.q %#,%B,%L%F",   0x0, 0x30e60f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "fxtr %#,%B,%K%F",      0x0, 0x30a60000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "xpkqb %A,%B,%C%F",     0x0, 0x30220000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "xpkqb %A,%B,%u%F",     0x0, 0x30620000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "xpkqb %A,%B,%L%F",     0x0, 0x30220f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "xpkqb %A,%L,%C%F",     0x0, 0x36227000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "xpkqb%.q %#,%B,%C%F",  0x0, 0x30e20000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "xpkqb%.q %#,%B,%u%F",  0x0, 0x30e20020, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "xpkqb%.q %#,%B,%L%F",  0x0, 0x30e20f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "xpkqb %#,%B,%K%F",     0x0, 0x30a20000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "acm %A,%B,%C%F",       0x0, 0x30280000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "acm %A,%B,%u%F",       0x0, 0x30680000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "acm %A,%B,%L%F",       0x0, 0x30280f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "acm %A,%L,%C%F",       0x0, 0x36287000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "acm%.q %#,%B,%C%F",    0x0, 0x30e80000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "acm%.q %#,%B,%u%F",    0x0, 0x30e80020, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "acm%.q %#,%B,%L%F",    0x0, 0x30e80f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "acm %#,%B,%K%F",       0x0, 0x30a80000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "sfxtr %A,%B,%C%F",     0x0, 0x30290000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "sfxtr %A,%B,%u%F",     0x0, 0x30690000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "sfxtr %A,%B,%L%F",     0x0, 0x30290f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "sfxtr %A,%L,%C%F",     0x0, 0x36297000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "sfxtr%.q %#,%B,%C%F",  0x0, 0x30e90000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "sfxtr%.q %#,%B,%u%F",  0x0, 0x30e90020, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "sfxtr%.q %#,%B,%L%F",  0x0, 0x30e90f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "sfxtr %#,%B,%K%F",     0x0, 0x30a90000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "clamp %A,%B,%C%F",     0x0, 0x302a0000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "clamp %A,%B,%u%F",     0x0, 0x306a0000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "clamp %A,%B,%L%F",     0x0, 0x302a0f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "clamp %A,%L,%C%F",     0x0, 0x362a7000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "clamp%.q %#,%B,%C%F",  0x0, 0x30ea0000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "clamp%.q %#,%B,%u%F",  0x0, 0x30ea0020, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "clamp%.q %#,%B,%L%F",  0x0, 0x30ea0f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "clamp %#,%B,%K%F",     0x0, 0x30aa0000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "mpyu16 %A,%B,%C%F",    0x0, 0x302b0000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "mpyu16 %A,%B,%u%F",    0x0, 0x306b0000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "mpyu16 %A,%B,%L%F",    0x0, 0x302b0f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "mpyu16 %A,%L,%C%F",    0x0, 0x362b7000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "mpyu16%.q %#,%B,%C%F", 0x0, 0x30eb0000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "mpyu16%.q %#,%B,%u%F", 0x0, 0x30eb0020, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "mpyu16%.q %#,%B,%L%F", 0x0, 0x30eb0f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "mpyu16 %#,%B,%K%F",    0x0, 0x30ab0000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "mpy16 %A,%B,%C%F",     0x0, 0x302c0000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "mpy16 %A,%B,%u%F",     0x0, 0x306c0000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "mpy16 %A,%B,%L%F",     0x0, 0x302c0f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "mpy16 %A,%L,%C%F",     0x0, 0x362c7000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "mpy16%.q %#,%B,%C%F",  0x0, 0x30ec0000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "mpy16%.q %#,%B,%u%F",  0x0, 0x30ec0020, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "mpy16%.q %#,%B,%L%F",  0x0, 0x30ec0f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "mpy16 %#,%B,%K%F",     0x0, 0x30ac0000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "iaddr %A,%B,%C%F",     0x0, 0x30270000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "iaddr %A,%B,%u%F",     0x0, 0x30670000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "iaddr %A,%B,%L%F",     0x0, 0x30270f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "iaddr %A,%L,%C%F",     0x0, 0x36277000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "iaddr%.q %#,%B,%C%F",  0x0, 0x30e70000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "iaddr%.q %#,%B,%u%F",  0x0, 0x30e70020, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "iaddr%.q %#,%B,%L%F",  0x0, 0x30e70f80, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
+  { (unsigned char *) "iaddr %#,%B,%K%F",     0x0, 0x30a70000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0, 0, 0},
 
   /*ARC v2 extensions*/
   #include "arc-em.h"
