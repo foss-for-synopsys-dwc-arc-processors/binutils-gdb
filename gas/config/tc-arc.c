@@ -44,6 +44,8 @@
 extern int arc_get_mach (char *);
 extern int arc_insn_not_jl (arc_insn);
 extern int arc_test_wb(void);
+extern unsigned char arc_get_branch_prediction(void);
+extern void arc_reset_branch_prediction(void);
 
 extern int arc_get_noshortcut_flag (void);
 static void arc_set_ext_seg (enum ExtOperType, int, int, int);
@@ -4843,6 +4845,7 @@ fprintf (stdout, "Matching ****** %s *************\n", str);
     {
       int past_opcode_p, fc, num_suffixes;
       int fix_up_at = 0;
+      int fix_up4_bbitbr = 0;
       unsigned char *syn;
       struct arc_fixup fixups[MAX_FIXUPS];
       int mods=0;
@@ -4940,7 +4943,7 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 	    {
 	      const char *errmsg = NULL;
 	      if (operand->insert)
-                  {
+		{
 		  insn = (*operand->insert) (insn,&insn2, operand, mods, NULL, 0,
 					     &errmsg);
 		  if (errmsg != (const char *) NULL)
@@ -4963,6 +4966,27 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 			     | ARC_OPERAND_ADDRESS)))
 		    {
 		      fixups[fix_up_at].opindex = arc_operand_map[operand->fmt];
+		    }
+		  /*ARCv2: Value of bit Y for branch prediction can be
+		    done only when we know the displacement. Hence, I
+		    override the 'd' modchar fixup with an insert
+		    function that depends on the mnemonic <.T> flag*/
+		  if (arc_get_branch_prediction() &&
+		      (operand->fmt == 144 || operand->fmt == 145))
+		    {
+		      if (operand->fmt == 144)
+			{
+			  /*BBIT*/
+			  fixups[fix_up4_bbitbr].opindex =
+			    arc_operand_map[operand->fmt + arc_get_branch_prediction() - 1];
+			}
+		      if (operand->fmt == 145)
+			{
+			  /*BR*/
+			  fixups[fix_up4_bbitbr].opindex =
+			    arc_operand_map[operand->fmt - arc_get_branch_prediction() + 1];
+			}
+		      arc_reset_branch_prediction();
 		    }
 		}
 	      ++syn;
@@ -6095,6 +6119,13 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 			(insn, &insn2,operand, mods, reg, 0L, &junk);
 		      fixups[fc].opindex = arc_operand_map[0];
 		    }
+		  else if (*syn == 'd')
+		    {
+		      /*ARCv2: This is a bbit or br. I need to
+			override this FIXUP to handle also the Ybit*/
+		      fix_up4_bbitbr = fc;
+		      fixups[fc].opindex = arc_operand_map[(int) *syn];
+		    }
 		  else
 		    fixups[fc].opindex = arc_operand_map[(int) *syn];
 		  ++fc;
@@ -6453,14 +6484,14 @@ fprintf (stdout, "Matched syntax %s\n", opcode->syntax);
 		reloc_type = arc_get_sda_reloc (insn, compact_insn_16);
 		break;
 	      case GOT_TYPE:
-		  reloc_type = BFD_RELOC_ARC_GOTPC32;
-		  break;
+		reloc_type = BFD_RELOC_ARC_GOTPC32;
+		break;
 	      case PLT_TYPE:
-		  reloc_type = BFD_RELOC_ARC_PLT32;
-		  break;
+		reloc_type = BFD_RELOC_ARC_PLT32;
+		break;
 	      case GOTOFF_TYPE:
-		  reloc_type = BFD_RELOC_ARC_GOTOFF;
-		  break;
+		reloc_type = BFD_RELOC_ARC_GOTOFF;
+		break;
 	      default:
 		break;
 	      }
