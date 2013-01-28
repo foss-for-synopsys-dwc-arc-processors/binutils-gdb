@@ -1,9 +1,15 @@
 /* Target dependent code for ARC processor family, for GDB, the GNU debugger.
 
    Copyright 2005 Free Software Foundation, Inc.
-   Copyright 2009-2012 Synopsys Inc.
+   Copyright 2009-2013 Synopsys Inc.
+
+   Contributor Jeremy Bennett <jeremy.bennett@embecosm.com> on behalf of
+   Synopsys Inc.
+   Contributed by Codito Technologies Pvt. Ltd. (www.codito.com) on behalf of
+   Synopsys Inc.
 
    Authors: 
+      Jeremy Bennett       <jeremy.bennett@embecosm.com>
       Soam Vasani          <soam.vasani@codito.com>
       Ramana Radhakrishnan <ramana.radhakrishnan@codito.com> 
       Richard Stuckey      <richard.stuckey@arc.com>
@@ -12,18 +18,16 @@
    
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
+   the Free Software Foundation; either version 3 of the License, or
    (at your option) any later version.
-   
+  
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-   
+  
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  
-*/
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 /******************************************************************************/
 /*                                                                            */
@@ -46,6 +50,7 @@
 /******************************************************************************/
 
 /* gdb header files */
+#include "gdbarch.h"
 #include "defs.h"
 #include "osabi.h"
 #include "regcache.h"
@@ -59,16 +64,16 @@
 #include "opcodes/arc-dis.h"
 
 /* ARC header files */
-/* deprecated tm.h support in 6.8 fix */
-#include "config/arc/tm-linux.h"
-#include "arc-linux-tdep.h"
-#include "arc-support.h"
 #include "arc-tdep.h"
 
 
 /* -------------------------------------------------------------------------- */
 /*                               local data                                   */
 /* -------------------------------------------------------------------------- */
+
+/* Linux specific values */
+#define ARC_NR_PSEUDO_REGS      6
+#define ARC_NR_REGS             (int) ARC_REG_END_MARKER
 
 #define STATUS32_L            0x00000100
 
@@ -852,17 +857,3 @@ _initialize_arc_linux_tdep (void)
                             GDB_OSABI_LINUX,
                             arc_linux_init_abi);
 }
-
-
-/* these functions are required simply to avoid undefined symbols at linkage */
-
-void arc_check_pc_defined(struct gdbarch* gdbarch)
-{
-}
-
-
-void arc_convert_aux_contents_for_write(int gdb_regno, void* buffer)
-{
-}
-
-/******************************************************************************/
