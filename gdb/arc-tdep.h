@@ -1,51 +1,57 @@
 /* Target dependent code for ARC processor family, for GDB, the GNU debugger.
 
    Copyright 2005 Free Software Foundation, Inc.
-   Copyright 2009-2012 Synopsys Inc.
+   Copyright 2009-2013 Synopsys Inc.
 
+   Contributor Jeremy Bennett <jeremy.bennett@embecosm.com> on behalf of
+   Synopsys Inc.
    Contributed by Codito Technologies Pvt. Ltd. (www.codito.com) on behalf of
    Synopsys Inc.
 
    Authors: 
+      Jeremy Bennett       <jeremy.bennett@embecosm.com>
       Soam Vasani          <soam.vasani@codito.com>
       Ramana Radhakrishnan <ramana.radhakrishnan@codito.com> 
       Richard Stuckey      <richard.stuckey@arc.com>
 
    This file is part of GDB.
-   
+
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
+   the Free Software Foundation; either version 3 of the License, or
    (at your option) any later version.
-   
+  
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-   
+  
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  
-*/
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 /******************************************************************************/
 /*                                                                            */
-/* Outline:                                                                   */
-/*     This header file defines some target-dependent information which is    */
-/*     specific to the ARC gdb port.                                          */
+/*		       ARC Architecture Header for GDB                        */
+/*		       ===============================                        */
+/*                                                                            */
+/*  Definitions specific to the architecture, but not any particular OS.      */
 /*                                                                            */
 /******************************************************************************/
 
 #ifndef ARC_TDEP_H
 #define ARC_TDEP_H
 
-/* ARC header files */
-#include "arc-support.h"
 
+#ifndef FALSE
+#define FALSE 0
+#endif
+#ifndef TRUE
+#define TRUE 1
+#endif
 
-#define ARC_PC_REGNUM       (gdbarch_pc_regnum       (current_gdbarch))
-#define ARC_NUM_REGS        (gdbarch_num_regs        (current_gdbarch))
-#define ARC_NUM_PSEUDO_REGS (gdbarch_num_pseudo_regs (current_gdbarch))
+#define ARC_PC_REGNUM       (gdbarch_pc_regnum       (target_gdbarch))
+#define ARC_NUM_REGS        (gdbarch_num_regs        (target_gdbarch))
+#define ARC_NUM_PSEUDO_REGS (gdbarch_num_pseudo_regs (target_gdbarch))
 #define ARC_TOTAL_REGS      (ARC_NUM_REGS + ARC_NUM_PSEUDO_REGS)
 
 
@@ -56,7 +62,9 @@
 #define ARC_NUM_STANDARD_CORE_REGS             (ARC_MAX_CORE_REGS - ARC_NUM_EXTENSION_CORE_REGS)
 
 
-#define IS_EXTENSION_CORE_REGISTER(hw_regnum)  (ARC_FIRST_EXTENSION_CORE_REGISTER <= (hw_regnum) && (hw_regnum) <= ARC_LAST_EXTENSION_CORE_REGISTER)
+#define IS_EXTENSION_CORE_REGISTER(hw_regnum)				\
+  ((ARC_FIRST_EXTENSION_CORE_REGISTER <= (hw_regnum))			\
+   && (hw_regnum) <= ARC_LAST_EXTENSION_CORE_REGISTER)
 
 
 /* ARC processor ABI-related registers:
@@ -103,7 +111,7 @@ typedef struct arc_variant_info ARC_VariantsInfo;
 struct gdbarch_tdep
 {
     /* Detect sigtramp.  */
-    Boolean (*is_sigtramp) (struct frame_info*);
+    int (*is_sigtramp) (struct frame_info*);
   
     /* Get address of sigcontext for sigtramp.  */
     CORE_ADDR (*sigcontext_addr) (struct frame_info*);
