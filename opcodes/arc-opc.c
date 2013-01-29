@@ -2081,6 +2081,10 @@ insert_ld_syntax (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
 	      *errmsg = _("ld operand error: Privilege Violation exception");
 	    }
 	}
+      if (cpu_type == ARC_MACH_ARCV2 && arc_user_mode_only && ac_reg_num == 29)
+	{
+	  *errmsg = _("ld operand error: Privilege Violation exception");
+	}
 
       return insn;
     }
@@ -2146,19 +2150,25 @@ insert_ex_syntax (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
 		  long value ATTRIBUTE_UNUSED,
 		  const char **errmsg)
 {
+  unsigned ac_reg_hi = X (insn, 12, 3);
+  unsigned ac_reg_lo = X (insn, 24, 3);
+  unsigned ac_reg_num = (ac_reg_hi << 3) | ac_reg_lo;
   /* Ravi: operand validity checks for the ARC700 */
   if (cpu_type == ARC_MACH_ARC7)
   /* if (arc_get_opcode_mach (arc_mach_type, 0) == ARC_MACH_ARC7) */
     {
-      unsigned ac_reg_hi = X (insn, 12, 3);
-      unsigned ac_reg_lo = X (insn, 24, 3);
-      unsigned ac_reg_num = (ac_reg_hi << 3) | ac_reg_lo;
-
       if (arc_user_mode_only && (ac_reg_num == 29 || ac_reg_num == 30))
 	*errmsg = _("ex operand error: Privilege Violation exception");
       if (0x20 <= ac_reg_num && ac_reg_num <= 0x3F
 	  && !((arc_ld_ext_mask >> (ac_reg_num - 32)) & 1))
 	*errmsg = _("ld operand error: Instruction Error exception");
+    }
+  else if (cpu_type == ARC_MACH_ARCV2)
+    {
+      if (arc_user_mode_only && ac_reg_num == 29)
+	{
+	  *errmsg = _("ex operand error: Privilege Violation exception");
+	}
     }
   return insn;
 }
@@ -4493,6 +4503,101 @@ static const struct arc_operand_value arc_reg_names_a700[] =
 
 };
 
+static const struct arc_operand_value arc_reg_names_em[] =
+{
+  /* Sort this so that the first 61 entries are sequential.
+     IE: For each i (i<61), arc_reg_names[i].value == i.  */
+
+  { "r0", 0, REG_AC, 0 }, { "r1", 1, REG_AC, 0 }, { "r2", 2, REG_AC, 0 },
+  { "r3", 3, REG_AC, 0 }, { "r4", 4, REG_AC, 0 }, { "r5", 5, REG_AC, 0 },
+  { "r6", 6, REG_AC, 0 }, { "r7", 7, REG_AC, 0 }, { "r8", 8, REG_AC, 0 },
+  { "r9", 9, REG_AC, 0 },
+  { "r10", 10, REG_AC, 0 }, { "r11", 11, REG_AC, 0 }, { "r12", 12, REG_AC, 0 },
+  { "r13", 13, REG_AC, 0 }, { "r14", 14, REG_AC, 0 }, { "r15", 15, REG_AC, 0 },
+  { "r16", 16, REG_AC, 0 }, { "r17", 17, REG_AC, 0 }, { "r18", 18, REG_AC, 0 },
+  { "r19", 19, REG_AC, 0 }, { "r20", 20, REG_AC, 0 }, { "r21", 21, REG_AC, 0 },
+  { "r22", 22, REG_AC, 0 }, { "r23", 23, REG_AC, 0 }, { "r24", 24, REG_AC, 0 },
+  { "r25", 25, REG_AC, 0 }, { "r26", 26, REG_AC, 0 }, { "r27", 27, REG_AC, 0 },
+  { "r28", 28, REG_AC, 0 }, { "r29", 29, REG_AC, 0 }, { "r30", 30, REG_AC, 0 },
+  { "r31", 31, REG_AC, 0 },
+  { "gp", 26, REG_AC, 0 }, { "fp", 27, REG_AC, 0 }, { "sp", 28, REG_AC, 0 },
+  { "ilink", 29, REG_AC, 0 },
+  { "blink", 31, REG_AC, 0 },
+  { "lp_count", 60, REG_AC, 0 }, { "r60", 60, REG_AC, 0 },
+  { "pcl", 63, REG_AC, ARC_REGISTER_READONLY },
+  { "r63", 63, REG_AC, ARC_REGISTER_READONLY },
+
+  /* General Purpose Registers for ARCompact 16-bit insns */
+
+  { "r0", 0, REG_AC, ARC_REGISTER_16 }, { "r1", 1, REG_AC, ARC_REGISTER_16 },
+  { "r2", 2, REG_AC, ARC_REGISTER_16 }, { "r3", 3, REG_AC, ARC_REGISTER_16 },
+  { "r12", 4, REG_AC, ARC_REGISTER_16 }, { "r13", 5, REG_AC, ARC_REGISTER_16 },
+  { "r14", 6, REG_AC, ARC_REGISTER_16 }, { "r15", 7, REG_AC, ARC_REGISTER_16 },
+
+
+    /* Standard auxiliary registers.  */
+  { "identity",       0x04, AUXREG_AC, ARC_REGISTER_READONLY },
+  { "pc",             0x06, AUXREG_AC, ARC_REGISTER_READONLY },
+  { "status32",       0x0A, AUXREG_AC, ARC_REGISTER_READONLY },
+  { "status32_p0",    0x0B, AUXREG_AC, ARC_REGISTER_READONLY },
+  { "bta",            0x412, AUXREG_AC, 0},
+  { "ecr",            0x403, AUXREG_AC, 0},
+  { "int_vector_base",0x25, AUXREG_AC, 0},
+  /*Saved exception and interrupt state*/
+  { "aux_user_sp",    0x0D, AUXREG_AC, 0},
+  { "eret",           0x400, AUXREG_AC, 0}, /* Exception Return Address */
+  { "erbta",          0x401, AUXREG_AC, 0}, /* Exception Return Branch Target Address */
+  { "erstatus",       0x402, AUXREG_AC, 0}, /* Exception Return Status */
+  /*Build configuration registers*/
+  { "bcr_ver",        0x60, AUXREG_AC, ARC_REGISTER_READONLY },
+  { "bta_link_build", 0x63, AUXREG_AC, ARC_REGISTER_READONLY },
+  { "vecbase_ac_build", 0x68, AUXREG_AC, ARC_REGISTER_READONLY },
+  { "rf_build",       0x6E, AUXREG_AC, ARC_REGISTER_READONLY },
+  { "isa_config",     0xC1, AUXREG_AC, ARC_REGISTER_READONLY },
+
+  /*Optional aux registers*/
+  /*Zero overhead loop aux regs*/
+  { "lp_start",       0x02, AUXREG_AC, 0},
+  { "lp_end",         0x03, AUXREG_AC, 0},
+  /*Indexed table auxiliary register*/
+  { "jli_base",       0x290, AUXREG_AC, 0},
+  { "ldi_base",       0x291, AUXREG_AC, 0},
+  { "ei_base",        0x292, AUXREG_AC, 0},
+  /*Debug registers*/
+  { "debug",          0x05, AUXREG_AC, ARC_REGISTER_READONLY },
+  { "debugi",         0x1F, AUXREG_AC, ARC_REGISTER_READONLY },
+  /*Extended exception state aux regs*/
+  { "efa",            0x404, AUXREG_AC, 0 } , /* Exception Fault Address */
+  /*Aux timer regs*/
+  { "count0",         0x21, AUXREG_AC, 0},
+  { "control0",       0x22, AUXREG_AC, 0},
+  { "limit0",         0x23, AUXREG_AC, 0},
+  { "count1",         0x100, AUXREG_AC, 0},
+  { "control1",       0x101, AUXREG_AC, 0},
+  { "limit1",         0x102, AUXREG_AC, 0},
+  { "aux_rtc_ctrl",   0x103, AUXREG_AC, 0},
+  { "aux_rtc_low",    0x104, AUXREG_AC, ARC_REGISTER_READONLY},
+  { "aux_rtc_high",   0x105, AUXREG_AC, ARC_REGISTER_READONLY},
+  /*User extension aux regs*/
+  { "xpu" ,           0x410, AUXREG_AC, 0 } , /* User Mode Extension Enables */
+  { "xflags" ,        0x44F, AUXREG_AC, 0 } ,
+  /*Cache aux regs*/
+  { "ic_ivic",        0x10, AUXREG_AC, ARC_REGISTER_WRITEONLY},
+  { "ic_ctrl",        0x11, AUXREG_AC, 0 } ,
+  { "ic_lil",         0x13, AUXREG_AC, ARC_REGISTER_WRITEONLY},
+  { "ic_ivil",        0x19, AUXREG_AC, ARC_REGISTER_WRITEONLY},
+  { "ic_ram_addr",    0x1A, AUXREG_AC, 0 } ,
+  { "ic_tag",         0x1B, AUXREG_AC, 0 } ,
+  { "ic_data",        0x1D, AUXREG_AC, 0 } ,
+  { "dc_ivdc",        0x47, AUXREG_AC, ARC_REGISTER_WRITEONLY},
+  { "dc_ctrl",        0x48, AUXREG_AC, 0 } ,
+  { "dc_flsh",        0x4B, AUXREG_AC, ARC_REGISTER_WRITEONLY},
+  { "aux_cache_limit",0x209, AUXREG_AC, 0 },
+  { "dc_ldl",         0x49, AUXREG_AC, ARC_REGISTER_WRITEONLY},
+  { "dc_ivdl",        0x4A, AUXREG_AC, ARC_REGISTER_WRITEONLY},
+  { "dc_fldl",        0x4C, AUXREG_AC, ARC_REGISTER_WRITEONLY}
+};
+
 
 
 const struct arc_operand_value *arc_reg_names = arc_reg_names_a4;
@@ -4765,11 +4870,15 @@ arc_opcode_init_tables (int flags)
 	     to be the case for A4. Would have to check that and test
 	     it at some point in time.
 	  */
-	  if (ARC_OPCODE_CPU(flags) == ARC_MACH_ARC7 ||
-	      ARC_OPCODE_CPU(flags) == ARC_MACH_ARCV2)
+	  if (ARC_OPCODE_CPU(flags) == ARC_MACH_ARC7)
 	    {
 	      arc_reg_names       = arc_reg_names_a700;
 	      arc_reg_names_count = ELEMENTS_IN(arc_reg_names_a700);
+	    }
+	  else if (ARC_OPCODE_CPU(flags) == ARC_MACH_ARCV2)
+	    {
+	      arc_reg_names       = arc_reg_names_em;
+	      arc_reg_names_count = ELEMENTS_IN(arc_reg_names_em);
 	    }
 	  else
 	    {
@@ -4965,8 +5074,11 @@ ac_brk_s_insn(arc_insn insn)
 }
 
 
-/* Returns 1 if insn being encoded is either branch or jump insn.
-   It can be used only for ARCompact architecture */
+/* Returns 1 if insn being encoded is either branch or jump insn.  It
+   can be used only for ARCompact architecture.
+
+   CZI: This procedure does not work for 16bit instructions due to
+   definition of the I() macro.  */
 
 int
 ac_branch_or_jump_insn(arc_insn insn, int compact_insn_16)
@@ -4981,6 +5093,42 @@ ac_branch_or_jump_insn(arc_insn insn, int compact_insn_16)
 	  (compact_insn_16 && ((insn & I(-1)) == I(0x1e))));
 }
 
+/* Returns 1 if the insn is a J_S.D or JL_S.D. It should work for
+   ARCompact and ARC EM architectures*/
+unsigned char
+em_jumplink_or_jump_insn(arc_insn insn, int compact_insn16)
+{
+#define MAJOR16(x) (((unsigned) (x) & 31) << 11)
+#define SOPCOD2(x) (((unsigned) (x) & 7) << 5)
+#define SOPCOD3(x) (((unsigned) (x) & 7) << 8)
+
+  return (compact_insn16 && (((insn & MAJOR16(-1)) == MAJOR16(0x0F)) &&
+			     ((insn & SOPCOD2(-1)) == SOPCOD2(0x01) || /*J_S.D*/
+			      (insn & SOPCOD2(-1)) == SOPCOD2(0x03) || /*JL_S.D*/
+			      ((insn & SOPCOD2(-1)) == SOPCOD2(0x07) &&
+			       (insn & SOPCOD3(-1)) == SOPCOD3(0x07)) /*J_S.D*/
+			      )));
+}
+
+/* Returns 1 if the insn is a J_S, JL_S, JEQ_S, JNE_S. It should work
+   for both ARCompact and ARC EM architectures */
+unsigned char
+em_branch_or_jump_insn(arc_insn insn, int compact_insn16)
+{
+  return ((compact_insn16 && (((insn & MAJOR16(-1)) == MAJOR16(0x0F)) &&
+			     ((insn & SOPCOD2(-1)) <= SOPCOD2(0x03) ||
+			      ((insn & SOPCOD2(-1)) == SOPCOD2(0x07) &&
+			       (insn & SOPCOD3(-1)) >= SOPCOD3(0x04))
+			      ))) ||
+	  (compact_insn16 && ((insn & MAJOR16(-1)) == MAJOR16(0x1E))) || /*all 16bit cond branches + B_S*/
+	  (compact_insn16 && ((insn & MAJOR16(-1)) == MAJOR16(0x1F))) || /*BL_S s13*/
+	  (compact_insn16 && ((insn & MAJOR16(-1)) == MAJOR16(0x1D))) /* BREQ_S and BRNE_S*/
+	  );
+
+#undef SOPCOD3
+#undef MAJOR16
+#undef SOPCOD2
+}
 
 /* This function returns true if insn being encoded is an lpcc insn.
    Ideally, we should be doing this and the other checks using the opcode
