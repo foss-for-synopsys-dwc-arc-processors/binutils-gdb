@@ -49,6 +49,23 @@
 #define TRUE 1
 #endif
 
+/* -------------------------------------------------------------------------- */
+/* Local constants, which should really be in the XML file. */
+/* -------------------------------------------------------------------------- */
+#define ARC_BLINK_REGNUM 32
+#define ARC_FP_REGNUM    33
+#define ARC_SP_REGNUM    34
+
+#define BYTES_IN_REGISTER          4
+#define BYTES_IN_WORD              4
+
+/* 3 instructions before and after callee saves, and max number of saves;
+   assume each is 4-byte inst. See arc_scan_prologue () for details. */
+#define MAX_PROLOGUE_LENGTH   ((6 + (ARC_ABI_LAST_CALLEE_SAVED_REGISTER     \
+				     - ARC_ABI_FIRST_CALLEE_SAVED_REGISTER  \
+				     + 1)) * 4)
+
+
 /* Debug support */
 #define ARC_ENTRY_DEBUG(fmt, ...)					\
   if (arc_debug)							\

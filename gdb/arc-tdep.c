@@ -185,23 +185,6 @@
 
 
 /* -------------------------------------------------------------------------- */
-/* Local constants, which should really be in the XML file. */
-/* -------------------------------------------------------------------------- */
-#define ARC_BLINK_REGNUM 32
-#define ARC_FP_REGNUM    33
-#define ARC_SP_REGNUM    34
-
-#define BYTES_IN_REGISTER          4
-#define BYTES_IN_WORD              4
-
-/* 3 instructions before and after callee saves, and max number of saves;
-   assume each is 4-byte inst. See arc_scan_prologue () for details. */
-#define MAX_PROLOGUE_LENGTH   ((6 + (ARC_ABI_LAST_CALLEE_SAVED_REGISTER     \
-				     - ARC_ABI_FIRST_CALLEE_SAVED_REGISTER  \
-				     + 1)) * 4)
-
-
-/* -------------------------------------------------------------------------- */
 /*                               local types                                  */
 /* -------------------------------------------------------------------------- */
 
@@ -529,6 +512,48 @@ arc_create_cache (struct frame_info *next_frame)
 }	/* arc_create_cache () */
 
 
+/*! Unwind the program counter.
+
+    @param[in] next_frame  NEXT frame from which the PC in THIS frame should be
+                           unwound.
+    @return  The value of the PC in THIS frame. */
+static CORE_ADDR
+arc_unwind_pc (struct gdbarch *gdbarch, struct frame_info *next_frame)
+{
+  int pc_regnum = gdbarch_pc_regnum (gdbarch);
+  ULONGEST pc = frame_unwind_register_unsigned (next_frame, pc_regnum);
+
+  if (arc_debug)
+    {
+      fprintf_unfiltered (gdb_stdlog, "unwind PC: 0x%08lx\n", (CORE_ADDR) pc);
+    }
+
+  return (CORE_ADDR) pc;
+
+}	/* arc_unwind_pc () */
+
+
+/*! Unwind the stack pointer.
+
+    @param[in] next_frame  NEXT frame from which the SP in THIS frame should be
+                           unwound.
+    @return  The value of the SP in THIS frame. */
+static CORE_ADDR
+arc_unwind_sp (struct gdbarch *gdbarch, struct frame_info *next_frame)
+{
+  int pc_regnum = gdbarch_pc_regnum (gdbarch);
+  ULONGEST sp = frame_unwind_register_unsigned (next_frame, sp_regnum);
+
+  if (arc_debug)
+    {
+      fprintf_unfiltered (gdb_stdlog, "unwind SP: 0x%08lx\n", (CORE_ADDR) sp);
+    }
+
+  return (CORE_ADDR) sp;
+
+}	/* arc_unwind_sp () */
+
+
 /*! Compute the previous frame's stack pointer and base pointer.
 
     This is also the frame's ID's stack address. */
@@ -604,9 +629,8 @@ arc_find_prev_sp (arc_unwind_cache_t * info,
       ULONGEST this_sp;
 
       /* Get the stack pointer for this frame by getting the saved SP
-       * from the next frame.
-       */
-      this_sp = frame_unwind_register_unsigned (next_frame, ARC_SP_REGNUM);
+         from the next frame. */
+      this_sp = arc_unwind_sp (target_gdbarch, next_frame);
 
       /* The previous SP is this frame's SP plus the known difference between
        * the previous SP and this frame's SP (the delta_sp is negated as it is
@@ -907,8 +931,11 @@ static CORE_ADDR
 arc_scan_prologue (CORE_ADDR entrypoint,
 		   struct frame_info *next_frame, arc_unwind_cache_t * info)
 {
-  CORE_ADDR prologue_ends_pc = entrypoint;
+  CORE_ADDR prologue_ends_pc;
+  CORE_ADDR final_pc;
   struct disassemble_info di;
+
+  ARC_ENTRY_DEBUG ("next_frame = %p, info = %p", next_frame, info);
 
   /* An arbitrary limit on the length of the prologue. If next_frame is NULL
      this means that there was no debug info and we are called from
@@ -920,11 +947,10 @@ arc_scan_prologue (CORE_ADDR entrypoint,
           the prologue, e.g. at a breakpoint); in that case, do NOT go beyond
           that pc, as the instructions at the pc and after have not been
           executed yet, so have had no effect! */
-  CORE_ADDR final_pc = (next_frame) ? frame_pc_unwind (next_frame)
+  prologue_ends_pc = entrypoint;
+  final_pc = (next_frame)
+    ? arc_unwind_pc (target_gdbarch, next_frame)
     : entrypoint + MAX_PROLOGUE_LENGTH;
-
-  ARC_ENTRY_DEBUG ("next_frame = %p, info = %p", next_frame, info);
-
 
   if (info)
     {
@@ -1376,38 +1402,6 @@ arc_dwarf2_frame_init_reg (struct gdbarch *gdbarch,
 }	/* arc_dwarf2_frame_init_reg () */
 
 
-static CORE_ADDR
-arc_unwind_pc (struct gdbarch *gdbarch, struct frame_info *next_frame)
-{
-  ULONGEST pc = frame_unwind_register_unsigned (next_frame, ARC_PC_REGNUM);
-
-  if (arc_debug)
-    {
-      fprintf_unfiltered (gdb_stdlog, "unwind PC: 0x%08llx\n", pc);
-    }
-
-  return (CORE_ADDR) pc;
-
-}	/* arc_unwind_pc () */
-
-
-static CORE_ADDR
-arc_unwind_sp (struct gdbarch *gdbarch, struct frame_info *next_frame)
-{
-  ULONGEST sp;
-
-  sp = frame_unwind_register_unsigned (next_frame, ARC_SP_REGNUM);
-
-  if (arc_debug)
-    {
-      fprintf_unfiltered (gdb_stdlog, "unwind SP: 0x%08llx\n", sp);
-    }
-
-  return (CORE_ADDR) sp;
-
-}	/* arc_unwind_sp () */
-
-
 /*! Determine how a result of particular type is returned.
 
     Return the convention used by the ABI for returning a result of the given
@@ -1475,7 +1469,7 @@ static struct frame_id
 arc_unwind_dummy_id (struct gdbarch *gdbarch, struct frame_info *next_frame)
 {
   return frame_id_build (arc_unwind_sp (gdbarch, next_frame),
-			 frame_pc_unwind (next_frame));
+			 arc_unwind_pc (gdbarch, next_frame));
 
 }	/* arc_unwind_dummy_id () */
 
@@ -1492,14 +1486,11 @@ arc_sigtramp_frame_cache (struct frame_info *next_frame, void **this_cache)
     {
       struct gdbarch_tdep *tdep = gdbarch_tdep (target_gdbarch);
       arc_unwind_cache_t *cache = arc_create_cache (next_frame);
-      gdb_byte buf[BYTES_IN_REGISTER];
 
       *this_cache = cache;
 
       /* get the stack pointer and use it as the frame base */
-      frame_unwind_register (next_frame, ARC_SP_REGNUM, buf);
-      cache->frame_base =
-	(CORE_ADDR) extract_unsigned_integer (buf, BYTES_IN_REGISTER);
+      cache->frame_base = arc_unwind_sp (target_gdbarch, next_frame);
 
       /* If the ARC-private target-dependent info has a table of offsets of
        * saved register contents within a O/S signal context structure.
@@ -1530,12 +1521,14 @@ static void
 arc_sigtramp_frame_this_id (struct frame_info *next_frame,
 			    void **this_cache, struct frame_id *this_id)
 {
-  arc_unwind_cache_t *cache =
-    arc_sigtramp_frame_cache (next_frame, this_cache);
-
+  CORE_ADDR stack_addr;
+  CORE_ADDR code_addr;
   ARC_ENTRY_DEBUG ("")
 
-  *this_id = frame_id_build (cache->frame_base, frame_pc_unwind (next_frame));
+  stack_addr = arc_sigtramp_frame_cache (next_frame, this_cache)->frame_base;
+  code_addr = arc_unwind_pc (target_gdbarch, next_frame);
+  *this_id = frame_id_build (stack_addr, code_addr);
+		    
 
 }	/* arc_sigtramp_frame_this_id () */
 
