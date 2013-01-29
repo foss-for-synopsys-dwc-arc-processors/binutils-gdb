@@ -1,4 +1,21 @@
-2013-01-28  Jeremy Bennett <jeremy.bennett@embecosm.com>
+2013-01-29  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	* arc-tdep.c (ARC_BLINK_REGNUM, ARC_FP_REGNUM, ARC_SP_REGNUM)
+	(BYTES_IN_REGISTER, BYTES_IN_WORD): Transferred to arc-tdep.c.
+	(arc_unwind_pc, arc_unwind_sp): Moved earlier in file, added
+	Doxygen commenting, and rewritten for clarity.
+	(arc_find_prev_sp): Use arc_unwind_sp, rather than
+	frame_unwind_register_unsigned.
+	(arc_scan_prologue): Reorder entry debug logging, use
+	arc_unwind_pc.
+	(arc_unwind_dummy_id): Use arc_unwind_pc instead of
+	frame_pc_unwind.
+	(arc_sigtramp_frame_cache): Use arc_unwind_sp instead of
+	frame_unwind_register.
+	* arc-tdep.h (ARC_BLINK_REGNUM, ARC_FP_REGNUM, ARC_SP_REGNUM)
+	(BYTES_IN_REGISTER, BYTES_IN_WORD): Transferred from arc-tdep.c.
+
+2013-01-29  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* arc-tdep.c (arc_find_prev_sp, arc_scan_prologue)
 	(arc_frame_unwind_cache, arc_extract_return_value)
