@@ -196,7 +196,7 @@
 
 /* 3 instructions before and after callee saves, and max number of saves;
    assume each is 4-byte inst. See arc_scan_prologue () for details. */
-#define MAX_PROLOGUE_LENGTH   ((6 + (ARC_ABI_LAST_CALLEE_SAVED_REGISTER     \ 
+#define MAX_PROLOGUE_LENGTH   ((6 + (ARC_ABI_LAST_CALLEE_SAVED_REGISTER     \
 				     - ARC_ABI_FIRST_CALLEE_SAVED_REGISTER  \
 				     + 1)) * 4)
 
@@ -536,11 +536,7 @@ static void
 arc_find_prev_sp (arc_unwind_cache_t * info,
 		  struct frame_info *next_frame)
 {
-  if (arc_debug)
-    {
-      fprintf_unfiltered (gdb_stdlog, "--- entered %s:%s(next_frame = %p)\n",
-			  __FILE__, __FUNCTION__, next_frame);
-    }
+  ARC_ENTRY_DEBUG ("next_frame = %p", next_frame);
 
   /* if the frame has a frame pointer */
   if (info->uses_fp)
@@ -911,30 +907,24 @@ static CORE_ADDR
 arc_scan_prologue (CORE_ADDR entrypoint,
 		   struct frame_info *next_frame, arc_unwind_cache_t * info)
 {
-  /* will be set to end of prologue */
   CORE_ADDR prologue_ends_pc = entrypoint;
   struct disassemble_info di;
 
-  /* An arbitrary limit on the length of the prologue. If next_frame is
-   * NULL this means that there was no debug info and we are called from
-   * arc_skip_prologue; otherwise, if we know the frame, we can find the
-   * pc within the function.
-   *
-   * N.B. that pc will usually be after the end of the prologue, but
-   *      it could actually be within the prologue (i.e. execution has
-   *      halted within the prologue, e.g. at a breakpoint); in that
-   *      case, do NOT go beyond that pc, as the instructions at the
-   *      pc and after have not been executed yet, so have had no effect!
-   */
+  /* An arbitrary limit on the length of the prologue. If next_frame is NULL
+     this means that there was no debug info and we are called from
+     arc_skip_prologue; otherwise, if we know the frame, we can find the pc
+     within the function.
+
+     N.B. That pc will usually be after the end of the prologue, but it could
+          actually be within the prologue (i.e. execution has halted within
+          the prologue, e.g. at a breakpoint); in that case, do NOT go beyond
+          that pc, as the instructions at the pc and after have not been
+          executed yet, so have had no effect! */
   CORE_ADDR final_pc = (next_frame) ? frame_pc_unwind (next_frame)
     : entrypoint + MAX_PROLOGUE_LENGTH;
 
-  if (arc_debug)
-    {
-      fprintf_unfiltered (gdb_stdlog,
-			  "--- entered %s:%s(next_frame = %p, info = %p)\n",
-			  __FILE__, __FUNCTION__, next_frame, info);
-    }
+  ARC_ENTRY_DEBUG ("next_frame = %p, info = %p", next_frame, info);
+
 
   if (info)
     {
@@ -1018,11 +1008,7 @@ static arc_unwind_cache_t *
 arc_frame_unwind_cache (struct frame_info *next_frame,
 			void **this_prologue_cache)
 {
-  if (arc_debug)
-    {
-      fprintf_unfiltered (gdb_stdlog, "--- entered %s:%s()\n", __FILE__,
-			  __FUNCTION__);
-    }
+  ARC_ENTRY_DEBUG ("");
 
   if ((*this_prologue_cache) == NULL)
     {
@@ -1054,11 +1040,7 @@ arc_extract_return_value (struct type *type,
 {
   unsigned int len = TYPE_LENGTH (type);
 
-  if (arc_debug)
-    {
-      fprintf_unfiltered (gdb_stdlog, "--- entered %s:%s()\n", __FILE__,
-			  __FUNCTION__);
-    }
+  ARC_ENTRY_DEBUG ("")
 
   if (len <= BYTES_IN_REGISTER)
     {
@@ -1107,11 +1089,7 @@ arc_store_return_value (struct type *type,
 {
   unsigned int len = TYPE_LENGTH (type);
 
-  if (arc_debug)
-    {
-      fprintf_unfiltered (gdb_stdlog, "--- entered %s:%s()\n", __FILE__,
-			  __FUNCTION__);
-    }
+  ARC_ENTRY_DEBUG ("")
 
   if (len <= BYTES_IN_REGISTER)
     {
@@ -1178,11 +1156,7 @@ arc_skip_prologue (struct gdbarch *gdbarch, CORE_ADDR pc)
   CORE_ADDR func_addr, func_end = 0;
   char *func_name;
 
-  if (arc_debug)
-    {
-      fprintf_unfiltered (gdb_stdlog, "--- entered %s:%s()\n", __FILE__,
-			  __FUNCTION__);
-    }
+  ARC_ENTRY_DEBUG ("")
 
   /* If we're in a dummy frame, don't even try to skip the prologue. */
   if (deprecated_pc_in_call_dummy (pc))
@@ -1225,11 +1199,7 @@ arc_frame_this_id (struct frame_info *next_frame,
   /* find the entry point of the function which owns the frame */
   CORE_ADDR entrypoint = frame_func_unwind (next_frame, NORMAL_FRAME);
 
-  if (arc_debug)
-    {
-      fprintf_unfiltered (gdb_stdlog, "--- entered %s:%s()\n", __FILE__,
-			  __FUNCTION__);
-    }
+  ARC_ENTRY_DEBUG ("")
 
   /* This is meant to halt the backtrace at the entry point (_start)
    * (it assumes that there is no code at a lower address).
@@ -1263,11 +1233,7 @@ arc_frame_prev_register (struct frame_info *next_frame,
 			 enum lval_type *lvalp,
 			 CORE_ADDR * addrp, int *realnump, gdb_byte * bufferp)
 {
-  if (arc_debug)
-    {
-      fprintf_unfiltered (gdb_stdlog, "--- entered %s:%s(regnum %d)\n",
-			  regnum);
-    }
+  ARC_ENTRY_DEBUG ("regnum %d", regnum)
 
   arc_unwind_cache_t *info =
     arc_frame_unwind_cache (next_frame, this_prologue_cache);
@@ -1470,12 +1436,7 @@ arc_return_value (struct gdbarch *gdbarch,
 			  TYPE_CODE (valtype) == TYPE_CODE_UNION ||
 			  TYPE_LENGTH (valtype) > 2 * BYTES_IN_REGISTER);
 
-  if (arc_debug)
-    {
-      fprintf_unfiltered (gdb_stdlog,
-			  "--- entered %s:%s(readbuf = %p, writebuf = %p0\n",
-			  __FILE__, __FUNCTION__, readbuf, writebuf);
-    }
+  ARC_ENTRY_DEBUG ("readbuf = %p, writebuf = %p", readbuf, writebuf)
 
   /* case a) */
   if (writebuf != NULL)
@@ -1525,11 +1486,7 @@ arc_unwind_dummy_id (struct gdbarch *gdbarch, struct frame_info *next_frame)
 static arc_unwind_cache_t *
 arc_sigtramp_frame_cache (struct frame_info *next_frame, void **this_cache)
 {
-  if (arc_debug)
-    {
-      fprintf_unfiltered (gdb_stdlog, "--- entered %s:%s()\n", __FILE__,
-			  __FUNCTION__);
-    }
+  ARC_ENTRY_DEBUG ("")
 
   if (*this_cache == NULL)
     {
@@ -1576,11 +1533,7 @@ arc_sigtramp_frame_this_id (struct frame_info *next_frame,
   arc_unwind_cache_t *cache =
     arc_sigtramp_frame_cache (next_frame, this_cache);
 
-  if (arc_debug)
-    {
-      fprintf_unfiltered (gdb_stdlog, "--- entered %s:%s()\n", __FILE__,
-			  __FUNCTION__);
-    }
+  ARC_ENTRY_DEBUG ("")
 
   *this_id = frame_id_build (cache->frame_base, frame_pc_unwind (next_frame));
 
@@ -1603,11 +1556,7 @@ arc_sigtramp_frame_prev_register (struct frame_info *next_frame,
   arc_unwind_cache_t *cache =
     arc_sigtramp_frame_cache (next_frame, this_cache);
 
-  if (arc_debug)
-    {
-      fprintf_unfiltered (gdb_stdlog, "--- entered %s:%s()\n", __FILE__,
-			  __FUNCTION__);
-    }
+  ARC_ENTRY_DEBUG ("")
 
   /* on a signal, the PC is in ret */
   if (regnum == ARC_PC_REGNUM)
@@ -1627,11 +1576,7 @@ arc_sigtramp_frame_sniffer (struct frame_info *next_frame)
 {
   struct gdbarch_tdep *tdep = gdbarch_tdep (get_frame_arch (next_frame));
 
-  if (arc_debug)
-    {
-      fprintf_unfiltered (gdb_stdlog, "--- entered %s:%s()\n", __FILE__,
-			  __FUNCTION__);
-    }
+  ARC_ENTRY_DEBUG ("")
 
   /* We don't even bother if we don't have a sigcontext_addr handler. */
   if ((tdep->sigcontext_addr != NULL) &&
@@ -1674,11 +1619,7 @@ arc_push_dummy_call (struct gdbarch *gdbarch,
 		     struct value **args,
 		     CORE_ADDR sp, int struct_return, CORE_ADDR struct_addr)
 {
-  if (arc_debug)
-    {
-      fprintf_unfiltered (gdb_stdlog, "--- entered %s:%s (nargs = %d)\n",
-			  __FILE__, __FUNCTION__, nargs);
-    }
+  ARC_ENTRY_DEBUG ("nargs = %d", nargs)
 
   int arg_reg = ARC_ABI_FIRST_ARGUMENT_REGISTER;
 
