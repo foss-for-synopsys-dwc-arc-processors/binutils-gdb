@@ -1,5 +1,17 @@
 2013-01-28  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
+	* arc-tdep.c (arc_find_prev_sp, arc_scan_prologue)
+	(arc_frame_unwind_cache, arc_extract_return_value)
+	(arc_store_return_value, arc_skip_prologue, arc_frame_this_id)
+	(arc_frame_prev_register, arc_return_value)
+	(arc_sigtramp_frame_cache, arc_sigtramp_frame_this_id)
+	(arc_sigtramp_frame_prev_register, arc_sigtramp_frame_sniffer)
+	(arc_push_dummy_call): Replace entry debug code with
+	ARC_ENTRY_DEBUG macro.
+	* arc-tdep.h (ARC_ENTRY_DEBUG): Created.
+
+2013-01-28  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
 	* configure.tgt (arc*-*-linux*): Remove solib.o and corelow.o.
 	* Makefile.in (HFILES_NO_SRCDIR): Add arc-tdep.h.
 	* arc-linux-tdep.c: Updated copyright notice.
