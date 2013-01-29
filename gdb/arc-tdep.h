@@ -49,6 +49,14 @@
 #define TRUE 1
 #endif
 
+/* Debug support */
+#define ARC_ENTRY_DEBUG(fmt, ...)					\
+  if (arc_debug)							\
+    {									\
+      fprintf_unfiltered (gdb_stdlog, "--- entered %s:%s(" fmt ")\n",	\
+                          __FILE__, __FUNCTION__, __VA_ARGS__);		\
+    }
+
 #define ARC_PC_REGNUM       (gdbarch_pc_regnum       (target_gdbarch))
 #define ARC_NUM_REGS        (gdbarch_num_regs        (target_gdbarch))
 #define ARC_NUM_PSEUDO_REGS (gdbarch_num_pseudo_regs (target_gdbarch))
