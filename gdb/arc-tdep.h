@@ -52,9 +52,11 @@
 /* -------------------------------------------------------------------------- */
 /* Local constants, which should really be in the XML file. */
 /* -------------------------------------------------------------------------- */
-#define ARC_BLINK_REGNUM 32
-#define ARC_FP_REGNUM    33
-#define ARC_SP_REGNUM    34
+#define ARC_BLINK_REGNUM  32
+#define ARC_FP_REGNUM     33
+#define ARC_SP_REGNUM     34
+#define ARC_ILINK1_REGNUM 39
+#define ARC_ILINK2_REGNUM 40
 
 #define BYTES_IN_REGISTER          4
 #define BYTES_IN_WORD              4
@@ -67,11 +69,15 @@
 
 
 /* Debug support */
+
+/*! Debug a function entry point.
+
+    @todo. The use of ##__VA_ARGS__ is a GCC extension. */
 #define ARC_ENTRY_DEBUG(fmt, ...)					\
   if (arc_debug)							\
     {									\
       fprintf_unfiltered (gdb_stdlog, "--- entered %s:%s(" fmt ")\n",	\
-                          __FILE__, __FUNCTION__, __VA_ARGS__);		\
+                          __FILE__, __FUNCTION__, ##__VA_ARGS__);	\
     }
 
 #define ARC_PC_REGNUM       (gdbarch_pc_regnum       (target_gdbarch))
@@ -177,7 +183,8 @@ void _initialize_arc_tdep (void);
 
 /* utility functions used by other ARC-specific modules */
 
-void arc_initialize_disassembler(struct disassemble_info* info);
+void arc_initialize_disassembler(struct gdbarch *gdbarch,
+				 struct disassemble_info* info);
 
 #endif /* ARC_TDEP_H */
 /******************************************************************************/

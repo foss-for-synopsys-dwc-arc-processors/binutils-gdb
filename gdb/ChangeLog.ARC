@@ -1,5 +1,47 @@
 2013-01-29  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
+	* Makefile.in: change golang.h to go-lang.h.
+	* arc-tdep.c (frame-base.h): Included.
+	(arc_create_cache): Use this_frame rather than next_frame.
+	(arc_unwind_sp): Correct typo.
+	(arc_frame_base_address): Created.
+	(arc_find_this_sp): Replaces arc_find_prev_sp, and uses this_frame
+	rather than next_frame.
+	(arc_scan_prologue): Use this_frame rather than next_frame,
+	recoding as required.
+	(arc_frame_cache): Replaces arc_frame_unwind_cache. Remove code
+	relating to stopping backtrace.
+	(arc_extrac_return_value): Add (unused) function argument.
+	(arc_extract_return_value, arc_store_return_value): Add gdbarch as
+	first argument.
+	(arc_register_type): Use builtin_type function.
+	(arc_frame_this_id): Use this_frame rather than next_frame,
+	recoding as required.
+	(arg_frame_prev_register) Use this_frame rather than next_frame,
+	recoding as required. Remove extra arguments and return structure.
+	(arc_frame_sniffer): Deleted.
+	(arc_dummy_id): Replaces arc_unwind_dummy_id and uses this_frame
+	rather than next_frame.
+	(arc_sigtramp_frame_cache, arg_sigtramp_frame_id): Use this_frame
+	rather than next_frame, recoding as required.
+	(arg_sigtramp_frame_prev_register) Use this_frame rather than
+	next_frame, recoding as required. Remove extra arguments and
+	return structure.
+	(arc_sigtramp_frame_unwind, arc_frame_unwind)
+	(arc_sigtramp_frame_base_sniffer, arc_frame_base_sniffer):
+	Created.
+	(arc_gdbarch_init): Updated gdbarch functions to match changes
+	above. Remove frame_unwind_append_sniffer and add
+	frame_unwind_append_unwinder and frame_base_append_sniffer
+	calls. Add DWARF2 unwinder and sniffer.
+	(arc_initialize_disassembler): Add gdbarch as first argument.
+	* arc-tdep.h (ARC_ENTRY_DEBUG): Use GCC ## extension.
+	(ARC_ILINK1_REGNUM, ARC_ILINK2_REGNUM): Adde definitions.
+	(arg_initialize_disassembler): Update prototype to match
+	implementation.
+
+2013-01-29  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
 	* arc-tdep.c (ARC_BLINK_REGNUM, ARC_FP_REGNUM, ARC_SP_REGNUM)
 	(BYTES_IN_REGISTER, BYTES_IN_WORD): Transferred to arc-tdep.c.
 	(arc_unwind_pc, arc_unwind_sp): Moved earlier in file, added

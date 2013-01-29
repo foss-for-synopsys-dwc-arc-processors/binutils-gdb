@@ -160,6 +160,7 @@
 #include "arch-utils.h"
 #include "dis-asm.h"
 #include "frame.h"
+#include "frame-base.h"
 #include "frame-unwind.h"
 #include "inferior.h"
 #include "regcache.h"
@@ -489,9 +490,12 @@ arc_set_disassembler (struct objfile *objfile)
 }	/* arc_set_disassembler () */
 
 
-/*! Simple utility function to create a new frame cache structure */
+/*! Simple utility function to create a new frame cache structure
+
+    The implementations has changed since GDB 6.8, since we are now provided
+    with the address of THIS frame, rather than the NEXT frame. */
 static arc_unwind_cache_t *
-arc_create_cache (struct frame_info *next_frame)
+arc_create_cache (struct frame_info *this_frame)
 {
   arc_unwind_cache_t *cache = FRAME_OBSTACK_ZALLOC (arc_unwind_cache_t);
 
@@ -505,7 +509,7 @@ arc_create_cache (struct frame_info *next_frame)
   cache->uses_fp = FALSE;
 
   /* allocate space for saved register info */
-  cache->saved_regs = trad_frame_alloc_saved_regs (next_frame);
+  cache->saved_regs = trad_frame_alloc_saved_regs (this_frame);
 
   return cache;
 
@@ -541,7 +545,7 @@ arc_unwind_pc (struct gdbarch *gdbarch, struct frame_info *next_frame)
 static CORE_ADDR
 arc_unwind_sp (struct gdbarch *gdbarch, struct frame_info *next_frame)
 {
-  int pc_regnum = gdbarch_pc_regnum (gdbarch);
+  int sp_regnum = gdbarch_sp_regnum (gdbarch);
   ULONGEST sp = frame_unwind_register_unsigned (next_frame, sp_regnum);
 
   if (arc_debug)
@@ -554,14 +558,41 @@ arc_unwind_sp (struct gdbarch *gdbarch, struct frame_info *next_frame)
 }	/* arc_unwind_sp () */
 
 
-/*! Compute the previous frame's stack pointer and base pointer.
+/*! Return the base address of the frame
+
+    The implementations has changed since GDB 6.8, since we are now provided
+    with the address of THIS frame, rather than the NEXT frame.
+
+    For ARC, the base address is the frame pointer
+
+    @param[in] this_frame      The current stack frame.
+    @param[in] prologue_cache  Any cached prologue for THIS function.
+
+    @return  The frame base address */
+static CORE_ADDR
+arc_frame_base_address (struct frame_info  *this_frame,
+			 void              **prologue_cache) 
+{
+  return  (CORE_ADDR) get_frame_register_unsigned (this_frame, ARC_FP_REGNUM);
+
+}	/* arc_frame_base_address() */
+
+
+/*! Compute THIS frame's stack pointer and base pointer.
+
+    This function has changed from GDB 6.8. It now takes a reference to THIS
+    frame, not the NEXT frame.
 
     This is also the frame's ID's stack address. */
 static void
-arc_find_prev_sp (arc_unwind_cache_t * info,
-		  struct frame_info *next_frame)
+arc_find_this_sp (arc_unwind_cache_t * info,
+		  struct frame_info *this_frame)
 {
-  ARC_ENTRY_DEBUG ("next_frame = %p", next_frame);
+  struct gdbarch *gdbarch;
+
+  ARC_ENTRY_DEBUG ("this_frame = %p", this_frame)
+
+  gdbarch = get_frame_arch (this_frame);
 
   /* if the frame has a frame pointer */
   if (info->uses_fp)
@@ -575,7 +606,7 @@ arc_find_prev_sp (arc_unwind_cache_t * info,
        * at the base of this frame, so this also gives us the address of
        * the FP save location.
        */
-      this_base = frame_unwind_register_unsigned (next_frame, ARC_FP_REGNUM);
+      this_base = arc_frame_base_address (this_frame, NULL);
       info->frame_base = (CORE_ADDR) this_base;
       info->saved_regs[ARC_FP_REGNUM].addr = (long long) this_base;
 
@@ -626,11 +657,9 @@ arc_find_prev_sp (arc_unwind_cache_t * info,
     }
   else
     {
-      ULONGEST this_sp;
-
-      /* Get the stack pointer for this frame by getting the saved SP
-         from the next frame. */
-      this_sp = arc_unwind_sp (target_gdbarch, next_frame);
+      int sp_regnum = gdbarch_sp_regnum (gdbarch);
+      CORE_ADDR this_sp =
+	(CORE_ADDR) get_frame_register_unsigned (this_frame, sp_regnum);
 
       /* The previous SP is this frame's SP plus the known difference between
        * the previous SP and this frame's SP (the delta_sp is negated as it is
@@ -874,6 +903,9 @@ arc_is_in_prologue (arc_unwind_cache_t * info, struct arcDisState *instr)
 
 /*! Scan the prologue.
 
+    This function has changed from GDB 6.8. It now takes a reference to THIS
+    frame, not the NEXT frame.
+
     Scan the prologue and update the corresponding frame cache for the frame
     unwinder for unwinding frames without debug info. In such a situation GDB
     attempts to parse the prologue for this purpose. This currently would
@@ -883,7 +915,7 @@ arc_is_in_prologue (arc_unwind_cache_t * info, struct arcDisState *instr)
 
     This function is called with:
        entrypoint : the address of the functon entry point
-       next_frame : the next frame to be filled in (if need be)
+       this_frame : THIS frame to be filled in (if need be)
        info       : the existing cached info.
 
     Returns: the address of the first instruction after the prologue.
@@ -892,7 +924,7 @@ arc_is_in_prologue (arc_unwind_cache_t * info, struct arcDisState *instr)
     arc_skip_prologue () in the case that it cannot detect the end of the
     prologue.
 
-    'next_frame' and 'info' are NULL if this function is called from
+    'this_frame' and 'info' are NULL if this function is called from
     arc_skip_prologue in an attempt to discover the end of the prologue.  In
     this case we don't fill in the 'info' structure that is passed in.
 
@@ -929,15 +961,20 @@ arc_is_in_prologue (arc_unwind_cache_t * info, struct arcDisState *instr)
        sub  sp , sp , #immediate ; create space for local vars on the stack */
 static CORE_ADDR
 arc_scan_prologue (CORE_ADDR entrypoint,
-		   struct frame_info *next_frame, arc_unwind_cache_t * info)
+		   struct frame_info *this_frame, arc_unwind_cache_t * info)
 {
+  struct gdbarch *gdbarch;
+  int pc_regnum;
   CORE_ADDR prologue_ends_pc;
   CORE_ADDR final_pc;
   struct disassemble_info di;
 
-  ARC_ENTRY_DEBUG ("next_frame = %p, info = %p", next_frame, info);
+  ARC_ENTRY_DEBUG ("this_frame = %p, info = %p", this_frame, info)
 
-  /* An arbitrary limit on the length of the prologue. If next_frame is NULL
+  gdbarch = get_frame_arch (this_frame);
+  pc_regnum = gdbarch_pc_regnum (gdbarch);
+
+  /* An arbitrary limit on the length of the prologue. If this_frame is NULL
      this means that there was no debug info and we are called from
      arc_skip_prologue; otherwise, if we know the frame, we can find the pc
      within the function.
@@ -948,8 +985,8 @@ arc_scan_prologue (CORE_ADDR entrypoint,
           that pc, as the instructions at the pc and after have not been
           executed yet, so have had no effect! */
   prologue_ends_pc = entrypoint;
-  final_pc = (next_frame)
-    ? arc_unwind_pc (target_gdbarch, next_frame)
+  final_pc = (this_frame)
+    ? get_frame_register_unsigned (this_frame, pc_regnum)
     : entrypoint + MAX_PROLOGUE_LENGTH;
 
   if (info)
@@ -965,7 +1002,7 @@ arc_scan_prologue (CORE_ADDR entrypoint,
     }
 
   /* Initializations to use the opcodes library. */
-  arc_initialize_disassembler (&di);
+  arc_initialize_disassembler (gdbarch, &di);
 
   if (arc_debug)
     {
@@ -1003,14 +1040,14 @@ arc_scan_prologue (CORE_ADDR entrypoint,
     }
 
   /* Means we were not called from arc_skip_prologue */
-  if (!((next_frame == NULL) && (info == NULL)))
+  if (!((this_frame == NULL) && (info == NULL)))
     {
       if (arc_debug)
 	{
 	  arc_print_frame_info ("after prologue", info, FALSE);
 	}
 
-      arc_find_prev_sp (info, next_frame);
+      arc_find_this_sp (info, this_frame);
 
       /* The PC is found in blink (the actual register or located on the
 	 stack). */
@@ -1027,42 +1064,13 @@ arc_scan_prologue (CORE_ADDR entrypoint,
 }	/* arc_scan_prologue () */
 
 
-/*! Unwind the frame cache.
-
-    The workhorse : frame_unwind_cache for the ARC700 platform. */
-static arc_unwind_cache_t *
-arc_frame_unwind_cache (struct frame_info *next_frame,
-			void **this_prologue_cache)
-{
-  ARC_ENTRY_DEBUG ("");
-
-  if ((*this_prologue_cache) == NULL)
-    {
-      CORE_ADDR entrypoint = frame_func_unwind (next_frame, NORMAL_FRAME);
-      arc_unwind_cache_t *cache = arc_create_cache (next_frame);
-
-      /* return the newly-created cache */
-      *this_prologue_cache = cache;
-
-      /* Prologue analysis does the rest... */
-      /* Currently our scan prologue does not support getting input for the
-       * frame unwinder.
-       */
-      (void) arc_scan_prologue (entrypoint, next_frame, cache);
-    }
-
-  return *this_prologue_cache;
-
-}	/* arc_frame_unwind_cache () */
-
-
 /*! Get return value of a function.
 
     Get the return value of a function from the registers used to return it,
     according to the convention used by the ABI. */
 static void
-arc_extract_return_value (struct type *type,
-		      struct regcache *regcache, gdb_byte * valbuf)
+arc_extract_return_value (struct gdbarch *gdbarch, struct type *type,
+			  struct regcache *regcache, gdb_byte * valbuf)
 {
   unsigned int len = TYPE_LENGTH (type);
 
@@ -1074,7 +1082,8 @@ arc_extract_return_value (struct type *type,
 
       /* Get the return value from one register. */
       regcache_cooked_read_unsigned (regcache, ARC_ABI_RETURN_REGNUM, &val);
-      store_unsigned_integer (valbuf, (int) len, val);
+      store_unsigned_integer (valbuf, (int) len,
+			      gdbarch_byte_order (gdbarch), val);
 
       if (arc_debug)
 	{
@@ -1091,9 +1100,11 @@ arc_extract_return_value (struct type *type,
       regcache_cooked_read_unsigned (regcache, ARC_ABI_RETURN_HIGH_REGNUM,
 				     &high);
 
-      store_unsigned_integer (valbuf, BYTES_IN_REGISTER, low);
+      store_unsigned_integer (valbuf, BYTES_IN_REGISTER,
+			      gdbarch_byte_order (gdbarch), low);
       store_unsigned_integer (valbuf + BYTES_IN_REGISTER,
-			      (int) len - BYTES_IN_REGISTER, high);
+			      (int) len - BYTES_IN_REGISTER,
+			      gdbarch_byte_order (gdbarch), high);
 
       if (arc_debug)
 	{
@@ -1103,15 +1114,16 @@ arc_extract_return_value (struct type *type,
     }
   else
     error (_("%s: type length %u too large"), __FUNCTION__, len);
-}
+
+}	/* arc_extract_value () */
 
 
 /* This function loads the return value of a function into the registers used to
  * return it, according to the convention used by the ABI.
  */
 static void
-arc_store_return_value (struct type *type,
-		    struct regcache *regcache, const gdb_byte * valbuf)
+arc_store_return_value (struct gdbarch *gdbarch, struct type *type,
+			struct regcache *regcache, const gdb_byte * valbuf)
 {
   unsigned int len = TYPE_LENGTH (type);
 
@@ -1122,7 +1134,8 @@ arc_store_return_value (struct type *type,
       ULONGEST val;
 
       /* Put the return value into one register. */
-      val = extract_unsigned_integer (valbuf, (int) len);
+      val = extract_unsigned_integer (valbuf, (int) len,
+				      gdbarch_byte_order (gdbarch));
       regcache_cooked_write_unsigned (regcache, ARC_ABI_RETURN_REGNUM, val);
 
       if (arc_debug)
@@ -1135,10 +1148,12 @@ arc_store_return_value (struct type *type,
       ULONGEST low, high;
 
       /* Put the return value into  two registers. */
-      low = extract_unsigned_integer (valbuf, BYTES_IN_REGISTER);
+      low = extract_unsigned_integer (valbuf, BYTES_IN_REGISTER,
+				      gdbarch_byte_order (gdbarch));
       high =
 	extract_unsigned_integer (valbuf + BYTES_IN_REGISTER,
-				  (int) len - BYTES_IN_REGISTER);
+				  (int) len - BYTES_IN_REGISTER,
+				  gdbarch_byte_order (gdbarch));
 
       regcache_cooked_write_unsigned (regcache, ARC_ABI_RETURN_LOW_REGNUM,
 				      low);
@@ -1167,7 +1182,7 @@ arc_store_return_value (struct type *type,
 static struct type *
 arc_register_type (struct gdbarch *gdbarch, int regnum)
 {
-  return builtin_type_uint32;
+  return builtin_type (gdbarch)->builtin_uint32;
 
 }	/* arc_register_type () */
 
@@ -1180,20 +1195,21 @@ static CORE_ADDR
 arc_skip_prologue (struct gdbarch *gdbarch, CORE_ADDR pc)
 {
   CORE_ADDR func_addr, func_end = 0;
-  char *func_name;
+  const char *func_name;
 
   ARC_ENTRY_DEBUG ("")
 
   /* If we're in a dummy frame, don't even try to skip the prologue. */
-  if (deprecated_pc_in_call_dummy (pc))
-    return pc;
+  if (deprecated_pc_in_call_dummy (gdbarch, pc))
+    {
+      return pc;
+    }
 
   /* See what the symbol table says. */
   if (find_pc_partial_function (pc, &func_name, &func_addr, &func_end))
     {
       /* Found a function. */
-      struct symbol *sym =
-	lookup_symbol (func_name, NULL, VAR_DOMAIN, NULL, NULL);
+      struct symbol *sym = lookup_symbol (func_name, NULL, VAR_DOMAIN, NULL);
 
       if ((sym != NULL) && SYMBOL_LANGUAGE (sym) != language_asm)
 	{
@@ -1214,108 +1230,110 @@ arc_skip_prologue (struct gdbarch *gdbarch, CORE_ADDR pc)
 }	/* arc_skip_prologue () */
 
 
-/*! Construct frame id for the normal frame. */
-static void
-arc_frame_this_id (struct frame_info *next_frame,
-		   void **this_prologue_cache, struct frame_id *this_id)
+/*! Frame unwinder for normal frames.
+
+    This function has changed from GDB 6.8. It now takes a reference to THIS
+    frame, not the NEXT frame. */
+static arc_unwind_cache_t *
+arc_frame_cache (struct frame_info *this_frame, void **this_cache)
 {
-  /* @todo To what should *this_id be set if the frame base can not be
-     found? */
-
-  /* find the entry point of the function which owns the frame */
-  CORE_ADDR entrypoint = frame_func_unwind (next_frame, NORMAL_FRAME);
-
   ARC_ENTRY_DEBUG ("")
 
-  /* This is meant to halt the backtrace at the entry point (_start)
-   * (it assumes that there is no code at a lower address).
-   */
-  if (entrypoint > gdbarch_tdep (target_gdbarch)->lowest_pc)
+  if ((*this_cache) == NULL)
     {
-      arc_unwind_cache_t *info =
-	arc_frame_unwind_cache (next_frame, this_prologue_cache);
-      CORE_ADDR base = info->prev_sp;
+        CORE_ADDR  entrypoint =
+	  (CORE_ADDR) get_frame_register_unsigned (this_frame, ARC_PC_REGNUM);
+        arc_unwind_cache_t *cache      = arc_create_cache (this_frame);
 
-      /* Hopefully the prologue analysis either correctly determined the
-       * frame's base (which is the SP from the previous frame), or set
-       * that base to "NULL".
-       */
+        /* return the newly-created cache */
+        *this_cache = cache;
 
-      if (base != 0)
-	{
-	  /* build the ID from the frame base address */
-	  *this_id = frame_id_build (base, entrypoint);
-	}
+        /* Prologue analysis does the rest... */
+        /* Currently our scan prologue does not support getting input for the
+         * frame unwinder.
+         */
+        (void) arc_scan_prologue (entrypoint, this_frame, cache);
     }
+
+    return *this_cache;
+
+}	/* arc_frame_cache () */
+
+
+/*! Get the frame_id of a normal frame.
+
+    This function has changed from GDB 6.8. It now takes a reference to THIS
+    frame, not the NEXT frame.
+
+    There seemed to be a bucket load of irrelevant code about stopping
+    backtraces in the old code, which we've stripped out. */
+static void
+arc_frame_this_id (struct frame_info *this_frame,
+		   void **this_cache, struct frame_id *this_id)
+{
+  CORE_ADDR stack_addr;
+  CORE_ADDR code_addr;
+  ARC_ENTRY_DEBUG ("")
+
+  stack_addr = arc_frame_cache (this_frame, this_cache)->frame_base;
+  code_addr = get_frame_register_unsigned (this_frame, ARC_PC_REGNUM);
+  *this_id = frame_id_build (stack_addr, code_addr);
+
 }	/* arc_frame_this_id () */
 
 
-/*! Unwind and obtain the register information. */
-static void
-arc_frame_prev_register (struct frame_info *next_frame,
-			 void **this_prologue_cache,
-			 int regnum,
-			 int *optimizedp,
-			 enum lval_type *lvalp,
-			 CORE_ADDR * addrp, int *realnump, gdb_byte * bufferp)
+/*! Get a register from a normal frame.
+
+    This function has changed from GDB 6.8. It now takes a reference to THIS
+    frame, not the NEXT frame. It returns it results via a structure, not its
+    argument list.
+
+    Given a pointer to the THIS frame, return the details of a register in the
+    PREVIOUS frame.
+
+    @param[in] this_frame  The stack frame under consideration
+    @param[in] this_cache  Any cached prologue associated with THIS frame,
+                           which may therefore tell us about registers in the
+			   PREVIOUS frame. 
+    @param[in] regnum      The register of interest in the PREVIOUS frame
+
+    @return  A value structure representing the register. */
+static struct value *
+arc_frame_prev_register (struct frame_info *this_frame,
+			 void **this_cache,
+			 int regnum)
 {
+  arc_unwind_cache_t *info = arc_frame_cache (this_frame, this_cache);
+
   ARC_ENTRY_DEBUG ("regnum %d", regnum)
 
-  arc_unwind_cache_t *info =
-    arc_frame_unwind_cache (next_frame, this_prologue_cache);
-  
-  /* If we are asked to unwind the PC, then we need to return blink instead:
-     the saved value of PC points into this frame's function's prologue, not
-     the next frame's function's resume location. */
+  /* @todo The old GDB 6.8 code noted that if we are asked to unwind the PC,
+           then we need to return blink instead: the saved value of PC points
+           into this frame's function's prologue, not the next frame's
+           function's resume location.
+
+           Is this still true? Do we need the following code. */
   if (regnum == ARC_PC_REGNUM)
-    regnum = ARC_BLINK_REGNUM;
-  
-  /* SP is generally not saved to the stack, but this frame is identified by
-     next_frame's stack pointer at the time of the call. The value was already
-     reconstructed into prev_sp. */
-  if (regnum == ARC_SP_REGNUM)
     {
-      /* This value is not an L-value, i.e. it can not be changed, because it
-         is implicit in the structure of the call-chain. */
-      *lvalp = not_lval;
-      
-      if (bufferp)
-	store_unsigned_integer (bufferp, BYTES_IN_REGISTER, info->prev_sp);
-      return;
+      regnum = ARC_BLINK_REGNUM;
     }
-  
-  trad_frame_get_prev_register (next_frame,
-				info->saved_regs,
-				regnum,
-				optimizedp,
-				lvalp, addrp, realnump, bufferp);
   
   if (arc_debug)
     {
-      fprintf_unfiltered (gdb_stdlog,
-			  "-*-*-*\n Regnum = %d, bufferp = %p\n", regnum,
-			  bufferp);
+      fprintf_unfiltered (gdb_stdlog, "-*-*-*\n Regnum = %d\n", regnum);
     }
-}	/* arc_frame_pref_register () */
 
+  /* @todo. The old GDB 6.8 code noted that SP is generally not saved to the
+            stack, but this frame is identified by next_frame's stack pointer
+            at the time of the call. The value was already reconstructed into
+            prev_sp.
 
-/*! ARC specific frame sniffer. */
-static const struct frame_unwind *
-arc_frame_sniffer (struct frame_info *next_frame)
-{
-  static const struct frame_unwind arc_frame_unwind = {
-    NORMAL_FRAME,		/*!< type */
-    arc_frame_this_id,		/*!< this_id */
-    arc_frame_prev_register,	/*!< prev_register */
-    NULL,			/*!< unwind_data */
-    NULL,			/*!< sniffer */
-    NULL,			/*!< prev_pc */
-    NULL			/*!< dealloc_cache */
-  };
+            The old code explicitly set *lvalp to not_lval and stored a value
+            in the buffer . Do we need to do something special for SP? */
 
-  return &arc_frame_unwind;
+  return trad_frame_get_prev_register (this_frame, info->saved_regs, regnum);
 
-}	/* arc_frame_sniffer () */
+}	/* arc_frame_prev_register () */
 
 
 /*! Get breakpoint which is approriate for address at which it is to be set.
@@ -1365,7 +1383,7 @@ arc_register_reggroup_p (struct gdbarch *gdbarch,
   if (group == save_reggroup || group == restore_reggroup)
     {
       /* don't save/restore read-only registers. */
-      return (!gdbarch_cannot_store_register (target_gdbarch, regnum));
+      return (!gdbarch_cannot_store_register (gdbarch, regnum));
     }
 
   if (group == system_reggroup)
@@ -1417,9 +1435,10 @@ arc_dwarf2_frame_init_reg (struct gdbarch *gdbarch,
          non-void result which must be returned to the user. */
 static enum return_value_convention
 arc_return_value (struct gdbarch *gdbarch,
+		  struct value *function,
 		  struct type *valtype,
 		  struct regcache *regcache,
-		  gdb_byte * readbuf, const gdb_byte * writebuf)
+		  gdb_byte *readbuf, const gdb_byte * writebuf)
 {
   /* If the return type is a struct, or a union, or would occupy more than two
      registers, the ABI uses the "struct return convention": the calling
@@ -1439,7 +1458,7 @@ arc_return_value (struct gdbarch *gdbarch,
        * know the struct return location and write the value there itself.
        */
       gdb_assert (!is_struct_return);
-      arc_store_return_value (valtype, regcache, writebuf);
+      arc_store_return_value (gdbarch, valtype, regcache, writebuf);
     }
 
   /* case b) */
@@ -1450,7 +1469,7 @@ arc_return_value (struct gdbarch *gdbarch,
        * itself.
        */
       gdb_assert (!is_struct_return);
-      arc_extract_return_value (valtype, regcache, readbuf);
+      arc_extract_return_value (gdbarch, valtype, regcache, readbuf);
     }
 
   return (is_struct_return) ? RETURN_VALUE_STRUCT_CONVENTION
@@ -1459,38 +1478,48 @@ arc_return_value (struct gdbarch *gdbarch,
 }	/* arc_return_value () */
 
 
-/*! Unwind a dummy frame.
+/*! Return the frame ID for a dummy stack frame
 
-    Assuming that next_frame->prev is a dummy, return the frame ID of that
-    dummy frame.  The frame ID's base needs to match the TOS value saved by
-    save_dummy_frame_tos() (!!!! WHAT IS THIS???) , and the PC to match the
-    dummy frame's breakpoint. */
+    The implementations has changed since GDB 6.8, since we are now provided
+    with the address of THIS frame, rather than the NEXT frame.
+
+    Tear down a dummy frame created by or32_push_dummy_call(). This data has
+    to be constructed manually from the data in our hand.
+
+    The stack pointer and program counter can be obtained from the frame info.
+
+    @param[in] gdbarch     The architecture to use
+    @param[in] this_frame  Information about this frame
+
+    @return  Frame ID of this frame */
 static struct frame_id
-arc_unwind_dummy_id (struct gdbarch *gdbarch, struct frame_info *next_frame)
+arc_dummy_id (struct gdbarch *gdbarch, struct frame_info *this_frame)
 {
-  return frame_id_build (arc_unwind_sp (gdbarch, next_frame),
-			 arc_unwind_pc (gdbarch, next_frame));
+  return frame_id_build (get_frame_sp (this_frame), get_frame_pc (this_frame));
 
 }	/* arc_unwind_dummy_id () */
 
 
 /*! Signal trampoline frame unwinder.
  
+    This function has changed from GDB 6.8. It now takes a reference to THIS
+    frame, not the NEXT frame.
+
     Allow frame unwinding to happen from within signal handlers. */
 static arc_unwind_cache_t *
-arc_sigtramp_frame_cache (struct frame_info *next_frame, void **this_cache)
+arc_sigtramp_frame_cache (struct frame_info *this_frame, void **this_cache)
 {
   ARC_ENTRY_DEBUG ("")
 
   if (*this_cache == NULL)
     {
-      struct gdbarch_tdep *tdep = gdbarch_tdep (target_gdbarch);
-      arc_unwind_cache_t *cache = arc_create_cache (next_frame);
+      struct gdbarch_tdep *tdep = gdbarch_tdep (get_frame_arch (this_frame));
+      arc_unwind_cache_t *cache = arc_create_cache (this_frame);
 
       *this_cache = cache;
 
       /* get the stack pointer and use it as the frame base */
-      cache->frame_base = arc_unwind_sp (target_gdbarch, next_frame);
+      cache->frame_base = arc_frame_base_address (this_frame, NULL);
 
       /* If the ARC-private target-dependent info has a table of offsets of
        * saved register contents within a O/S signal context structure.
@@ -1498,7 +1527,7 @@ arc_sigtramp_frame_cache (struct frame_info *next_frame, void **this_cache)
       if (tdep->sc_reg_offset)
 	{
 	  /* find the address of the sigcontext structure */
-	  CORE_ADDR addr = tdep->sigcontext_addr (next_frame);
+	  CORE_ADDR addr = tdep->sigcontext_addr (this_frame);
 	  unsigned int i;
 
 	  /* For each register, if its contents have been saved within the
@@ -1516,81 +1545,160 @@ arc_sigtramp_frame_cache (struct frame_info *next_frame, void **this_cache)
 }	/* arc_sigtramp_frame_cache () */
 
 
-/*! Get the frame_id of a signal handler frame. */
+/*! Get the frame_id of a signal handler frame.
+
+    This function has changed from GDB 6.8. It now takes a reference to THIS
+    frame, not the NEXT frame. */
 static void
-arc_sigtramp_frame_this_id (struct frame_info *next_frame,
+arc_sigtramp_frame_this_id (struct frame_info *this_frame,
 			    void **this_cache, struct frame_id *this_id)
 {
   CORE_ADDR stack_addr;
   CORE_ADDR code_addr;
   ARC_ENTRY_DEBUG ("")
 
-  stack_addr = arc_sigtramp_frame_cache (next_frame, this_cache)->frame_base;
-  code_addr = arc_unwind_pc (target_gdbarch, next_frame);
+  stack_addr = arc_sigtramp_frame_cache (this_frame, this_cache)->frame_base;
+  code_addr = get_frame_register_unsigned (this_frame, ARC_PC_REGNUM);
   *this_id = frame_id_build (stack_addr, code_addr);
-		    
 
 }	/* arc_sigtramp_frame_this_id () */
 
 
-/*! Get a register from a signal handler frame. */
-static void
-arc_sigtramp_frame_prev_register (struct frame_info *next_frame,
-				  void **this_cache,
-				  int regnum,
-				  int *optimizedp,
-				  enum lval_type *lvalp,
-				  CORE_ADDR * addrp,
-				  int *realnump, gdb_byte * valuep)
-{
-  struct gdbarch_tdep *tdep = gdbarch_tdep (target_gdbarch);
+/*! Get a register from a signal handler frame.
 
+    This function has changed from GDB 6.8. It now takes a reference to THIS
+    frame, not the NEXT frame. It returns it results via a structure, not its
+    argument list.
+
+    Given a pointer to the THIS frame, return the details of a register in the
+    PREVIOUS frame.
+
+    @param[in] this_frame  The stack frame under consideration
+    @param[in] this_cache  Any cached prologue associated with THIS frame,
+                           which may therefore tell us about registers in the
+			   PREVIOUS frame. 
+    @param[in] regnum      The register of interest in the PREVIOUS frame
+
+    @return  A value structure representing the register. */
+static struct value *
+arc_sigtramp_frame_prev_register (struct frame_info *this_frame,
+				  void **this_cache,
+				  int regnum)
+{
   /* Make sure we've initialized the cache. */
-  arc_unwind_cache_t *cache =
-    arc_sigtramp_frame_cache (next_frame, this_cache);
+  arc_unwind_cache_t *info = arc_sigtramp_frame_cache (this_frame, this_cache);
 
   ARC_ENTRY_DEBUG ("")
 
   /* on a signal, the PC is in ret */
   if (regnum == ARC_PC_REGNUM)
-    regnum = tdep->pc_regnum_in_sigcontext;
+    {
+      struct gdbarch_tdep *tdep = gdbarch_tdep (get_frame_arch (this_frame));
+      regnum = tdep->pc_regnum_in_sigcontext;
+    }
 
-  trad_frame_get_prev_register (next_frame,
-				cache->saved_regs,
-				regnum,
-				optimizedp, lvalp, addrp, realnump, valuep);
+  return trad_frame_get_prev_register (this_frame, info->saved_regs, regnum);
 
 }	/* arc_sigtramp_frame_prev_register () */
 
 
-/* Frame sniffer for signal handler frame. */
-static const struct frame_unwind *
-arc_sigtramp_frame_sniffer (struct frame_info *next_frame)
+/*! Frame sniffer for signal handler frame.
+
+    The implementations has changed since GDB 6.8, since we are now provided
+    with the address of THIS frame, rather than the NEXT frame.
+
+    Only recognize a frame if we have a sigcontext_addr hander in the target
+    dependency.
+
+    @return Non-zero (TRUE) if this frame is accepted, zero (FALSE)
+    otherwise. */
+static int
+arc_sigtramp_frame_sniffer (const struct frame_unwind *self,
+			   struct frame_info *this_frame,
+			   void **this_cache)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (get_frame_arch (next_frame));
+  struct gdbarch_tdep *tdep;
 
   ARC_ENTRY_DEBUG ("")
 
-  /* We don't even bother if we don't have a sigcontext_addr handler. */
+  tdep = gdbarch_tdep (get_frame_arch (this_frame));
+
+  /* If we have a sigcontext_addr handler, then just use the default frame
+     sniffer. */
   if ((tdep->sigcontext_addr != NULL) &&
-      (tdep->is_sigtramp != NULL) && tdep->is_sigtramp (next_frame))
+      (tdep->is_sigtramp != NULL) && tdep->is_sigtramp (this_frame))
     {
-      static const struct frame_unwind arc_sigtramp_frame_unwind = {
-	SIGTRAMP_FRAME,		// type
-	arc_sigtramp_frame_this_id,	// this_id
-	arc_sigtramp_frame_prev_register,	// prev_register
-	NULL,			// unwind_data
-	NULL,			// sniffer
-	NULL,			// prev_pc
-	NULL			// dealloc_cache
-      };
-
-      return &arc_sigtramp_frame_unwind;
+      return default_frame_sniffer (self, this_frame, this_cache);
     }
-
-  return NULL;
-
+  else
+    {
+      return FALSE;
+    }
 }	/* arc_sigtramp_frame_sniffer () */
+
+
+/*! Structure defining the ARC signal frame unwind functions
+
+    We use a custom sniffer, since we must only accept this frame in the right
+    context. */
+static const struct frame_unwind arc_sigtramp_frame_unwind = {
+  .type          = SIGTRAMP_FRAME,
+  .this_id       = arc_sigtramp_frame_this_id,
+  .prev_register = arc_sigtramp_frame_prev_register,
+  .unwind_data   = NULL,
+  .sniffer       = arc_sigtramp_frame_sniffer,
+  .dealloc_cache = NULL,
+  .prev_arch     = NULL
+};
+
+
+/*! Structure defining the ARC ordinary frame unwind functions
+
+    Since we are the fallback unwinder, we use the default frame sniffer,
+    which always accepts the frame. */
+static const struct frame_unwind arc_frame_unwind = {
+  .type          = NORMAL_FRAME,
+  .this_id       = arc_frame_this_id,
+  .prev_register = arc_frame_prev_register,
+  .unwind_data   = NULL,
+  .sniffer       = default_frame_sniffer,
+  .dealloc_cache = NULL,
+  .prev_arch     = NULL
+};
+
+
+/*! Function identifying the frame base sniffers for signal frames. */
+static const struct frame_base *
+arc_sigtramp_frame_base_sniffer (struct frame_info *this_frame)
+{
+  static const struct frame_base fb =
+    {
+      .unwind      = &arc_sigtramp_frame_unwind,
+      .this_base   = arc_frame_base_address,
+      .this_locals = arc_frame_base_address,
+      .this_args   = arc_frame_base_address
+    };
+
+  return &fb;
+
+}	/* arc_sigtramp_frame_base_sniffer () */
+
+
+/*! Function identifying the frame base sniffers for normal frames. */
+static const struct frame_base *
+arc_frame_base_sniffer (struct frame_info *this_frame)
+{
+  static const struct frame_base fb =
+    {
+      .unwind      = &arc_frame_unwind,
+      .this_base   = arc_frame_base_address,
+      .this_locals = arc_frame_base_address,
+      .this_args   = arc_frame_base_address
+    };
+
+  return &fb;
+
+}	/* arc_frame_base_sniffer () */
 
 
 /*! Push stack frame for a dummy call.
@@ -1612,9 +1720,9 @@ arc_push_dummy_call (struct gdbarch *gdbarch,
 		     struct value **args,
 		     CORE_ADDR sp, int struct_return, CORE_ADDR struct_addr)
 {
-  ARC_ENTRY_DEBUG ("nargs = %d", nargs)
-
   int arg_reg = ARC_ABI_FIRST_ARGUMENT_REGISTER;
+
+  ARC_ENTRY_DEBUG ("nargs = %d", nargs)
 
   /* Push the return address. */
   regcache_cooked_write_unsigned (regcache, ARC_BLINK_REGNUM, bp_addr);
@@ -1788,7 +1896,7 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   set_gdbarch_inner_than (gdbarch, core_addr_lessthan);
   set_gdbarch_unwind_pc (gdbarch, arc_unwind_pc);
   set_gdbarch_unwind_sp (gdbarch, arc_unwind_sp);
-  set_gdbarch_unwind_dummy_id (gdbarch, arc_unwind_dummy_id);
+  set_gdbarch_dummy_id (gdbarch, arc_dummy_id);
   set_gdbarch_return_value (gdbarch, arc_return_value);
 
   /* Add the arc register groups.  */
@@ -1813,13 +1921,17 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
      will trigger gdbabort, but we could give a nicer message. */
   observer_attach_new_objfile (arc_set_disassembler);
 
-  /* Frame sniffers. We try the standard DWARF2 sniffer, then ARC specific
-     signal frame sniffer, then ARC specific ordinary frame sniffer. */
+  /* Frame unwinders and sniffers. We use DWARF2 if it's available, for which
+     we set up a register initialization function. Then we have ARC specific
+     unwinders and sniffers for signal frames and ordinary frames. */
   dwarf2_frame_set_init_reg (gdbarch, arc_dwarf2_frame_init_reg);
-  frame_unwind_append_sniffer (gdbarch, dwarf2_frame_sniffer);
-  frame_unwind_append_sniffer (gdbarch, arc_sigtramp_frame_sniffer);
-  frame_unwind_append_sniffer (gdbarch, arc_frame_sniffer);
-
+  dwarf2_append_unwinders (gdbarch);
+  frame_unwind_append_unwinder (gdbarch, &arc_sigtramp_frame_unwind);
+  frame_unwind_append_unwinder (gdbarch, &arc_frame_unwind);
+  frame_base_append_sniffer (gdbarch, dwarf2_frame_base_sniffer);
+  frame_base_append_sniffer (gdbarch, arc_sigtramp_frame_base_sniffer);
+frame_base_append_sniffer (gdbarch, arc_frame_base_sniffer);
+  
   /* Put OS specific stuff into gdbarch. This can override any of the generic
      ones specified above. */
   info.osabi = GDB_OSABI_LINUX;
@@ -1833,7 +1945,7 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 
   @todo. Why is this empty! */
 static void
-arc_dump_tdep (struct gdbarch *target_gdbarch, struct ui_file *file)
+arc_dump_tdep (struct gdbarch *gdbarch, struct ui_file *file)
 {
 }	/* arc_dump_tdep () */
 
@@ -1843,14 +1955,15 @@ arc_dump_tdep (struct gdbarch *target_gdbarch, struct ui_file *file)
 /* -------------------------------------------------------------------------- */
 
 void
-arc_initialize_disassembler (struct disassemble_info *info)
+arc_initialize_disassembler (struct gdbarch *gdbarch, 
+			     struct disassemble_info *info)
 {
   // N.B. this type cast is not strictly correct: the return types differ!
   init_disassemble_info (info, gdb_stderr,
 			 (fprintf_ftype) fprintf_unfiltered);
-  info->arch = gdbarch_bfd_arch_info (target_gdbarch)->arch;
-  info->mach = gdbarch_bfd_arch_info (target_gdbarch)->mach;
-  info->endian = gdbarch_byte_order (target_gdbarch);
+  info->arch = gdbarch_bfd_arch_info (gdbarch)->arch;
+  info->mach = gdbarch_bfd_arch_info (gdbarch)->mach;
+  info->endian = gdbarch_byte_order (gdbarch);
   info->read_memory_func = arc_read_memory_for_disassembler;
 }
 
