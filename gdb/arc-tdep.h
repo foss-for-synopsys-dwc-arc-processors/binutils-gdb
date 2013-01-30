@@ -52,11 +52,28 @@
 /* -------------------------------------------------------------------------- */
 /* Local constants, which should really be in the XML file. */
 /* -------------------------------------------------------------------------- */
-#define ARC_BLINK_REGNUM  32
-#define ARC_FP_REGNUM     33
-#define ARC_SP_REGNUM     34
-#define ARC_ILINK1_REGNUM 39
-#define ARC_ILINK2_REGNUM 40
+/* Regsters */
+#define ARC_BTA_REGNUM          27
+#define ARC_LP_START_REGNUM     28
+#define ARC_LP_END_REGNUM       29
+#define ARC_LP_COUNT_REGNUM     30
+#define ARC_STATUS32_REGNUM     31
+#define ARC_BLINK_REGNUM        32
+#define ARC_FP_REGNUM           33
+#define ARC_SP_REGNUM           34
+#define ARC_EFA_REGNUM          35
+#define ARC_RET_REGNUM          36
+#define ARC_ORIG_R8_REGNUM      37
+#define ARC_STOP_PC_REGNUM      38
+
+/* Pseudo-registers */
+#define ARC_ILINK1_REGNUM       39
+#define ARC_ILINK2_REGNUM       40
+#define ARC_ERET_REGNUM         41
+#define ARC_STATUS32_L1_REGNUM  42
+#define ARC_STATUS32_L2_REGNUM  43
+#define ARC_ERSTATUS_REGNUM     44
+
 
 #define BYTES_IN_REGISTER  4
 #define BYTES_IN_WORD      4
