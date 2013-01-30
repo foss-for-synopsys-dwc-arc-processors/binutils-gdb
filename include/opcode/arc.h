@@ -42,7 +42,6 @@
 #define ARC_MACH_ARC6 4
 #define ARC_MACH_ARC7 8
 #define ARC_MACH_ARC601 16
-#define ARC_MACH_ARC601 16
 #define ARC_MACH_ARCV2 32
 
 /* Additional cpu values can be inserted here and ARC_MACH_BIG moved down.  */

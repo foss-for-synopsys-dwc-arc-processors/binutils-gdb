@@ -1,7 +1,8 @@
-2013-01-16  Simon Cook  <simon.cook@embecosm.com>
+2013-01-30 Claudiu Zissulescu <claziss@synopsys.com>
 
-	* cpu-arc.c (bfd_arc_arch): Make A5 default architecture to solve
-	incorrect architecture outputs.
+	* archures.c : defined bfd_mach_arc_arcv2
+	* elf32-arc.c: added ARCv2 machine number for an ARC elf file
+	* cpu-arc.c : added the new EM bfd definition.
 
 2013-01-07  Simon Cook  <simon.cook@embecosm.com>
 

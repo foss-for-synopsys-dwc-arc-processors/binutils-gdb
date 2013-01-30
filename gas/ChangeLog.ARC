@@ -1,3 +1,7 @@
+2013-01-30  Claudiu Zissulescu <claziss@synopsys.com>
+
+	* config/tc-arc.c: Added ARCv2 support
+
 2012-12-06  Simon Cook  <simon.cook@embecosm.com>
 
 	* config/tc-arc.c (md_assemble): Possible fix for fmt chars above 0x80.

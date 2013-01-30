@@ -1,3 +1,8 @@
+2013-01-30  Claudiu Zissulescu <claziss@synopsys.com>
+
+	* arc-em.h : Added ARCv2-EM instructions
+	* arc-opc.h: Added support for ARCv2-EM instructions.
+
 2013-01-07  Simon Cook  <simon.cook@embecosm.com>
 
 	* arc-opc.c (arc_opcodes): Added assembly of Android instructions.
