@@ -129,7 +129,7 @@
 typedef struct arc_variant_info ARC_VariantsInfo;
 
 
-#define REGISTER_NOT_PRESENT   (-1)   // special value for sc_reg_offset[reg]
+#define REGISTER_NOT_PRESENT   (-1)   /* special value for sc_reg_offset[reg] */
 
 
 /* this structure holds target-dependent information
