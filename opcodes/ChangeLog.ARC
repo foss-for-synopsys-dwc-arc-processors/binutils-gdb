@@ -1,3 +1,8 @@
+2013-01-30  Simon Cook  <simon.cook@embecosm.com>
+
+	* arc-opc.c (arc_opcodes): Applied Claudiu Zissulescu's fixes to
+	instruction patterns.
+
 2013-01-07  Simon Cook  <simon.cook@embecosm.com>
 
 	* arc-opc.c (arc_opcodes): Added assembly of Android instructions.
