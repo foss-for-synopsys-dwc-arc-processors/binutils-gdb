@@ -691,8 +691,8 @@
 /* clri    u6           	0010 0111 0110 1111 0000 uuuu uu11 1111  */
 { (unsigned char *) "clri [%u]",                               0xFFFFF03F, 0x276F003F, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*LP */
-{ (unsigned char *) "lp %y",                                 0xFFFFF03F, 0x20680000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "lp %Y",                                 0xFFFFF000, 0x20A80000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "lp %y",                                 0xFFFFF03F, 0x20680000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "lp%.q %y",                              0xFFFFF020, 0x20E80020, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "lp%q %y",                               0xFFFFF020, 0x20E80020, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*SETI */
@@ -785,13 +785,13 @@
 /* st_s    R0,[GP,Ss11] 	0101 0SSS SSS1 0sss  */
 { (unsigned char *) "st_s %4,[%5,%ç]",                       0xF818, 0x5010, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*ST */
-{ (unsigned char *) "st%z%.w%.D %Ñ,[%B]%0",                  0xF8FF8001, 0x18000001, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "st%z%.w%.D %Ñ,[%B,%o]%0",               0xF8000001, 0x18000001, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "st%z%.w%.D %C,[%B]%0",                  0xF8FF8001, 0x18000000, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "st%z%.w%.D %C,[%B,%o]%0",               0xF8000001, 0x18000000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "st%z%.w%.D %Ñ,[%g]%0",                  0xF8FF8001, 0x18000001, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "st%z%.w%.D %Ñ,[%g,%o]%0",               0xF8000001, 0x18000001, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "st%z%.w%.D %C,[%g]%0",                  0xF8FF8001, 0x18000000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "st%z%.w%.D %C,[%g,%o]%0",               0xF8000001, 0x18000000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "st%z%.D%Q %C,[%L]%0",                   0xFFFFF019, 0x1E007000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "st%z%.w%.D%Q %Ñ,[%L,%o]%0",             0xFF007001, 0x1E007001, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "st%z%.w%.D%Q %L,[%B,%o]%0",             0xF8000FC1, 0x18000F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "st%z%.w%.D%Q %L,[%g,%o]%0",             0xF8000FC1, 0x18000F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "st%z%.w%.D%Q %L,[%L,%o]%0",             0xFF007FC1, 0x1E007F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*LD_S */
 /* ld_s    R0,[h,Lu5]   	0100 0U00 hhhu u1HH  */
@@ -877,6 +877,8 @@
 /*BREQ */
 { (unsigned char *) "breq%.n%.è %B,%C,%d%ë",                 0xF8010017, 0x8010000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "breq%.n%.è %B,%u,%d%ë",                 0xF8010017, 0x8010010, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "breq%.è%.n %B,%C,%d%ë",                 0xF8010017, 0x8010000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "breq%.è%.n %B,%u,%d%ë",                 0xF8010017, 0x8010010, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "breq%.è%Q %B,%L,%d%ë",                  0xF8010FF7, 0x8010F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "breq%.è%Q %L,%C,%d%ë",                  0xFF017037, 0xE017000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "breq%.è%Q %L,%u,%d%ë",                  0xFF017037, 0xE017010, ARC_MACH_ARCV2, 0, 0, 0, 0},
@@ -884,6 +886,8 @@
 /*BRNE */
 { (unsigned char *) "brne%.n%.è %B,%C,%d%ë",                 0xF8010017, 0x8010001, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "brne%.n%.è %B,%u,%d%ë",                 0xF8010017, 0x8010011, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "brne%.è%.n %B,%C,%d%ë",                 0xF8010017, 0x8010001, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "brne%.è%.n %B,%u,%d%ë",                 0xF8010017, 0x8010011, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "brne%.è%Q %B,%L,%d%ë",                  0xF8010FF7, 0x8010F81, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "brne%.è%Q %L,%C,%d%ë",                  0xFF017037, 0xE017001, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "brne%.è%Q %L,%u,%d%ë",                  0xFF017037, 0xE017011, ARC_MACH_ARCV2, 0, 0, 0, 0},
@@ -891,6 +895,8 @@
 /*BRLT */
 { (unsigned char *) "brlt%.n%.è %B,%C,%d%ë",                 0xF8010017, 0x8010002, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "brlt%.n%.è %B,%u,%d%ë",                 0xF8010017, 0x8010012, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "brlt%.è%.n %B,%C,%d%ë",                 0xF8010017, 0x8010002, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "brlt%.è%.n %B,%u,%d%ë",                 0xF8010017, 0x8010012, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "brlt%.è%Q %B,%L,%d%ë",                  0xF8010FF7, 0x8010F82, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "brlt%.è%Q %L,%C,%d%ë",                  0xFF017037, 0xE017002, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "brlt%.è%Q %L,%u,%d%ë",                  0xFF017037, 0xE017012, ARC_MACH_ARCV2, 0, 0, 0, 0},
@@ -898,6 +904,8 @@
 /*BRGE */
 { (unsigned char *) "brge%.n%.è %B,%C,%d%ë",                 0xF8010017, 0x8010003, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "brge%.n%.è %B,%u,%d%ë",                 0xF8010017, 0x8010013, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "brge%.è%.n %B,%C,%d%ë",                 0xF8010017, 0x8010003, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "brge%.è%.n %B,%u,%d%ë",                 0xF8010017, 0x8010013, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "brge%.è%Q %B,%L,%d%ë",                  0xF8010FF7, 0x8010F83, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "brge%.è%Q %L,%C,%d%ë",                  0xFF017037, 0xE017003, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "brge%.è%Q %L,%u,%d%ë",                  0xFF017037, 0xE017013, ARC_MACH_ARCV2, 0, 0, 0, 0},
@@ -905,6 +913,8 @@
 /*BRLO */
 { (unsigned char *) "brlo%.n%.è %B,%C,%d%ë",                 0xF8010017, 0x8010004, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "brlo%.n%.è %B,%u,%d%ë",                 0xF8010017, 0x8010014, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "brlo%.è%.n %B,%C,%d%ë",                 0xF8010017, 0x8010004, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "brlo%.è%.n %B,%u,%d%ë",                 0xF8010017, 0x8010014, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "brlo%.è%Q %B,%L,%d%ë",                  0xF8010FF7, 0x8010F84, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "brlo%.è%Q %L,%C,%d%ë",                  0xFF017037, 0xE017004, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "brlo%.è%Q %L,%u,%d%ë",                  0xFF017037, 0xE017014, ARC_MACH_ARCV2, 0, 0, 0, 0},
@@ -912,6 +922,8 @@
 /*BRHS */
 { (unsigned char *) "brhs%.n%.è %B,%C,%d%ë",                 0xF8010017, 0x8010005, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "brhs%.n%.è %B,%u,%d%ë",                 0xF8010017, 0x8010015, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "brhs%.è%.n %B,%C,%d%ë",                 0xF8010017, 0x8010005, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "brhs%.è%.n %B,%u,%d%ë",                 0xF8010017, 0x8010015, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "brhs%.è%Q %B,%L,%d%ë",                  0xF8010FF7, 0x8010F85, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "brhs%.è%Q %L,%C,%d%ë",                  0xFF017037, 0xE017005, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "brhs%.è%Q %L,%u,%d%ë",                  0xFF017037, 0xE017015, ARC_MACH_ARCV2, 0, 0, 0, 0},
@@ -988,6 +1000,14 @@
 { (unsigned char *) "sleep %u",                              0xFFFFF03F, 0x216F003F, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "sleep%Q %L",                            0xFFFFFFFF, 0x212F0FBF, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "sleep",                                 0xFFFFFFFF, 0x216F003F, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/*SCOND */
+/* scond<.di>    b,[c]  	0010 0bbb 0010 1111 DBBB CCCC CC01 0001  */
+{ (unsigned char *) "scond%.V %B,[%C]",                      0xF8FF003F, 0x202F0011, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* scond<.di>    b,[u6] 	0010 0bbb 0110 1111 DBBB uuuu uu01 0001  */
+{ (unsigned char *) "scond%.V %B,[%u]",                      0xF8FF003F, 0x206F0011, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* scond<.di>    b,[limm] 	0010 0bbb 0010 1111 DBBB 1111 1001 0001  */
+{ (unsigned char *) "scond%.V%Q %B,[%L]",                    0xF8FF0FFF, 0x202F0F91, ARC_MACH_ARCV2, 0, 0, 0, 0},
+
 
 /*BIC*/
 { (unsigned char *) "bic%.f%Q %A,%L,%L%F",                   0xFFFF7FC0, 0x26067F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
