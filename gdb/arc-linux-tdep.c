@@ -62,9 +62,9 @@
 /* -------------------------------------------------------------------------- */
 
 /* Linux specific values */
-#define ARC_NR_PSEUDO_REGS      6
-#define ARC_NR_REGS             39
-
+#define ARC_NR_REGS           39
+#define ARC_NR_PSEUDO_REGS     6
+#define ARC_NR_ALL_REGS      (ARC_NR_PSEUDO_REGS + ARC_NR_REGS)
 #define STATUS32_L            0x00000100
 
 
@@ -276,13 +276,13 @@ next_pc (CORE_ADDR pc, CORE_ADDR *fall_thru, CORE_ADDR *target)
   if (arc_debug)
     {
       fprintf_unfiltered (gdb_stdlog,
-			  "--- next_pc (%s) = %d, isBranch = %s, "
+			  "--- next_pc (%s) = %s, isBranch = %s, "
 			  "tcnt = %d [0x%x],\n"
 			  "    flow = %s (%d), reg for indirect jump = %d, "
 			  "nullifyMode = %s\n",
-			  print_core_address (pc),
-			  print_core_address (*fall_through),
-			  instr.isBranch ? "true", "false", instr.tcnt,
+			  print_core_address (gdbarch, pc),
+			  print_core_address (gdbarch, *fall_thru),
+			  instr.isBranch ? "true" : "false", instr.tcnt,
 			  instr.targets[0],
 			  (instr.flow == direct_jump
 			   || instr.flow == direct_call)
@@ -307,7 +307,7 @@ next_pc (CORE_ADDR pc, CORE_ADDR *fall_thru, CORE_ADDR *target)
 	}
       else
 	{
-	  UNLONGEST val;
+	  ULONGEST val;
 	  regcache_cooked_read_unsigned (regcache,
 					 arc_linux_binutils_reg_to_regnum
 					 (gdbarch,
@@ -333,7 +333,7 @@ next_pc (CORE_ADDR pc, CORE_ADDR *fall_thru, CORE_ADDR *target)
    *        next_pc = lp_start;
    */
   {
-    unsigned int lp_end, lp_start, lp_count, status32;
+    ULONGEST  lp_end, lp_start, lp_count, status32;
 
     regcache_cooked_read_unsigned (regcache, ARC_LP_START_REGNUM, &lp_start);
     regcache_cooked_read_unsigned (regcache, ARC_LP_END_REGNUM, &lp_end);
@@ -362,8 +362,7 @@ arcompact_linux_supply_gregset (struct regcache *regcache,
   const bfd_byte *buf = gregs;
   unsigned int reg;
 
-  for (reg = 0; reg < ELEMENTS_IN_ARRAY (arcompact_linux_core_reg_offsets);
-       reg++)
+  for (reg = 0; reg < ARC_NR_REGS; reg++)
     {
       if (arcompact_linux_core_reg_offsets[reg] != REGISTER_NOT_PRESENT)
 	regcache_raw_supply (regcache,
@@ -380,7 +379,8 @@ static int
 is_linux_sigtramp (struct frame_info *next_frame)
 {
   /* find the PC for that previous frame */
-  CORE_ADDR pc = frame_pc_unwind (next_frame);
+  struct gdbarch *gdbarch = get_frame_arch (next_frame);
+  CORE_ADDR pc = gdbarch_unwind_pc (gdbarch, next_frame);
   gdb_byte buf[SIGTRAMP_INSNS_LENGTH];
 
   /* read the memory at that PC (this gives us the code without any s/w
@@ -405,7 +405,8 @@ is_linux_sigtramp (struct frame_info *next_frame)
     return TRUE;
 
   return FALSE;
-}
+
+}	/* is_linux_sigtramp () */
 
 
 /* Assuming next_frame is a frame following a GNU/Linux sigtramp
@@ -414,12 +415,10 @@ is_linux_sigtramp (struct frame_info *next_frame)
 static CORE_ADDR
 linux_sigcontext_addr (struct frame_info *next_frame)
 {
-  gdb_byte buf[4];
+  return (CORE_ADDR) gdbarch_unwind_sp (get_frame_arch (next_frame),
+					next_frame);
 
-  frame_unwind_register (next_frame, ARC_SP_REGNUM, buf);
-
-  return (CORE_ADDR) extract_unsigned_integer (buf, 4);
-}
+}	/* linux_sigcontext_addr () */
 
 
 /* Returns 0, 1, or -1:
@@ -480,49 +479,60 @@ register_reggroup_p (int regnum, struct reggroup *group)
  *     ARC_STATUS32_L2_REGNUM
  *     ARC_ERSTATUS_REGNUM
  */
-static void
+static enum register_status
 arc_linux_pseudo_register_read (struct gdbarch *gdbarch,
 				struct regcache *regcache,
-				int gdb_regno, gdb_byte * buf)
+				int gdb_regno, gdb_byte *buf)
 {
   unsigned int *contents = (unsigned int *) buf;
   unsigned int status32, ret;
-  int orig_r8;
+  LONGEST orig_r8;
+  enum register_status  res;
 
-  regcache_cooked_read (regcache, ARC_ORIG_R8_REGNUM, (gdb_byte *) & orig_r8);
-
-  if (gdb_regno == ARC_ILINK1_REGNUM ||
-      gdb_regno == ARC_ILINK2_REGNUM || gdb_regno == ARC_ERET_REGNUM)
+  /* Get orig_r8 and give up if we don't have it. */
+  res = regcache_cooked_read_unsigned (regcache, ARC_ORIG_R8_REGNUM, &orig_r8);
+  if (res != REG_VALID)
     {
-      regcache_cooked_read (regcache, ARC_RET_REGNUM, (gdb_byte *) & ret);
-
-      if (gdb_regno == ARC_ILINK1_REGNUM)
-	*contents = ((orig_r8 == -1) ? ret : 0);
-      else if (gdb_regno == ARC_ILINK2_REGNUM)
-	*contents = ((orig_r8 == -2) ? ret : 0);
-      else			/* (gdb_regno == ARC_ERET_REGNUM) */
-	*contents = ((orig_r8 >= 0) ? ret : 0);
-
+      return  res;
     }
-  else if (gdb_regno == ARC_STATUS32_L1_REGNUM ||
-	   gdb_regno == ARC_STATUS32_L2_REGNUM ||
-	   gdb_regno == ARC_ERSTATUS_REGNUM)
-    {
-      regcache_cooked_read (regcache, ARC_STATUS32_REGNUM,
-			    (gdb_byte *) & status32);
 
-      if (gdb_regno == ARC_STATUS32_L1_REGNUM)
-	*contents = ((orig_r8 == -1) ? status32 : 0);
-      else if (gdb_regno == ARC_STATUS32_L2_REGNUM)
-	*contents = ((orig_r8 == -2) ? status32 : 0);
-      else			/* (gdb_regno == ARC_ERSTATUS_REGNUM) */
-	*contents = ((orig_r8 >= 0) ? status32 : 0);
+  if ((gdb_regno == ARC_ILINK1_REGNUM)
+      || (gdb_regno == ARC_ILINK2_REGNUM)
+      || (gdb_regno == ARC_ERET_REGNUM))
+    {
+      if (((gdb_regno == ARC_ILINK1_REGNUM) && (orig_r8 == -1))
+	  || ((gdb_regno == ARC_ILINK2_REGNUM) && (orig_r8 == -2))
+	  || (orig_r8 >= 0))
+	{
+	  return regcache_cooked_read (regcache, ARC_RET_REGNUM, &buf);
+	}
+      else
+	{
+	  return REG_UNAVAILABLE;
+	}
+    }
+  else if ((gdb_regno == ARC_STATUS32_L1_REGNUM)
+	   || (gdb_regno == ARC_STATUS32_L2_REGNUM)
+	   || (gdb_regno == ARC_ERSTATUS_REGNUM))
+    {
+      if (((gdb_regno == ARC_STATUS32_L1_REGNUM) && (orig_r8 == -1))
+	  || ((gdb_regno == ARC_STATUS32_L2_REGNUM) && (orig_r8 == -2))
+	  || (orig_r8 >= 0))
+	{
+	  return regcache_cooked_read (regcache, ARC_STATUS32_REGNUM, &buf);
+	}
+      else
+	{
+	  return REG_UNAVAILABLE;
+	}
     }
   else
-    internal_error (__FILE__, __LINE__,
-		    _("%s: bad pseudo register number (%d)"), __FUNCTION__,
-		    gdb_regno);
-}
+    {
+      internal_error (__FILE__, __LINE__,
+		      _("%s: bad pseudo register number (%d)"), __FUNCTION__,
+		      gdb_regno);
+    }
+}	/* arc_linux_pseudo_register_read () */
 
 
 static void
@@ -631,12 +641,7 @@ arc_linux_print_registers_info (struct gdbarch *gdbarch,
 static const char *
 arc_linux_register_name (struct gdbarch *gdbarch, int gdb_regno)
 {
-  gdb_assert (ELEMENTS_IN_ARRAY (register_names) ==
-	      (unsigned int) (ARC_NR_REGS + ARC_NR_PSEUDO_REGS));
-
-  /* Oh, for a proper language with array bounds checking, like Ada... */
-  gdb_assert (0 <= gdb_regno
-	      && gdb_regno < (int) ELEMENTS_IN_ARRAY (register_names));
+  gdb_assert ((0 <= gdb_regno) && (gdb_regno < ARC_NR_ALL_REGS));
 
   return register_names[gdb_regno];
 }
@@ -664,29 +669,32 @@ arc_linux_cannot_store_register (struct gdbarch *gdbarch, int gdb_regno)
 }
 
 
-/* this is called with insert_breakpoints_p = 1 before single-stepping and
-   with insert_breakpoints_p = 0 after the step */
+/*! Single step in software.
 
-/*      Makis in 6.8 this is used to add breakpoints only and not remove them so remove 
-        functionality for now. This needs monitoring in case we see problems. 
-        This code is now completely removed as it break the way the higher layers are
-        using breakpoints. It now uses insert_single_step_breakpoint() function this code 
-        needs to be validated */
+    This is called with insert_breakpoints_p = 1 before single-stepping and
+    with insert_breakpoints_p = 0 after the step.
 
+    @todo Makis noted in 6.8 that this is used to add breakpoints only and not
+          remove them so remove functionality for now. This needs monitoring
+          in case we see problems.  This code is now completely removed as it
+          break the way the higher layers are using breakpoints. It now uses
+          insert_single_step_breakpoint() function this code needs to be
+          validated */
 static int
 arc_linux_software_single_step (struct frame_info *frame)
 {
   struct gdbarch *gdbarch = get_frame_arch (frame);
+  struct address_space *aspace = get_frame_address_space (frame);
+  CORE_ADDR pc = get_frame_pc (frame);
   CORE_ADDR fall_thru, branch_target;
-  CORE_ADDR pc = read_pc ();
   int two_breakpoints = next_pc (pc, &fall_thru, &branch_target);
 
-  insert_single_step_breakpoint (fall_thru);
+  insert_single_step_breakpoint (gdbarch, aspace, fall_thru);
 
   if (two_breakpoints)
     {
       if ((pc != branch_target) && (fall_thru != branch_target))
-	insert_single_step_breakpoint (branch_target);
+	insert_single_step_breakpoint (gdbarch, aspace, branch_target);
     }
 
   return 1;			/* returns always true for now */
@@ -721,35 +729,32 @@ arc_linux_write_pc (struct regcache *regcache, CORE_ADDR pc)
 }
 
 
-/* See the comments for SKIP_SOLIB_RESOLVER at the top of infrun.c.
- *
- * This is called on every single step through the PLT and runtime resolver.
- *
- * This function:
- *    1) decides whether a PLT has sent us into the linker to resolve
- *       a function reference, and
- *    2) if so, tells us where to set a temporary breakpoint that will
- *       trigger when the dynamic linker is done.
- */
+/*! Find where to put a breakpoint after the resolver.
+
+    See the comments for SKIP_SOLIB_RESOLVER at the top of infrun.c.
+ 
+    This is called on every single step through the PLT and runtime resolver.
+   
+    This function:
+       1) decides whether a PLT has sent us into the linker to resolve a
+          function reference, and
+       2) if so, tells us where to set a temporary breakpoint that will
+          trigger when the dynamic linker is done. */
 static CORE_ADDR
 arc_linux_skip_solib_resolver (struct gdbarch *gdbarch, CORE_ADDR pc)
 {
   /* For uClibc 0.9.26.
-   *
-   *   An unresolved PLT entry points to "__dl_linux_resolve", which calls
-   *   "__dl_linux_resolver" to do the resolving and then eventually jumps to
-   *   the function.
-   *
-   *   So we look for the symbol `_dl_linux_resolver', and if we are there,
-   *   gdb sets a breakpoint at the return address, and continues.
-   */
+   
+     An unresolved PLT entry points to "__dl_linux_resolve", which calls
+     "__dl_linux_resolver" to do the resolving and then eventually jumps to
+     the function.
+   
+     So we look for the symbol `_dl_linux_resolver', and if we are there, gdb
+     sets a breakpoint at the return address, and continues.
 
-  /* lookup_minimal_symbol didn't work, for some reason.  */
-  struct symbol *resolver = lookup_symbol_global ("_dl_linux_resolver", 0,
-						  0,
-						  /* Makis: Warning added this
-						     as API changed in 6.8 */
-						  VAR_DOMAIN, 0);
+     lookup_minimal_symbol didn't work, for some reason.  */
+  struct symbol *resolver = lookup_symbol_global ("_dl_linux_resolver", NULL,
+						  VAR_DOMAIN);
 
   if (arc_debug)
     {
@@ -757,13 +762,13 @@ arc_linux_skip_solib_resolver (struct gdbarch *gdbarch, CORE_ADDR pc)
 	{
 	  CORE_ADDR res_addr = BLOCK_START (SYMBOL_BLOCK_VALUE (resolver));
 	  fprintf_unfiltered (gdb_stdlog, "--- %s : pc = %s, resolver at %s\n",
-			      __FUNCTION__, print_core_address (pc),
-			      print_core_address (res_addr));
+			      __FUNCTION__, print_core_address (gdbarch, pc),
+			      print_core_address (gdbarch, res_addr));
 	}
       else
 	{
 	  fprintf_unfiltered (gdb_stdlog, "--- %s : pc = %s, no resolver found",
-			      __FUNCTION__, print_core_address (pc));
+			      __FUNCTION__, print_core_address (gdbarch, pc));
 	}
     }
 
@@ -829,7 +834,7 @@ arc_linux_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
   tdep->is_sigtramp = is_linux_sigtramp;
   tdep->sigcontext_addr = linux_sigcontext_addr;
   tdep->sc_reg_offset = arc_linux_sc_reg_offset;
-  tdep->sc_num_regs = ELEMENTS_IN_ARRAY (arc_linux_sc_reg_offset);
+  tdep->sc_num_regs = ARC_NR_REGS;
   tdep->pc_regnum_in_sigcontext = ARC_RET_REGNUM;
 
   if (info.byte_order == BFD_ENDIAN_BIG)
