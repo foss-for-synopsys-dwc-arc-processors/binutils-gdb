@@ -5973,7 +5973,8 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 			  if (!strncmp (str, "@gotpc", 6))
 			    {
 			      str += 6;
-			      if (arc_mach_type != bfd_mach_arc_arc700)
+			      if (arc_mach_type != bfd_mach_arc_arc700 ||
+				  arc_mach_type != bfd_mach_arc_arcv2)
 				as_warn ("PIC not supported for processors prior to ARC 700\n");
 			      else
 				current_special_sym_flag = GOT_TYPE;
@@ -5983,7 +5984,8 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 			  else if (!strncmp (str, "@plt", 4))
 			    {
 			      str += 4;
-			      if (arc_mach_type != bfd_mach_arc_arc700)
+			      if (arc_mach_type != bfd_mach_arc_arc700 ||
+				  arc_mach_type != bfd_mach_arc_arcv2)
 				as_warn ("PIC not supported for processors prior to ARC 700\n");
 			      else
 				current_special_sym_flag = PLT_TYPE;
@@ -5991,7 +5993,8 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 			    }
 			  else if (!strncmp (str, "@gotoff", 7))
 			    {
-			      if (arc_mach_type != bfd_mach_arc_arc700)
+			      if (arc_mach_type != bfd_mach_arc_arc700 ||
+				  arc_mach_type != bfd_mach_arc_arcv2)
 				as_warn ("PIC not supported for processors prior to ARC 700\n");
 			      else
 				current_special_sym_flag = GOTOFF_TYPE;
@@ -6297,7 +6300,8 @@ fprintf (stdout, "Matched syntax %s\n", opcode->syntax);
 		    break;
 		  case 'q':
 		    conditional = insn_suffixes[i]->value;
-		    if (arc_mach_type != bfd_mach_arc_arc700
+		    if ((arc_mach_type != bfd_mach_arc_arc700 ||
+			 arc_mach_type != bfd_mach_arc_arcv2)
 		       && conditional > 15
 		       && !ext_suffix_p)
 		      {
@@ -6346,7 +6350,8 @@ fprintf (stdout, "Matched syntax %s\n", opcode->syntax);
 		      as_bad ("rtie instruction in delay slot");
 		  }
 
-		if (arc_mach_type != bfd_mach_arc_arc700)
+		if (arc_mach_type != bfd_mach_arc_arc700 ||
+		    arc_mach_type != bfd_mach_arc_arcv2)
 		  {
 		    if (a4_brk_insn (insn))
 		      as_bad ("brk instruction in delay slot");

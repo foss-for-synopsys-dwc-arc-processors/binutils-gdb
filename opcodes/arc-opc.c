@@ -1085,15 +1085,23 @@ void arc_reset_branch_prediction(void)
 static arc_insn
 insert_Ybit (arc_insn insn, long *ex ATTRIBUTE_UNUSED,
 	     const struct arc_operand *operand,
-	     int mods ATTRIBUTE_UNUSED,
+	     int mods,
 	     const struct arc_operand_value *reg ATTRIBUTE_UNUSED,
 	     long value ,
 	     const char **errmsg ATTRIBUTE_UNUSED)
 {
   arc_insn bitY = 0;
 
-  if (!value)
-    return insn;
+  /*mods == -1 only in fixup*/
+  if (!value && mods != -1)
+    {
+      if (tflag_p == NONE)
+	{
+	  /* I need to add the default behaviour: BBITx: Y=1 */
+	  insn |= 8;
+	}
+      return insn;
+    }
 
   if (value < 0)
     {
@@ -1120,7 +1128,7 @@ insert_Ybit_neg (arc_insn insn, long *ex ATTRIBUTE_UNUSED,
 {
   arc_insn bitY = 1;
 
-  if (!value)
+  if (!value && mods != -1)
     return insn;
 
   if (value < 0)
