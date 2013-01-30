@@ -1,35 +1,7 @@
-2013-03-17  Joern Rennecke  <joern.rennecke@embecosm.com>
+2013-01-30  Claudiu Zissulescu <claziss@synopsys.com>
 
-	* arc-opinst.c: Regenerate.
-
-2013-03-17  Joern Rennecke  <joern.rennecke@embecosm.com>
-
-	* arc-opc.c, arc-dis.c, arc-dis.h: Rename to:
-	* arc-opc-old.c, arc-dis-old.c, arc-dis-old.h.
-	* arc-dis-old.c, arcompact-dis.c: Reflect header file name change.
-	* arc-opc-cgen.c, arc-dis-cgen.c, arc-dis-cgen.h: Delete.
-	* arc-opc.c, arc-dis.c, arc-dis.h: Autogenerate with CGEN.
-	* Makefile.am (HFILES): Add arc-desch and arc-opc.h.
-	(TARGET_LIBOPCODES_CFILES): Add arc-asm.c, arc-desc.c, arc-dis-old.c,
-	arc-ibld.c, arc-opinst.c.
-	(CLEANFILES): Add stamp-arc.
-	(CGEN_CPUS): Add arc.
-	(ARC_DEPS): New rule.
-	($(srcdir)/arc-desc.h $(srcdir)/arc-desc.c $(srcdir)/arc-opc.h
-	 $(srcdir)/arc-opc.c $(srcdir)/arc-ibld.c $(srcdir)/arc-opinst.c
-	 $(srcdir)/arc-asm.c $(srcdir)/arc-dis.c): Likewise.
-	 (stamp-arc): Likewise.
-	 * configure.in (bfd_arc_arch): Update file list.
-	 * Makefile.in, configure: Regenerate.
-
-	 * arc-asm.c, arc-desc.h, arc-ibld.c, arc-opc.h: Regenerate, using:
-	 Customer-Projects/synopsys/arc_gnu/branches/arc_gnu_4.8/srcw-20120503/cgen.
-	 * arc-desc.c, arc-dis.c, arc-opc.c, arc-opinst.c: Likewise.
-
-2013-01-30  Simon Cook  <simon.cook@embecosm.com>
-
-	* arc-opc.c (arc_opcodes): Applied Claudiu Zissulescu's fixes to
-	instruction patterns.
+	* arc-em.h : Added ARCv2-EM instructions
+	* arc-opc.h: Added support for ARCv2-EM instructions.
 
 2013-01-07  Simon Cook  <simon.cook@embecosm.com>
 
@@ -46,12 +18,6 @@
 
 	* arc-ext.c (arcExtMap_instName): set but unused variables
 	removed.
-
-2012-12-10  Mischa Jonker  <mischa.jonker@synopsys.com>
-
-	* arcompact-dis.c (dsmOneArcInst): Fix decoding of register when doing
-	indirect jumps with short instructions (j_s, jl_s, j_s.d, jl_s.d).
-	It only worked for r0 and blink. Now it works also for r1..3, r12..15.
 
 2012-12-10  Mischa Jonker  <mischa.jonker@synopsys.com>
 
