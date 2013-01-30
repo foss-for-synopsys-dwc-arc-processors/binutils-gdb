@@ -1,5 +1,18 @@
 2013-01-30  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
+	* arc-tdep.c (arc_print_frame_info): Use print_core_address to
+	print CORE_ADDR values, use phex for saved addresses.
+	(arc_unwind_pc, arc_unwind_sp): Use CORE_ADDR throughout and
+	print_core_address to print values.
+	(arc_find_this_sp): Use phex to print hex values.
+	(arc_scan_prologue, arc_push_dummy_call): Use print_core_address
+	to print CORE_ADDR values.
+	(arc_extract_return_value, arc_store_return_value): Use phex to
+	print hex values.
+	* arc-tdep.h (BYTES_IN_ADDRESS): Added.
+
+2013-01-30  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
 	* arc-linux-tdep.c: Remove superfluous general comments.
 	(gdbarch.h): Included after degs.h.
 	(ARC_NR_REGS): Updated with explicit value.
