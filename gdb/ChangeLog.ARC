@@ -1,5 +1,10 @@
 2013-01-30  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
+	* arc-tdep.c (arc_dummy_disassembler): Created.
+	(arc_gdbarch-init): set arc_dummy_disassembler as default.
+
+2013-01-30  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
 	* arc-linux-tdep.c: General tidy up of commenting.
 	(arc_linux_core_reg_offsets): Renamed from
 	arcompact_linux_core_reg_offsets.
