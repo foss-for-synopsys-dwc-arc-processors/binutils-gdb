@@ -58,8 +58,9 @@
 #define ARC_ILINK1_REGNUM 39
 #define ARC_ILINK2_REGNUM 40
 
-#define BYTES_IN_REGISTER          4
-#define BYTES_IN_WORD              4
+#define BYTES_IN_REGISTER  4
+#define BYTES_IN_WORD      4
+#define BYTES_IN_ADDRESS  (BYTES_IN_REGISTER)
 
 /* 3 instructions before and after callee saves, and max number of saves;
    assume each is 4-byte inst. See arc_scan_prologue () for details. */
