@@ -1,3 +1,11 @@
+2013-01-30  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	* arc-linux-tdep.c: Remove superfluous general comments.
+	(gdbarch.h): Included after degs.h.
+	(ARC_NR_REGS): Updated with explicit value.
+	(Boolean): Replace with int throughout.
+	(next_pc): Add gdbarch argument to arc_initialize_disassembler.
+
 2013-01-29  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* Makefile.in: change golang.h to go-lang.h.
