@@ -1,5 +1,25 @@
 2013-01-30  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
+	* arc-linux-tdep.c: General tidy up of commenting.
+	(arc_linux_core_reg_offsets): Renamed from
+	arcompact_linux_core_reg_offsets.
+	(arc_linux_binutils_reg_to_regnum): Moved to start of file to
+	avoid need for forward declaration. Renamed from
+	binutils_reg_to_regnum.
+	(arc_linux_next_pc): Renamed from next_pc. Move declarations of
+	lp_end, lp_start, lp_count and status32 to start of function.
+	(arc_linux_supply_gregset): Renamed from
+	arcompact_linux_supply_gregset and merged with supply_gregset.
+	(supply_gregset): Merged into arc_linux_supply_gregset.
+	(arc_linux_is_sigtramp): Renamed from is_linux_sigtramp.
+	(arc_linux_sigcontext_addr): Renamed from linux_sigcontext_addr.
+	(arc_linux_register_reggroup_p): Renamed from register_reggroup_p.
+	(arc_linux_pseudo_register_read): Restructured.
+	(arc_linux_regset_from_core_section): Define arch field.
+	(arc_linux_init_abi): Tidied up code.
+
+2013-01-30  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
 	* arc-linux-tdep.c (ARC_NR_ALL_REGS): Defined for convenience.
 	(next_pc): Typos and missing args corrected, use ULONGEST for reg
 	reads.
