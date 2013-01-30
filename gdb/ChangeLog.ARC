@@ -1,5 +1,28 @@
 2013-01-30  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
+	* arc-linux-tdep.c (ARC_NR_ALL_REGS): Defined for convenience.
+	(next_pc): Typos and missing args corrected, use ULONGEST for reg
+	reads.
+	(arcompact_linux_supply_gregset): Replace ELEMENTS_IN_ARRAY by
+	array size.
+	(is_linux_sigtramp): Use gdbarch functions to unwind PC.
+	(arc_linux_pseudo_register_read): Set a return result, restructure
+	code.
+	(arc_linux_register_name): Replace ELEMENTS_IN_ARRAY by array size
+	and simplify code.
+	(arc_linux_software_single_step): Recode to use address space.
+	(arc_linux_skip_solib_resolver): Correct call to
+	lookup_symbol_global, correct missing argument to
+	print_core_address.
+	(arc_linux_init_abi): Replace ELEMENTS_IN_ARRAY by array size.
+	* arc-tdep.h (ARC_BTA_REGNUM, ARC_LP_START_REGNUM)
+	(ARC_LP_END_REGNUM, ARC_LP_COUNT_REGNUM, ARC_STATUS32_REGNUM)
+	(ARC_EFA_REGNUM, ARC_RET_REGNUM, ARC_ORIG_R8_REGNUM)
+	(ARC_STOP_PC_REGNUM, ARC_ERET_REGNUM, ARC_STATUS32_L1_REGNUM)
+	(ARC_STATUS32_L2_REGNUM, ARC_ERSTATUS_REGNUM): Define.
+
+2013-01-30  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
 	* arc-tdep.c, arc-tdep.h: Corrected C++ style comments throughout.
 	* arc-linux-tdep.c: Corrected C++ style comments throughout.
 	(arc_debug): Added extern declaration.
