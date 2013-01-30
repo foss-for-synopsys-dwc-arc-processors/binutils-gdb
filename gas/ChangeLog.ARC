@@ -1,19 +1,6 @@
-2013-03-27  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+2013-01-30  Claudiu Zissulescu <claziss@synopsys.com>
 
-	* config/extlib/Makefile.in: Add pdf and install-pdf targets.
-
-2013-03-20  Joern Rennecke  <joern.rennecke@embecosm.com>
-
-	* config/tc-arc.c (tc_gen_reloc): Adjust offset to reflect
-	difference between relocation location and instruction start.
-
-2012-03-04  Simon Cook  <simon.cook@embecosm.com>
-
-	* testsuite/gas/all/redef3.d: Replace arc-*-* with arc*-*-*.
-	* testsuite/gas/arc/ex_arc700.s: Likewise.
-	* testsuite/gas/arc/ld_arc700.s: Likewise.
-	* testsuite/gas/arc/warn.s: Likewise.
-	* testsuite/gas/lns/lns.exp: Likewise.
+	* config/tc-arc.c: Added ARCv2 support
 
 2012-12-06  Simon Cook  <simon.cook@embecosm.com>
 
