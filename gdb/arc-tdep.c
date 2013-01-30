@@ -248,7 +248,7 @@ typedef struct
 /*                               externally visible data                      */
 /* -------------------------------------------------------------------------- */
 
-/* global debug flag */
+/*! Global debug flag */
 int arc_debug;
 
 
@@ -375,10 +375,10 @@ arc_print_frame_info (char *message, arc_unwind_cache_t *info,
 
   fprintf_unfiltered (gdb_stdlog, "-------------------\n");
   fprintf_unfiltered (gdb_stdlog, "%s (info = %p)\n", message, info);
-  fprintf_unfiltered (gdb_stdlog, "prev_sp               = %lx\n",
-		      (long unsigned int) info->prev_sp);
-  fprintf_unfiltered (gdb_stdlog, "frame_base            = %lx\n",
-		      (long unsigned int) info->frame_base);
+  fprintf_unfiltered (gdb_stdlog, "prev_sp               = %s\n",
+		      print_core_address (target_gdbarch, info->prev_sp));
+  fprintf_unfiltered (gdb_stdlog, "frame_base            = %s\n",
+		      print_core_address (target_gdbarch, info->frame_base));
   fprintf_unfiltered (gdb_stdlog, "blink offset          = %d\n",
 		      info->blink_save_offset_from_prev_sp);
   fprintf_unfiltered (gdb_stdlog, "delta_sp              = %d\n",
@@ -392,9 +392,9 @@ arc_print_frame_info (char *message, arc_unwind_cache_t *info,
        i < ARC_ABI_LAST_CALLEE_SAVED_REGISTER; i++)
     {
       if (info->saved_regs_mask & (1 << i))
-	fprintf_unfiltered (gdb_stdlog, "saved register R%02d %s 0x%lx\n",
+	fprintf_unfiltered (gdb_stdlog, "saved register R%02d %s %s\n",
 			    i, (addresses_known) ? "address" : "offset",
-			    (unsigned long) info->saved_regs[i].addr);
+			    phex (info->saved_regs[i].addr, BYTES_IN_ADDRESS));
     }
   fprintf_unfiltered (gdb_stdlog, "-------------------\n");
 
@@ -525,14 +525,16 @@ static CORE_ADDR
 arc_unwind_pc (struct gdbarch *gdbarch, struct frame_info *next_frame)
 {
   int pc_regnum = gdbarch_pc_regnum (gdbarch);
-  ULONGEST pc = frame_unwind_register_unsigned (next_frame, pc_regnum);
+  CORE_ADDR pc =
+    (CORE_ADDR) frame_unwind_register_unsigned (next_frame, pc_regnum);
 
   if (arc_debug)
     {
-      fprintf_unfiltered (gdb_stdlog, "unwind PC: 0x%08lx\n", (CORE_ADDR) pc);
+      fprintf_unfiltered (gdb_stdlog, "unwind PC: %s\n",
+			  print_core_address (gdbarch, pc));
     }
 
-  return (CORE_ADDR) pc;
+  return pc;
 
 }	/* arc_unwind_pc () */
 
@@ -546,11 +548,13 @@ static CORE_ADDR
 arc_unwind_sp (struct gdbarch *gdbarch, struct frame_info *next_frame)
 {
   int sp_regnum = gdbarch_sp_regnum (gdbarch);
-  ULONGEST sp = frame_unwind_register_unsigned (next_frame, sp_regnum);
+  CORE_ADDR sp =
+    (CORE_ADDR) frame_unwind_register_unsigned (next_frame, sp_regnum);
 
   if (arc_debug)
     {
-      fprintf_unfiltered (gdb_stdlog, "unwind SP: 0x%08lx\n", (CORE_ADDR) sp);
+      fprintf_unfiltered (gdb_stdlog, "unwind SP: %s\n",
+			  print_core_address (gdbarch, sp));
     }
 
   return (CORE_ADDR) sp;
@@ -639,9 +643,10 @@ arc_find_this_sp (arc_unwind_cache_t * info,
 		     dumped, so showing that we have got the right addresses
 		     for the save locations! */
 		  unsigned int contents;
-		  fprintf_unfiltered (gdb_stdlog,
-				      "saved R%02d is at 0x%lx\n", i,
-				      (CORE_ADDR) info->saved_regs[i].addr);
+		  fprintf_unfiltered (gdb_stdlog, "saved R%02d is at %s\n", i,
+				      phex (info->saved_regs[i].addr,
+					    BYTES_IN_ADDRESS));
+				   
 
 		  if (target_read_memory
 		      ((CORE_ADDR) info->saved_regs[i].addr,
@@ -1006,10 +1011,10 @@ arc_scan_prologue (CORE_ADDR entrypoint,
 
   if (arc_debug)
     {
-      fprintf_unfiltered (gdb_stdlog, "Prologue PC: %lx\n",
-			  (unsigned long) prologue_ends_pc);
-      fprintf_unfiltered (gdb_stdlog, "Final    PC: %lx\n",
-			  (unsigned long) final_pc);
+      fprintf_unfiltered (gdb_stdlog, "Prologue PC: %s\n",
+			  print_core_address (gdbarch, prologue_ends_pc));
+      fprintf_unfiltered (gdb_stdlog, "Final    PC: %s\n",
+			  print_core_address (gdbarch, final_pc));
     }
 
   /* look at each instruction in the prologue */
@@ -1087,7 +1092,8 @@ arc_extract_return_value (struct gdbarch *gdbarch, struct type *type,
 
       if (arc_debug)
 	{
-	  fprintf_unfiltered (gdb_stdlog, "returning 0x%08llX\n", val);
+	  fprintf_unfiltered (gdb_stdlog, "returning %s\n",
+			      phex (val, BYTES_IN_REGISTER));
 	}
     }
   else if (len <= BYTES_IN_REGISTER * 2)
@@ -1108,8 +1114,9 @@ arc_extract_return_value (struct gdbarch *gdbarch, struct type *type,
 
       if (arc_debug)
 	{
-	  fprintf_unfiltered (gdb_stdlog, "returning 0x%08llX%08llX\n", high,
-			      low);
+	  fprintf_unfiltered (gdb_stdlog, "returning 0x%s%s\n",
+			      phex (high, BYTES_IN_REGISTER), 
+			      phex (low, BYTES_IN_REGISTER));
 	}
     }
   else
@@ -1140,7 +1147,8 @@ arc_store_return_value (struct gdbarch *gdbarch, struct type *type,
 
       if (arc_debug)
 	{
-	  fprintf_unfiltered (gdb_stdlog, "storing 0x%08llX\n", val);
+	  fprintf_unfiltered (gdb_stdlog, "storing 0x%s\n",
+			      phex (val, BYTES_IN_REGISTER));
 	}
     }
   else if (len <= BYTES_IN_REGISTER * 2)
@@ -1162,8 +1170,9 @@ arc_store_return_value (struct gdbarch *gdbarch, struct type *type,
 
       if (arc_debug)
 	{
-	  fprintf_unfiltered (gdb_stdlog, "storing 0x%08llX%08llX\n", high,
-			      low);
+	  fprintf_unfiltered (gdb_stdlog, "storing 0x%s%s\n",
+			      phex (high, BYTES_IN_REGISTER), 
+			      phex (low, BYTES_IN_REGISTER));
 	}
     }
   else
@@ -1743,8 +1752,9 @@ arc_push_dummy_call (struct gdbarch *gdbarch,
       if (arc_debug)
 	{
 	  fprintf_unfiltered (gdb_stdlog,
-			      "struct return address 0x%08lX passed in R%d",
-			      struct_addr, arg_reg);
+			      "struct return address %s passed in R%d",
+			      print_core_address (gdbarch, struct_addr),
+			      arg_reg);
 	}
 
       arg_reg++;
@@ -1951,7 +1961,7 @@ arc_dump_tdep (struct gdbarch *gdbarch, struct ui_file *file)
 
 
 /* -------------------------------------------------------------------------- */
-/*                               externally visible functions                 */
+/*			 Externally visible functions                         */
 /* -------------------------------------------------------------------------- */
 
 void
