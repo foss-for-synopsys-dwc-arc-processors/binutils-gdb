@@ -472,6 +472,21 @@ arc_read_memory_for_disassembler (bfd_vma memaddr, bfd_byte *myaddr,
 }	/* arc_read_memory_for_disassembler () */
 
 
+/*! Dummy disassembler.
+
+    We'll use a callback to set the real assembler, but we must have one
+    present or GDB won't start.
+
+    @return 0 to indicate failure. */
+static int
+arc_dummy_disassembler(bfd_vma address, disassemble_info* info)
+{
+    error(_("disassembly not yet available (no executable file loaded)"));
+    return  0;
+
+}	/* arc_dummy_disassembler () */
+
+
 /*! Callback to set the disassembler
 
     We use the new_objfile observer to trigger this function.
@@ -1929,6 +1944,7 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 
      @todo. Should we use a dummy_disassembler before this. GDB by default
      will trigger gdbabort, but we could give a nicer message. */
+  set_gdbarch_print_insn(gdbarch, arc_dummy_disassembler);
   observer_attach_new_objfile (arc_set_disassembler);
 
   /* Frame unwinders and sniffers. We use DWARF2 if it's available, for which
