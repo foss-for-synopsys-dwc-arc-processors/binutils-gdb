@@ -41,6 +41,7 @@
 /* gdb header files */
 #include "defs.h"
 #include "gdbarch.h"
+#include "frame.h"
 #include "osabi.h"
 #include "regcache.h"
 #include "inferior.h"
@@ -107,7 +108,7 @@ static const char *register_names[ARC_NR_REGS + ARC_NR_PSEUDO_REGS] = {
   /* linux-only registers */
   "ret",
   "orig_r8",
-  "pc",				// stop pc
+  "pc",				/* stop pc */
 
   /* pseudo-regs */
   "ilink1",
@@ -219,13 +220,15 @@ static const int arcompact_linux_core_reg_offsets[ARC_NR_REGS] = {
 
 
 /* -------------------------------------------------------------------------- */
-/*                               external functions                           */
+/*		  External functions and variables used here                  */
 /* -------------------------------------------------------------------------- */
 
-/* FIXME: this should be in a header file! */
-
+/* From opcodes/arcompact-dis.h. */
 extern struct arcDisState arcAnalyzeInstr (bfd_vma address,
 					   disassemble_info * info);
+
+/* From arc-tdep.c */
+extern int arc_debug;
 
 
 /* -------------------------------------------------------------------------- */
@@ -253,9 +256,10 @@ static int arc_linux_binutils_reg_to_regnum (struct gdbarch *gdbarch,
  *   *target    is set to the branch target.
  */
 static int
-next_pc (CORE_ADDR pc, CORE_ADDR * fall_thru, CORE_ADDR * target)
+next_pc (CORE_ADDR pc, CORE_ADDR *fall_thru, CORE_ADDR *target)
 {
   struct regcache *regcache = get_current_regcache ();
+  struct gdbarch *gdbarch = get_regcache_arch (regcache);
   struct disassemble_info di;
   struct arcDisState instr;
   int two_targets = FALSE;
@@ -269,38 +273,52 @@ next_pc (CORE_ADDR pc, CORE_ADDR * fall_thru, CORE_ADDR * target)
   /* by default, the next instruction is the one immediately after the one at pc */
   *fall_thru = pc + instr.instructionLen;
 
-  DEBUG
-    ("--- next_pc(%x) = %x, isBranch = %d, tcnt = %d [%x], flow = %s (%d), "
-     "reg for indirect jump = %d, nullifyMode = %s\n", (unsigned int) pc,
-     (unsigned int) *fall_thru, instr.isBranch, instr.tcnt, instr.targets[0],
-     (instr.flow == direct_jump
-      || instr.flow == direct_call) ? "direct" : "indirect", instr.flow,
-     instr.register_for_indirect_jump,
-     ((instr.nullifyMode ==
-       (char) BR_exec_always) ? "delay slot" : "no delay"));
+  if (arc_debug)
+    {
+      fprintf_unfiltered (gdb_stdlog,
+			  "--- next_pc (%s) = %d, isBranch = %s, "
+			  "tcnt = %d [0x%x],\n"
+			  "    flow = %s (%d), reg for indirect jump = %d, "
+			  "nullifyMode = %s\n",
+			  print_core_address (pc),
+			  print_core_address (*fall_through),
+			  instr.isBranch ? "true", "false", instr.tcnt,
+			  instr.targets[0],
+			  (instr.flow == direct_jump
+			   || instr.flow == direct_call)
+			  ? "direct" : "indirect", instr.flow,
+			  instr.register_for_indirect_jump,
+			  ((instr.nullifyMode == (char) BR_exec_always)
+			   ? "delay slot" : "no delay"));
+    }
 
   /* OK, it's a branch */
-  if ((int) instr.isBranch)
+  if (instr.isBranch)
     {
       two_targets = TRUE;
 
       /* if it's a direct jump or call, the destination address is encoded in
-       * the instruction, so we got it by disassembling the instruction;
-       * otherwise, it's an indirect jump to the address held in the register
-       * named in the instruction, so we must read that register
-       */
+         the instruction, so we got it by disassembling the instruction;
+         otherwise, it's an indirect jump to the address held in the register
+         named in the instruction, so we must read that register */
       if (instr.flow == direct_jump || instr.flow == direct_call)
-	*target = (CORE_ADDR) instr.targets[0];
+	{
+	  *target = (CORE_ADDR) instr.targets[0];
+	}
       else
-	regcache_cooked_read_unsigned (regcache,
-				       arc_linux_binutils_reg_to_regnum
-				       (current_gdbarch,
-					instr.register_for_indirect_jump),
-				       target);
+	{
+	  UNLONGEST val;
+	  regcache_cooked_read_unsigned (regcache,
+					 arc_linux_binutils_reg_to_regnum
+					 (gdbarch,
+					  instr.register_for_indirect_jump),
+					 &val);
+	  *target = val;
+	}
 
-      /* for instructions with delay slots, the fall thru is not the instruction
-       * immediately after the branch instruction, but the one after that
-       */
+      /* for instructions with delay slots, the fall thru is not the
+         instruction immediately after the branch instruction, but the one
+         after that. */
       if (instr.nullifyMode == (char) BR_exec_always)
 	{
 	  struct arcDisState instr_d = arcAnalyzeInstr (*fall_thru, &di);
@@ -482,7 +500,7 @@ arc_linux_pseudo_register_read (struct gdbarch *gdbarch,
 	*contents = ((orig_r8 == -1) ? ret : 0);
       else if (gdb_regno == ARC_ILINK2_REGNUM)
 	*contents = ((orig_r8 == -2) ? ret : 0);
-      else			// (gdb_regno == ARC_ERET_REGNUM)
+      else			/* (gdb_regno == ARC_ERET_REGNUM) */
 	*contents = ((orig_r8 >= 0) ? ret : 0);
 
     }
@@ -497,7 +515,7 @@ arc_linux_pseudo_register_read (struct gdbarch *gdbarch,
 	*contents = ((orig_r8 == -1) ? status32 : 0);
       else if (gdb_regno == ARC_STATUS32_L2_REGNUM)
 	*contents = ((orig_r8 == -2) ? status32 : 0);
-      else			// (gdb_regno == ARC_ERSTATUS_REGNUM)
+      else			/* (gdb_regno == ARC_ERSTATUS_REGNUM) */
 	*contents = ((orig_r8 >= 0) ? status32 : 0);
     }
   else
@@ -658,6 +676,7 @@ arc_linux_cannot_store_register (struct gdbarch *gdbarch, int gdb_regno)
 static int
 arc_linux_software_single_step (struct frame_info *frame)
 {
+  struct gdbarch *gdbarch = get_frame_arch (frame);
   CORE_ADDR fall_thru, branch_target;
   CORE_ADDR pc = read_pc ();
   int two_breakpoints = next_pc (pc, &fall_thru, &branch_target);
@@ -670,7 +689,7 @@ arc_linux_software_single_step (struct frame_info *frame)
 	insert_single_step_breakpoint (branch_target);
     }
 
-  return 1;			// returns always true for now
+  return 1;			/* returns always true for now */
 }
 
 
@@ -696,8 +715,8 @@ arc_linux_write_pc (struct regcache *regcache, CORE_ADDR pc)
    * restarted.
    */
 
-  // FIXME: why -3 and not -1? -3 does not appear to be a defined valued for
-  //        orig_r8 (i.e. -2, -1 or >= 0) - perhaps it means "none of these"?
+  /* FIXME: why -3 and not -1? -3 does not appear to be a defined valued for
+            orig_r8 (i.e. -2, -1 or >= 0) - perhaps it means "none of these"? */
   regcache_cooked_write_signed (regcache, ARC_ORIG_R8_REGNUM, -3);
 }
 
@@ -727,25 +746,38 @@ arc_linux_skip_solib_resolver (struct gdbarch *gdbarch, CORE_ADDR pc)
 
   /* lookup_minimal_symbol didn't work, for some reason.  */
   struct symbol *resolver = lookup_symbol_global ("_dl_linux_resolver", 0,
-						  0
-						  /* Makis: Warning added this as API changed in 6.8 */
-						  , VAR_DOMAIN, 0);
+						  0,
+						  /* Makis: Warning added this
+						     as API changed in 6.8 */
+						  VAR_DOMAIN, 0);
 
-  DEBUG ((resolver == NULL) ? "--- %s : pc = %x, no resolver found"
-	 : "--- %s : pc = %x, resolver at %x\n",
-	 __FUNCTION__,
-	 (unsigned int) pc,
-	 (unsigned int) ((resolver == NULL) ? 0 :
-			 BLOCK_START (SYMBOL_BLOCK_VALUE (resolver))));
+  if (arc_debug)
+    {
+      if (resolver)
+	{
+	  CORE_ADDR res_addr = BLOCK_START (SYMBOL_BLOCK_VALUE (resolver));
+	  fprintf_unfiltered (gdb_stdlog, "--- %s : pc = %s, resolver at %s\n",
+			      __FUNCTION__, print_core_address (pc),
+			      print_core_address (res_addr));
+	}
+      else
+	{
+	  fprintf_unfiltered (gdb_stdlog, "--- %s : pc = %s, no resolver found",
+			      __FUNCTION__, print_core_address (pc));
+	}
+    }
 
-  if ((resolver != NULL)
-      && (BLOCK_START (SYMBOL_BLOCK_VALUE (resolver))) == pc)
-    /* find the return address */
-    return frame_pc_unwind (get_current_frame ());
-
-  /* no breakpoint required */
-  return 0;
-}
+  if (resolver && ((BLOCK_START (SYMBOL_BLOCK_VALUE (resolver))) == pc))
+    {
+      /* find the return address */
+      return  gdbarch_unwind_pc (gdbarch, get_current_frame());
+    }
+  else
+    {
+      /* no breakpoint required */
+      return 0;
+    }
+}	/* arc_linux_skip_solib_resolver () */
 
 
 /* Call the right architecture variant's supply_gregset function.  For now, we
@@ -773,10 +805,10 @@ arc_linux_regset_from_core_section (struct gdbarch *core_arch,
 				    const char *sect_name, size_t sect_size)
 {
   static const struct regset arc_linux_gregset = {
-    NULL,			// descr
-    arc_linux_supply_gregset,	// supply_regset
-    NULL,			// collect_regset
-    NULL			// arch
+    NULL,			/* descr */
+    arc_linux_supply_gregset,	/* supply_regset */
+    NULL,			/* collect_regset */
+    NULL			/* arch */
   };
 
   if (strcmp (sect_name, ".reg") == 0)
@@ -808,7 +840,7 @@ arc_linux_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 
   tdep->register_reggroup_p = register_reggroup_p;
 
-  tdep->lowest_pc = 0x74;	// FIXME: why this?
+  tdep->lowest_pc = 0x74;	/* FIXME: why this? */
   tdep->processor_variant_info = NULL;
 
   /* Pass target-dependent info to gdb. */
@@ -853,6 +885,6 @@ _initialize_arc_linux_tdep (void)
    * 'bfd_arch_arc' is an enumeration value specifically denoting the ARC
    *                architecture
    */
-  gdbarch_register_osabi (bfd_arch_arc, 0,	// machine (irrelevant)
+  gdbarch_register_osabi (bfd_arch_arc, 0,	/* machine (irrelevant) */
 			  GDB_OSABI_LINUX, arc_linux_init_abi);
 }

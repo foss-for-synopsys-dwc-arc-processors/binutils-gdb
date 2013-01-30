@@ -464,7 +464,7 @@ arc_print_insn_state (struct arcDisState state)
 static int
 arc_read_memory_for_disassembler (bfd_vma memaddr, bfd_byte *myaddr,
 				  unsigned int length,
-				  struct disassemble_info *info) // unused
+				  struct disassemble_info *info) /* unused */
 {
   return target_read_memory ((CORE_ADDR) memaddr, (gdb_byte *) myaddr,
 			     (int) length);
@@ -1416,7 +1416,7 @@ arc_dwarf2_frame_init_reg (struct gdbarch *gdbarch,
 			   struct dwarf2_frame_state_reg *reg,
 			   struct frame_info *info)
 {
-//  ENTERARGS("Regno no:%d, 0x%x", regnum, (unsigned int) regnum);
+  /*  ENTERARGS("Regno no:%d, 0x%x", regnum, (unsigned int) regnum); */
 
   /* The return address column. */
   if (regnum == ARC_PC_REGNUM)
@@ -1968,7 +1968,7 @@ void
 arc_initialize_disassembler (struct gdbarch *gdbarch, 
 			     struct disassemble_info *info)
 {
-  // N.B. this type cast is not strictly correct: the return types differ!
+  /* N.B. this type cast is not strictly correct: the return types differ! */
   init_disassemble_info (info, gdb_stderr,
 			 (fprintf_ftype) fprintf_unfiltered);
   info->arch = gdbarch_bfd_arch_info (gdbarch)->arch;

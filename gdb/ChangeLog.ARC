@@ -1,5 +1,14 @@
 2013-01-30  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
+	* arc-tdep.c, arc-tdep.h: Corrected C++ style comments throughout.
+	* arc-linux-tdep.c: Corrected C++ style comments throughout.
+	(arc_debug): Added extern declaration.
+	(next_pc): Replace DEBUG macro, updating print structure. Correct
+	argument type for callto regcache_cooked_read_unsigned
+	(arc_linux_skip_solib_resolver). Correct types for printf.
+
+2013-01-30  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
 	* arc-tdep.c (arc_print_frame_info): Use print_core_address to
 	print CORE_ADDR values, use phex for saved addresses.
 	(arc_unwind_pc, arc_unwind_sp): Use CORE_ADDR throughout and
