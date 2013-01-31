@@ -1,5 +1,9 @@
 2013-01-31  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
+	* arc-regnums-defs.h: Deleted.
+
+2013-01-31  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
 	* arc-embed.c: Deleted.
 
 2013-01-31  Jeremy Bennett <jeremy.bennett@embecosm.com>
