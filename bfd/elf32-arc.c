@@ -3253,6 +3253,7 @@ elf32_arc_gc_sweep_hook (bfd *                     abfd,
 #define ELF_ARCH		bfd_arch_arc
 #define ELF_MACHINE_CODE	EM_ARC
 #define ELF_MACHINE_ALT1	EM_ARCOMPACT
+#define ELF_MACHINE_ALT2	EM_ARCOMPACT2
 #define ELF_MAXPAGESIZE		0x2000
 
 #define elf_info_to_howto                    arc_info_to_howto_rel
