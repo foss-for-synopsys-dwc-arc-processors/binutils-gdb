@@ -1,5 +1,15 @@
 2013-01-31  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
+	* arc-gpio.c, arc-gpio.h, arc-jtag-actionpoints.c: Deleted.
+	* arc-jtag-actionpoints.h, arc-jtag-fileio.c: Likewise.
+	* arc-jtag-fileio.h, arc-jtag-ops.c, arc-jtag-ops.h: Likewise.
+	* arc-jtag.c, arc-jtag.h, arc-support.h: Likewise.
+	* arc-elf-tdep.c: Renamed from arc-jtag-tdep.c.
+	* arc-elf-tdep.h: Renamed from arc-jtag-tdep.h.
+	* configure.tgt <arc*-*-*>: Remove redundant files from target.
+
+2013-01-31  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
 	* arc-linux-tdep.c (arcAnalzerInstr, arc_debug): Move extern
 	declarations to header.
 	(arc_get_osabi): Created.
