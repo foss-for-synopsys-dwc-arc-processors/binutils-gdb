@@ -58,10 +58,10 @@
 #define ARC_HW_STATUS32_REGNUM        (ARC_RegisterNumber) 0xA
 
 /* Specific ARCangel aux registers for caches  */
-#define ARC_HW_IC_IVIC_REGNUM         (ARC_RegisterNumber) 0x10     /* invalidate ICache */
-#define ARC_HW_IC_CTRL_REGNUM         (ARC_RegisterNumber) 0x11     /* disable    ICache */
-#define ARC_HW_DC_IVDC_REGNUM         (ARC_RegisterNumber) 0x47     /* invalidate DCache */
-#define ARC_HW_DC_CTRL_REGNUM         (ARC_RegisterNumber) 0x48     /* disable    DCache */
+#define ARC_HW_IC_IVIC_REGNUM         (ARC_RegisterNumber) 0x10	/* invalidate ICache */
+#define ARC_HW_IC_CTRL_REGNUM         (ARC_RegisterNumber) 0x11	/* disable    ICache */
+#define ARC_HW_DC_IVDC_REGNUM         (ARC_RegisterNumber) 0x47	/* invalidate DCache */
+#define ARC_HW_DC_CTRL_REGNUM         (ARC_RegisterNumber) 0x48	/* disable    DCache */
 
 
 #define ARC_HW_AP_BUILD_REGNUM        (ARC_RegisterNumber) 0x76
@@ -104,25 +104,25 @@
 
 typedef enum register_access
 {
-    READ_ONLY,
-    READ_WRITE,
-    WRITE_ONLY
+  READ_ONLY,
+  READ_WRITE,
+  WRITE_ONLY
 } RegisterAccess;
 
 
 struct core_register_definition
 {
-    int            gdb_regno;
-    ARC_Word       mask;
-    RegisterAccess access;
-    Boolean        exists;
+  int gdb_regno;
+  ARC_Word mask;
+  RegisterAccess access;
+  Boolean exists;
 };
 
 
 /* the type 'struct aux_register_definition' is incomplete: it is private to this
  * module
  */
-typedef struct aux_register_definition  ARC_AuxRegisterDefinition;
+typedef struct aux_register_definition ARC_AuxRegisterDefinition;
 typedef struct core_register_definition ARC_CoreRegisterDefinition;
 
 
@@ -131,18 +131,19 @@ typedef struct core_register_definition ARC_CoreRegisterDefinition;
  */
 typedef struct _register_info
 {
-    ARC_ProcessorVersion       processor;
-    ARC_AuxRegisterDefinition* aux_registers;
-    unsigned int               aux_register_count;
-    int                        first_aux_gdb_regno;
-    unsigned int               max_name_length;
-    int                        PC_number;
-    ARC_CoreRegisterDefinition core_registers[ARC_MAX_CORE_REGS];
-    unsigned int               core_register_count;
+  ARC_ProcessorVersion processor;
+  ARC_AuxRegisterDefinition *aux_registers;
+  unsigned int aux_register_count;
+  int first_aux_gdb_regno;
+  unsigned int max_name_length;
+  int PC_number;
+  ARC_CoreRegisterDefinition core_registers[ARC_MAX_CORE_REGS];
+  unsigned int core_register_count;
 } ARC_RegisterInfo;
 
 
-typedef void (*ARC_AuxRegisterFunction)(ARC_AuxRegisterDefinition* def, void* data);
+typedef void (*ARC_AuxRegisterFunction) (ARC_AuxRegisterDefinition * def,
+					 void *data);
 
 
 extern Boolean arc_pending_register_architecture_change_event;
@@ -150,86 +151,89 @@ extern Boolean arc_pending_register_architecture_change_event;
 
 /* initialization functions */
 
-void _initialize_arc_aux_regs(void);
+void _initialize_arc_aux_regs (void);
 
-void arc_initialize_aux_reg_info(ARC_RegisterInfo* info);
+void arc_initialize_aux_reg_info (ARC_RegisterInfo * info);
 
-void arc_read_default_aux_registers(struct gdbarch* gdbarch);
+void arc_read_default_aux_registers (struct gdbarch *gdbarch);
 
 
 /* PC-related functions */
 
-void arc_aux_pc_guard        (struct gdbarch* gdbarch);
+void arc_aux_pc_guard (struct gdbarch *gdbarch);
 
-void arc_aux_check_pc_defined(struct gdbarch* gdbarch);
+void arc_aux_check_pc_defined (struct gdbarch *gdbarch);
 
-int  arc_aux_pc_number       (struct gdbarch* gdbarch);
+int arc_aux_pc_number (struct gdbarch *gdbarch);
 
 
 /* output functions */
 
-void arc_print_aux_register(ARC_AuxRegisterDefinition* def,
-                            ARC_RegisterContents       contents);
+void arc_print_aux_register (ARC_AuxRegisterDefinition * def,
+			     ARC_RegisterContents contents);
 
 
 /* search functions */
 
-ARC_AuxRegisterDefinition* arc_find_aux_register_by_name      (const char* name);
+ARC_AuxRegisterDefinition *arc_find_aux_register_by_name (const char *name);
 
-ARC_AuxRegisterDefinition* arc_find_aux_register_by_gdb_number(int gdb_regno);
+ARC_AuxRegisterDefinition *arc_find_aux_register_by_gdb_number (int gdb_regno);
 
-ARC_AuxRegisterDefinition* arc_find_aux_register_by_hw_number (ARC_RegisterNumber hw_regno);
+ARC_AuxRegisterDefinition
+  * arc_find_aux_register_by_hw_number (ARC_RegisterNumber hw_regno);
 
-ARC_RegisterNumber      arc_aux_find_register_number(const char*        name,
-                                                     ARC_RegisterNumber defaultNumber);
+ARC_RegisterNumber arc_aux_find_register_number (const char *name,
+						 ARC_RegisterNumber
+						 defaultNumber);
 
-ARC_RegisterNumber      arc_core_register_number(int gdb_regno);
+ARC_RegisterNumber arc_core_register_number (int gdb_regno);
 
-int                     arc_core_register_gdb_number(ARC_RegisterNumber hw_regno);
+int arc_core_register_gdb_number (ARC_RegisterNumber hw_regno);
 
-const char*             arc_aux_register_name_of(ARC_RegisterNumber hw_regno);
+const char *arc_aux_register_name_of (ARC_RegisterNumber hw_regno);
 
-Boolean                 arc_is_core_register(int gdb_regno);
+Boolean arc_is_core_register (int gdb_regno);
 
 
 /* accessor functions */
 
-int                arc_aux_gdb_register_number(ARC_AuxRegisterDefinition* def);
+int arc_aux_gdb_register_number (ARC_AuxRegisterDefinition * def);
 
-ARC_RegisterNumber arc_aux_hw_register_number (ARC_AuxRegisterDefinition* def);
+ARC_RegisterNumber arc_aux_hw_register_number (ARC_AuxRegisterDefinition * def);
 
-RegisterAccess     arc_aux_register_access    (ARC_AuxRegisterDefinition* def);
+RegisterAccess arc_aux_register_access (ARC_AuxRegisterDefinition * def);
 
-Boolean            arc_aux_is_unused          (ARC_AuxRegisterDefinition* def);
+Boolean arc_aux_is_unused (ARC_AuxRegisterDefinition * def);
 
-Boolean            arc_aux_is_BCR             (ARC_AuxRegisterDefinition* def);
+Boolean arc_aux_is_BCR (ARC_AuxRegisterDefinition * def);
 
-const char*        arc_aux_register_name      (ARC_AuxRegisterDefinition* def);
+const char *arc_aux_register_name (ARC_AuxRegisterDefinition * def);
 
-RegisterAccess     arc_core_register_access   (ARC_RegisterNumber regno);
+RegisterAccess arc_core_register_access (ARC_RegisterNumber regno);
 
 
 /* iterator/summary functions */
 
-void arc_all_aux_registers(ARC_AuxRegisterFunction function, void* data);
+void arc_all_aux_registers (ARC_AuxRegisterFunction function, void *data);
 
-unsigned int         arc_aux_register_max_name_length(void);
+unsigned int arc_aux_register_max_name_length (void);
 
-unsigned int         arc_aux_register_count           (struct gdbarch* gdbarch);
+unsigned int arc_aux_register_count (struct gdbarch *gdbarch);
 
-unsigned int         arc_core_register_count          (struct gdbarch* gdbarch);
+unsigned int arc_core_register_count (struct gdbarch *gdbarch);
 
-Boolean              arc_aux_regs_defined             (struct gdbarch* gdbarch);
+Boolean arc_aux_regs_defined (struct gdbarch *gdbarch);
 
-int                  arc_first_aux_gdb_register_number(struct gdbarch* gdbarch);
+int arc_first_aux_gdb_register_number (struct gdbarch *gdbarch);
 
-ARC_ProcessorVersion arc_aux_architecture             (struct gdbarch* gdbarch);
+ARC_ProcessorVersion arc_aux_architecture (struct gdbarch *gdbarch);
 
 /* register contents conversion functions */
 
-ARC_RegisterContents arc_write_value(ARC_AuxRegisterDefinition* def, ARC_RegisterContents value);
+ARC_RegisterContents arc_write_value (ARC_AuxRegisterDefinition * def,
+				      ARC_RegisterContents value);
 
-void arc_convert_aux_contents_for_write(int gdb_regno, void* buffer);
+void arc_convert_aux_contents_for_write (int gdb_regno, void *buffer);
 
 
 #endif /* ARC_AUX_REGISTERS_H */
