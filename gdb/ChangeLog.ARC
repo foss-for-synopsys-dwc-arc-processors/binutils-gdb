@@ -1,5 +1,10 @@
 2013-01-31  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
+	* arc-architecture.c, ac-architecture.h: Deleted.
+	* configure.tgt <arc*-*-*>: Remove redundant files from target.
+
+2013-01-31  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
 	* arc-linux-tdep.c, arc-linux-tdep.h, arc-tdep.c: Make
 	non-executable.
 	* arc-architecture.c, arc-elf-tdep.c: Format to
