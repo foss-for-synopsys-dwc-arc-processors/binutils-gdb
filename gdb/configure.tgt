@@ -87,9 +87,8 @@ arc*-*-linux*)
 
 arc*-*-*)
 	# Target: ARC elf32 based target
-	gdb_target_obs="arc-embed.o arc-jtag.o arc-jtag-tdep.o arc-jtag-ops.o \
-			arc-jtag-actionpoints.o arc-jtag-fileio.o \
-			arc-aux-registers.o arc-architecture.o arc-board.o arc-gpio.o"
+	gdb_target_obs="arc-tdep.o arc-jtag-tdep.o arc-aux-registers.o \
+	                arc-architecture.o arc-board.o"
 	gdb_sim=../sim/arc/libsim.a
 	;;
 
