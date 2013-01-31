@@ -1,5 +1,9 @@
 2013-01-31  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
+	* arc-embed.c: Deleted.
+
+2013-01-31  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
 	* arc-gpio.c, arc-gpio.h, arc-jtag-actionpoints.c: Deleted.
 	* arc-jtag-actionpoints.h, arc-jtag-fileio.c: Likewise.
 	* arc-jtag-fileio.h, arc-jtag-ops.c, arc-jtag-ops.h: Likewise.
