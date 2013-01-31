@@ -1,3 +1,13 @@
+2013-01-31  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	* arc-linux-tdep.c (arcAnalzerInstr, arc_debug): Move extern
+	declarations to header.
+	(arc_get_osabi): Created.
+	* arc-tdep.c: Minor tidying up of comments and layout,
+	(arc_gdb_init): Set info.osabi using arc_get_osabi.
+	* arc-tdep.h (arcAnalzerInstr, arc_debug, arc_get_osabi): Add
+	extern declarations.
+
 2013-01-30  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* arc-tdep.c (arc_dummy_disassembler): Created.

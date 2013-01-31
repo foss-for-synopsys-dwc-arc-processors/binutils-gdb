@@ -217,18 +217,6 @@ static const int arc_linux_core_reg_offsets[ARC_NR_REGS] = {
 
 
 /* -------------------------------------------------------------------------- */
-/*		  External functions and variables used here                  */
-/* -------------------------------------------------------------------------- */
-
-/* From opcodes/arcompact-dis.h. */
-extern struct arcDisState arcAnalyzeInstr (bfd_vma address,
-					   disassemble_info * info);
-
-/* From arc-tdep.c */
-extern int arc_debug;
-
-
-/* -------------------------------------------------------------------------- */
 /*                               local macros                                 */
 /* -------------------------------------------------------------------------- */
 
@@ -865,6 +853,17 @@ arc_linux_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 /* -------------------------------------------------------------------------- */
 /*                               externally visible functions                 */
 /* -------------------------------------------------------------------------- */
+
+/*! Function to identify the OSABI to be used.
+
+    Every target variant must define this appropriately. */
+enum gdb_osabi
+arc_get_osabi (void)
+{
+  return  GDB_OSABI_LINUX;
+
+}	/* arc_get_osabi () */
+
 
 void
 _initialize_arc_linux_tdep (void)
