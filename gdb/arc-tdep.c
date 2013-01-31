@@ -1887,10 +1887,9 @@ arc_print_float_info (struct gdbarch *gdbarch, struct ui_file *file,
 }
 
 
-/* this initialization function is called by gdb
- *
- * see gdbarch.h for a description of its parameters
- */
+/*! Initialize GDB
+
+    See gdbarch.h for a description of the functions called. */
 static struct gdbarch *
 arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 {
@@ -1956,11 +1955,11 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   frame_unwind_append_unwinder (gdbarch, &arc_frame_unwind);
   frame_base_append_sniffer (gdbarch, dwarf2_frame_base_sniffer);
   frame_base_append_sniffer (gdbarch, arc_sigtramp_frame_base_sniffer);
-frame_base_append_sniffer (gdbarch, arc_frame_base_sniffer);
+  frame_base_append_sniffer (gdbarch, arc_frame_base_sniffer);
   
   /* Put OS specific stuff into gdbarch. This can override any of the generic
      ones specified above. */
-  info.osabi = GDB_OSABI_LINUX;
+  info.osabi = arc_get_osabi ();
   gdbarch_init_osabi (info, gdbarch);
 
   return gdbarch;			/* Newly created architecture. */
