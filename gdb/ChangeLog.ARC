@@ -1,5 +1,16 @@
 2013-01-31  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
+	* arc-linux-tdep.c, arc-linux-tdep.h, arc-tdep.c: Make
+	non-executable.
+	* arc-architecture.c, arc-elf-tdep.c: Format to
+	GNU standard with indent and make non-executable.
+	* arc-architecture.h, arc-aux-registers.c: Format to GNU standard
+	with indent.
+	* arc-aux-registers.h, arc-board.c, arc-board.h: Likewise.
+	* arc-elf-tdep.h: Likewise.
+
+2013-01-31  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
 	* arc-regnums-defs.h: Deleted.
 
 2013-01-31  Jeremy Bennett <jeremy.bennett@embecosm.com>
