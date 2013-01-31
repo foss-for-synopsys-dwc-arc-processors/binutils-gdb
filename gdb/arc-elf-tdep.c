@@ -102,9 +102,9 @@
 
 typedef struct
 {
-    struct gdbarch    *gdbarch;
-    struct ui_file    *file;
-    struct frame_info *frame;
+  struct gdbarch *gdbarch;
+  struct ui_file *file;
+  struct frame_info *frame;
 } PrintData;
 
 
@@ -131,31 +131,30 @@ static const unsigned char breakpoint_instruction[] = { 0xff, 0x7f };
  *      will warn of "excess elements in array initializer" if there is a
  *      mismatch (but not of too few elements, unfortunately!).
  */
-static const char* register_names[ARC_MAX_CORE_REGS] =
-{
-    "r0",  "r1",  "r2",  "r3",  "r4",  "r5",  "r6",
-    "r7",  "r8",  "r9",  "r10", "r11", "r12", "r13",
-    "r14", "r15", "r16", "r17", "r18", "r19", "r20",
-    "r21", "r22", "r23", "r24", "r25", "r26",
+static const char *register_names[ARC_MAX_CORE_REGS] = {
+  "r0", "r1", "r2", "r3", "r4", "r5", "r6",
+  "r7", "r8", "r9", "r10", "r11", "r12", "r13",
+  "r14", "r15", "r16", "r17", "r18", "r19", "r20",
+  "r21", "r22", "r23", "r24", "r25", "r26",
 
-    "fp",      // r27
-    "sp",      // r28
-    "ilink1",  // r29
-    "ilink2",  // r30
-    "blink",   // r31
+  "fp",				// r27
+  "sp",				// r28
+  "ilink1",			// r29
+  "ilink2",			// r30
+  "blink",			// r31
 
-    /* Extension core registers are 32 .. 59 inclusive. */
-    "r32", "r33", "r34", "r35", "r36", "r37", "r38", "r39",
-    "r40", "r41", "r42", "r43", "r44", "r45", "r46", "r47", "r48", "r49",
-    "r50", "r51", "r52", "r53", "r54", "r55", "r56", "r57", "r58", "r59",
+  /* Extension core registers are 32 .. 59 inclusive. */
+  "r32", "r33", "r34", "r35", "r36", "r37", "r38", "r39",
+  "r40", "r41", "r42", "r43", "r44", "r45", "r46", "r47", "r48", "r49",
+  "r50", "r51", "r52", "r53", "r54", "r55", "r56", "r57", "r58", "r59",
 
-    "lp_count",
+  "lp_count",
 
-    /* 61 is reserved, 62 is not a real register. */
-    "r61",
-    "r62",
+  /* 61 is reserved, 62 is not a real register. */
+  "r61",
+  "r62",
 
-    "pcl"
+  "pcl"
 };
 
 
@@ -192,22 +191,24 @@ static const char* register_names[ARC_MAX_CORE_REGS] =
 /*                               local functions                              */
 /* -------------------------------------------------------------------------- */
 
-static void create_variant_info(struct gdbarch_tdep* tdep)
+static void
+create_variant_info (struct gdbarch_tdep *tdep)
 {
-    tdep->processor_variant_info = xmalloc(sizeof(ARC_VariantsInfo));
-    tdep->processor_variant_info->processor_version = NO_ARCHITECTURE;
+  tdep->processor_variant_info = xmalloc (sizeof (ARC_VariantsInfo));
+  tdep->processor_variant_info->processor_version = NO_ARCHITECTURE;
 
-    arc_initialize_aux_reg_info(&tdep->processor_variant_info->registers);
+  arc_initialize_aux_reg_info (&tdep->processor_variant_info->registers);
 }
 
 
 /* this is a callback function which gets called by gdb whenever the current
  * object file changes
  */
-static void check_architecture(struct objfile* objfile)
+static void
+check_architecture (struct objfile *objfile)
 {
-    if (objfile)
-        arc_check_architecture(current_gdbarch, objfile->obfd);
+  if (objfile)
+    arc_check_architecture (current_gdbarch, objfile->obfd);
 }
 
 
@@ -219,196 +220,197 @@ static void check_architecture(struct objfile* objfile)
 static int
 register_reggroup_p (int regnum, struct reggroup *group)
 {
-    gdb_assert(regnum >= 0);
+  gdb_assert (regnum >= 0);
 
-    /* Save/restore:
-     *    1. all standard core regs, except PCL (PCL is not writable)
-     *    2. those extension core regs which are read/write
-     *    3. aux regs LP_START  .. LP_END (IDENTITY is not writable)
-     *    4. aux regs PC_REGNUM .. STATUS32_L2
-     *    5. aux regs ERET      .. EFA
-     */
+  /* Save/restore:
+   *    1. all standard core regs, except PCL (PCL is not writable)
+   *    2. those extension core regs which are read/write
+   *    3. aux regs LP_START  .. LP_END (IDENTITY is not writable)
+   *    4. aux regs PC_REGNUM .. STATUS32_L2
+   *    5. aux regs ERET      .. EFA
+   */
 
-    if (arc_is_core_register(regnum))
+  if (arc_is_core_register (regnum))
     {
-        ARC_RegisterNumber hw_num = arc_core_register_number(regnum);
+      ARC_RegisterNumber hw_num = arc_core_register_number (regnum);
 
-        /* r61 and r62 are reserved; they are not in any reggroup */
-        if (hw_num == 61 || hw_num == 62)
-              return 0;
+      /* r61 and r62 are reserved; they are not in any reggroup */
+      if (hw_num == 61 || hw_num == 62)
+	return 0;
 
-        if ((group == save_reggroup || group == restore_reggroup))
-        {
-            if (IS_EXTENSION_CORE_REGISTER(hw_num))
-                return (arc_core_register_access(hw_num) == READ_WRITE) ? 1 : 0;
+      if ((group == save_reggroup || group == restore_reggroup))
+	{
+	  if (IS_EXTENSION_CORE_REGISTER (hw_num))
+	    return (arc_core_register_access (hw_num) == READ_WRITE) ? 1 : 0;
 
-            return (hw_num == ARC_PCL_REGNUM) ? 0 : 1;
-        }
+	  return (hw_num == ARC_PCL_REGNUM) ? 0 : 1;
+	}
 
-        if (group == general_reggroup)
-            return 1;
+      if (group == general_reggroup)
+	return 1;
     }
-    else
+  else
     {
 #define REGISTER_NAME_IS(ident)    (strcasecmp(name, ident) == 0)
 
-        ARC_AuxRegisterDefinition* def = arc_find_aux_register_by_gdb_number(regnum);
+      ARC_AuxRegisterDefinition *def =
+	arc_find_aux_register_by_gdb_number (regnum);
 
-        if (def)
-        {
-            const char* name = arc_aux_register_name(def);
+      if (def)
+	{
+	  const char *name = arc_aux_register_name (def);
 
-            if (arc_aux_is_unused(def))
-                return 0;
-     
-            if ((group == save_reggroup || group == restore_reggroup))
-            {
-                if (arc_aux_register_access(def) != READ_WRITE)
-                    return 0;
-            }
+	  if (arc_aux_is_unused (def))
+	    return 0;
 
-            /* Which regs to save/restore? */
-            if ((group == save_reggroup || group == restore_reggroup))
-            {
-                return (REGISTER_NAME_IS("LP_START")    ||
-                        REGISTER_NAME_IS("LP_END")      ||
-                        REGISTER_NAME_IS("PC")          ||
-                        REGISTER_NAME_IS("STATUS32")    ||
-                        REGISTER_NAME_IS("STATUS32_L1") ||
-                        REGISTER_NAME_IS("STATUS32_L2") ||
-                        REGISTER_NAME_IS("ERET")        ||
-                        REGISTER_NAME_IS("ERBTA")       ||
-                        REGISTER_NAME_IS("ERSTATUS")    ||
-                        REGISTER_NAME_IS("ECR")         ||
-                        REGISTER_NAME_IS("EFA")) ? 1 : 0;
-            }
+	  if ((group == save_reggroup || group == restore_reggroup))
+	    {
+	      if (arc_aux_register_access (def) != READ_WRITE)
+		return 0;
+	    }
 
-            if (group == general_reggroup)
-                return (REGISTER_NAME_IS("STATUS32")) ? 0 : 1;
+	  /* Which regs to save/restore? */
+	  if ((group == save_reggroup || group == restore_reggroup))
+	    {
+	      return (REGISTER_NAME_IS ("LP_START") ||
+		      REGISTER_NAME_IS ("LP_END") ||
+		      REGISTER_NAME_IS ("PC") ||
+		      REGISTER_NAME_IS ("STATUS32") ||
+		      REGISTER_NAME_IS ("STATUS32_L1") ||
+		      REGISTER_NAME_IS ("STATUS32_L2") ||
+		      REGISTER_NAME_IS ("ERET") ||
+		      REGISTER_NAME_IS ("ERBTA") ||
+		      REGISTER_NAME_IS ("ERSTATUS") ||
+		      REGISTER_NAME_IS ("ECR") ||
+		      REGISTER_NAME_IS ("EFA")) ? 1 : 0;
+	    }
 
-            if (group == system_reggroup)
-            {
-                return (REGISTER_NAME_IS("SEMAPHORE")            ||
-		        REGISTER_NAME_IS("STATUS32_L1")          ||
-		        REGISTER_NAME_IS("STATUS32_L2")          ||
-                        REGISTER_NAME_IS("AUX_IRQ_LV12")         ||
-                        REGISTER_NAME_IS("AUX_IRQ_LEV")          ||
-                        REGISTER_NAME_IS("AUX_IRQ_HINT")         ||
-                        REGISTER_NAME_IS("ERET")                 ||
-                        REGISTER_NAME_IS("ERBTA")                ||
-                        REGISTER_NAME_IS("ERSTATUS")             ||
-                        REGISTER_NAME_IS("ECR")                  ||
-                        REGISTER_NAME_IS("EFA")                  ||
-                        REGISTER_NAME_IS("ICAUSE1")              ||
-                        REGISTER_NAME_IS("ICAUSE2")              ||
-                        REGISTER_NAME_IS("AUX_IENABLE")          ||
-                        REGISTER_NAME_IS("AUX_ITRIGGER")         ||
-                        REGISTER_NAME_IS("BTA_L1")               ||
-                        REGISTER_NAME_IS("BTA_L2")               ||
-                        REGISTER_NAME_IS("AUX_IRQ_PULSE_CANCEL") ||
-                        REGISTER_NAME_IS("AUX_IRQ_PENDING")) ? 1 : 0;
-            }
-        }
+	  if (group == general_reggroup)
+	    return (REGISTER_NAME_IS ("STATUS32")) ? 0 : 1;
+
+	  if (group == system_reggroup)
+	    {
+	      return (REGISTER_NAME_IS ("SEMAPHORE") ||
+		      REGISTER_NAME_IS ("STATUS32_L1") ||
+		      REGISTER_NAME_IS ("STATUS32_L2") ||
+		      REGISTER_NAME_IS ("AUX_IRQ_LV12") ||
+		      REGISTER_NAME_IS ("AUX_IRQ_LEV") ||
+		      REGISTER_NAME_IS ("AUX_IRQ_HINT") ||
+		      REGISTER_NAME_IS ("ERET") ||
+		      REGISTER_NAME_IS ("ERBTA") ||
+		      REGISTER_NAME_IS ("ERSTATUS") ||
+		      REGISTER_NAME_IS ("ECR") ||
+		      REGISTER_NAME_IS ("EFA") ||
+		      REGISTER_NAME_IS ("ICAUSE1") ||
+		      REGISTER_NAME_IS ("ICAUSE2") ||
+		      REGISTER_NAME_IS ("AUX_IENABLE") ||
+		      REGISTER_NAME_IS ("AUX_ITRIGGER") ||
+		      REGISTER_NAME_IS ("BTA_L1") ||
+		      REGISTER_NAME_IS ("BTA_L2") ||
+		      REGISTER_NAME_IS ("AUX_IRQ_PULSE_CANCEL") ||
+		      REGISTER_NAME_IS ("AUX_IRQ_PENDING")) ? 1 : 0;
+	    }
+	}
     }
 
-    /* let the caller sort it out! */
-    return -1;
+  /* let the caller sort it out! */
+  return -1;
 }
 
 
-static void memory_range_command(char*       arg,
-                                 int         from_tty,
-                                 Boolean     is_watchpoint,
-                                 const char* command,
-                                 const char* usage)
+static void
+memory_range_command (char *arg,
+		      int from_tty,
+		      Boolean is_watchpoint,
+		      const char *command, const char *usage)
 {
-    char                  *length_arg;
-    unsigned int           start;
-    int                    length;
-    enum target_hw_bp_type type;
+  char *length_arg;
+  unsigned int start;
+  int length;
+  enum target_hw_bp_type type;
 
-    if (!arg)
+  if (!arg)
     {
-        printf_filtered (_("%s"), usage);
-        return;
+      printf_filtered (_("%s"), usage);
+      return;
     }
 
-    length_arg = strchr(arg, ' ');
+  length_arg = strchr (arg, ' ');
 
-    if (!length_arg)
+  if (!length_arg)
     {
-        printf_filtered (_("%s : no second argument\n%s"), command, usage);
-        return;
+      printf_filtered (_("%s : no second argument\n%s"), command, usage);
+      return;
     }
 
-    /* split up the input string */
-    length_arg[0] = (char) 0;
+  /* split up the input string */
+  length_arg[0] = (char) 0;
+  length_arg++;
+  while (*length_arg == ' ')
     length_arg++;
-    while (*length_arg == ' ') length_arg++;
 
-    if (is_watchpoint)
+  if (is_watchpoint)
     {
-        char* access_arg = strchr(length_arg, ' ');
+      char *access_arg = strchr (length_arg, ' ');
 
-        if (access_arg)
-        {
-            /* split up the input string */
-            access_arg[0] = (char) 0;
-            access_arg++;
-            while (*access_arg == ' ') access_arg++;
+      if (access_arg)
+	{
+	  /* split up the input string */
+	  access_arg[0] = (char) 0;
+	  access_arg++;
+	  while (*access_arg == ' ')
+	    access_arg++;
 
-            if (strcmp(access_arg, "read") == 0)
-                type = hw_read;
-            else if (strcmp(access_arg, "write") == 0)
-                type = hw_write;
-            else if (strcmp(access_arg, "access") == 0)
-                type = hw_access;
-            else
-            {
-                printf_filtered (_("%s: invalid type '%s'\n%s"), command, access_arg, usage);
-                return;
-            }
-        }
-        else
-            // write by default
-            type = hw_write;
+	  if (strcmp (access_arg, "read") == 0)
+	    type = hw_read;
+	  else if (strcmp (access_arg, "write") == 0)
+	    type = hw_write;
+	  else if (strcmp (access_arg, "access") == 0)
+	    type = hw_access;
+	  else
+	    {
+	      printf_filtered (_("%s: invalid type '%s'\n%s"), command,
+			       access_arg, usage);
+	      return;
+	    }
+	}
+      else
+	// write by default
+	type = hw_write;
     }
-    else
-        type = hw_execute;
+  else
+    type = hw_execute;
 
-    /* from address expression */
-    EXTRACT(arg, unsigned int, start)  
-
+  /* from address expression */
+  EXTRACT (arg, unsigned int, start)
     /* length expression */
-    EXTRACT(length_arg, int, length)  
-
-    if (length <= 0)
+    EXTRACT (length_arg, int, length) if (length <= 0)
     {
-        warning(_("%s: %s <= 0"), command, length_arg);
-        return;
+      warning (_("%s: %s <= 0"), command, length_arg);
+      return;
     }
 
-    DEBUG("try to set %u breakpoint at 0x%08X length %d bytes\n",
-          type, start, length);
+  DEBUG ("try to set %u breakpoint at 0x%08X length %d bytes\n",
+	 type, start, length);
 
-    watch_range_command(start, (unsigned int) length, type, from_tty);
+  watch_range_command (start, (unsigned int) length, type, from_tty);
 
-    // although the call to insert_breakpoints would result in an error message
-    // if the range breakpoint could not be set, the breakpoint would still be
-    // entered into gdb's breakpoint table, and displayed by the 'info break'
-    // command - that would be even more confusng to the user!
+  // although the call to insert_breakpoints would result in an error message
+  // if the range breakpoint could not be set, the breakpoint would still be
+  // entered into gdb's breakpoint table, and displayed by the 'info break'
+  // command - that would be even more confusng to the user!
 
 #if 0
-    /* gdb manages breakpoints by deleting them from the target as soon as it
-     * has halted, then re-inserting them again immediately before execution is
-     * resumed (no, I don't know why either, unless it is to make generating a
-     * disassembly display easier by removing all the s/w b/ps from the code) -
-     * so in order to display what actionpoints are currently in use, we must
-     * temporarily re-insert the breakpoints!
-     */
-    insert_breakpoints();
-    arc_display_actionpoints();
-    remove_breakpoints();
+  /* gdb manages breakpoints by deleting them from the target as soon as it
+   * has halted, then re-inserting them again immediately before execution is
+   * resumed (no, I don't know why either, unless it is to make generating a
+   * disassembly display easier by removing all the s/w b/ps from the code) -
+   * so in order to display what actionpoints are currently in use, we must
+   * temporarily re-insert the breakpoints!
+   */
+  insert_breakpoints ();
+  arc_display_actionpoints ();
+  remove_breakpoints ();
 #endif
 }
 
@@ -417,14 +419,16 @@ static void memory_range_command(char*       arg,
 /*                        local functions called from gdb                     */
 /* -------------------------------------------------------------------------- */
 
-static void print_one_aux_register(ARC_AuxRegisterDefinition* def, void* data)
+static void
+print_one_aux_register (ARC_AuxRegisterDefinition * def, void *data)
 {
-    if (!arc_aux_is_unused(def))
+  if (!arc_aux_is_unused (def))
     {
-        PrintData* p      = (PrintData*) data;
-        int        regnum = arc_aux_gdb_register_number(def);
+      PrintData *p = (PrintData *) data;
+      int regnum = arc_aux_gdb_register_number (def);
 
-        default_print_registers_info (p->gdbarch, p->file, p->frame, regnum, TRUE);
+      default_print_registers_info (p->gdbarch, p->file, p->frame, regnum,
+				    TRUE);
     }
 }
 
@@ -435,84 +439,86 @@ static void print_one_aux_register(ARC_AuxRegisterDefinition* def, void* data)
  *      different GDB register numbers in the arc-elf32 and arc-linux-uclibc
  *      configurations of the ARC gdb.
  */
-static int arc_jtag_binutils_reg_to_regnum (struct gdbarch *gdbarch, int reg)
+static int
+arc_jtag_binutils_reg_to_regnum (struct gdbarch *gdbarch, int reg)
 {
-    return arc_core_register_gdb_number((ARC_RegisterNumber) reg);
+  return arc_core_register_gdb_number ((ARC_RegisterNumber) reg);
 }
 
 
 static void
-arc_jtag_print_registers_info (struct gdbarch    *gdbarch,
-                               struct ui_file    *file,
-                               struct frame_info *frame,
-                               int                regnum,
-                               int                all)
+arc_jtag_print_registers_info (struct gdbarch *gdbarch,
+			       struct ui_file *file,
+			       struct frame_info *frame, int regnum, int all)
 {
-    if (regnum >= 0)
-        PRINT(regnum);
-    else
+  if (regnum >= 0)
+    PRINT (regnum);
+  else
     /* if regnum < 0, print registers */
     {
-        /* r32 .. r59 are the extension core registers, r61 and r62 are reserved */
+      /* r32 .. r59 are the extension core registers, r61 and r62 are reserved */
 
-        /* r0 .. r26 */
-        for (regnum = 0; regnum <= 26; regnum++) PRINT_HW ((ARC_RegisterNumber) regnum);
+      /* r0 .. r26 */
+      for (regnum = 0; regnum <= 26; regnum++)
+	PRINT_HW ((ARC_RegisterNumber) regnum);
 
-        PRINT_HW (ARC_FP_REGNUM      );    // r27
-        PRINT_HW (ARC_SP_REGNUM      );    // r28
-        PRINT_HW (ARC_ILINK1_REGNUM  );    // r29
-        PRINT_HW (ARC_ILINK2_REGNUM  );    // r30
-        PRINT_HW (ARC_BLINK_REGNUM   );    // r31
-        PRINT_HW (ARC_LP_COUNT_REGNUM);    // r60
-        PRINT_HW (ARC_PCL_REGNUM     );    // r63
+      PRINT_HW (ARC_FP_REGNUM);	// r27
+      PRINT_HW (ARC_SP_REGNUM);	// r28
+      PRINT_HW (ARC_ILINK1_REGNUM);	// r29
+      PRINT_HW (ARC_ILINK2_REGNUM);	// r30
+      PRINT_HW (ARC_BLINK_REGNUM);	// r31
+      PRINT_HW (ARC_LP_COUNT_REGNUM);	// r60
+      PRINT_HW (ARC_PCL_REGNUM);	// r63
 
-        if (all)
-        {
-            PrintData data = {gdbarch, file, frame};
+      if (all)
+	{
+	  PrintData data = { gdbarch, file, frame };
 
-            arc_all_aux_registers(print_one_aux_register, &data);
-        }
-        else
-        {
-            PRINT_BY_NAME ("LP_START"   );
-            PRINT_BY_NAME ("LP_END"     );
-            PRINT_BY_NAME ("STATUS32"   );
-            PRINT_BY_NAME ("BTA"        );
-            PRINT_BY_NAME ("EFA"        );
-            PRINT_BY_NAME ("ERET"       );
-            PRINT_BY_NAME ("STATUS32_L1");
-            PRINT_BY_NAME ("STATUS32_L2");
-            PRINT_BY_NAME ("ERSTATUS"   );
-            PRINT_BY_NAME ("PC"         );
-        }
+	  arc_all_aux_registers (print_one_aux_register, &data);
+	}
+      else
+	{
+	  PRINT_BY_NAME ("LP_START");
+	  PRINT_BY_NAME ("LP_END");
+	  PRINT_BY_NAME ("STATUS32");
+	  PRINT_BY_NAME ("BTA");
+	  PRINT_BY_NAME ("EFA");
+	  PRINT_BY_NAME ("ERET");
+	  PRINT_BY_NAME ("STATUS32_L1");
+	  PRINT_BY_NAME ("STATUS32_L2");
+	  PRINT_BY_NAME ("ERSTATUS");
+	  PRINT_BY_NAME ("PC");
+	}
     }
 }
 
 
 /* return the name of the given register */
-static const char*
+static const char *
 arc_jtag_register_name (struct gdbarch *gdbarch, int gdb_regno)
 {
-    if (gdb_regno >= 0)
+  if (gdb_regno >= 0)
     {
-        if (arc_is_core_register(gdb_regno))
-        {
-            ARC_RegisterNumber hw_num = arc_core_register_number(gdb_regno);
+      if (arc_is_core_register (gdb_regno))
+	{
+	  ARC_RegisterNumber hw_num = arc_core_register_number (gdb_regno);
 
-            if (hw_num < ELEMENTS_IN_ARRAY(register_names))
-                return register_names[hw_num];
-        }
-        else
-        {
-            ARC_AuxRegisterDefinition* def = arc_find_aux_register_by_gdb_number(gdb_regno);
+	  if (hw_num < ELEMENTS_IN_ARRAY (register_names))
+	    return register_names[hw_num];
+	}
+      else
+	{
+	  ARC_AuxRegisterDefinition *def =
+	    arc_find_aux_register_by_gdb_number (gdb_regno);
 
-            /* if it is an aux register */
-            if (def)
-                return arc_aux_register_name(def);
-        }
+	  /* if it is an aux register */
+	  if (def)
+	    return arc_aux_register_name (def);
+	}
     }
 
-    internal_error(__FILE__, __LINE__, _("Invalid register number: %d"), gdb_regno);
+  internal_error (__FILE__, __LINE__, _("Invalid register number: %d"),
+		  gdb_regno);
 }
 
 
@@ -520,25 +526,27 @@ arc_jtag_register_name (struct gdbarch *gdbarch, int gdb_regno)
 static int
 arc_jtag_cannot_store_register (struct gdbarch *gdbarch, int gdb_regno)
 {
-    ARC_AuxRegisterDefinition* def = arc_find_aux_register_by_gdb_number(gdb_regno);
+  ARC_AuxRegisterDefinition *def =
+    arc_find_aux_register_by_gdb_number (gdb_regno);
 
-   /* No warning should be printed.  arc_cannot_store_register being
-      called does not imply that someone is actually writing to regnum.  */
+  /* No warning should be printed.  arc_cannot_store_register being
+     called does not imply that someone is actually writing to regnum.  */
 
-    /* if it is an aux register */
-    if (def)
-        return (arc_aux_register_access(def) == READ_ONLY) ? 1 : 0;
+  /* if it is an aux register */
+  if (def)
+    return (arc_aux_register_access (def) == READ_ONLY) ? 1 : 0;
 
-    return 0;
+  return 0;
 }
 
 
 /* arc-break-range <start> <length>
    Set hardware breakpoint at address START covering LENGTH bytes. */
 static void
-arc_jtag_break_memory_command(char *arg, int from_tty)
+arc_jtag_break_memory_command (char *arg, int from_tty)
 {
-    memory_range_command(arg, from_tty, FALSE, BREAK_MEMORY_COMMAND, BREAK_MEMORY_COMMAND_USAGE);
+  memory_range_command (arg, from_tty, FALSE, BREAK_MEMORY_COMMAND,
+			BREAK_MEMORY_COMMAND_USAGE);
 }
 
 
@@ -547,7 +555,8 @@ arc_jtag_break_memory_command(char *arg, int from_tty)
 static void
 arc_jtag_watch_memory_command (char *arg, int from_tty)
 {
-    memory_range_command(arg, from_tty, TRUE, WATCH_MEMORY_COMMAND, WATCH_MEMORY_COMMAND_USAGE);
+  memory_range_command (arg, from_tty, TRUE, WATCH_MEMORY_COMMAND,
+			WATCH_MEMORY_COMMAND_USAGE);
 }
 
 
@@ -556,64 +565,65 @@ arc_jtag_watch_memory_command (char *arg, int from_tty)
 static void
 arc_jtag_fill_memory_command (char *arg, int from_tty)
 {
-    char*        length_arg;
-    char*        pattern_arg;
-    ARC_Address  start;
-    ARC_Word     pattern;
-    int          length;
-    unsigned int written;
+  char *length_arg;
+  char *pattern_arg;
+  ARC_Address start;
+  ARC_Word pattern;
+  int length;
+  unsigned int written;
 
-    if (!arg)
+  if (!arg)
     {
-        printf_filtered ("%s", _(FILL_MEMORY_COMMAND_USAGE));
-        return;
+      printf_filtered ("%s", _(FILL_MEMORY_COMMAND_USAGE));
+      return;
     }
 
-    length_arg = strchr(arg, ' ');
+  length_arg = strchr (arg, ' ');
 
-    if (!length_arg)
+  if (!length_arg)
     {
-        printf_filtered (_(FILL_MEMORY_COMMAND " : no second argument\n" FILL_MEMORY_COMMAND_USAGE));
-        return;
+      printf_filtered (_
+		       (FILL_MEMORY_COMMAND " : no second argument\n"
+			FILL_MEMORY_COMMAND_USAGE));
+      return;
     }
 
-    /* split up the input string */
-    length_arg[0] = (char) 0;
+  /* split up the input string */
+  length_arg[0] = (char) 0;
+  length_arg++;
+  while (*length_arg == ' ')
     length_arg++;
-    while (*length_arg == ' ') length_arg++;
 
-    pattern_arg = strchr(length_arg, ' ');
-    if (pattern_arg)
+  pattern_arg = strchr (length_arg, ' ');
+  if (pattern_arg)
     {
-        /* split up the input string */
-        pattern_arg[0] = (char) 0;
-        pattern_arg++;
+      /* split up the input string */
+      pattern_arg[0] = (char) 0;
+      pattern_arg++;
     }
 
-    /* from address expression */
-    EXTRACT(arg, ARC_Address, start)  
-
+  /* from address expression */
+  EXTRACT (arg, ARC_Address, start)
     /* length expression */
-    EXTRACT(length_arg, int, length)  
-
-    if (length <= 0)
+  EXTRACT (length_arg, int, length) if (length <= 0)
     {
-        warning(_(FILL_MEMORY_COMMAND ": %s <= 0"), length_arg);
-        return;
+      warning (_(FILL_MEMORY_COMMAND ": %s <= 0"), length_arg);
+      return;
     }
 
-    if (pattern_arg)
+  if (pattern_arg)
     {
-        /* from pattern expression */
-        EXTRACT(pattern_arg, ARC_Word, pattern)  
-    }
-    else
-        pattern = 0;
+      /* from pattern expression */
+    EXTRACT (pattern_arg, ARC_Word, pattern)}
+  else
+    pattern = 0;
 
-    written = arc_jtag_ops.memory_write_pattern(start, pattern, (unsigned int) length);
+  written =
+    arc_jtag_ops.memory_write_pattern (start, pattern, (unsigned int) length);
 
-    if (written != (unsigned int) length)
-        warning (_(FILL_MEMORY_COMMAND ": only %u bytes written to target memory"), written);
+  if (written != (unsigned int) length)
+    warning (_(FILL_MEMORY_COMMAND ": only %u bytes written to target memory"),
+	     written);
 }
 
 
@@ -621,111 +631,110 @@ arc_jtag_fill_memory_command (char *arg, int from_tty)
 /*                               externally visible functions                 */
 /* -------------------------------------------------------------------------- */
 
-struct gdbarch*
-arc_jtag_initialize (struct gdbarch*      gdbarch,
-                     struct gdbarch_list* arches)
+struct gdbarch *
+arc_jtag_initialize (struct gdbarch *gdbarch, struct gdbarch_list *arches)
 {
-    struct gdbarch_tdep* tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
 
-    arc_aux_pc_guard(gdbarch);
+  arc_aux_pc_guard (gdbarch);
 
-    /* N.B. this function is called twice: once when gdb is started, then
-     *      again when the 'target arcjtag' command is issued; do not try to
-     *      read the aux registers definitions the first time (when 'arches'
-     *      is NULL) as that results in an error message (if the XML file
-     *      is not found) which is output too early in the start-up process
-     *      (before gdb has identified itself).
-     */
-    if (arches == NULL)
+  /* N.B. this function is called twice: once when gdb is started, then
+   *      again when the 'target arcjtag' command is issued; do not try to
+   *      read the aux registers definitions the first time (when 'arches'
+   *      is NULL) as that results in an error message (if the XML file
+   *      is not found) which is output too early in the start-up process
+   *      (before gdb has identified itself).
+   */
+  if (arches == NULL)
     {
-        create_variant_info(tdep);
+      create_variant_info (tdep);
     }
-    else
+  else
     {
-        /* this is the arch that was created earlier */
-        struct gdbarch*      gdbarch0 = arches[0].gdbarch;
-        struct gdbarch_tdep* tdep0    = gdbarch_tdep(gdbarch0);
+      /* this is the arch that was created earlier */
+      struct gdbarch *gdbarch0 = arches[0].gdbarch;
+      struct gdbarch_tdep *tdep0 = gdbarch_tdep (gdbarch0);
 
-        /* have aux registers been defined for that arch`? */
-        if (arc_aux_regs_defined(gdbarch0))
-        {
-            /* share the variant info */
-            tdep->processor_variant_info = tdep0->processor_variant_info;
-        }
-        else
-        {
-            create_variant_info(tdep);
+      /* have aux registers been defined for that arch`? */
+      if (arc_aux_regs_defined (gdbarch0))
+	{
+	  /* share the variant info */
+	  tdep->processor_variant_info = tdep0->processor_variant_info;
+	}
+      else
+	{
+	  create_variant_info (tdep);
 
-            /* try to get the definitions of the target's auxiliary registers */
-            arc_read_default_aux_registers(gdbarch);
-        }
+	  /* try to get the definitions of the target's auxiliary registers */
+	  arc_read_default_aux_registers (gdbarch);
+	}
     }
 
-    /* Fill in target-dependent info in ARC-private structure. */
+  /* Fill in target-dependent info in ARC-private structure. */
 
-    tdep->is_sigtramp             = NULL;
-    tdep->sigcontext_addr         = NULL;
-    tdep->sc_reg_offset           = NULL;
-    tdep->sc_num_regs             = 0;
-    tdep->pc_regnum_in_sigcontext = 0;
+  tdep->is_sigtramp = NULL;
+  tdep->sigcontext_addr = NULL;
+  tdep->sc_reg_offset = NULL;
+  tdep->sc_num_regs = 0;
+  tdep->pc_regnum_in_sigcontext = 0;
 
-    tdep->breakpoint_instruction = breakpoint_instruction;
-    tdep->breakpoint_size        = (unsigned int) sizeof(breakpoint_instruction);
+  tdep->breakpoint_instruction = breakpoint_instruction;
+  tdep->breakpoint_size = (unsigned int) sizeof (breakpoint_instruction);
 
-    tdep->register_reggroup_p = register_reggroup_p;
-    tdep->lowest_pc = 0;
+  tdep->register_reggroup_p = register_reggroup_p;
+  tdep->lowest_pc = 0;
 
-    /* Pass target-dependent info to gdb. */
+  /* Pass target-dependent info to gdb. */
 
-    /* ARC_NR_REGS and ARC_NR_PSEUDO_REGS are defined in the tm.h configuration file */
-    set_gdbarch_pc_regnum             (gdbarch, arc_aux_pc_number(gdbarch));
-    set_gdbarch_num_regs              (gdbarch, ARC_NR_REGS);
-    set_gdbarch_num_pseudo_regs       (gdbarch, ARC_NR_PSEUDO_REGS);
-    set_gdbarch_print_registers_info  (gdbarch, arc_jtag_print_registers_info);
-    set_gdbarch_register_name         (gdbarch, arc_jtag_register_name);
-    set_gdbarch_cannot_store_register (gdbarch, arc_jtag_cannot_store_register);
-    set_gdbarch_dwarf2_reg_to_regnum  (gdbarch, arc_jtag_binutils_reg_to_regnum);
+  /* ARC_NR_REGS and ARC_NR_PSEUDO_REGS are defined in the tm.h configuration file */
+  set_gdbarch_pc_regnum (gdbarch, arc_aux_pc_number (gdbarch));
+  set_gdbarch_num_regs (gdbarch, ARC_NR_REGS);
+  set_gdbarch_num_pseudo_regs (gdbarch, ARC_NR_PSEUDO_REGS);
+  set_gdbarch_print_registers_info (gdbarch, arc_jtag_print_registers_info);
+  set_gdbarch_register_name (gdbarch, arc_jtag_register_name);
+  set_gdbarch_cannot_store_register (gdbarch, arc_jtag_cannot_store_register);
+  set_gdbarch_dwarf2_reg_to_regnum (gdbarch, arc_jtag_binutils_reg_to_regnum);
 
-    return gdbarch;
+  return gdbarch;
 }
 
 
 void
 _initialize_arc_jtag_tdep (void)
 {
-    (void) add_cmd (BREAK_MEMORY_COMMAND,
-                    class_breakpoint,
-                    arc_jtag_break_memory_command,
-                    _("Set a breakpoint on a memory address range.\n"
-                      BREAK_MEMORY_COMMAND_USAGE
-                      "<START> and <LENGTH> can be any expressions that evaluate to integers.\n"),
-                    &cmdlist);
+  (void) add_cmd (BREAK_MEMORY_COMMAND,
+		  class_breakpoint,
+		  arc_jtag_break_memory_command,
+		  _("Set a breakpoint on a memory address range.\n"
+		    BREAK_MEMORY_COMMAND_USAGE
+		    "<START> and <LENGTH> can be any expressions that evaluate to integers.\n"),
+		  &cmdlist);
 
-    (void) add_cmd (WATCH_MEMORY_COMMAND,
-                    class_breakpoint,
-                    arc_jtag_watch_memory_command,
-                    _("Set a watchpoint on a memory address range.\n"
-                      WATCH_MEMORY_COMMAND_USAGE
-                      "<START> and <LENGTH> can be any expressions that evaluate to integers.\n"
-                      "If the watchpoint mode is omitted, it defaults to 'access'.\n"),
-                    &cmdlist);
+  (void) add_cmd (WATCH_MEMORY_COMMAND,
+		  class_breakpoint,
+		  arc_jtag_watch_memory_command,
+		  _("Set a watchpoint on a memory address range.\n"
+		    WATCH_MEMORY_COMMAND_USAGE
+		    "<START> and <LENGTH> can be any expressions that evaluate to integers.\n"
+		    "If the watchpoint mode is omitted, it defaults to 'access'.\n"),
+		  &cmdlist);
 
-    (void) add_cmd (FILL_MEMORY_COMMAND,
-                    class_obscure,
-                    arc_jtag_fill_memory_command,
-                    _("Fill a memory address range with a repeated pattern.\n"
-                      FILL_MEMORY_COMMAND_USAGE
-                      "<START>, <LENGTH> and <PATTERN> can be any expressions that evaluate to integers.\n"
-                      "If <PATTERN> is omitted, it defaults to 0.\n"),
-                    &cmdlist);
+  (void) add_cmd (FILL_MEMORY_COMMAND,
+		  class_obscure,
+		  arc_jtag_fill_memory_command,
+		  _("Fill a memory address range with a repeated pattern.\n"
+		    FILL_MEMORY_COMMAND_USAGE
+		    "<START>, <LENGTH> and <PATTERN> can be any expressions that evaluate to integers.\n"
+		    "If <PATTERN> is omitted, it defaults to 0.\n"), &cmdlist);
 
-    observer_attach_new_objfile(check_architecture);
+  observer_attach_new_objfile (check_architecture);
 }
 
 
-void arc_check_pc_defined(struct gdbarch* gdbarch)
+void
+arc_check_pc_defined (struct gdbarch *gdbarch)
 {
-    arc_aux_check_pc_defined(gdbarch);
+  arc_aux_check_pc_defined (gdbarch);
 }
 
 /******************************************************************************/

@@ -54,15 +54,15 @@
 
 typedef enum
 {
-    INACCESSIBLE,
-    CONFIGURED,
-    UNCONFIGURED
+  INACCESSIBLE,
+  CONFIGURED,
+  UNCONFIGURED
 } FPGA_Status;
 
 
 void arc_blast_board (char *args, int from_tty);
 
-void arc_reset_board(void);
+void arc_reset_board (void);
 
 FPGA_Status arc_is_FPGA_configured (void);
 
