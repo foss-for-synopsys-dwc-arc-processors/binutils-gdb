@@ -204,5 +204,26 @@ void _initialize_arc_tdep (void);
 void arc_initialize_disassembler(struct gdbarch *gdbarch,
 				 struct disassemble_info* info);
 
+
+/* -------------------------------------------------------------------------- */
+/*			    Globally visible data                             */
+/* -------------------------------------------------------------------------- */
+
+extern int  arc_debug;
+
+/* -------------------------------------------------------------------------- */
+/*			  Globally visible functions                          */
+/* -------------------------------------------------------------------------- */
+
+/* From opcodes/arcompact-dis.h. */
+extern struct arcDisState arcAnalyzeInstr (bfd_vma address,
+					   disassemble_info * info);
+
+/* From arc-tdep.c */
+extern int arc_debug;
+
+/* From arc-linux.c or arc-elf32.c */
+extern enum gdb_osabi arc_get_osabi (void);
+
 #endif /* ARC_TDEP_H */
 /******************************************************************************/
