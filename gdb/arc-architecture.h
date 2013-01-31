@@ -46,24 +46,24 @@
 
 typedef enum arc_processor_version
 {
-    NO_ARCHITECTURE,
-    ARC700,
-    ARC600,
-    A5,
-    A4,
-    UNSUPPORTED_ARCHITECTURE
+  NO_ARCHITECTURE,
+  ARC700,
+  ARC600,
+  A5,
+  A4,
+  UNSUPPORTED_ARCHITECTURE
 } ARC_ProcessorVersion;
 
 
-ARC_ProcessorVersion arc_get_architecture(ARC_RegisterNumber identity_regnum);
+ARC_ProcessorVersion arc_get_architecture (ARC_RegisterNumber identity_regnum);
 
-void arc_update_architecture(ARC_RegisterNumber identity_regnum);
+void arc_update_architecture (ARC_RegisterNumber identity_regnum);
 
-void arc_check_architecture(struct gdbarch* gdbarch, bfd* objfile_bfd);
+void arc_check_architecture (struct gdbarch *gdbarch, bfd * objfile_bfd);
 
-ARC_ProcessorVersion arc_version(const char* arch);
+ARC_ProcessorVersion arc_version (const char *arch);
 
-const char* arc_version_image(ARC_ProcessorVersion version);
+const char *arc_version_image (ARC_ProcessorVersion version);
 
 
 extern ARC_ProcessorVersion ARC_processor;
