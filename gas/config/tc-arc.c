@@ -6329,7 +6329,7 @@ fprintf (stdout, "Matched syntax %s\n", opcode->syntax);
 	       be legal, but let's warn the user anyway.  Ditto for 8 byte
 	       jumps with delay slots.  */
 	    if (in_delay_slot_p && limm_p)
-	      as_warn ("8 byte instruction in delay slot");
+	      as_bad ("Instruction with long immediate data in delay slot");
 
 	    if (delay_slot_type != ARC_DELAY_NONE
 	      && limm_p && arc_insn_not_jl (insn)) /* except for jl  addr */
