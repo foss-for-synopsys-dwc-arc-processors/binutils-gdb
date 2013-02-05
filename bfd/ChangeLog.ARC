@@ -8,6 +8,15 @@
 
 	* bfd/config.bfd: Make arc*-*-elf* valid for big endian ARC.
 
+2013-02-05  Simon Cook  <simon.cook@embecosm.com>
+
+	* elf32-arc.c (elf_arc_check_relocs): Change
+	R_ARC_32/R_ARC_32_ME/R_ARC_PC32 to use
+	_bfd_elf_make_dynamic_reloc_section.
+	(elf_arc_relocate_section): Change R_ARC_32/R_ARC_32_ME/R_ARC_PC32 to use 
+	_bfd_elf_section_offset.
+	(ELF_TARGET_ID): Define.
+
 2013-01-16  Simon Cook  <simon.cook@embecosm.com>
 
 	* cpu-arc.c (bfd_arc_arch): Make A5 default architecture to solve
