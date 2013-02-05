@@ -4,6 +4,10 @@
 	* configure.ac: Make arceb-*-* valid.
 	* configure: Regenerate.
 
+2013-02-05  Simon Cook  <simon.cook@embecosm.com>
+
+	* configure: Regenerated.
+
 2012-08-18  Vineet Gupta <vgupta@synopsys.com>
 
 	* include/elf/arc.h: Extended "machine" bit-field in e_flags to	8-bits,
