@@ -134,9 +134,9 @@ ALL_EMULATION_SOURCES = \
 	ealpha.c \
 	ealphavms.c \
 	earcelf.c \
-	earcelf_prof.o \
-	earclinux.o \
-	earclinux_prof.o \
+	earcelf_prof.c \
+	earclinux.c \
+	earclinux_prof.c \
 	earm_epoc_pe.c \
 	earm_wince_pe.c \
 	earmaoutb.c \

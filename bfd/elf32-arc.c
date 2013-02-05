@@ -1590,38 +1590,15 @@ elf_arc_check_relocs (bfd *abfd,
 		      && (!info->symbolic || !h->def_regular))))
 	    {
 	      /* When creating a shared object, we must copy these
-                 reloc types into the output file.  We create a reloc
-                 section in dynobj and make room for this reloc.  */
+                 reloc types into the output file.  We may need to
+                 create a reloc section in the dynobj and make room
+                 for this reloc.  */
 	      if (sreloc == NULL)
 		{
-		  const char *name;
+                  sreloc = _bfd_elf_make_dynamic_reloc_section (sec, dynobj, 2, abfd, /*rela*/ TRUE);
 
-		  name = (bfd_elf_string_from_elf_section
-			  (abfd,
-			   elf_elfheader (abfd)->e_shstrndx,
-			   _bfd_elf_single_rel_hdr(sec)->sh_name));
-		  if (name == NULL)
-		    return FALSE;
-
-		  BFD_ASSERT (strncmp (name, ".rela", 5) == 0
-			      && strcmp (bfd_get_section_name (abfd, sec),
-					 name + 5) == 0);
-
-		  sreloc = bfd_get_section_by_name (dynobj, name);
 		  if (sreloc == NULL)
-		    {
-		      flagword flags;
-
-		      flags = (SEC_HAS_CONTENTS | SEC_READONLY
-			       | SEC_IN_MEMORY | SEC_LINKER_CREATED);
-		      if ((sec->flags & SEC_ALLOC) != 0)
-			flags |= SEC_ALLOC | SEC_LOAD;
-		      sreloc
-			= bfd_make_section_with_flags (dynobj, name, flags);
-		      if (sreloc == NULL
-			  || ! bfd_set_section_alignment (dynobj, sreloc, 2))
-			return FALSE;
-		    }
+		    return FALSE;
 		}
 
 	      sreloc->size += sizeof (Elf32_External_Rela);
@@ -2110,21 +2087,8 @@ elf_arc_relocate_section (bfd *output_bfd,
 
 	      if (sreloc == NULL)
 		{
-		  const char *name;
-
-		  name = (bfd_elf_string_from_elf_section
-			  (input_bfd,
-			   elf_elfheader (input_bfd)->e_shstrndx,
-			   _bfd_elf_single_rel_hdr (input_section)->sh_name));
-		  if (name == NULL)
-		    return FALSE;
-
-		  BFD_ASSERT (strncmp (name, ".rela", 5) == 0
-			      && strcmp (bfd_get_section_name (input_bfd,
-							       input_section),
-					 name + 5) == 0);
-
-		  sreloc = bfd_get_section_by_name (dynobj, name);
+                  sreloc = _bfd_elf_get_dynamic_reloc_section
+                    (input_bfd, input_section, /*RELA*/ TRUE);
 
 		  BFD_ASSERT (sreloc != NULL);
 		}
@@ -3243,6 +3207,7 @@ elf32_arc_gc_sweep_hook (bfd *                     abfd,
 #define ELF_ARCH		bfd_arch_arc
 #define ELF_MACHINE_CODE	EM_ARC
 #define ELF_MACHINE_ALT1	EM_ARCOMPACT
+#define ELF_TARGET_ID           ARC_ELF_DATA
 #define ELF_MAXPAGESIZE		0x2000
 
 #define elf_info_to_howto                    arc_info_to_howto_rel
