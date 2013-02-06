@@ -375,6 +375,8 @@ ALL_EMULATIONS = \
 	eaixppc.o \
 	eaixrs6.o \
 	ealpha.o \
+	earcebelf.o \
+	earcebelf_prof.o \
 	earcelf.o \
 	earcelf_prof.o \
 	earclinux.o \
@@ -1374,6 +1376,12 @@ earcelf.c: $(srcdir)/emulparams/arcelf.sh \
 earcelf_prof.c: $(srcdir)/emulparams/arcelf_prof.sh \
   $(ELF_GEN_DEPS) $(srcdir)/scripttempl/elfarc.sc ${GEN_DEPENDS}
 	${GENSCRIPTS} arcelf_prof "$(tdir_arcelf_prof)"
+earcebelf.c: $(srcdir)/emulparams/arcebelf.sh \
+  $(ELF_GEN_DEPS) $(srcdir)/scripttempl/elfarc.sc ${GEN_DEPENDS}
+	${GENSCRIPTS} arcebelf "$(tdir_arcelf)"
+earcebelf_prof.c: $(srcdir)/emulparams/arcebelf_prof.sh \
+  $(ELF_GEN_DEPS) $(srcdir)/scripttempl/elfarc.sc ${GEN_DEPENDS}
+	${GENSCRIPTS} arcebelf_prof "$(tdir_arcelf_prof)"
 #for linux on arc
 earclinux.c: $(srcdir)/emulparams/arclinux.sh \
   $(ELF_DEPS) $(srcdir)/emultempl/arclinux.em $(srcdir)/scripttempl/arclinux.sc ${GEN_DEPENDS}

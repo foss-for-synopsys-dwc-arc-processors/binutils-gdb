@@ -1,3 +1,11 @@
+2013-02-06  Simon Cook  <simon.cook@embecosm.com>
+
+	* emulparams/arcebelf.sh: Added big endian elf emulation parameters.
+	* emulparams/arcebelf_prof.sh: Likewise.
+	* configure.tgt: Added rules for big endian emulations.
+	* Makefile.am: Likewise.
+	* Makefile.in: Regenerated.
+
 2013-01-07  Simon Cook  <simon.cook@embecosm.com>
 
 	* testsuite/ld-selective/sel-dump.exp: Remove arc from xfail.
