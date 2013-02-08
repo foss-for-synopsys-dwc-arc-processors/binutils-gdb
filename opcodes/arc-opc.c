@@ -4774,7 +4774,10 @@ static const struct arc_operand_value arc_suffixes_ac[] =
   { "di", 1, CACHEBYPASS15_AC, 0 },
   /*ARCv2 specific*/
   { "nt", 0, ARCV2_TFLAG, 0},
-  { "t", 1, ARCV2_TFLAG, 0}
+  { "t", 1, ARCV2_TFLAG, 0},
+  { "h", 2, SIZE1_AC, 0 },
+  { "h", 2, SIZE7_AC, 0 },
+  { "h", 2, SIZE17_AC, 0 }
 };
 
 
