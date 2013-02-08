@@ -5109,16 +5109,18 @@ ac_branch_or_jump_insn(arc_insn insn, int compact_insn_16)
 unsigned char
 em_jumplink_or_jump_insn(arc_insn insn, int compact_insn16)
 {
-#define MAJOR16(x) (((unsigned) (x) & 31) << 11)
-#define SOPCOD2(x) (((unsigned) (x) & 7) << 5)
-#define SOPCOD3(x) (((unsigned) (x) & 7) << 8)
 
-  return (compact_insn16 && (((insn & MAJOR16(-1)) == MAJOR16(0x0F)) &&
-			     ((insn & SOPCOD2(-1)) == SOPCOD2(0x01) || /*J_S.D*/
-			      (insn & SOPCOD2(-1)) == SOPCOD2(0x03) || /*JL_S.D*/
-			      ((insn & SOPCOD2(-1)) == SOPCOD2(0x07) &&
-			       (insn & SOPCOD3(-1)) == SOPCOD3(0x07)) /*J_S.D*/
-			      )));
+  /*J_S.D [b] */
+  if ( (0xF8FF & insn) == 0x7820)
+    return compact_insn16?1:0;
+  /*J_S.D [blink] */
+  if ( (0xFFFF & insn) == 0x7FE0)
+    return compact_insn16?1:0;
+  /*JL_S.D [b] */
+  if ( (0xF8FF & insn) == 0x7860)
+    return compact_insn16?1:0;
+
+  return 0;
 }
 
 /* Returns 1 if the insn is a J_S, JL_S, JEQ_S, JNE_S. It should work
@@ -5126,11 +5128,16 @@ em_jumplink_or_jump_insn(arc_insn insn, int compact_insn16)
 unsigned char
 em_branch_or_jump_insn(arc_insn insn, int compact_insn16)
 {
+#define MAJOR16(x) (((unsigned) (x) & 31) << 11)
+#define SOPCOD2(x) (((unsigned) (x) & 7) << 5)
+#define SOPCOD3(x) (((unsigned) (x) & 7) << 8)
+
   return ((compact_insn16 && (((insn & MAJOR16(-1)) == MAJOR16(0x0F)) &&
-			     ((insn & SOPCOD2(-1)) <= SOPCOD2(0x03) ||
-			      ((insn & SOPCOD2(-1)) == SOPCOD2(0x07) &&
-			       (insn & SOPCOD3(-1)) >= SOPCOD3(0x04))
-			      ))) ||
+			      ((insn & SOPCOD2(-1)) <= SOPCOD2(0x03) ||
+			       ((insn & SOPCOD2(-1)) == SOPCOD2(0x07) &&
+				(insn & SOPCOD3(-1)) >= SOPCOD3(0x04))) &&
+			      ((insn & 0x1F) == 0x00)
+			      )) ||
 	  (compact_insn16 && ((insn & MAJOR16(-1)) == MAJOR16(0x1E))) || /*all 16bit cond branches + B_S*/
 	  (compact_insn16 && ((insn & MAJOR16(-1)) == MAJOR16(0x1F))) || /*BL_S s13*/
 	  (compact_insn16 && ((insn & MAJOR16(-1)) == MAJOR16(0x1D))) /* BREQ_S and BRNE_S*/
