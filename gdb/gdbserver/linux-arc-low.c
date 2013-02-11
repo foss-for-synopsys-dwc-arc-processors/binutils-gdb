@@ -22,7 +22,7 @@
 #include "server.h"
 #include "linux-low.h"
 
-#include "../config/arc/tm-linux.h"	/* useful ARC info */
+#include "../arc-tdep.h"		/* useful ARC info */
 #include <asm/ptrace.h>			/* Linux kernel ptrace reg offsets */
 
 

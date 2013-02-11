@@ -1,3 +1,8 @@
+2013-02-11  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	* linux-arc-low.c: Use arc-tdep.h rather than tm-linux.h as
+	header.
+
 2012-12-12  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	Manual merge from GDB 6.8 branch.
