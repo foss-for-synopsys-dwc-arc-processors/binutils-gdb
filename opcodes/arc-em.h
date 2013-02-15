@@ -655,8 +655,12 @@
 /*LDH_S */
 { (unsigned char *) "ldh_s %a,[%b,%c]",                      0xF818, 0x6010, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "ldh_s %c,[%b,%k]",                      0xF800, 0x9000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "ldh_s %c,[%b]",                         0xF800, 0x9000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "ldh_s %4,[%5,%[L]",                     0xFE00, 0xCC00, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "ldh_s %4,[%5,%O]",                      0xFE00, 0xCC00, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "ldh_s %4,[%5]",                         0xFE00, 0xCC00, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "ldh_s.x %c,[%b,%k]",                    0xF800, 0x9800, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "ldh_s.x %c,[%b]",                       0xF800, 0x9800, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*LR */
 /* lr    b,[c]          	0010 0bbb 0010 1010 RBBB CCCC CCRR RRRR  */
 { (unsigned char *) "lr %#,[%C]",                            0xF8FF803F, 0x202A0000, ARC_MACH_ARCV2, 0, 0, 0, 0},

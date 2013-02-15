@@ -3947,10 +3947,10 @@ static struct arc_opcode arc_opcodes[] = {
   { (unsigned char *) "ldb_s %c,[%b]", 0xf800, 0x8800, ARCOMPACT, 0, 0 ,0,0},
 /* ldw_s c,[b,u6];              10010 bbb ccc uuuuu */
   { (unsigned char *) "ldw_s %c,[%b,%k]", 0xf800, 0x9000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
-  { (unsigned char *) "ldw_s %c,[%b]", 0xf800, 0x9000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "ldw_s %c,[%b]",    0xf800, 0x9000, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 /* ldw_s.x c,[b,u6];            10011 bbb ccc uuuuu */
   { (unsigned char *) "ldw_s.x %c,[%b,%k]", 0xf800, 0x9800, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
-  { (unsigned char *) "ldw_s.x %c,[%b]", 0xf800, 0x9800, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "ldw_s.x %c,[%b]",    0xf800, 0x9800, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 /* ld_s b,[sp,u7];              11000 bbb 000 uuuuu */
   { (unsigned char *) "ld_s %b,[%6,%l]", 0xf8e0, 0xc000, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "ld_s %b,[%6]", 0xf8e0, 0xc000, ARCOMPACT, 0, 0 ,0,0},
@@ -3966,9 +3966,9 @@ static struct arc_opcode arc_opcodes[] = {
   { (unsigned char *) "ldb_s %4,[%5,%M]", 0xfe00, 0xca00, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "ldb_s %4,[%5]", 0xfe00, 0xca00, ARCOMPACT, 0, 0 ,0,0},
 /* ldw_s r0,[gp,s10];           11001 10 sssssssss */
-  { (unsigned char *) "ldw_s %4,[%5,%[L]", 0xfe00, 0xcc00, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "ldw_s %4,[%5,%O]", 0xfe00, 0xcc00, ARCOMPACT, 0, 0 ,0,0},
-  { (unsigned char *) "ldw_s %4,[%5]", 0xfe00, 0xcc00, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "ldw_s %4,[%5,%[L]", 0xfe00, 0xcc00, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "ldw_s %4,[%5,%O]",  0xfe00, 0xcc00, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+  { (unsigned char *) "ldw_s %4,[%5]",     0xfe00, 0xcc00, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 /* ld_s b,[pcl,u10];            11010 bbb uuuuuuuu */
   { (unsigned char *) "ld_s %b,[%!,%m]", 0xf800, 0xd000, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "ld_s %b,[%!]", 0xf800, 0xd000, ARCOMPACT, 0, 0 ,0,0},
