@@ -1,3 +1,15 @@
+2013-02-18  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	* arc-aux-registers.h (_initialize_arc_aux_regs): Replace
+	ARC_VariantsInfo by underlying struct definition.
+	* arc-constants.h: Created.
+	* arc-elf-tdep.c (create_variant_info): Replace ARC_VariantsInfo
+	by underlying struct definition.
+	* arc-tdep.h: Break out constants into arc-constants.h
+	(ARC_VariantsInfo): Remove typedef
+	(gdbarch_tdep): Replace ARC_VariantsInfo by underlying struct
+	definition.
+
 2013-01-31  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* arc-architecture.c, ac-architecture.h: Deleted.

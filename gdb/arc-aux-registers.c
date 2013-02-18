@@ -2207,7 +2207,7 @@ _initialize_arc_aux_regs (void)
    *      causes problems when linking!
    */
   struct gdbarch_info info;
-  static ARC_VariantsInfo variant;
+  static struct arc_variant_info variant;
   struct gdbarch_tdep *tdep = malloc (sizeof (struct gdbarch_tdep));
   struct gdbarch *gdbarch = gdbarch_alloc (&info, tdep);
 
