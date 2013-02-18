@@ -54,6 +54,7 @@
 #include "opcodes/arc-dis.h"
 
 /* ARC header files */
+#include "arc-constants.h"
 #include "arc-tdep.h"
 
 

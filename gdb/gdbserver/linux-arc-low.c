@@ -22,9 +22,10 @@
 #include "server.h"
 #include "linux-low.h"
 
-#include "../arc-tdep.h"		/* useful ARC info */
+#include "../arc-constants.h"		/* useful ARC info */
 #include <asm/ptrace.h>			/* Linux kernel ptrace reg offsets */
 
+#define ARC_NR_REGS  39			/*!< @todo Should be common with GDB */
 
 /* arc_regmap[i] is the saved "address" of a register. The map is built in
    GDB order (r0-r26, bta, lp_start, lp_end, lp_count, status32, blink, fp,
