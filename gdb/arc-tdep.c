@@ -182,6 +182,7 @@
 #include "opcodes/arc-dis.h"
 #include "opcodes/arc-ext.h"
 #include "opcodes/arcompact-dis.h"
+#include "arc-constants.h"
 #include "arc-tdep.h"
 
 
