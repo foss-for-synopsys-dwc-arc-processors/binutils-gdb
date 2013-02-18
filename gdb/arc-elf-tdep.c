@@ -194,7 +194,7 @@ static const char *register_names[ARC_MAX_CORE_REGS] = {
 static void
 create_variant_info (struct gdbarch_tdep *tdep)
 {
-  tdep->processor_variant_info = xmalloc (sizeof (ARC_VariantsInfo));
+  tdep->processor_variant_info = xmalloc (sizeof (struct arc_variant_info));
   tdep->processor_variant_info->processor_version = NO_ARCHITECTURE;
 
   arc_initialize_aux_reg_info (&tdep->processor_variant_info->registers);
