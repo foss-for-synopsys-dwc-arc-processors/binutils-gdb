@@ -1,3 +1,19 @@
+2013-02-19  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	* configure.srv (arc*-*-linux*): Add linux-osdata.o,
+	linux-procfs.o and linux-ptrace.o to srv_tgt_obj.
+	(arc*-*): Deleted.
+	* linux-arc-low.c (init_registers_arc): Provide prototype.
+	(arc_arch_setup): Created.
+	(arc_get_pc): add regcache first argument, use in call to
+	collect_register_by_name.
+	(arc_set_pc): add regcache first argument, use in call to
+	supply_register_by_name.
+	(arc_reinsert_addr): allocate regcache and pass to
+	collect_register_by_name.
+	(the_low_target): Add arc_arch_setup, insert NULLs for new shape
+	of structure.
+
 2013-02-11  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* linux-arc-low.c: Use arc-tdep.h rather than tm-linux.h as
