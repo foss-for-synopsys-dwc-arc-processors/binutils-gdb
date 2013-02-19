@@ -48,6 +48,24 @@ static int arc_regmap[] = {
 };
 
 
+/*! Defined in auto-generated file arc-reg.c. */
+void init_registers_arc (void);
+
+
+/*! Set up the ARC architecture.
+
+    New function for GDB 7.x. Initialize the ARC architecture. For now it is a
+    placeholder, but expect to configure the aux registers from the XML file
+    in due couse. */
+static void
+arc_arch_setup (void)
+{
+  /* The auto generated register initialization. */
+  init_registers_arc ();
+
+}	/* arc_arch_setup () */
+
+
 static int
 arc_cannot_store_register (int regno)
 {
@@ -68,20 +86,20 @@ arc_cannot_fetch_register (int regno)
 
 
 static CORE_ADDR
-arc_get_pc ()
+arc_get_pc (struct regcache *regcache)
 {
   unsigned long pc;
-  collect_register_by_name ("stop_pc", &pc);
+  collect_register_by_name (regcache, "stop_pc", &pc);
   if (debug_threads)
     fprintf (stderr, "stop pc is %08lx\n", pc);
   return pc;
 }
 
 static void
-arc_set_pc (CORE_ADDR pc)
+arc_set_pc (struct regcache *regcache, CORE_ADDR pc)
 {
   unsigned long newpc = pc;
-  supply_register_by_name ("ret", &newpc);
+  supply_register_by_name (regcache, "ret", &newpc);
 }
 
 
@@ -111,16 +129,20 @@ arc_breakpoint_at (CORE_ADDR where)
 static CORE_ADDR
 arc_reinsert_addr ()
 {
+  struct regcache *regcache = get_thread_regcache (current_inferior, 1);
   unsigned long pc;
-  collect_register_by_name ("blink", &pc);
+  collect_register_by_name (regcache, "blink", &pc);
   return pc;
 }
 
 struct linux_target_ops the_low_target = {
+  arc_arch_setup,
   ARC_NR_REGS,
   arc_regmap,
+  NULL,
   arc_cannot_fetch_register,
   arc_cannot_store_register,
+  NULL,				/* fetch_register */
   arc_get_pc,
   arc_set_pc,
   (const unsigned char *) &arc_breakpoint,

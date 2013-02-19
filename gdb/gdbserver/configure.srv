@@ -60,13 +60,8 @@ case "${target}" in
 			;;
   arc*-*-linux*)
 			srv_regobj=reg-arc.o
-			srv_tgtobj="linux-low.o linux-arc-low.o"
-			srv_linux_usrregs=yes
-			srv_linux_thread_db=yes
-			;;
-  arc*-*)
-			srv_regobj=reg-arc.o
-			srv_tgtobj="linux-low.o linux-arc-low.o"
+			srv_tgtobj="linux-low.o linux-osdata.o linux-arc-low.o"
+			srv_tgtobj="${srv_tgtobj} linux-procfs.o linux-ptrace.o"
 			srv_linux_usrregs=yes
 			srv_linux_thread_db=yes
 			;;
