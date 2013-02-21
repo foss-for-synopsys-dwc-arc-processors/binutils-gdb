@@ -5973,8 +5973,8 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 			  if (!strncmp (str, "@gotpc", 6))
 			    {
 			      str += 6;
-			      if (arc_mach_type != bfd_mach_arc_arc700 ||
-				  arc_mach_type != bfd_mach_arc_arcv2)
+			      if ((arc_mach_type != bfd_mach_arc_arc700) &&
+				  (arc_mach_type != bfd_mach_arc_arcv2))
 				as_warn ("PIC not supported for processors prior to ARC 700\n");
 			      else
 				current_special_sym_flag = GOT_TYPE;
@@ -5984,8 +5984,8 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 			  else if (!strncmp (str, "@plt", 4))
 			    {
 			      str += 4;
-			      if (arc_mach_type != bfd_mach_arc_arc700 ||
-				  arc_mach_type != bfd_mach_arc_arcv2)
+			      if ((arc_mach_type != bfd_mach_arc_arc700) &&
+				  (arc_mach_type != bfd_mach_arc_arcv2))
 				as_warn ("PIC not supported for processors prior to ARC 700\n");
 			      else
 				current_special_sym_flag = PLT_TYPE;
@@ -5993,8 +5993,8 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 			    }
 			  else if (!strncmp (str, "@gotoff", 7))
 			    {
-			      if (arc_mach_type != bfd_mach_arc_arc700 ||
-				  arc_mach_type != bfd_mach_arc_arcv2)
+			      if ((arc_mach_type != bfd_mach_arc_arc700) &&
+				  (arc_mach_type != bfd_mach_arc_arcv2))
 				as_warn ("PIC not supported for processors prior to ARC 700\n");
 			      else
 				current_special_sym_flag = GOTOFF_TYPE;
