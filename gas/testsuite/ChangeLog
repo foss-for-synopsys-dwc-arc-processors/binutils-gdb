@@ -1,3 +1,385 @@
+2012-10-09  Nagajyothi Eggone  <nagajyothi.eggone@amd.com>
+
+	* gas/i386/i386.exp: Run bdver3 test cases.
+	* gas/i386/nops-1-bdver3.d: New.
+	* gas/i386/arch-10-bdver3.d: New.
+	* gas/i386/x86-64-nops-1-bdver3.d: New.
+	* gas/i386/x86-64-arch-2-bdver3.d: New.
+
+2012-09-18  Kyrylo Tkachov  <kyrylo.tkachov@arm.com>
+
+	* gas/arm/armv8-a-bad.l: Updated for changed mnemonics.
+	* gas/arm/armv8-a-bad.s: Likewise.
+	* gas/arm/armv8-a.d: Likewise.
+	* gas/arm/armv8-a.s: Likewise.
+	* gas/arm/inst.s: Added test for ldrt encoding compatibly with ldralt.
+	* gas/arm/inst.d: Updated.
+
+2012-09-17  Yufeng Zhang  <yufeng.zhang@arm.com>
+
+	* gas/aarch64/crypto.d (#as): Update for v8->v8-A change.
+	* gas/aarch64/int-insns.d (#as): Likewise.
+	* gas/aarch64/legacy_reg_names.s (.arch): Likewise.
+	* gas/aarch64/neon-not.s (.arch): Likewise.
+	* gas/aarch64/neon-vfp-reglist-post.s (.arch): Likewise.
+	* gas/aarch64/neon-vfp-reglist.s (.arch): Likewise.
+
+2012-09-18  Chao-ying Fu  <fu@mips.com>
+
+	* gas/mips/micromips.d: Correct the disassembly of SWXC1.
+	* gas/mips/micromips-trap.d: Likewise.
+	* gas/mips/micromips@24k-triple-stores-1.d: Likewise.
+	* gas/mips/micromips@mips4-fp.d: Likewise.
+
+2012-08-17  Nagajyothi Eggone  <nagajyothi.eggone@amd.com>
+
+	* gas/i386/i386.exp: Run btver1 and btver2 test cases.
+
+	* gas/i386/nops-1-btver1.d: New.
+	* gas/i386/nops-1-btver2.d: New.
+	* gas/i386/arch-10-btver1.d: New.
+	* gas/i386/arch-10-btver2.d: New.
+	* gas/i386/x86-64-nops-1-btver1.d: New.
+	* gas/i386/x86-64-nops-1-btver2.d: New.
+	* gas/i386/x86-64-arch-2-btver1.d: New.
+	* gas/i386/x86-64-arch-2-btver2.d: New.
+
+2012-08-11  Saravanan Ekanathan <saravanan.ekanathan@amd.com>
+
+	PR gas/14423
+	* gas/i386/arch-10-bdver2.d: New file.
+	* gas/i386/x86-64-arch-2-bdver2.d: Likewise.
+	* gas/i386/i386.exp: Run new test
+
+2012-09-10  Hans-Peter Nilsson  <hp@bitrange.com>
+
+	PR gas/14521
+	* gas/mmix/group-1.d, gas/mmix/group-1.s: New test.
+
+	* gas/mmix/err-fb-2.s: New test.
+
+2012-09-10  Maciej W. Rozycki  <macro@codesourcery.com>
+
+	* gas/mips/mips.exp: Set has_newabi for all Linux targets.
+	* gas/mips/cfi-n64-1.d: Adjust for targets that do not infer the
+	ISA from the ABI.
+	* gas/mips/elf-rel-got-n32.d: Likewise.
+	* gas/mips/elf-rel-got-n64.d: Likewise.
+	* gas/mips/elf-rel-xgot-n32.d: Likewise.
+	* gas/mips/elf-rel-xgot-n64.d: Likewise.
+	* gas/mips/elf-rel18.d: Likewise.
+	* gas/mips/elf-rel28-n32.d: Likewise.
+	* gas/mips/elf-rel28-n64.d: Likewise.
+	* gas/mips/jal-newabi.d: Likewise.
+	* gas/mips/ldstla-n64-shared.d: Likewise.
+	* gas/mips/ldstla-n64-sym32.d: Likewise.
+	* gas/mips/ldstla-n64.d: Likewise.
+	* gas/mips/macro-warn-1-n32.d: Likewise.
+	* gas/mips/macro-warn-2-n32.d: Likewise.
+	* gas/mips/n32-consec.d: Likewise.
+
+2012-08-06  Maciej W. Rozycki  <macro@codesourcery.com>
+
+	* gas/mips/mips.exp: Set has_newabi for mips*-sde-elf* too.
+	* gas/mips/elf-rel-got-n32.s: Adjust padding.
+	* gas/mips/elf-rel-got-n64.s: Likewise.
+	* gas/mips/elf-rel23.s: Likewise.
+	* gas/mips/elf-rel28.s: Likewise.
+	* gas/mips/n32-consec.s: Likewise.
+	* gas/mips/elf-rel-xgot-n32.d: Adjust output expected.
+	* gas/mips/elf-rel-xgot-n64.d: Likewise.
+	* gas/mips/elf-rel23.d: Likewise.
+	* gas/mips/elf-rel23a.d: Likewise.
+	* gas/mips/elf-rel23b.d: Likewise.
+	* gas/mips/elf-rel28-n32.d: Likewise.
+
+2012-08-06  Maciej W. Rozycki  <macro@codesourcery.com>
+
+2012-08-06  Maciej W. Rozycki  <macro@codesourcery.com>
+
+	* gas/mips/branch-swap-2.l: New list test.
+	* gas/mips/branch-swap-2.s: New test source.
+	* gas/mips/mips.exp: Run the new test.
+
+	* gas/mips/micromips@mips32-dsp.d: New test.
+	* gas/mips/micromips@mips32-dspr2.d: New test.
+	* gas/mips/mips32-dsp.s: Update padding.
+	* gas/mips/mips32-dspr2.s: Likewise.
+	* gas/mips/mips.exp: Use run_dump_test_arches to run MIPS32 DSP
+	tests.
+2012-07-31  Catherine Moore  <clm@codesourcery.com>
+            Maciej W. Rozycki  <macro@codesourcery.com>
+
+	* gas/mips/micromips@mips32-dsp.d: New.
+	* gas/mips/micromips@mips32-dspr2.d: New.
+	* gas/mips/mips32-dsp.d: Remove -mips32r2.
+	* gas/mips/mips32-dspr2.d: Likewise.
+	* gas/mips/mips.exp: (mips_create_arch): Use -mips64r2
+	for micromips.  Use run_dump_test_arches to run dsp tests.
+
+2012-09-04  Sergey A. Guriev  <sergey.a.guriev@intel.com>
+
+	* gas/testsuite/gas/ia64/psn.d: New file.
+	* gas/testsuite/gas/ia64/psn.s: New file.
+	* gas/testsuite/gas/ia64/ia64.exp: Add new testcase.
+	* gas/testsuite/gas/ia64/opc-i.d: Fixed failing tests.
+	* gas/testsuite/gas/ia64/opc-m.d: Ditto.
+
+2012-08-28  Peter Bergner  <bergner@vnet.ibm.com>
+
+	Backport from mainline
+	2012-08-15  Peter Bergner  <bergner@vnet.ibm.com>
+
+	* gas/ppc/common.d ("nop", "xnop"): Add tests.
+	* gas/ppc/common.s: Likewise.
+	* gas/ppc/power7.d ("yield", "mdoio", "mdoom"): Add tests.
+	* gas/ppc/power7.s: Likewise.
+
+	2012-08-15  Peter Bergner  <bergner@vnet.ibm.com>
+
+	* gas/ppc/power4.s <lq, stq>: Add more tests.
+	* gas/ppc/power4.d: Likewise.
+
+	2012-08-20  Edmar Wienskoski  <edmar@freescale.com>
+	* gas/ppc/e6500.d: Changed opcode for vabsdub, vabsduh, vabsduw,
+	mviwsplt.
+
+2012-08-28  Matthew Gretton-Dann  <matthew.gretton-dann@arm.com>
+
+	Apply mainline patches
+	2012-08-24  Matthew Gretton-Dann  <matthew.gretton-dann@arm.com>
+	* gas/arm/armv8-a+crypto.s: Update testcase.
+	* gas/arm/armv8-a+crypto.d: Likewise.
+
+	2012-08-24  Matthew Gretton-Dann  <matthew.gretton-dann@arm.com>
+	* gas/arm/armv8-a+crypto.d: Update testcase.
+	* gas/arm/armv8-a+crypto.s: Likewise.
+
+	2012-08-24  Matthew Gretton-Dann  <matthew.gretton-dann@arm.com>
+	* gas/arm/armv8-a+crypto.d: Update testcase.
+	* gas/arm/armv8-a+crypto.s: Likewise.
+
+	2012-08-24  Matthew Gretton-Dann  <matthew.gretton-dann@arm.com>
+	* gas/arm/armv8-a+crypto.d: New testcase.
+	* gas/arm/armv8-a+crypto.s: Likewise.
+
+	2012-08-24  Matthew Gretton-Dann  <matthew.gretton-dann@arm.com>
+	* gas/arm/armv8-a+fp.d: Update testcase.
+	* gas/arm/armv8-a+fp.s: Likewise.
+	* gas/arm/half-prec-vfpv3.s: Likewise.
+
+	2012-08-24  Matthew Gretton-Dann  <matthew.gretton-dann@arm.com>
+	* gas/arm/armv8-a+fpv5.d: Update testcase.
+	* gas/arm/armv8-a+fpv5.s: Likewise.
+	* gas/arm/armv8-a+simdv3.d: Likewise.
+	* gas/arm/armv8-a+simdv3.s: Likewise.
+
+	2012-08-24  Matthew Gretton-Dann  <matthew.gretton-dann@arm.com>
+	* gas/arm/armv8-a+fp.d: Update testcase.
+	* gas/arm/armv8-a+fp.s: Likewise.
+	* gas/arm/armv8-a+simd.d: Likewise.
+	* gas/arm/armv8-a+simd.s: Likewise.
+
+	2012-08-24  Matthew Gretton-Dann  <matthew.gretton-dann@arm.com>
+	* gas/testsuite/gas/armv8-a+fp.d: Update testcase.
+	* gas/testsuite/gas/armv8-a+fp.s: Likewise.
+	* gas/testsuite/gas/armv8-a+simd.d: New testcase.
+	* gas/testsuite/gas/armv8-a+simd.s: Likewise.
+
+	2012-08-24  Matthew Gretton-Dann  <matthew.gretton-dann@arm.com>
+	* gas/arm/armv8-a+fp.d: New testcase.
+	* gas/arm/armv8-a+fp.s: Likewise.
+
+	2012-08-24  Matthew Gretton-Dann  <matthew.gretton-dann@arm.com>
+	* gas/arm/armv8-a-bad.l: Update testcase.
+	* gas/arm/armv8-a-bad.s: Likewise.
+	* gas/arm/armv8-a.d: Likewise.
+	* gas/arm/armv8-a.s: Likewise.
+
+	2012-08-24  Matthew Gretton-Dann  <matthew.gretton-dann@arm.com>
+	* gas/arm/armv8-a-bad.l: Update for HLT.
+	* gas/arm/armv8-a-bad.s: Likewise.
+	* gas/arm/armv8-a.d: Likewise.
+	* gas/arm/armv8-a.s: Likewise.
+
+	2012-08-24  Matthew Gretton-Dann  <matthew.gretton-dann@arm.com>
+	* gas/arm/armv8-a.d: Update.
+	* gas/arm/armv8-a.s: Likewise.
+
+	2012-08-24  Matthew Gretton-Dann  <matthew.gretton-dann@arm.com>
+	* gas/arm/armv8-a.s: New testcase.
+	* gas/arm/armv8-a.d: Likewise.
+
+	2012-08-24  Matthew Gretton-Dann  <matthew.gretton-dann@arm.com>
+	* gas/arm/armv8-a-barrier.s: New testcase.
+	* gas/arm/armv8-a-barrier-arm.d: Likewise.
+	* gas/arm/armv8-a-barrier-thumb.d: Likewise.
+
+	2012-08-24  Matthew Gretton-Dann  <matthew.gretton-dann@arm.com>
+	* gas/arm/armv8-a-bad.l: Update
+	* gas/arm/armv8-a-bad.s: Likewise.
+
+	2012-08-24  Matthew Gretton-Dann  <matthew.gretton-dann@arm.com>
+	* gas/arm/armv8-a-it-bad.d: New testcase.
+	* gas/arm/armv8-a-it-bad.l: Likewise.
+	* gas/arm/armv8-a-it-bad.s: Likewise.
+	* gas/arm/ldr-t-bad.s: Update testcase.
+	* gas/arm/ldr-t.d: Likewise.
+	* gas/arm/ldr-t.s: Likewise.
+	* gas/arm/neon-cond-bad-inc.s: Likewise.
+	* gas/arm/sp-pc-validations-bad-t: Likewise.
+	* gas/arm/vfp-fma-inc.s: Likewise.
+	* gas/arm/vfp-neon-syntax-inc.s: Likewise.
+
+	2012-08-24  Matthew Gretton-Dann  <matthew.gretton-dann@arm.com>
+	* gas/arm/armv8-a-bad.l: Update testcase.
+	* gas/arm/armv8-a-bad.s: Likewise.
+
+	2012-08-24  Matthew Gretton-Dann  <matthew.gretton-dann@arm.com>
+	* gas/arm/armv8-a-bad.d: New testcase.
+	* gas/arm/armv8-a-bad.l: Likewise.
+	* gas/arm/armv8-a-bad.s: Likewise.
+	* gas/arm/depr-swp.l: Update for change in expected output.
+	* gas/arm/depr-swp.s: Add additional test.
+
+	2012-08-24  Matthew Gretton-Dann  <matthew.gretton-dann@arm.com>
+	* gas/arm/attr-march-all.d: Update for change in expected
+	output.
+	* gas/arm/attr-mfpu-vfpv4-d16.d: Likewise.
+	* gas/arm/attr-mfpu-vfpv4.d: Likewise.
+	* gas/arm/attr-march-armv8-a+crypto.d: New testcase.
+	* gas/arm/attr-march-armv8-a+fp.d: Likewise.
+	* gas/arm/attr-march-armv8-a+simd.d: Likewise.
+	* gas/arm/attr-march-armv8-a.d: Likewise.
+
+012-08-13  Ian Bolton  <ian.bolton@arm.com>
+            Laurent Desnogues  <laurent.desnogues@arm.com>
+            Jim MacArthur  <jim.macarthur@arm.com>
+            Marcus Shawcroft  <marcus.shawcroft@arm.com>
+            Nigel Stephens  <nigel.stephens@arm.com>
+            Ramana Radhakrishnan  <ramana.radhakrishnan@arm.com>
+            Richard Earnshaw  <rearnsha@arm.com>
+            Sofiane Naci  <sofiane.naci@arm.com>
+            Tejas Belagod  <tejas.belagod@arm.com>
+            Yufeng Zhang  <yufeng.zhang@arm.com>
+
+	* gas/aarch64: New directory.
+	* gas/aarch64/aarch64.exp: New file.
+	* gas/aarch64/addsub.d: New file.
+	* gas/aarch64/addsub.s: New file.
+	* gas/aarch64/advsimd-across.d: New file.
+	* gas/aarch64/advsimd-across.s: New file.
+	* gas/aarch64/advsimd-misc.d: New file.
+	* gas/aarch64/advsimd-misc.s: New file.
+	* gas/aarch64/advsisd-copy.d: New file.
+	* gas/aarch64/advsisd-copy.s: New file.
+	* gas/aarch64/advsisd-misc.d: New file.
+	* gas/aarch64/advsisd-misc.s: New file.
+	* gas/aarch64/alias.d: New file.
+	* gas/aarch64/alias.s: New file.
+	* gas/aarch64/bitfield-alias.d: New file.
+	* gas/aarch64/bitfield-alias.s: New file.
+	* gas/aarch64/bitfield-bfm.d: New file.
+	* gas/aarch64/bitfield-bfm.s: New file.
+	* gas/aarch64/bitfield-dump: New file.
+	* gas/aarch64/bitfield-no-aliases.d: New file.
+	* gas/aarch64/crypto.d: New file.
+	* gas/aarch64/crypto.s: New file.
+	* gas/aarch64/diagnostic.d: New file.
+	* gas/aarch64/diagnostic.l: New file.
+	* gas/aarch64/diagnostic.s: New file.
+	* gas/aarch64/floatdp2.d: New file.
+	* gas/aarch64/floatdp2.s: New file.
+	* gas/aarch64/fp_cvt_int.d: New file.
+	* gas/aarch64/fp_cvt_int.s: New file.
+	* gas/aarch64/illegal-2.d: New file.
+	* gas/aarch64/illegal-2.l: New file.
+	* gas/aarch64/illegal-2.s: New file.
+	* gas/aarch64/illegal.d: New file.
+	* gas/aarch64/illegal.l: New file.
+	* gas/aarch64/illegal.s: New file.
+	* gas/aarch64/inst-directive.d: New file.
+	* gas/aarch64/inst-directive.s: New file.
+	* gas/aarch64/int-insns.d: New file.
+	* gas/aarch64/int-insns.s: New file.
+	* gas/aarch64/ldst-exclusive.d: New file.
+	* gas/aarch64/ldst-exclusive.s: New file.
+	* gas/aarch64/ldst-reg-imm-post-ind.d: New file.
+	* gas/aarch64/ldst-reg-imm-post-ind.s: New file.
+	* gas/aarch64/ldst-reg-imm-pre-ind.d: New file.
+	* gas/aarch64/ldst-reg-imm-pre-ind.s: New file.
+	* gas/aarch64/ldst-reg-pair.d: New file.
+	* gas/aarch64/ldst-reg-pair.s: New file.
+	* gas/aarch64/ldst-reg-reg-offset.d: New file.
+	* gas/aarch64/ldst-reg-reg-offset.s: New file.
+	* gas/aarch64/ldst-reg-uns-imm.d: New file.
+	* gas/aarch64/ldst-reg-uns-imm.s: New file.
+	* gas/aarch64/ldst-reg-unscaled-imm.d: New file.
+	* gas/aarch64/ldst-reg-unscaled-imm.s: New file.
+	* gas/aarch64/legacy_reg_names.d: New file.
+	* gas/aarch64/legacy_reg_names.l: New file.
+	* gas/aarch64/legacy_reg_names.s: New file.
+	* gas/aarch64/mapmisc.d: New file.
+	* gas/aarch64/mapmisc.dat: New file.
+	* gas/aarch64/mapmisc.s: New file.
+	* gas/aarch64/mapping.d: New file.
+	* gas/aarch64/mapping.s: New file.
+	* gas/aarch64/mapping2.d: New file.
+	* gas/aarch64/mapping2.s: New file.
+	* gas/aarch64/mapping3.d: New file.
+	* gas/aarch64/mapping3.s: New file.
+	* gas/aarch64/mapping4.d: New file.
+	* gas/aarch64/mapping4.s: New file.
+	* gas/aarch64/mov-no-aliases.d: New file.
+	* gas/aarch64/mov.d: New file.
+	* gas/aarch64/mov.s: New file.
+	* gas/aarch64/movi.d: New file.
+	* gas/aarch64/movi.s: New file.
+	* gas/aarch64/msr.d: New file.
+	* gas/aarch64/msr.s: New file.
+	* gas/aarch64/neon-fp-cvt-int.d: New file.
+	* gas/aarch64/neon-fp-cvt-int.s: New file.
+	* gas/aarch64/neon-frint.d: New file.
+	* gas/aarch64/neon-frint.s: New file.
+	* gas/aarch64/neon-ins.d: New file.
+	* gas/aarch64/neon-ins.s: New file.
+	* gas/aarch64/neon-not.d: New file.
+	* gas/aarch64/neon-not.s: New file.
+	* gas/aarch64/neon-vfp-reglist-post.d: New file.
+	* gas/aarch64/neon-vfp-reglist-post.s: New file.
+	* gas/aarch64/neon-vfp-reglist.d: New file.
+	* gas/aarch64/neon-vfp-reglist.s: New file.
+	* gas/aarch64/no-aliases.d: New file.
+	* gas/aarch64/optional.d: New file.
+	* gas/aarch64/optional.s: New file.
+	* gas/aarch64/programmer-friendly.d: New file.
+	* gas/aarch64/programmer-friendly.s: New file.
+	* gas/aarch64/reloc-data.d: New file.
+	* gas/aarch64/reloc-data.s: New file.
+	* gas/aarch64/reloc-insn.d: New file.
+	* gas/aarch64/reloc-insn.s: New file.
+	* gas/aarch64/shifted.d: New file.
+	* gas/aarch64/shifted.s: New file.
+	* gas/aarch64/symbol.d: New file.
+	* gas/aarch64/symbol.s: New file.
+	* gas/aarch64/sysreg-1.d: New file.
+	* gas/aarch64/sysreg-1.s: New file.
+	* gas/aarch64/sysreg.d: New file.
+	* gas/aarch64/sysreg.s: New file.
+	* gas/aarch64/system.d: New file.
+	* gas/aarch64/system.s: New file.
+	* gas/aarch64/tlbi_op.d: New file.
+	* gas/aarch64/tlbi_op.s: New file.
+	* gas/aarch64/tls.d: New file.
+	* gas/aarch64/tls.s: New file.
+	* gas/aarch64/verbose-error.d: New file.
+	* gas/aarch64/verbose-error.l: New file.
+	* gas/aarch64/verbose-error.s: New file.
+
+2012-07-30  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* gas/i386/inval-equ-2.l: Updated.
+
 2012-07-24  Sandra Loosemore  <sandra@codesourcery.com>
 	    Jie Zhang  <jzhang918@gmail.com>
 

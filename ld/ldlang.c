@@ -2462,7 +2462,9 @@ wild_sort (lang_wild_statement_type *wild,
       /* Here either the files are not sorted by name, or we are
 	 looking at the sections for this file.  */
 
-      if (sec != NULL && sec->spec.sorted != none)
+      if (sec != NULL
+	  && sec->spec.sorted != none
+	  && sec->spec.sorted != by_none)
 	if (compare_section (sec->spec.sorted, section, ls->section) < 0)
 	  break;
     }
@@ -3284,7 +3286,7 @@ open_input_bfds (lang_statement_union_type *s, enum open_bfd_mode mode)
 #endif
 	  break;
 	case lang_assignment_statement_enum:
-	  if (s->assignment_statement.exp->assign.hidden)
+	  if (s->assignment_statement.exp->assign.defsym)
 	    /* This is from a --defsym on the command line.  */
 	    exp_fold_tree_no_dot (s->assignment_statement.exp);
 	  break;
@@ -3510,8 +3512,6 @@ update_wild_statements (lang_statement_union_type *s)
 		      if (sort_section == by_name)
 			sec->spec.sorted = by_alignment_name;
 		      break;
-		    case by_none:
-		      sec->spec.sorted = none;
 		    default:
 		      break;
 		    }
@@ -7437,7 +7437,7 @@ lang_leave_overlay (etree_type *lma_expr,
     {
       overlay_list->os->update_dot = 1;
       overlay_list->os->update_dot_tree
-	= exp_assign (".", exp_binop ('+', overlay_vma, overlay_max));
+	= exp_assign (".", exp_binop ('+', overlay_vma, overlay_max), FALSE);
     }
 
   l = overlay_list;
