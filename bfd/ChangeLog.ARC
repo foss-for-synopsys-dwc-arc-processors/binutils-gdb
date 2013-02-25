@@ -4,6 +4,10 @@
 	* elf32-arc.c: added ARCv2 machine number for an ARC elf file
 	* cpu-arc.c : added the new EM bfd definition.
 
+2013-02-25  Simon Cook  <simon.cook@embecosm.com>
+
+	* bfd/config.bfd: Make arc*-*-elf* valid for big endian ARC.
+
 2013-01-16  Simon Cook  <simon.cook@embecosm.com>
 
 	* cpu-arc.c (bfd_arc_arch): Make A5 default architecture to solve
