@@ -1,3 +1,118 @@
+2012-11-29  Joel Brobecker  <brobecker@adacore.com>
+
+	* version.in: Update GDB version number to 7.5.1.
+
+2012-11-15  Luis Machado  <lgustavo@codesourcery.com>
+
+	* value.c (value_actual_type): Check for TYPE_CODE_STRUCT
+	target types.
+
+2012-11-10  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR backtrace/14646
+	PR gdb/14647
+	* i386-tdep.h (gdbarch_tdep): Remove sp_regnum_from_eax and
+	pc_regnum_from_eax.
+	* i386-tdep.c (i386_gdbarch_init): Don't use sp_regnum_from_eax
+	nor pc_regnum_from_eax.
+	* amd64-tdep.c (amd64_x32_init_abi): Don't set sp_regnum_from_eax
+	nor pc_regnum_from_eax.
+
+2012-10-11  Doug Evans  <dje@google.com>
+
+	PR breakpoints/14643.
+	* linespec.c (struct ls_parser): New member keyword_ok.
+	(linespec_lexer_lex_string): Add comment.
+	(linespec_lexer_lex_one): Ignore keywords if it's the wrong place
+	for one.
+	(parse_linespec): Set keyword_ok.
+
+2012-10-06  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	Fix crash during stepping on ppc32.
+	* ppc-linux-tdep.c (powerpc_linux_in_dynsym_resolve_code): Test NULL
+	SYM.
+
+2012-09-17  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* common/linux-ptrace.c: Change __i386__ to __i386__ || __x86_64__.
+	(linux_ptrace_test_ret_to_nx): Extend comment for x86_64.  Change
+	__i386__ to __i386__ || __x86_64__. Extend code also for __x86_64__.
+	Extend code also for PaX support.  Convert all gdb_assert to warning
+	calls.
+
+2012-09-17  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	Implement auto-load user conveniences suggested by Doug Evans.
+	* auto-load.c: Include top.h.
+	(file_is_auto_load_safe): New variable advice_printed.  Print advice.
+	(_initialize_auto_load): New variable scripts_directory_help.  Mention
+	GDBPY_AUTO_FILE_NAME and GDB_AUTO_FILE_NAME for set auto-load
+	scripts-directory.  Document in online help one can use also files for
+	set auto-load safe-path.
+	* python/py-auto-load.c: (GDBPY_AUTO_FILE_NAME): Move it from here ...
+	* python/python.h (GDBPY_AUTO_FILE_NAME): ... to here.
+
+2012-09-17  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	PR 14119
+	* frame.c (skip_inlined_frames): Skip also TAILCALL_FRAME frames.
+	(frame_pop): Drop also TAILCALL_FRAME frames.
+	* infcmd.c (finish_command): Ignore also TAILCALL_FRAME frames.
+
+2012-09-17  Jan Kratochvil  <jan.kratochvil@redhat.com>
+	    Pedro Alves  <palves@redhat.com>
+
+	PR 14548
+	* infrun.c (handle_inferior_event): Do not reverse-continue back to the
+	function start if we are already at function start.  Both for
+	reverse-next and for reverse-step into function without line number
+	info.
+
+2012-08-29  Doug Evans  <dje@google.com>
+
+	* main.c (print_gdb_help): Remove reference to
+	--use-deprecated-index-sections.
+
+2012-08-27  Eli Zaretskii  <eliz@gnu.org>
+	    Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* auto-load.c (auto_load_objfile_script): Rename to ...
+	(auto_load_objfile_script_1): ... here, change variable realname to
+	parameter realname, document it, add return value, add variable retval.
+	(auto_load_objfile_script): New function.
+
+2012-08-27  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	* cli/cli-decode.c (print_doc_line): Keep skipping '.' and ',' not
+	followed by a whitespace.
+
+2012-08-27  Jan Kratochvil  <jan.kratochvil@redhat.com>
+
+	PR gdb/14494.
+	* dwarf2read.c (dwarf2_locate_sections): Move variable aflag here.
+	Move the SEC_HAS_CONTENTS check here - for any NAMES use.
+	(dwarf2_locate_sections) <eh_frame>: Move the variable and check from
+	here.
+
+2012-08-22  Keith Seitz  <keiths@redhat.com>
+
+	* defs.h: Include build-gnulib/config.h
+
+2012-08-21  Pierre Muller  <muller@ics.u-strasbg.fr>
+
+	* symfile.c (allocate_symtab): Use host_address_to_string
+	function instead of cast of pointer to long which is not
+	compatible with x86_64-w64-mingw32 build.
+
+2012-08-17  Joel Brobecker  <brobecker@adacore.com>
+
+	* version.in: Set version to 7.5.0.20120817-cvs.
+
+2012-08-17  Joel Brobecker  <brobecker@adacore.com>
+
+	GDB 7.5 released.
+
 2012-08-17  Joel Brobecker  <brobecker@adacore.com>
 
 	* version.in: Update GDB version number to 7.5.
