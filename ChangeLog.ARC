@@ -1,19 +1,8 @@
 2013-02-25  Simon Cook  <simon.cook@embecosm.com>
 
-	* Makefile.def: Brought in from updated gcc.
-	* Makefile.in: Likewise.
-	* configure: Likewise.
-	* configure.ac: Likewise.
-
-2013-02-25  Simon Cook  <simon.cook@embecosm.com>
-
 	* config.sub: Make arceb-* valid.
 	* configure.ac: Make arceb-*-* valid.
 	* configure: Regenerate.
-
-2013-02-05  Simon Cook  <simon.cook@embecosm.com>
-
-	* configure: Regenerated.
 
 2012-08-18  Vineet Gupta <vgupta@synopsys.com>
 
