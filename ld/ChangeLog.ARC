@@ -1,3 +1,7 @@
+2013-02-25  Simon Cook  <simon.cook@embecosm.com>
+
+	* configure.tgt: Make arc*-*-elf* valid for big endian ARC.
+
 2012-10-19  Simon Cook  <simon.cook@embecosm.com>
 
 	* scripttempl/arclinux.sc: Set default linker endianness based on
