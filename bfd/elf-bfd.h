@@ -402,7 +402,8 @@ struct eh_frame_hdr_info
    one line.  */
 enum elf_target_id
 {
-  ALPHA_ELF_DATA = 1,
+  AARCH64_ELF_DATA = 1,
+  ALPHA_ELF_DATA,
   ARC_ELF_DATA,
   ARM_ELF_DATA,
   AVR_ELF_DATA,
@@ -1967,7 +1968,7 @@ extern bfd_boolean _bfd_elf_maybe_strip_eh_frame_hdr
 
 extern bfd_boolean _bfd_elf_merge_symbol
   (bfd *, struct bfd_link_info *, const char *, Elf_Internal_Sym *,
-   asection **, bfd_vma *, unsigned int *,
+   asection **, bfd_vma *, bfd_boolean *, unsigned int *,
    struct elf_link_hash_entry **, bfd_boolean *,
    bfd_boolean *, bfd_boolean *, bfd_boolean *);
 

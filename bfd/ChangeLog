@@ -1,3 +1,247 @@
+2012-11-13  Tristan Gingold  <gingold@adacore.com>
+
+	* configure.in: Bump version to 2.23.1
+	* Makefile.am (RELEASE): Set.
+	* configure, Makefile.in: Regenerate.
+
+2012-11-05  Andreas Krebbel  <Andreas.Krebbel@de.ibm.com>
+
+	PR target/14788
+	* elf32-s390.c (elf_s390_relocate_section): Set elf.dynobj for
+	local ifunc symbols.
+	* elf64-s390.c (elf_s390_relocate_section): Likewise.
+
+2012-11-05  Alan Modra  <amodra@gmail.com>
+
+	* configure.in: Apply 2012-09-10 change to config.in here.
+
+2012-10-29  Sean Keys <skeys@ipdatasys.com>
+
+	* elf32-xgate.c(elf_xgate_howto_table): Fix src and dest mask for
+	R_XGATE_16
+
+2012-10-22  Tristan Gingold  <gingold@adacore.com>
+
+	* configure.in: Bump version to 2.23.0
+	* Makefile.am (RELEASE): Unset.
+	* configure, Makefile.in: Regenerate.
+
+2012-10-22  Tristan Gingold  <gingold@adacore.com>
+
+	* configure.in: Bump version to 2.23
+	* Makefile.am (RELEASE): Set.
+	* configure, Makefile.in: Regenerate.
+
+2012-10-16  Sofiane Naci  <sofiane.naci@arm.com>
+
+	* elf64-aarch64.c (elf64_aarch64_tls_howto_table): Fix shift value for
+	R_AARCH64_TLSIE_LD_GOTTPREL_PREL19, R_AARCH64_TLSLE_MOVW_TPREL_G2,
+	R_AARCH64_TLSLE_MOVW_TPREL_G1, R_AARCH64_TLSLE_MOVW_TPREL_G1_NC,
+	R_AARCH64_TLSLE_ADD_TPREL_HI12.
+	(elf64_aarch64_tlsdesc_howto_table): Fix shift value for
+	R_AARCH64_TLSDESC_LD64_PREL19 and R_AARCH64_TLSDESC_OFF_G1.
+	(elf64_aarch64_final_link_relocate): Add signed_addend when resolving
+	AARCH64_TLSLE_*_TPREL_* relocations.
+
+2012-09-20  Walter Lee  <walt@tilera.com>
+
+	* elf32-tilepro.c (tilepro_elf_relocate_section): Adjust got
+	relocations with value of hgot.
+	* elfxx-tilegx.c (tilegx_elf_relocate_section): Ditto.
+
+2012-09-18  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/14591
+	* elf-bfd.h (_bfd_elf_merge_symbol): Add an argument to return
+	if the old symbol is weak.
+
+	* elf32-sh-symbian.c (sh_symbian_relocate_section): Update
+	_bfd_elf_merge_symbol call.
+
+	* elflink.c (_bfd_elf_merge_symbol): Add an argument to return
+	if the old symbol is weak.
+	(_bfd_elf_add_default_symbol): Update _bfd_elf_merge_symbol
+	call.
+	(elf_link_add_object_symbols): Don't update symbol type from a
+	weak definition.  Update symbol type from a common symbol when
+	overriding a weak symbol.
+
+2012-09-17  Walter Lee  <walt@tilera.com>
+
+	* elf32-tilepro.c (tilepro_elf_relocate_section): Remove unused
+	got_base variable.
+	* elfxx-tilegx.c (tilegx_elf_relocate_section): Ditto.
+
+2012-09-17  Walter Lee  <walt@tilera.com>
+
+	* elf32-tilepro.c (tilepro_elf_relocate_section): Fix computation
+	of got relocations for when .got.plt section is merged with .got.
+	* elfxx-tilegx.c (tilegx_elf_relocate_section): Ditto.
+
+2012-09-13  Doug Kwan  <dougkwan@google.com>
+
+	* elf64-ppc.c (ppc64_elf_relocate_section): Use pre-adjusted
+	relocation for stub lookup.
+
+2012-09-10  Matthias Klose  <doko@ubuntu.com>
+
+	* config.in: Disable sanity check for kfreebsd.
+
+2012-09-07  Alan Modra  <amodra@gmail.com>
+
+	PR ld/14464
+	* elf64-ppc.c (ppc64_elf_relocate_section): Map symbols defined
+	by a linker script in .opd to corresponding input .opd section.
+
+2012-08-09  Maciej W. Rozycki  <macro@codesourcery.com>
+
+	* elfxx-mips.c (LA25_LUI_MICROMIPS_1, LA25_LUI_MICROMIPS_2):
+	Remove macros, folding them into...
+	(LA25_LUI_MICROMIPS): ... this new macro.
+	(LA25_J_MICROMIPS_1, LA25_J_MICROMIPS_2): Likewise into...
+	(LA25_J_MICROMIPS): ... this new macro.
+	(LA25_ADDIU_MICROMIPS_1, LA25_ADDIU_MICROMIPS_2): Likewise
+	into...
+	(LA25_ADDIU_MICROMIPS): ... this new macro.
+	(bfd_put_micromips_32, bfd_get_micromips_32): New functions.
+	(mips_elf_create_la25_stub): Use them.
+	(check_br32_dslot, check_br32, check_relocated_bzc): Likewise.
+	(_bfd_mips_elf_relax_section): Likewise.
+
+	* elf32-ppc.c (ppc_elf_relocate_section): Assert that dynindx is
+	not minus one.
+	* elf64-ppc.c (ppc64_elf_relocate_section): Likewise.
+
+2012-08-28  Maciej W. Rozycki  <macro@codesourcery.com>
+
+	* elflink.c (_bfd_elf_merge_symbol): Also override the version
+	a dynamic symbol defaulted to if preempted with a hidden or
+	internal definition.
+
+	* elfxx-mips.c (_bfd_mips_elf_size_dynamic_sections): Look up
+	the options section in the output rather than input BFD to
+	decide if to add a DT_MIPS_OPTIONS tag.
+
+2012-08-13  Maciej W. Rozycki  <macro@codesourcery.com>
+
+	* config.bfd: Wrap mips*el-*-linux* and mips*-*-linux* into
+	#ifdef BFD64.
+
+2012-08-13  Maciej W. Rozycki  <macro@codesourcery.com>
+
+	* elfxx-mips.c (mips_elf_calculate_relocation): Fix the handling
+	of protected symbols.
+
+2012-08-06  Maciej W. Rozycki  <macro@codesourcery.com>
+
+	* elflink.c (bfd_elf_record_link_assignment): Remove --defsym
+	symbols special case.
+
+	* elf64-mips.c (mips16_elf64_howto_table_rela): Correct src_mask
+	field initializers throughout.
+	* elfn32-mips.c (elf_mips16_howto_table_rela): Likewise.
+
+2012-08-03  Maciej W. Rozycki  <macro@codesourcery.com>
+
+	* elfxx-mips.c (mips_elf_perform_relocation): Update the
+	cross-mode jump message.
+
+2012-09-04  Sergey A. Guriev <sergey.a.guriev@intel.com>
+
+	* cpu-ia64-opc.c (ins_cnt6a): New function.
+	(ext_cnt6a): Ditto.
+	(ins_strd5b): Ditto.
+	(ext_strd5b): Ditto.
+	(elf64_ia64_operands): Add new operand types.
+
+2012-08-05  Maciej W. Rozycki  <macro@linux-mips.org>
+
+	* elf32-vax.c (elf_vax_adjust_dynamic_symbol): Don't allocate
+	PLT slots for local symbols.
+
+2012-08-28  Matthew Gretton-Dann  <matthew.gretton-dann@arm.com>
+
+	Apply from mainline
+	2012-08-24  Matthew Gretton-Dann  <matthew.gretton-dann@arm.com>
+	* elf32-arm.c (v8): New array.
+	(tag_cpu_arch_combine): Add support for ARMv8 attributes.
+	(elf32_arm_merge_eabi_attributes): Likewise.
+	(VFP_VERSION_COUNT): New define.
+
+2012-08-17  Nick Clifton  <nickc@redhat.com>
+
+	* po/vi.po: Updated Vietnamese translation.
+
+2012-08-16  Ian Bolton  <ian.bolton@arm.com>
+            Laurent Desnogues  <laurent.desnogues@arm.com>
+            Jim MacArthur  <jim.macarthur@arm.com>
+            Marcus Shawcroft  <marcus.shawcroft@arm.com>
+            Nigel Stephens  <nigel.stephens@arm.com>
+            Ramana Radhakrishnan  <ramana.radhakrishnan@arm.com>
+            Richard Earnshaw  <rearnsha@arm.com>
+            Sofiane Naci  <sofiane.naci@arm.com>
+            Tejas Belagod  <tejas.belagod@arm.com>
+            Yufeng Zhang  <yufeng.zhang@arm.com>
+
+	* Makefile.am: Add AArch64 files.
+	* Makefile.in: Regenerate.
+	* archures.c (bfd_aarch64_arch): New declaration.
+	(bfd_archures_list): Use bfd_archures_list.
+	* bfd-in.h (bfd_elf64_aarch64_init_maps): New declaration.
+	(bfd_aarch64_process_before_allocation): New declaration.
+	(bfd_elf64_aarch64_process_before_allocation): New declaration.
+	(bfd_elf64_aarch64_set_options): New declaration.
+	(bfd_elf64_aarch64_add_glue_sections_to_bfd): New declaration.
+	(BFD_AARCH64_SPECIAL_SYM_TYPE_MAP): New definition.
+	(BFD_AARCH64_SPECIAL_SYM_TYPE_TAG): New definition.
+	(BFD_AARCH64_SPECIAL_SYM_TYPE_OTHER): New definition.
+	(BFD_AARCH64_SPECIAL_SYM_TYPE_ANY): New definition.
+	(bfd_is_aarch64_special_symbol_name): New declaration.
+	(bfd_aarch64_merge_machines): New declaration.
+	(bfd_aarch64_update_notes): New declaration.
+	(int bfd_aarch64_get_mach_from_notes): New declaration.
+	(elf64_aarch64_setup_section_lists): New declaration.
+	(elf64_aarch64_next_input_section): New declaration.
+	(elf64_aarch64_size_stubs): New declaration.
+	(elf64_aarch64_build_stubs): New declaration.
+	* config.bfd: Add AArch64.
+	* configure.in: Add AArch64.
+	* configure: Regenerate.
+	* cpu-aarch64.c: New file.
+	* elf-bfd.h: Add AArch64.
+	* bfd-in2.h: Regenerate.
+	* libbfd.h: Regenerate.
+	* elf64-aarch64.c: New file.
+	* reloc.c: Add AArch64 relocations.
+	* targets.c: Add AArch64.
+	* po/SRC-POTFILES.in: Regenerate.
+
+2012-08-14  Nick Clifton  <nickc@redhat.com>
+
+	* po/uk.po: Updated Ukranian translation.
+
+2012-08-09  Nick Clifton  <nickc@redhat.com>
+
+	* po/vi.po: Updated Vietnamese translation.
+
+2012-08-07  Nick Clifton  <nickc@redhat.com>
+
+	* po/uk.po: Updated Ukranian translation.
+
+2012-07-30  Nick Clifton  <nickc@redhat.com>
+
+	* po/bfd.pot: Updated template.
+	* po/es.po: Updated Spanish translation.
+	* po/fi.po: Updated Finnish translation.
+	* po/fr.po: Updated French translation.
+	* po/ru.po: Updated Russian translation.
+	* po/uk.po: Updated Ukranian translation.
+
+2012-07-27  Tristan Gingold  <gingold@adacore.com>
+
+	* configure.in: Bump version to 2.22.90
+	* configure: Regenerate.
+
 2012-07-26  Teresa Johnson  <tejohnson@google.com>
 
 	* bfd/dwarf2.c (find_line): Initialize discriminator_ptr
