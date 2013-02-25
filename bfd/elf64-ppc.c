@@ -12249,7 +12249,7 @@ ppc64_elf_relocate_section (bfd *output_bfd,
   for (; rel < relend; rel++)
     {
       enum elf_ppc64_reloc_type r_type;
-      bfd_vma addend, orig_addend;
+      bfd_vma addend;
       bfd_reloc_status_type r;
       Elf_Internal_Sym *sym;
       asection *sec;
@@ -12269,6 +12269,7 @@ ppc64_elf_relocate_section (bfd *output_bfd,
       struct ppc_stub_hash_entry *stub_entry;
       bfd_vma max_br_offset;
       bfd_vma from;
+      const Elf_Internal_Rela orig_rel = *rel;
 
       r_type = ELF64_R_TYPE (rel->r_info);
       r_symndx = ELF64_R_SYM (rel->r_info);
@@ -12288,7 +12289,6 @@ ppc64_elf_relocate_section (bfd *output_bfd,
       sym_name = NULL;
       unresolved_reloc = FALSE;
       warned = FALSE;
-      orig_addend = rel->r_addend;
 
       if (r_symndx < symtab_hdr->sh_info)
 	{
@@ -12328,6 +12328,33 @@ ppc64_elf_relocate_section (bfd *output_bfd,
 				   unresolved_reloc, warned);
 	  sym_name = h_elf->root.root.string;
 	  sym_type = h_elf->type;
+	  if (sec != NULL
+	      && sec->owner == output_bfd
+	      && strcmp (sec->name, ".opd") == 0)
+	    {
+	      /* This is a symbol defined in a linker script.  All
+		 such are defined in output sections, even those
+		 defined by simple assignment from a symbol defined in
+		 an input section.  Transfer the symbol to an
+		 appropriate input .opd section, so that a branch to
+		 this symbol will be mapped to the location specified
+		 by the opd entry.  */
+	      struct bfd_link_order *lo;
+	      for (lo = sec->map_head.link_order; lo != NULL; lo = lo->next)
+		if (lo->type == bfd_indirect_link_order)
+		  {
+		    asection *isec = lo->u.indirect.section;
+		    if (h_elf->root.u.def.value >= isec->output_offset
+			&& h_elf->root.u.def.value < (isec->output_offset
+						      + isec->size))
+		      {
+			h_elf->root.u.def.value -= isec->output_offset;
+			h_elf->root.u.def.section = isec;
+			sec = isec;
+			break;
+		      }
+		  }
+	    }
 	}
       h = (struct ppc_link_hash_entry *) h_elf;
 
@@ -12850,7 +12877,8 @@ ppc64_elf_relocate_section (bfd *output_bfd,
 	      && h->oh != NULL
 	      && h->oh->is_func_descriptor)
 	    fdh = ppc_follow_link (h->oh);
-	  stub_entry = ppc_get_stub_entry (input_section, sec, fdh, rel, htab);
+	  stub_entry = ppc_get_stub_entry (input_section, sec, fdh, &orig_rel,
+					   htab);
 	  if (stub_entry != NULL
 	      && (stub_entry->stub_type == ppc_stub_plt_call
 		  || stub_entry->stub_type == ppc_stub_plt_call_r2save
@@ -13118,6 +13146,7 @@ ppc64_elf_relocate_section (bfd *output_bfd,
 		      ;
 		    else
 		      {
+			BFD_ASSERT (h->elf.dynindx != -1);
 			indx = h->elf.dynindx;
 			unresolved_reloc = FALSE;
 		      }
@@ -13131,7 +13160,7 @@ ppc64_elf_relocate_section (bfd *output_bfd,
 		  }
 
 		for (; ent != NULL; ent = ent->next)
-		  if (ent->addend == orig_addend
+		  if (ent->addend == orig_rel.r_addend
 		      && ent->owner == input_bfd
 		      && ent->tls_type == tls_type)
 		    break;
@@ -13284,7 +13313,7 @@ ppc64_elf_relocate_section (bfd *output_bfd,
 	    {
 	      struct plt_entry *ent;
 	      for (ent = h->elf.plt.plist; ent != NULL; ent = ent->next)
-		if (ent->addend == orig_addend
+		if (ent->addend == orig_rel.r_addend
 		    && ent->plt.offset != (bfd_vma) -1)
 		  {
 		    relocation = (htab->plt->output_section->vma
@@ -13490,7 +13519,10 @@ ppc64_elf_relocate_section (bfd *output_bfd,
 	      else if (!SYMBOL_CALLS_LOCAL (info, &h->elf)
 		       && !is_opd
 		       && r_type != R_PPC64_TOC)
-		outrel.r_info = ELF64_R_INFO (h->elf.dynindx, r_type);
+		{
+		  BFD_ASSERT (h->elf.dynindx != -1);
+		  outrel.r_info = ELF64_R_INFO (h->elf.dynindx, r_type);
+		}
 	      else
 		{
 		  /* This symbol is local, or marked to become local,
@@ -13853,7 +13885,8 @@ ppc64_elf_relocate_section (bfd *output_bfd,
 	      if (!((*info->callbacks->reloc_overflow)
 		    (info, (h ? &h->elf.root : NULL), sym_name,
 		     ppc64_elf_howto_table[r_type]->name,
-		     orig_addend, input_bfd, input_section, rel->r_offset)))
+		     orig_rel.r_addend, input_bfd, input_section,
+		     rel->r_offset)))
 		return FALSE;
 	    }
 	  else

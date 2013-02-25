@@ -1,3 +1,116 @@
+2012-11-05  Alan Modra  <amodra@gmail.com>
+
+	* configure.in: Apply 2012-09-10 change to config.in here.
+
+2012-09-10  Matthias Klose  <doko@ubuntu.com>
+
+	* config.in: Disable sanity check for kfreebsd.
+
+2012-09-10  Hans-Peter Nilsson  <hp@bitrange.com>
+
+	* emultempl/mmo.em (mmo_place_orphan): Rewrite to also attach
+	orphan sections to .data and .bss output sections, not just .text.
+	When giving up on finding a suitable output section, attach to any
+	output section other than .MMIX.reg_contents, if it exists.
+	* scripttempl/mmo.sc: Move output debug sections to just before
+	.MMIX.reg_contents.  Add .gnu.attributes.  Add new . = . NOP
+	assignments and move end-of-section provide-symbols after them
+	to force the end-of-section symbols to the address after orphan
+	placement.  Add SORT_NONE to .init and .fini sections.
+
+2012-09-10  Maciej W. Rozycki  <macro@codesourcery.com>
+
+	* emulparams/elf32bmip.sh: Make _gp hidden.
+	* emulparams/elf32bmipn32-defs.sh: Likewise.
+	* emulparams/elf32mipswindiss.sh: Likewise.
+	* scripttempl/mips.sc: Likewise.
+
+2012-08-06  Maciej W. Rozycki  <macro@codesourcery.com>
+
+	* ldexp.h (etree_union): Add defsym member to the assign member
+	structure.
+	(exp_assign): Add hidden argument to prototype.
+	* ldexp.c (exp_fold_tree_1): Use the defsym member to handle
+	--defsym symbols.
+	(exp_assop): Add defsym argument, initialize the defsym member
+	of the assign structure.
+	(exp_assign): Handle hidden symbols.
+	(exp_defsym): Update to use the defsym argument to exp_assop.
+	(exp_provide): Update to handle the defsym argument to exp_assop.
+	* ldlex.l (HIDDEN): New token.
+	* ldgram.y (HIDDEN): Likewise.
+	(assignment, section): Update calls to exp_assign.
+	* ldctor.c (ldctor_build_sets): Likewise.
+	* mri.c (mri_format): Likewise.
+	* ldlang.c (lang_insert_orphan, lang_leave_overlay): Likewise.
+	(open_input_bfds): Remove --defsym symbols special case.
+	* emultempl/beos.em (gld_${EMULATION_NAME}_set_symbols): Update
+	call to exp_assign.
+	* emultempl/pe.em (gld_${EMULATION_NAME}_set_symbols): Likewise.
+	* emultempl/pep.em (gld_${EMULATION_NAME}_set_symbols): Likewise.
+	* emultempl/spuelf.em (spu_place_special_section): Likewise.
+	* emultempl/xtensaelf.em (ld_xtensa_insert_page_offsets):
+	Likewise.
+	* ld.texinfo (Assigning Values to Symbols): Add HIDDEN.
+	(HIDDEN): New subsection.
+
+2012-08-13  Ian Bolton  <ian.bolton@arm.com>
+            Laurent Desnogues  <laurent.desnogues@arm.com>
+            Jim MacArthur  <jim.macarthur@arm.com>
+            Marcus Shawcroft  <marcus.shawcroft@arm.com>
+            Nigel Stephens  <nigel.stephens@arm.com>
+            Ramana Radhakrishnan  <ramana.radhakrishnan@arm.com>
+            Richard Earnshaw  <rearnsha@arm.com>
+            Sofiane Naci  <sofiane.naci@arm.com>
+            Tejas Belagod  <tejas.belagod@arm.com>
+            Yufeng Zhang  <yufeng.zhang@arm.com>
+
+	* Makefile.am: Add AArch64.
+	* Makefile.in: Regenerate.
+	* configure.tgt: Add AArch64.
+	* emulparams/aarch64elf.sh: New file.
+	* emulparams/aarch64elfb.sh: New file.
+	* emulparams/aarch64linux.sh: New file.
+	* emulparams/aarch64linuxb.sh: New file.
+	* emultempl/aarch64elf.em: New file.
+	* NEWS: Mention the new feature.
+
+2012-08-14  Nick Clifton  <nickc@redhat.com>
+
+	* configure.in (ALL_LINGUGAS): Add uk.
+	* configure: Regenerate.
+	* po/uk.po: New Ukranian translation.
+
+2012-08-09  Nick Clifton  <nickc@redhat.com>
+
+	* po/vi.po: Updated Vietnamese translation.
+
+2012-08-07  Nick Clifton  <nickc@redhat.com>
+
+	* po/ja.po: Updated Japanese translation.
+
+2012-08-02  H.J. Lu  <hongjiu.lu@intel.com>
+
+	Backport from mainline
+	2012-07-31  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/14156
+	* ldlang.c (wild_sort): Properly handle by_none.
+
+	* scripttempl/elf.sc: Add SORT_NONE to .init and .fini sections.
+	* scripttempl/elf32msp430.sc: Likewise.
+	* scripttempl/elf32msp430_3.sc: Likewise.
+	* scripttempl/elfd10v.sc: Likewise.
+	* scripttempl/elfd30v.sc: Likewise.
+	* scripttempl/elfxtensa.sc: Likewise.
+
+2012-07-30  Nick Clifton  <nickc@redhat.com>
+
+	* po/ld.pot: Updated template.
+	* po/bg.po: Updated Bulgarian translation.
+	* po/es.po: Updated Spanish translation.
+	* po/fi.po: Updated Finnish translation.
+
 2012-07-27  Tristan Gingold  <gingold@adacore.com>
 
 	* NEWS: Add marker for 2.23.
