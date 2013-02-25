@@ -50,7 +50,7 @@ alpha*-*-netbsd*)	targ_emul=elf64alpha_nbsd ;;
 alpha*-*-openbsd*)	targ_emul=elf64alpha ;;
 alpha*-*-*vms*)		targ_emul=alphavms
 			;;
-arc-*-elf* | arc*-*-linux-uclibc*)
+arc*-*-elf* | arc*-*-linux-uclibc*)
 			targ_emul=arcelf
 			targ_extra_emuls="arcelf_prof arclinux arclinux_prof"
 			;;
