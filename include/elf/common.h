@@ -193,7 +193,7 @@
 #define EM_MN10200	 90	/* Matsushita MN10200 */
 #define EM_PJ		 91	/* picoJava */
 #define EM_OR1K		 92	/* OpenRISC 1000 32-bit embedded processor */
-#define EM_ARC_A5	 93	/* ARC Cores Tangent-A5 */
+#define EM_ARCOMPACT	 93	/* ARC Cores */
 #define EM_XTENSA	 94	/* Tensilica Xtensa Architecture */
 #define EM_VIDEOCORE	 95	/* Alphamosaic VideoCore processor */
 #define EM_TMM_GPP	 96	/* Thompson Multimedia General Purpose Processor */
