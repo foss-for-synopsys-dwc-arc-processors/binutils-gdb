@@ -70,11 +70,11 @@ alpha*-*-*vms*)		targ_emul=alphavms
 			;;
 arc*-*-elf*)
 			targ_emul=arcelf
-            targ_extra_emuls="arcelf_prof"
+            targ_extra_emuls="arcelf_prof arclinux arclinux_prof"
             ;;
 arc*-*-linux-uclibc*)
             targ_emul=arclinux
-            targ_extra_emuls="arclinux_prof"
+            targ_extra_emuls="arclinux_prof arcelf arcelf_prof"
 			;;
 arm-epoc-pe)		targ_emul=arm_epoc_pe ;	targ_extra_ofiles="deffilep.o pe-dll.o" ;;
 arm*-*-cegcc*)		targ_emul=arm_wince_pe ; targ_extra_ofiles="deffilep.o pe-dll.o"
