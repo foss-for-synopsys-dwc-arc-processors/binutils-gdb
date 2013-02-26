@@ -1,3 +1,10 @@
+2013-02-26  Simon Cook  <simon.cook@embecosm.com>
+
+	* configure.tgt (arc*-*-elf*): Add arclinux emulation scripts.
+	(arc*-*-linux-uclibc*): Add arcelf emulation scripts.
+	* scripttempl/elfarc.sc: Set default linker endianness based on
+	configured target.
+
 2013-02-25  Simon Cook  <simon.cook@embecosm.com>
 
 	* configure.tgt: Make arc*-*-elf* valid for big endian ARC.
