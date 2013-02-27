@@ -1,3 +1,8 @@
+2013-02-27  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	* regformats/reg-arc.dat: Updated to match new GDB register
+	sequence.
+
 2013-02-18  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* arc-aux-registers.h (_initialize_arc_aux_regs): Replace
