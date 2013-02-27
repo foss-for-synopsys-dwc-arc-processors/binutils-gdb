@@ -1,3 +1,32 @@
+2013-02-27  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	* configure.srv (arc*-*-linux*): Remove srv_linux_usrregs and
+	replace with srv_linux_regsets.
+	* linux-arc-low.c: Commenting updated throughout.
+	(regdef.h): Include file added.
+	(../arc-constants.h, asm/trace.h): Include files removed
+	(elf.h, linux/ptrace.h): Added.
+	(ARC_NR_REGS): Removed throughout, replaced where appropriate by
+	arc_num_regs.
+	(arc_regmap): Removed.
+	(struct user_regs_struct) [ARC_LEGACY_PTRACE_ABI]: Added
+	conditionally to define struture, pending its adoption in mainline
+	Linux.
+	(orig_r8): Created to track latest value of orig_r8 register.
+	(arc_num_regs): Created.
+	(init_registers_arc): Declared as extern.
+	(arc_arch_setup): Initialize arc_num_regs from regcache size.
+	(arc_get_pc): Name of register is changed.
+	(arc_set_pc): Rewritten to use new register structure.
+	(arc_fill_gregset, arc_store_gregset): Created.
+	(target_regsets): Created.
+	(the_low_target): Reordered to omit obsolete functions and
+	variables and use named elements.
+
+2013-02-27  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	* Makefile.in (SFILES): Correct location of common files.
+
 2013-02-19  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* configure.srv (arc*-*-linux*): Add linux-osdata.o,
