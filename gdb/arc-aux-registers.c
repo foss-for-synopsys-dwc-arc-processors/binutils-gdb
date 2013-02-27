@@ -53,10 +53,8 @@
 
 /* ARC header files */
 #include "arc-aux-registers.h"
-#include "arc-architecture.h"
 #include "arc-tdep.h"
-#include "arc-jtag-tdep.h"
-#include "config/arc/tm-embed.h"
+#include "arc-elf-tdep.h"
 
 /* ARC simulator header files */
 #include "sim/arc/arc-sim-registers.h"
@@ -68,35 +66,35 @@
 
 typedef struct field_meaning
 {
-  const char *description;
-  ARC_RegisterContents value;
+  char *description;
+  uint32_t value;
 } ARC_FieldMeaning;
 
 
 typedef struct field_definition
 {
-  const char *name;
-  const char *description;
+  char *name;
+  char *description;
   unsigned int offset;
   unsigned int size;
-  RegisterAccess access;
-  ARC_RegisterContents value_for_write;
-  Boolean fixed;
+  enum arc_reg_access access;
+  uint32_t value_for_write;
+  int fixed;
   ARC_FieldMeaning *meanings;
   unsigned int meaning_count;
 } ARC_FieldDefinition;
 
 
 // complete the type (declared in the header file) here 
-struct aux_register_definition
+struct arc_aux_reg_def
 {
-  const char *name;
-  const char *description;
-  ARC_RegisterNumber number;
+  char *name;
+  char *description;
+  unsigned int number;
   int gdb_regno;
-  Boolean is_BCR;
-  ARC_Word mask;
-  RegisterAccess access;
+  int is_BCR;
+  uint32_t mask;
+  enum arc_reg_access access;
   ARC_FieldDefinition *fields;
   unsigned int field_count;
   unsigned int longest_field_name;
@@ -116,11 +114,11 @@ struct aux_register_definition
 typedef struct parsing_data
 {
   const char *filename;
-  ARC_RegisterInfo *info;
-  ARC_AuxRegisterDefinition *currentRegister;
+  struct arc_reg_info *info;
+  struct arc_aux_reg_def *currentRegister;
   ARC_FieldDefinition *currentField;
-  ARC_RegisterContents maxFieldContents;
-  ARC_AuxRegisterDefinition reg;
+  uint32_t maxFieldContents;
+  struct arc_aux_reg_def reg;
   ARC_FieldDefinition field;
 } ParsingData;
 
@@ -145,7 +143,7 @@ static gdb_xml_element_start_handler start_meaning;
 /*                               externally visible data                      */
 /* -------------------------------------------------------------------------- */
 
-Boolean arc_pending_register_architecture_change_event;
+int arc_pending_register_architecture_change_event;
 
 
 /* -------------------------------------------------------------------------- */
@@ -173,9 +171,9 @@ Boolean arc_pending_register_architecture_change_event;
 #define ATTRIBUTE_END_MARKER     { NULL,             GDB_XML_AF_NONE, NULL, NULL }
 
 
-static const char *NO_DESCRIPTION = "";
-static const char *RESERVED = "<reserved>";
-static const char *UNUSED = "<unused>";
+static char *NO_DESCRIPTION = "";
+static char *RESERVED = "<reserved>";
+static char *UNUSED = "<unused>";
 
 
 /* The elements and attributes of an XML target description. */
@@ -316,12 +314,12 @@ static const struct gdb_xml_element elements[] = {
 
 #define FIND_REGISTER_DEFINITION_SUCH_THAT(condition)             \
 {                                                                 \
-    ARC_RegisterInfo* info = find_info(TRUE);                     \
+    struct arc_reg_info* info = find_info(TRUE);                     \
     unsigned int      i;                                          \
                                                                   \
     for (i = 0; i < info->aux_register_count; i++)                \
     {                                                             \
-        ARC_AuxRegisterDefinition* def = &info->aux_registers[i]; \
+        struct arc_aux_reg_def* def = &info->aux_registers[i]; \
                                                                   \
         if (condition)                                            \
             return def;                                           \
@@ -336,7 +334,7 @@ static const struct gdb_xml_element elements[] = {
 /* -------------------------------------------------------------------------- */
 
 static const char *
-RegisterAccess_Image (RegisterAccess val)
+RegisterAccess_Image (enum arc_reg_access val)
 {
   switch (val)
     {
@@ -353,7 +351,7 @@ RegisterAccess_Image (RegisterAccess val)
 
 
 static void
-initialize_register (ARC_AuxRegisterDefinition * reg)
+initialize_register (struct arc_aux_reg_def * reg)
 {
   reg->name = NULL;
   reg->number = 0;
@@ -370,7 +368,7 @@ initialize_register (ARC_AuxRegisterDefinition * reg)
 
 
 static void
-initialize_field (ARC_FieldDefinition * field, RegisterAccess access)
+initialize_field (ARC_FieldDefinition * field, enum arc_reg_access access)
 {
   field->name = NULL;
   field->description = NO_DESCRIPTION;
@@ -392,7 +390,7 @@ initialize_meaning (ARC_FieldMeaning * meaning)
 }
 
 
-static Boolean
+static int
 overlaps (ARC_FieldDefinition * field1, ARC_FieldDefinition * field2)
 {
   unsigned int field1_start = field1->offset;
@@ -405,7 +403,7 @@ overlaps (ARC_FieldDefinition * field1, ARC_FieldDefinition * field2)
 
 
 static void
-free_register_set (ARC_RegisterInfo * info)
+free_register_set (struct arc_reg_info * info)
 {
   if (info->aux_registers)
     {
@@ -413,7 +411,7 @@ free_register_set (ARC_RegisterInfo * info)
 
       for (i = 0; i < info->aux_register_count; i++)
 	{
-	  ARC_AuxRegisterDefinition *r = &info->aux_registers[i];
+	  struct arc_aux_reg_def *r = &info->aux_registers[i];
 
 	  if (r->name != UNUSED)
 	    xfree (r->name);
@@ -606,15 +604,15 @@ static void
 add_aux_register (struct gdb_xml_parser *parser,
 		  const struct gdb_xml_element *element,
 		  void *user_data,
-		  VEC (gdb_xml_value_s) * attributes, Boolean is_BCR)
+		  VEC (gdb_xml_value_s) * attributes, int is_BCR)
 {
   ParsingData *data = user_data;
-  ARC_RegisterInfo *info = data->info;
-  ARC_AuxRegisterDefinition *reg = &data->reg;
+  struct arc_reg_info *info = data->info;
+  struct arc_aux_reg_def *reg = &data->reg;
   struct gdb_xml_value *attrs = VEC_address (gdb_xml_value_s, attributes);
   unsigned int length = VEC_length (gdb_xml_value_s, attributes);
   unsigned int i;
-  Boolean add = TRUE;
+  int add = TRUE;
 
   initialize_register (reg);
 
@@ -628,11 +626,11 @@ add_aux_register (struct gdb_xml_parser *parser,
       else if (NAME_IS ("description"))
 	reg->description = xstrdup (value);
       else if (NAME_IS ("number"))
-	reg->number = (ARC_RegisterNumber) * (ULONGEST *) value;
+	reg->number = (unsigned int) * (ULONGEST *) value;
       else if (NAME_IS ("mask"))
-	reg->mask = (ARC_Word) * (ULONGEST *) value;
+	reg->mask = (uint32_t) * (ULONGEST *) value;
       else if (NAME_IS ("access"))
-	reg->access = (RegisterAccess) * (ULONGEST *) value;
+	reg->access = (enum arc_reg_access) * (ULONGEST *) value;
     }
 
   if (strcasecmp (reg->name, "unused") == 0)
@@ -677,7 +675,7 @@ add_aux_register (struct gdb_xml_parser *parser,
       info->aux_register_count++;
       info->aux_registers = xrealloc (info->aux_registers,
 				      info->aux_register_count *
-				      sizeof (ARC_AuxRegisterDefinition));
+				      sizeof (struct arc_aux_reg_def));
 
       if (info->aux_registers == NULL)
 	{
@@ -722,12 +720,12 @@ start_ecr (struct gdb_xml_parser *parser,
 	   void *user_data, VEC (gdb_xml_value_s) * attributes)
 {
   ParsingData *data = user_data;
-  ARC_RegisterInfo *info = data->info;
+  struct arc_reg_info *info = data->info;
   struct gdb_xml_value *attrs = VEC_address (gdb_xml_value_s, attributes);
   unsigned int length = VEC_length (gdb_xml_value_s, attributes);
-  ARC_RegisterNumber number = 0;
-  ARC_Word mask = 0xFFFFFFFF;
-  RegisterAccess access = READ_WRITE;
+  unsigned int number = 0;
+  uint32_t mask = 0xFFFFFFFF;
+  enum arc_reg_access access = READ_WRITE;
   unsigned int i;
 
   for (i = 0; i < length; i++)
@@ -736,11 +734,11 @@ start_ecr (struct gdb_xml_parser *parser,
       void *value = attrs[i].value;
 
       if (NAME_IS ("number"))
-	number = (ARC_RegisterNumber) * (ULONGEST *) value;
+	number = (unsigned int) * (ULONGEST *) value;
       else if (NAME_IS ("mask"))
-	mask = (ARC_Word) * (ULONGEST *) value;
+	mask = (uint32_t) * (ULONGEST *) value;
       else if (NAME_IS ("access"))
-	access = (RegisterAccess) * (ULONGEST *) value;
+	access = (enum arc_reg_access) * (ULONGEST *) value;
     }
 
   /* sanity checking */
@@ -771,15 +769,15 @@ start_ecr (struct gdb_xml_parser *parser,
 static void
 add_field (struct gdb_xml_parser *parser,
 	   const struct gdb_xml_element *element,
-	   void *user_data, VEC (gdb_xml_value_s) * attributes, Boolean is_BCR)
+	   void *user_data, VEC (gdb_xml_value_s) * attributes, int is_BCR)
 {
   ParsingData *data = user_data;
-  ARC_AuxRegisterDefinition *reg = data->currentRegister;
+  struct arc_aux_reg_def *reg = data->currentRegister;
   ARC_FieldDefinition *field = &data->field;
   struct gdb_xml_value *attrs = VEC_address (gdb_xml_value_s, attributes);
   unsigned int length = VEC_length (gdb_xml_value_s, attributes);
   unsigned int i;
-  Boolean add = TRUE;
+  int add = TRUE;
 
   /* by default, a field has the same access as the register that contains it
    * (though a particular field in a R/W register might be R/O or W/O)
@@ -800,10 +798,10 @@ add_field (struct gdb_xml_parser *parser,
       else if (NAME_IS ("size"))
 	field->size = (unsigned int) *(ULONGEST *) value;
       else if (NAME_IS ("access"))
-	field->access = (RegisterAccess) * (ULONGEST *) value;
+	field->access = (enum arc_reg_access) * (ULONGEST *) value;
       else if (NAME_IS ("onwrite"))
 	{
-	  field->value_for_write = (ARC_RegisterContents) * (ULONGEST *) value;
+	  field->value_for_write = (uint32_t) * (ULONGEST *) value;
 	  field->fixed = TRUE;
 	}
     }
@@ -950,13 +948,13 @@ start_meaning (struct gdb_xml_parser *parser,
 	       void *user_data, VEC (gdb_xml_value_s) * attributes)
 {
   ParsingData *data = user_data;
-  ARC_AuxRegisterDefinition *reg = data->currentRegister;
+  struct arc_aux_reg_def *reg = data->currentRegister;
   ARC_FieldDefinition *field = data->currentField;
   ARC_FieldMeaning meaning;
   struct gdb_xml_value *attrs = VEC_address (gdb_xml_value_s, attributes);
   unsigned int length = VEC_length (gdb_xml_value_s, attributes);
   unsigned int i;
-  Boolean add = TRUE;
+  int add = TRUE;
 
 // this should not be needed
 //  if (reg->is_BCR)
@@ -976,7 +974,7 @@ start_meaning (struct gdb_xml_parser *parser,
       if (NAME_IS ("description"))
 	meaning.description = xstrdup (value);
       else if (NAME_IS ("value"))
-	meaning.value = (ARC_RegisterContents) * (ULONGEST *) value;
+	meaning.value = (uint32_t) * (ULONGEST *) value;
     }
 
   if (meaning.value > data->maxFieldContents)
@@ -1027,7 +1025,7 @@ start_meaning (struct gdb_xml_parser *parser,
 
 
 static void
-assign_gdb_register_numbers (struct gdbarch *gdbarch, ARC_RegisterInfo * info)
+assign_gdb_register_numbers (struct gdbarch *gdbarch, struct arc_reg_info * info)
 {
   unsigned int i;
   int pc = -1;
@@ -1035,7 +1033,7 @@ assign_gdb_register_numbers (struct gdbarch *gdbarch, ARC_RegisterInfo * info)
   /* core registers first */
   for (i = 0; i < ELEMENTS_IN_ARRAY (info->core_registers); i++)
     {
-      ARC_CoreRegisterDefinition *reg = &info->core_registers[i];
+      struct arc_core_reg_def *reg = &info->core_registers[i];
 
       /* if this core register exists in the target, we have one more core
        * register in total; and the gdb number of this register is that number
@@ -1050,7 +1048,7 @@ assign_gdb_register_numbers (struct gdbarch *gdbarch, ARC_RegisterInfo * info)
   /* then the auxiliary registers */
   for (i = 0; i < info->aux_register_count; i++)
     {
-      ARC_AuxRegisterDefinition *reg = &info->aux_registers[i];
+      struct arc_aux_reg_def *reg = &info->aux_registers[i];
 
       reg->gdb_regno = info->first_aux_gdb_regno + i;
 
@@ -1116,16 +1114,16 @@ parse_XML (const char *document,
 }
 
 
-static Boolean
+static int
 read_XML_file (const char *filename,
 	       struct gdbarch *gdbarch,
-	       Boolean replace, Boolean inform, Boolean check)
+	       int replace, int inform, int check)
 {
   char *xml = read_file_contents (filename, NULL);
 
   if (xml)
     {
-      ARC_RegisterInfo *info = INFO_OF (gdbarch);
+      struct arc_reg_info *info = INFO_OF (gdbarch);
       struct cleanup *back_to = make_cleanup (xfree, xml);
       char *dirname = ldirname (filename);
       ParsingData data;
@@ -1183,7 +1181,7 @@ read_XML_file (const char *filename,
  *    2) the user's home directory
  */
 static void
-read_default_file (struct gdbarch *gdbarch, Boolean inform, Boolean check)
+read_default_file (struct gdbarch *gdbarch, int inform, int check)
 {
 #define DESCR  "auxiliary registers definition file "
 
@@ -1241,13 +1239,13 @@ get_pc (struct regcache *regcache)
 }
 
 
-static ARC_RegisterInfo *
-find_info (Boolean must_be_defined)
+static struct arc_reg_info *
+find_info (int must_be_defined)
 {
   gdb_assert (current_gdbarch != NULL);
 
   {
-    ARC_RegisterInfo *info = INFO_OF (current_gdbarch);
+    struct arc_reg_info *info = INFO_OF (current_gdbarch);
 
     /* if we have no aux register info */
     if (must_be_defined && info->aux_register_count == 0)
@@ -1284,7 +1282,7 @@ simulator_mapping (int gdb_regno, int *hw_regno, ARC_RegisterClass * reg_class)
     }
   else
     {
-      ARC_AuxRegisterDefinition *def =
+      struct arc_aux_reg_def *def =
 	arc_find_aux_register_by_gdb_number (gdb_regno);
 
       if (def)
@@ -1300,11 +1298,11 @@ simulator_mapping (int gdb_regno, int *hw_regno, ARC_RegisterClass * reg_class)
 /*                  local functions for supporting commands                   */
 /* -------------------------------------------------------------------------- */
 
-static ARC_RegisterNumber
+static unsigned int
 extractRegisterNumber (char *arg)
 {
-  ARC_AuxRegisterDefinition *def = arc_find_aux_register_by_name (arg);
-  ARC_RegisterNumber num;
+  struct arc_aux_reg_def *def = arc_find_aux_register_by_name (arg);
+  unsigned int num;
 
   /* is it a register name? */
   if (def)
@@ -1317,17 +1315,17 @@ extractRegisterNumber (char *arg)
       EXTRACT (arg, int, regnum) if (regnum < 0)
 	  error (_("register number '%s < 0"), arg);
 
-      num = (ARC_RegisterNumber) regnum;
+      num = (unsigned int) regnum;
     }
 
   return num;
 }
 
 
-static ARC_AuxRegisterDefinition *
+static struct arc_aux_reg_def *
 find_aux_register (char *arg)
 {
-  ARC_AuxRegisterDefinition *def = arc_find_aux_register_by_name (arg);
+  struct arc_aux_reg_def *def = arc_find_aux_register_by_name (arg);
 
   /* is it not a register name? */
   if (def == NULL)
@@ -1338,7 +1336,7 @@ find_aux_register (char *arg)
       EXTRACT (arg, int, regnum) if (regnum < 0)
 	  error (_("register number '%s < 0"), arg);
 
-      def = arc_find_aux_register_by_hw_number ((ARC_RegisterNumber) regnum);
+      def = arc_find_aux_register_by_hw_number ((unsigned int) regnum);
     }
 
   return def;
@@ -1346,7 +1344,7 @@ find_aux_register (char *arg)
 
 
 static void
-list_register (ARC_AuxRegisterDefinition * r, Boolean full)
+list_register (struct arc_aux_reg_def * r, int full)
 {
   printf_filtered ("%s", r->name);
   if (r->is_BCR)
@@ -1410,14 +1408,14 @@ list_register (ARC_AuxRegisterDefinition * r, Boolean full)
 
 
 static void
-list_registers (Boolean full)
+list_registers (int full)
 {
-  ARC_RegisterInfo *info = find_info (TRUE);
+  struct arc_reg_info *info = find_info (TRUE);
   unsigned int i;
 
   for (i = 0; i < info->aux_register_count; i++)
     {
-      ARC_AuxRegisterDefinition *def = info->aux_registers + i;
+      struct arc_aux_reg_def *def = info->aux_registers + i;
 
       if (def->name != UNUSED)
 	list_register (def, full);
@@ -1425,9 +1423,9 @@ list_registers (Boolean full)
 }
 
 
-static Boolean
-read_aux_register (ARC_AuxRegisterDefinition * def,
-		   ARC_RegisterContents * value, Boolean warn_on_failure)
+static int
+read_aux_register (struct arc_aux_reg_def * def,
+		   uint32_t * value, int warn_on_failure)
 {
   int gdb_regno = arc_aux_gdb_register_number (def);
   struct regcache *regcache = get_current_regcache ();
@@ -1442,13 +1440,13 @@ read_aux_register (ARC_AuxRegisterDefinition * def,
 }
 
 
-static Boolean
-write_aux_register (ARC_AuxRegisterDefinition * def,
-		    ARC_RegisterContents value, Boolean warn_on_failure)
+static int
+write_aux_register (struct arc_aux_reg_def * def,
+		    uint32_t value, int warn_on_failure)
 {
   int gdb_regno = arc_aux_gdb_register_number (def);
   struct regcache *regcache = get_current_regcache ();
-  ARC_RegisterContents written = arc_write_value (def, value);
+  uint32_t written = arc_write_value (def, value);
 
   /* supply the register value to the register cache, then write it from the
    * cache to the target
@@ -1477,12 +1475,12 @@ write_aux_register (ARC_AuxRegisterDefinition * def,
 
 
 static void
-print_bcr (ARC_AuxRegisterDefinition * def, void *data)
+print_bcr (struct arc_aux_reg_def * def, void *data)
 {
   if (arc_aux_is_BCR (def) && !arc_aux_is_unused (def))
     {
-      ARC_RegisterNumber bcr = arc_aux_hw_register_number (def);
-      ARC_RegisterContents bcr_value;
+      unsigned int bcr = arc_aux_hw_register_number (def);
+      uint32_t bcr_value;
 
       if (read_aux_register (def, &bcr_value, TRUE))
 	printf_filtered (_("[%02x] %-16s : 0x%02x\n"),
@@ -1492,10 +1490,10 @@ print_bcr (ARC_AuxRegisterDefinition * def, void *data)
 
 
 static void
-show_one_aux_register (ARC_AuxRegisterDefinition * def, void *data)
+show_one_aux_register (struct arc_aux_reg_def * def, void *data)
 {
-  ARC_RegisterNumber reg_no = arc_aux_hw_register_number (def);
-  ARC_RegisterContents contents;
+  unsigned int reg_no = arc_aux_hw_register_number (def);
+  uint32_t contents;
 
   DEBUG ("try to read aux reg %u\n", reg_no);
 
@@ -1504,10 +1502,10 @@ show_one_aux_register (ARC_AuxRegisterDefinition * def, void *data)
 }
 
 
-static Boolean
+static int
 read_aux_regs_file (const char *filename,
 		    struct gdbarch *gdbarch,
-		    Boolean replace, Boolean inform, Boolean check)
+		    int replace, int inform, int check)
 {
   /* try to read the register descriptions from the file */
   if (read_XML_file (filename, gdbarch, replace, inform, check))
@@ -1533,7 +1531,7 @@ static void
 arc_aux_reg_read_command (char *arg, int from_tty)
 {
   char *arg2;
-  ARC_RegisterNumber first_regnum, last_regnum, r;
+  unsigned int first_regnum, last_regnum, r;
   char format[40];
 
   if (!arg)
@@ -1584,12 +1582,12 @@ arc_aux_reg_read_command (char *arg, int from_tty)
 
   for (r = first_regnum; r <= last_regnum; r++)
     {
-      ARC_AuxRegisterDefinition *def = arc_find_aux_register_by_hw_number (r);
+      struct arc_aux_reg_def *def = arc_find_aux_register_by_hw_number (r);
 
       // if the aux register exists, and is used
       if ((def != NULL) && !arc_aux_is_unused (def))
 	{
-	  ARC_RegisterContents contents;
+	  uint32_t contents;
 
 	  DEBUG ("try to read aux reg %u\n", r);
 
@@ -1612,9 +1610,9 @@ arc_aux_reg_write_command (char *arg, int from_tty)
 {
   char *value_arg;
   char *p;
-  ARC_RegisterNumber regnum;
-  ARC_RegisterContents value;
-  ARC_AuxRegisterDefinition *def;
+  unsigned int regnum;
+  uint32_t value;
+  struct arc_aux_reg_def *def;
 
   if (!arg)
     {
@@ -1643,7 +1641,7 @@ arc_aux_reg_write_command (char *arg, int from_tty)
   regnum = extractRegisterNumber (arg);
 
   /* Value expression */
-  EXTRACT (value_arg, ARC_RegisterContents, value)
+  EXTRACT (value_arg, uint32_t, value)
     def = arc_find_aux_register_by_hw_number (regnum);
 
   if (def == NULL)
@@ -1670,7 +1668,7 @@ arc_aux_reg_show_command (char *arg, int from_tty)
 {
   if (arg)
     {
-      ARC_AuxRegisterDefinition *def = find_aux_register (arg);
+      struct arc_aux_reg_def *def = find_aux_register (arg);
 
       if (def)
 	show_one_aux_register (def, NULL);
@@ -1737,7 +1735,7 @@ arc_aux_reg_list_command (char *arg, int from_tty)
 {
   if (arg)
     {
-      ARC_AuxRegisterDefinition *def = find_aux_register (arg);
+      struct arc_aux_reg_def *def = find_aux_register (arg);
 
       if (def)
 	list_register (def, FALSE);
@@ -1769,7 +1767,7 @@ arc_print_bcr_regs (char *arg, int from_tty)
 /* -------------------------------------------------------------------------- */
 
 void
-arc_initialize_aux_reg_info (ARC_RegisterInfo * info)
+arc_initialize_aux_reg_info (struct arc_reg_info * info)
 {
   unsigned int i;
 
@@ -1783,7 +1781,7 @@ arc_initialize_aux_reg_info (ARC_RegisterInfo * info)
   /* all possible core registers */
   for (i = 0; i < ELEMENTS_IN_ARRAY (info->core_registers); i++)
     {
-      ARC_CoreRegisterDefinition *reg = &info->core_registers[i];
+      struct arc_core_reg_def *reg = &info->core_registers[i];
 
       reg->exists = TRUE;
       reg->mask = 0xFFFFFFFF;
@@ -1835,37 +1833,37 @@ arc_aux_check_pc_defined (struct gdbarch *gdbarch)
 int
 arc_aux_pc_number (struct gdbarch *gdbarch)
 {
-  ARC_RegisterInfo *info = INFO_OF (gdbarch);
+  struct arc_reg_info *info = INFO_OF (gdbarch);
 
   return (info) ? info->PC_number : -1;
 }
 
 
-ARC_AuxRegisterDefinition *
+struct arc_aux_reg_def *
 arc_find_aux_register_by_name (const char *name)
 {
 FIND_REGISTER_DEFINITION_SUCH_THAT (strcasecmp (name, def->name) == 0)}
 
 
-ARC_AuxRegisterDefinition *
-arc_find_aux_register_by_hw_number (ARC_RegisterNumber hw_regno)
+struct arc_aux_reg_def *
+arc_find_aux_register_by_hw_number (unsigned int hw_regno)
 {
 FIND_REGISTER_DEFINITION_SUCH_THAT (hw_regno == def->number)}
 
 
-ARC_AuxRegisterDefinition *
+struct arc_aux_reg_def *
 arc_find_aux_register_by_gdb_number (int gdb_regno)
 {
   /* N.B. the elements in the info->aux_registers array have strictly increasing
    *      gdb numbers starting at info->first_aux_gdb_regno, so we can index the array
    *      instead of searching it.
    */
-  ARC_RegisterInfo *info = find_info (TRUE);
+  struct arc_reg_info *info = find_info (TRUE);
   int index = gdb_regno - info->first_aux_gdb_regno;
 
   if (0 <= index && index < (int) info->aux_register_count)
     {
-      ARC_AuxRegisterDefinition *def = info->aux_registers + index;
+      struct arc_aux_reg_def *def = info->aux_registers + index;
 
       /* just to be sure we have found the right element... */
       gdb_assert (def->gdb_regno == gdb_regno);
@@ -1877,11 +1875,11 @@ arc_find_aux_register_by_gdb_number (int gdb_regno)
 }
 
 
-ARC_RegisterNumber
+unsigned int
 arc_aux_find_register_number (const char *name,
-			      ARC_RegisterNumber defaultNumber)
+			      unsigned int defaultNumber)
 {
-  ARC_AuxRegisterDefinition *def = arc_find_aux_register_by_name (name);
+  struct arc_aux_reg_def *def = arc_find_aux_register_by_name (name);
 
   if (def == NULL)
     {
@@ -1895,27 +1893,27 @@ arc_aux_find_register_number (const char *name,
 }
 
 
-ARC_RegisterNumber
+unsigned int
 arc_core_register_number (int gdb_regno)
 {
-  ARC_RegisterInfo *info = find_info (TRUE);
+  struct arc_reg_info *info = find_info (TRUE);
   unsigned int i;
 
   /* the lower-numbered set of non-extension core registers (i.e. excluding
    * R60 .. R63) have fixed gdb numbers which are the same as the h/w number
    */
   if (gdb_regno < ARC_FIRST_EXTENSION_CORE_REGISTER)
-    return (ARC_RegisterNumber) gdb_regno;
+    return (unsigned int) gdb_regno;
 
   /* scan the rest of the array */
   for (i = ARC_FIRST_EXTENSION_CORE_REGISTER;
        i < ELEMENTS_IN_ARRAY (info->core_registers); i++)
     {
-      ARC_CoreRegisterDefinition *def = &info->core_registers[i];
+      struct arc_core_reg_def *def = &info->core_registers[i];
 
       if (def->exists)
 	if (gdb_regno == def->gdb_regno)
-	  return (ARC_RegisterNumber) (i);
+	  return (unsigned int) (i);
     }
 
   /* too  large to be the number of a core register */
@@ -1924,10 +1922,10 @@ arc_core_register_number (int gdb_regno)
 
 
 int
-arc_core_register_gdb_number (ARC_RegisterNumber hw_regno)
+arc_core_register_gdb_number (unsigned int hw_regno)
 {
-  ARC_RegisterInfo *info = find_info (TRUE);
-  ARC_CoreRegisterDefinition *def = &info->core_registers[hw_regno];
+  struct arc_reg_info *info = find_info (TRUE);
+  struct arc_core_reg_def *def = &info->core_registers[hw_regno];
 
   gdb_assert (def->exists);
 
@@ -1936,8 +1934,8 @@ arc_core_register_gdb_number (ARC_RegisterNumber hw_regno)
 
 
 void
-arc_print_aux_register (ARC_AuxRegisterDefinition * def,
-			ARC_RegisterContents contents)
+arc_print_aux_register (struct arc_aux_reg_def * def,
+			uint32_t contents)
 {
   printf_filtered (_("%s : %08x\n"), def->name, contents);
 
@@ -1962,9 +1960,9 @@ arc_print_aux_register (ARC_AuxRegisterDefinition * def,
       for (i = 0; i < def->field_count; i++)
 	{
 	  ARC_FieldDefinition *f = &def->fields[i];
-	  ARC_RegisterContents val = contents >> f->offset;
-	  ARC_RegisterContents val2 = val;
-	  ARC_RegisterContents mask = 0;
+	  uint32_t val = contents >> f->offset;
+	  uint32_t val2 = val;
+	  uint32_t mask = 0;
 	  char bits[BITS_IN_REGISTER];
 	  char *p = &bits[BITS_IN_REGISTER - 1];
 	  unsigned int b;
@@ -2016,52 +2014,52 @@ arc_print_aux_register (ARC_AuxRegisterDefinition * def,
 
 
 int
-arc_aux_gdb_register_number (ARC_AuxRegisterDefinition * def)
+arc_aux_gdb_register_number (struct arc_aux_reg_def * def)
 {
   return def->gdb_regno;
 }
 
 
-ARC_RegisterNumber
-arc_aux_hw_register_number (ARC_AuxRegisterDefinition * def)
+unsigned int
+arc_aux_hw_register_number (struct arc_aux_reg_def * def)
 {
   return def->number;
 }
 
 
-RegisterAccess
-arc_aux_register_access (ARC_AuxRegisterDefinition * def)
+enum arc_reg_access
+arc_aux_register_access (struct arc_aux_reg_def * def)
 {
   return def->access;
 }
 
 
-Boolean
-arc_aux_is_unused (ARC_AuxRegisterDefinition * def)
+int
+arc_aux_is_unused (struct arc_aux_reg_def * def)
 {
   return (def->name == UNUSED);
 }
 
 
-Boolean
-arc_aux_is_BCR (ARC_AuxRegisterDefinition * def)
+int
+arc_aux_is_BCR (struct arc_aux_reg_def * def)
 {
   return (def->is_BCR);
 }
 
 
 const char *
-arc_aux_register_name (ARC_AuxRegisterDefinition * def)
+arc_aux_register_name (struct arc_aux_reg_def * def)
 {
   return def->name;
 }
 
 
-RegisterAccess
-arc_core_register_access (ARC_RegisterNumber hw_regno)
+enum arc_reg_access
+arc_core_register_access (unsigned int hw_regno)
 {
-  ARC_RegisterInfo *info = find_info (TRUE);
-  ARC_CoreRegisterDefinition *def = &info->core_registers[hw_regno];
+  struct arc_reg_info *info = find_info (TRUE);
+  struct arc_core_reg_def *def = &info->core_registers[hw_regno];
 
   gdb_assert (def->exists);
 
@@ -2070,28 +2068,19 @@ arc_core_register_access (ARC_RegisterNumber hw_regno)
 
 
 const char *
-arc_aux_register_name_of (ARC_RegisterNumber hw_regno)
+arc_aux_register_name_of (unsigned int hw_regno)
 {
-  ARC_AuxRegisterDefinition *def =
+  struct arc_aux_reg_def *def =
     arc_find_aux_register_by_hw_number (hw_regno);
 
   return (def) ? def->name : "<no such register>";
 }
 
 
-Boolean
-arc_is_core_register (int gdb_regno)
-{
-  ARC_RegisterInfo *info = find_info (TRUE);
-
-  return (gdb_regno < info->first_aux_gdb_regno);
-}
-
-
 void
 arc_all_aux_registers (ARC_AuxRegisterFunction function, void *data)
 {
-  ARC_RegisterInfo *info = find_info (TRUE);
+  struct arc_reg_info *info = find_info (TRUE);
   unsigned int i;
 
   for (i = 0; i < info->aux_register_count; i++)
@@ -2102,7 +2091,7 @@ arc_all_aux_registers (ARC_AuxRegisterFunction function, void *data)
 unsigned int
 arc_aux_register_max_name_length (void)
 {
-  ARC_RegisterInfo *info = find_info (TRUE);
+  struct arc_reg_info *info = find_info (TRUE);
 
   return info->max_name_length;
 }
@@ -2111,7 +2100,7 @@ arc_aux_register_max_name_length (void)
 unsigned int
 arc_aux_register_count (struct gdbarch *gdbarch)
 {
-  ARC_RegisterInfo *info = INFO_OF (gdbarch);
+  struct arc_reg_info *info = INFO_OF (gdbarch);
 
   return (info) ? info->aux_register_count : 0;
 }
@@ -2120,16 +2109,16 @@ arc_aux_register_count (struct gdbarch *gdbarch)
 unsigned int
 arc_core_register_count (struct gdbarch *gdbarch)
 {
-  ARC_RegisterInfo *info = INFO_OF (gdbarch);
+  struct arc_reg_info *info = INFO_OF (gdbarch);
 
   return (info) ? info->core_register_count : ARC_NUM_STANDARD_CORE_REGS;
 }
 
 
-Boolean
+int
 arc_aux_regs_defined (struct gdbarch * gdbarch)
 {
-  ARC_RegisterInfo *info = INFO_OF (gdbarch);
+  struct arc_reg_info *info = INFO_OF (gdbarch);
 
   return (info->aux_register_count > 0 && info->aux_registers != NULL);
 }
@@ -2138,23 +2127,23 @@ arc_aux_regs_defined (struct gdbarch * gdbarch)
 int
 arc_first_aux_gdb_register_number (struct gdbarch *gdbarch)
 {
-  ARC_RegisterInfo *info = INFO_OF (gdbarch);
+  struct arc_reg_info *info = INFO_OF (gdbarch);
 
   return info->first_aux_gdb_regno;
 }
 
 
-ARC_ProcessorVersion
+enum arc_processor_version
 arc_aux_architecture (struct gdbarch * gdbarch)
 {
-  ARC_RegisterInfo *info = INFO_OF (gdbarch);
+  struct arc_reg_info *info = INFO_OF (gdbarch);
 
   return info->processor;
 }
 
 
-ARC_RegisterContents
-arc_write_value (ARC_AuxRegisterDefinition * def, ARC_RegisterContents value)
+uint32_t
+arc_write_value (struct arc_aux_reg_def * def, uint32_t value)
 {
   unsigned int i;
 
@@ -2176,13 +2165,13 @@ arc_write_value (ARC_AuxRegisterDefinition * def, ARC_RegisterContents value)
 void
 arc_convert_aux_contents_for_write (int gdb_regno, void *buffer)
 {
-  ARC_AuxRegisterDefinition *def =
+  struct arc_aux_reg_def *def =
     arc_find_aux_register_by_gdb_number (gdb_regno);
 
   if (def)
     {
-      ARC_RegisterContents old;
-      ARC_RegisterContents new;
+      uint32_t old;
+      uint32_t new;
 
       memcpy (&old, buffer, BYTES_IN_REGISTER);
       new = arc_write_value (def, old);

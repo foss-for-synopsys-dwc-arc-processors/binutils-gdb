@@ -182,7 +182,6 @@
 #include "opcodes/arc-dis.h"
 #include "opcodes/arc-ext.h"
 #include "opcodes/arcompact-dis.h"
-#include "arc-constants.h"
 #include "arc-tdep.h"
 
 
@@ -254,115 +253,176 @@ int arc_debug;
 
 
 /* -------------------------------------------------------------------------- */
-/*                               local macros                                 */
-/* -------------------------------------------------------------------------- */
-
-#define WORD_ALIGNED(addr)         ((addr) & ~(BYTES_IN_WORD - 1))
-#define WORDS_OCCUPIED(bytes)      (((bytes) + BYTES_IN_WORD - 1)	\
-				    / BYTES_IN_WORD)
-#define ROUND_UP_TO_WORDS(bytes)   (WORDS_OCCUPIED(bytes) * BYTES_IN_WORD)
-
-
-
-/* Macros to be used with disassembling the prologue and update the frame info.
- * The *FI macros are to update the frame info and the ACT macros are to
- * actually do the action on a corresponding match.
- */
-
-#define IS_INSTRUCTION(insn_name, search_string)	\
-  !strcmp(insn_name, search_string)
-
-#define CHECK_OPERAND_STRING_AND_ACT(target_check, search_string, action) \
-    if (strstr(target_check, search_string) == target_check)              \
-    {                                                                     \
-        action;                                                           \
-        return TRUE;                                                      \
-    }
-
-
-/* The frame info changes by changing the decrementing the delta_sp and setting
- * the leaf function flag to be False (if this function prologue is saving blink
- * then it must be going to call another function - so it can not be a leaf!);
- * also the offset of the blink register save location from the previous value
- * of sp is recorded.  This will eventually used to compute the address of the
- * save location:
- *
- *         <blink saved address> = <prev sp> + <blink offset from prev sp>
- *
- * The addition (+=) below is because the sp offset and the instruction offset
- * are negative - so incrementing the sp offset by the instruction offset is
- * actually making the sp offset more negative, correctly reflecting that SP
- * is moving further down the downwards-growing stack.
- */
-
-#define PUSH_BLINK(offset)                                           \
-    {                                                                \
-        info->delta_sp += offset;                                    \
-        info->blink_save_offset_from_prev_sp = (int) info->delta_sp; \
-        info->is_leaf = FALSE;                                       \
-    }
-
-#define PUSH_BLINK_ACT                          \
-    do {                                        \
-           if (info) PUSH_BLINK(instr->_offset) \
-       } while (0);
-
-
-#define IS_PUSH_BLINK_FI(state) CHECK_OPERAND_STRING_AND_ACT(state->operandBuffer, "blink", PUSH_BLINK_ACT)
-
-
-/* At the point that that FP is pushed onto the stack (so saving the dynamic
- * link chain pointer to the previous frame), at the address that will be the
- * base of the new frame, we know the offset of SP from the previous SP - so the
- * offset of the old SP from the new frame base is known (the -ve delta_sp is
- * negated to give the +ve old_sp_offset_from_fp).
- */
-#define PUSH_FP_ACT					\
-  do {							\
-    if (info)						\
-      {							\
-	info->delta_sp += instr->_offset;		\
-	info->old_sp_offset_from_fp = -info->delta_sp;	\
-      }} while (0);
-
-#define IS_PUSH_FP_FI(state)						\
-  CHECK_OPERAND_STRING_AND_ACT(state->operandBuffer, "fp", PUSH_FP_ACT)
-
-#define UPDATE_FP_ACT				      \
-  do {						      \
-    if (info)					      \
-      info->uses_fp = TRUE;			      \
-  } while (0);
-
-#define IS_UPDATE_FP_FI(state)						\
-  if (IS_INSTRUCTION(state->instrBuffer, "mov"))			\
-    {									\
-      CHECK_OPERAND_STRING_AND_ACT(state->operandBuffer, "fp,sp",	\
-				   UPDATE_FP_ACT);			\
-    }
-
-#define UPDATE_STACK_SPACE(state)			\
-  do {							\
-    if (info) {						\
-      /* Eat up sp,sp */				\
-      int immediate = atoi(state->operandBuffer + 6);	\
-      info->delta_sp -= immediate;			\
-    }							\
-  } while (0);
-
-
-#define IS_SUB_SP_FI(state)						\
-  if (IS_INSTRUCTION(state->instrBuffer, "sub")				\
-      || IS_INSTRUCTION(state->instrBuffer, "sub_s"))			\
-    {									\
-      CHECK_OPERAND_STRING_AND_ACT(state->operandBuffer, "sp,sp",	\
-				   UPDATE_STACK_SPACE(state))		\
-    }
-
-
-/* -------------------------------------------------------------------------- */
 /*                               local functions                              */
 /* -------------------------------------------------------------------------- */
+
+/*! Round up a number of bytes to a whole number of words
+
+    @param[in] bytes  Number of bytes to round up.
+    @return           Number of bytes rounded up to a whole number of words. */
+static int
+arc_round_up_to_words (unsigned int  bytes)
+{
+  return ((bytes + BYTES_IN_WORD - 1)	/ BYTES_IN_WORD) * BYTES_IN_WORD;
+
+}	/* arc_round_up_to_words () */
+
+
+/* Functions to be used with disassembling the prologue and update the frame
+   info.  The *FI macros are to update the frame info and the ACT macros are
+   to actually do the action on a corresponding match. */
+
+/*! Update frame info for "push blink".
+
+    The frame info changes by changing the decrementing the delta_sp and
+    setting the leaf function flag to be False (if this function prologue is
+    saving blink then it must be going to call another function - so it can
+    not be a leaf!); also the offset of the blink register save location from
+    the previous value of sp is recorded.  This will eventually used to
+    compute the address of the save location:
+
+      <blink saved address> = <prev sp> + <blink offset from prev sp>
+
+    The addition (+=) below is because the sp offset and the instruction
+    offset are negative - so incrementing the sp offset by the instruction
+    offset is actually making the sp offset more negative, correctly
+    reflecting that SP is moving further down the downwards-growing stack.
+
+    @param[out] info  Frame unwind cache to be updated.
+    @param[in]  offset  Offset of the new frame. */
+static void
+arc_push_blink (arc_unwind_cache_t *info, int offset)
+{
+  info->delta_sp += offset;
+  info->blink_save_offset_from_prev_sp = (int) info->delta_sp;
+  info->is_leaf = FALSE;
+
+}	/* arc_push_blink () */
+
+
+/*! Do we need to update frame info for "push blink".
+
+    We already know we have a push instruction, so we just need to check if
+    the operand starts with "blink".
+
+    @param[out] info   Frame unwind cache to be updated if non-NULL.
+    @param[in]  state  Instruction state to analyse.
+    @return            Non-zero (true) if this was "push blink". Zero (false)
+                       otherwise. */
+static int
+arc_is_push_blink_fi (arc_unwind_cache_t *info, struct arcDisState *state)
+{
+  if (strstr (state->operandBuffer, "blink") == state->operandBuffer)
+    {
+      if (info)
+	{
+	  arc_push_blink (info, state->_offset);
+	}
+      return TRUE;
+    }
+  else
+    {
+      return FALSE;
+    }
+}	/* arc_is_push_blink_fi () */
+
+
+/*! Do we need to update frame info for "push fp".
+
+    We already know we have a push instruction, so we just need to check if
+    the operand starts with "fp".
+
+    At the point that that FP is pushed onto the stack (so saving the dynamic
+    link chain pointer to the previous frame), at the address that will be the
+    base of the new frame, we know the offset of SP from the previous SP - so
+    the offset of the old SP from the new frame base is known (the -ve
+    delta_sp is negated to give the +ve old_sp_offset_from_fp).
+
+    @param[out] info   Frame unwind cache to be updated if non-NULL.
+    @param[in]  state  Instruction state to analyse.
+    @return            Non-zero (true) if this was "push fp". Zero (false)
+                       otherwise. */
+static int
+arc_is_push_fp_fi (arc_unwind_cache_t *info, struct arcDisState *state)
+{
+  if (strstr (state->operandBuffer, "fp") == state->operandBuffer)
+    {
+      if (info)
+	{
+	  info->delta_sp += state->_offset;
+	  info->old_sp_offset_from_fp = -info->delta_sp;
+	}
+      return TRUE;
+    }
+  else
+    {
+      return FALSE;
+    }
+}	/* arc_is_push_fp_fi () */
+
+
+/*! Do we need to update frame info for "mov fp,sp".
+
+    @param[out] info   Frame unwind cache to be updated if non-NULL.
+    @param[in]  state  Instruction state to analyse.
+    @return            Non-zero (true) if this was "push fp". Zero (false)
+                       otherwise. */
+static int
+arc_is_update_fp_fi (arc_unwind_cache_t *info, struct arcDisState *state)
+{
+  if ((0 == strcmp(state->instrBuffer, "mov"))
+      && (strstr (state->operandBuffer, "fp,sp") == state->operandBuffer))
+    {
+      if (info)
+	{
+	  info->uses_fp = TRUE;
+	}
+      return TRUE;
+    }
+  else
+    {
+      return FALSE;
+    }
+}	/* arc_update_fp_act () */
+
+	  
+/*! Do we need to update frame info for "sub sp,sp" of various forms.
+
+    @note Could be sub or sub.s and could be "sub.s sp,sp,const"
+
+    @param[out] info   Frame unwind cache to be updated if non-NULL.
+    @param[in]  state  Instruction state to analyse.
+    @return            Non-zero (true) if this was "push fp". Zero (false)
+                       otherwise. */
+static int
+arc_is_sub_sp_fi (arc_unwind_cache_t *info, struct arcDisState *state)
+{
+  if (((0 == strcmp(state->instrBuffer, "sub"))
+       || (0 == strcmp(state->instrBuffer, "sub_s")))
+      && (strstr (state->operandBuffer, "sp,sp") == state->operandBuffer))
+    {
+      if (info)
+	{
+	  /* Eat up sp,sp to just leave (possible) constant. */
+	  int immediate = atoi(state->operandBuffer + 6);
+	  info->delta_sp -= immediate;
+	}
+      return TRUE;
+    }
+  else
+    {
+      return FALSE;
+    }
+}	/* arc_is_sub_sp_fi () */
+
+
+/*! Is this an auxilliary register? */
+static int
+arc_is_core_register (int  regnum)
+{
+  return (0 <= regnum) && (regnum <= ARC_PCL_REGNUM);
+
+}	/* arc_is_core_register () */
 
 
 /*! Dump the frame info
@@ -813,10 +873,16 @@ arc_is_in_prologue (arc_unwind_cache_t * info, struct arcDisState *instr)
 		{
 		  /* This is a push something at SP */
 		  /* Is it a push of the blink? */
-		  IS_PUSH_BLINK_FI (instr);
+		  if (arc_is_push_blink_fi (info, instr))
+		    {
+		      return TRUE;
+		    }
 
 		  /* Is it a push for fp? */
-		  IS_PUSH_FP_FI (instr);
+		  if (arc_is_push_fp_fi (info, instr))
+		    {
+		      return TRUE;
+		    }
 		}
 	      else
 		{
@@ -877,14 +943,20 @@ arc_is_in_prologue (arc_unwind_cache_t * info, struct arcDisState *instr)
     {
       /* A major opcode 0x4 instruction */
       /* We are usually interested in a mov or a sub */
-      IS_UPDATE_FP_FI (instr);
-      IS_SUB_SP_FI (instr);
+      if (arc_is_update_fp_fi (info, instr)
+	  || arc_is_sub_sp_fi (info, instr))
+	{
+	  return TRUE;
+	}
     }
 
   else if (instr->_opcode == 0x18)
     {
       /* sub_s sp,sp,constant */
-      IS_SUB_SP_FI (instr);
+      if (arc_is_sub_sp_fi (info, instr))
+	{
+	  return TRUE;
+	}
 
       /* push_s blink */
       if (strcmp (instr->instrBuffer, "push_s") == 0)
@@ -896,7 +968,8 @@ arc_is_in_prologue (arc_unwind_cache_t * info, struct arcDisState *instr)
 		  /* SP is decremented by the push_s instruction (before it
 		   * stores blink at the stack location addressed by SP)
 		   */
-		  PUSH_BLINK (-BYTES_IN_REGISTER)}
+		  arc_push_blink (info, -BYTES_IN_REGISTER);
+		}
 	      return TRUE;
 	    }
 	}
@@ -1789,14 +1862,14 @@ arc_push_dummy_call (struct gdbarch *gdbarch,
       for (i = 0; i < nargs; i++)
 	{
 	  unsigned int len = TYPE_LENGTH (value_type (args[i]));
-	  unsigned int space = ROUND_UP_TO_WORDS (len);
+	  unsigned int space = arc_round_up_to_words (len);
 
 	  total_space += space;
 
 	  if (arc_debug)
 	    {
-	      fprintf_unfiltered (gdb_stdlog, "arg %d: %d bytes -> %d\n", i,
-				  len, ROUND_UP_TO_WORDS (len));
+	      fprintf_unfiltered (gdb_stdlog, "arg %d: %d bytes -> %u\n", i,
+				  len, arc_round_up_to_words (len));
 	    }
 	}
 
@@ -1813,7 +1886,7 @@ arc_push_dummy_call (struct gdbarch *gdbarch,
       for (i = 0; i < nargs; i++)
 	{
 	  unsigned int len = TYPE_LENGTH (value_type (args[i]));
-	  unsigned int space = ROUND_UP_TO_WORDS (len);
+	  unsigned int space = arc_round_up_to_words (len);
 
 	  (void) memcpy (data, value_contents (args[i]), (size_t) len);
 	  data += space;
@@ -1872,7 +1945,7 @@ static CORE_ADDR
 arc_frame_align (struct gdbarch *gdbarch, CORE_ADDR sp)
 {
   /* Align to the normal alignment on the stack).  */
-  return WORD_ALIGNED (sp);
+  return sp & (~(BYTES_IN_WORD - 1));
 
 }	/* arc_frame_align () */
 
