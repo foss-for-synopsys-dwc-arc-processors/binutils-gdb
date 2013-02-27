@@ -147,7 +147,7 @@ typedef double MegaHertz;
 typedef struct global_clock
 {
   ClockSource source;
-  Boolean set;
+  int set;
   PLL_ClockId PLL_clock;
 } GlobalClock;
 
@@ -155,7 +155,7 @@ typedef struct pll_clock
 {
   MegaHertz requested_frequency;
   MegaHertz actual_frequency;
-  Boolean in_use;
+  int in_use;
 } PLL_Clock;
 
 typedef struct pll_clock_info
@@ -271,7 +271,7 @@ static const PLL_ClockInfo PLL_clock_info[NUM_PLL_CLOCKS] = {
 
 static PLL_Clock PLL_clocks[NUM_PLL_CLOCKS];
 static GlobalClock global_clocks[NUM_GLOBAL_CLOCKS];
-static Boolean harvard;
+static int harvard;
 
 
 /* -------------------------------------------------------------------------- */
@@ -354,7 +354,7 @@ pair (char *args, char **value)
 /* -------------------------------------------------------------------------- */
 
 /* Initialise the FPGA ready for blasting */
-static Boolean
+static int
 initialize_FPGA (void)
 {
   Byte status;
@@ -442,7 +442,7 @@ initialize_FPGA (void)
 }
 
 
-static Boolean
+static int
 parallel_send_data (Byte * buffer, unsigned int count)
 {
   GPIO_Pair arr[MAX_MAX_BURST * 3 + 1];
@@ -498,7 +498,7 @@ parallel_send_data (Byte * buffer, unsigned int count)
 }
 
 
-static Boolean
+static int
 serial_send_data (Byte * buff, unsigned int count)
 {
   // This code is taken from the SeeCode debugger file os/arc/connect/par/arc/aa3blast.cpp
@@ -587,10 +587,10 @@ serial_send_data (Byte * buff, unsigned int count)
 }
 
 
-static Boolean
+static int
 blast_FPGA (FILE * xbf)
 {
-  Boolean parallel_cfg;
+  int parallel_cfg;
   unsigned long file_size;
   unsigned long five_percent;
   unsigned long bytes_sent = 0;
@@ -887,7 +887,7 @@ calculate_ctrl_word (const MegaHertz requested_frequency,
 }
 
 
-static Boolean
+static int
 write_PLL_register (unsigned int address, unsigned int ctrl_word)
 {
   const Byte S0S1_FINAL_STATE[] = { (Byte) 0x0, (Byte) 0x1, (Byte) 0x2 };
@@ -1069,10 +1069,10 @@ configure_CPLD (void)
 }
 
 
-static Boolean
+static int
 set_PLL_clock_frequency (PLL_ClockId clock,
 			 MegaHertz requested_frequency,
-			 Boolean inform, Boolean emit_warning)
+			 int inform, int emit_warning)
 {
   // first need to work out the control words for the frequencies set
   MegaHertz actual_frequency = UNDEFINED_FREQUENCY;
@@ -1082,7 +1082,7 @@ set_PLL_clock_frequency (PLL_ClockId clock,
 						PLL_clock_info
 						[clock].MAX_VCO_FREQ,
 						&actual_frequency);
-  Boolean set;
+  int set;
 
   DEBUG ("set_PLL_clock_frequency: %s ctrl_word = %08X, freq = %.2lf MHz\n",
 	 PLL_clock_info[clock].name, ctrl_word, requested_frequency);
@@ -1302,7 +1302,7 @@ set_global_clock (GlobalClockId clockId, const char *clockData)
     ClockSource source;
     PLL_ClockId clock;
     const char *name;
-    Boolean harvard;
+    int harvard;
   } table[] =
   {
     {
@@ -1409,10 +1409,10 @@ enable_Harvard_clock (void)
 
 
 static void
-print_clock_settings (Boolean with_PLL_clocks,
-		      Boolean with_global_only_if_using_PLL)
+print_clock_settings (int with_PLL_clocks,
+		      int with_global_only_if_using_PLL)
 {
-  Boolean with_global_clocks = TRUE;
+  int with_global_clocks = TRUE;
   unsigned int i;
 
   if (with_global_only_if_using_PLL)
@@ -1514,7 +1514,7 @@ set_PLL_clocks (MegaHertz requested_MCLK_frequency,
 #define FREQUENCY(clock)    ((PLL_clocks[clock].in_use) ? PLL_clocks[clock].requested_frequency : UNDEFINED_FREQUENCY)
 
 static void
-program_clock_settings (const char *message, Boolean after_blast)
+program_clock_settings (const char *message, int after_blast)
 {
   unsigned int i;
 
@@ -1643,7 +1643,7 @@ arc_set_clock_frequency (char *args, int from_tty)
 static void
 arc_set_clock_source (char *args, int from_tty)
 {
-  Boolean invalid = FALSE;
+  int invalid = FALSE;
 
   if (args)
     {
@@ -1801,7 +1801,7 @@ arc_blast_board (char *args, int from_tty)
 	    {
 	      if (blast_FPGA (fp))
 		{
-		  ARC_RegisterNumber identity_regnum =
+		  unsigned int identity_regnum =
 		    arc_aux_find_register_number ("IDENTITY",
 						  ARC_HW_IDENTITY_REGNUM);
 

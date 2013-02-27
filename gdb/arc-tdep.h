@@ -42,6 +42,276 @@
 #define ARC_TDEP_H
 
 
+#ifndef FALSE
+#define FALSE 0
+#endif
+#ifndef TRUE
+#define TRUE 1
+#endif
+
+/* -------------------------------------------------------------------------- */
+/* Local constants, which should really be in the XML file. */
+/* -------------------------------------------------------------------------- */
+
+/* Auxilliary register addresses. */
+
+/* Baseline aux registers - architectural state. */
+#define ARC_PC_AUXADDR                0x006
+#define ARC_STATUS32_AUXADDR          0x00a
+#define ARC_BTA_AUXADDR               0x412
+#define ARC_ECR_AUXADDR               0x403
+#define ARC_ICAUSE1_AUXADDR           0x40A
+#define ARC_ICAUSE2_AUXADDR           0x40B
+
+/* Baseline aux registers - saved exception and interrupt state. */
+#define ARC_STATUS32_L1_AUXADDR       0x00b
+#define ARC_STATUS32_L2_AUXADDR       0x00c
+#define ARC_ERET_AUXADDR              0x400
+#define ARC_ERBTA_AUXADDR             0x401
+#define ARC_ERSTATUS_AUXADDR          0x402
+
+/* Baseline aux registers - programmable interrupt unit control & status
+   registers. */
+#define ARC_IRQ_LV12_AUXADDR          0x043
+#define ARC_IRQ_LEV_AUXADDR           0x200
+#define ARC_IRQ_HINT_AUXADDR          0x201
+#define ARC_IENABLE_AUXADDR           0x40c
+#define ARC_ITRIGGER_AUXADDR          0x40d
+#define ARC_IRQ_PULSE_CANCEL_AUXADDR  0x415
+#define ARC_IRQ_PENDING_AUXADDR       0x416
+
+/* Optional instruction set aux registers - zero overhead loops. */
+#define ARC_LP_START_AUXADDR          0x002
+#define ARC_LP_END_AUXADDR            0x003
+
+/* Extended exception state auxilliary registers. */
+#define ARC_EFA_AUXADDR               0x404
+#define ARC_BTA_L1_AUXADDR            0x413
+#define ARC_BTA_L2_AUXADDR            0x414
+
+/* -------------------------------------------------------------------------- */
+/* GDB register numbers                                                       */
+/* -------------------------------------------------------------------------- */
+
+/* Core register set. Old GDB used to have a completely arbitrary mapping,
+   and that mapping differed between ELF32 and LINUX tool chains. In this
+   version we use the direct address number for the core registers (r0
+   through r63).
+
+   We'll also use Franck Jullien's OpenRISC GDB trick, of only accessing the
+   core registers using G/g packets, requiring aux registers to be accessed
+   using P/p packets. That way a G packet need not be too large. */
+
+/* Core general registers:
+   r0  - r3   args
+   r4  - r7   args (32-bit instructions only)
+   r8  - r9   temp regs (32 bit instructions only)
+   r10 - r11  temp regs (32 bit & reduced instructsion set only)
+   r12 - r15  temp regs
+   r16 - r25  saved regs */
+
+#define ARC_GP_REGNUM        26
+#define ARC_FP_REGNUM        27		/*!< Old Linux GDB defined as 33 */
+#define ARC_SP_REGNUM        28		/*!< Old Linux GDB defined as 34 */
+#define ARC_ILINK1_REGNUM    29		/*!< Old Linux GDB defined as 39 */
+#define ARC_ILINK2_REGNUM    30		/*!< Old Linux GDB defined as 40 */
+#define ARC_BLINK_REGNUM     31		/*!< Old Linux GDB defined as 32 */
+
+/* Extension core registers r32-r59 */
+
+#define ARC_LP_COUNT_REGNUM  60		/*!< Old Linux GDB defined as 30 */
+#define ARC_RESERVED_REGNUM  61
+#define ARC_LIMM_REGNUM      62
+#define ARC_PCL_REGNUM       63
+
+#define ARC_MAX_CORE_REGS  (ARC_PCL_REGNUM + 1)
+
+/* Auxilliary registers. These are the sequential register numbers by which
+   these are known in GDB. They'll be mapped onto actual AUX register numbers
+   in due course.
+
+   @todo Eventually these should be sorted out through XML. */
+
+/* Baseline aux registers - architectural state. */
+#define ARC_PC_REGNUM               64	/*!< Old Linux GDB defined as 38 */
+#define ARC_STATUS32_REGNUM         65	/*!< Old Linux GDB defined as 31 */
+#define ARC_BTA_REGNUM              66	/*!< Old Linux GDB defined as 27 */
+#define ARC_ECR_REGNUM              67	/*!< Not defined in old Linux GDB */
+#define ARC_ICAUSE1_REGNUM          68	/*!< Not defined in old Linux GDB */
+#define ARC_ICAUSE2_REGNUM          69	/*!< Not defined in old Linux GDB */
+
+/* Baseline aux registers - saved exception and interrupt state. */
+#define ARC_STATUS32_L1_REGNUM      70	/*!< Old Linux GDB defined as 42 */
+#define ARC_STATUS32_L2_REGNUM      71	/*!< Old Linux GDB defined as 43 */
+#define ARC_ERET_REGNUM             72	/*!< Old Linux GDB defined as 41 */
+#define ARC_ERBTA_REGNUM            73	/*!< Not defined in old Linux GDB */
+#define ARC_ERSTATUS_REGNUM         74	/*!< Old Linux GDB defined as 44 */
+
+/* Baseline aux registers - programmable interrupt unit control & status
+   registers. */
+#define ARC_AUX_IRQ_LV12_REGNUM     75	/*!< Not defined in old Linux GDB */
+#define ARC_AUX_IRQ_LEV_REGNUM      76	/*!< Not defined in old Linux GDB */
+#define ARC_AUX_IRQ_HINT_REGNUM     77	/*!< Not defined in old Linux GDB */
+#define ARC_AUX_IENABLE_REGNUM      78	/*!< Not defined in old Linux GDB */
+#define ARC_AUX_ITRIGGER_REGNUM     79	/*!< Not defined in old Linux GDB */
+#define ARC_AUX_IRQ_PULSE_CANCEL_REGNUM  80 /*!< Not defined in old Linux GDB */
+#define ARC_AUX_IRQ_PENDING_REGNUM  81	/*!< Not defined in old Linux GDB */
+
+/* Optional instruction set aux registers - zero overhead loops. */
+#define ARC_LP_START_REGNUM         82	/*!< Old Linux GDB defined as 28 */
+#define ARC_LP_END_REGNUM           83	/*!< Old Linux GDB defined as 29 */
+
+/* Extended exception state auxilliary registers. */
+#define ARC_EFA_REGNUM              84	/*!< Old Linux GDB defined as 35 */
+#define ARC_BTA_L1_REGNUM           85	/*!< Not defined in old Linux GDB */
+#define ARC_BTA_L2_REGNUM           86	/*!< Not defined in old Linux GDB */
+
+#define ARC_NUM_REGS  (ARC_BTA_L2_REGNUM + 1)
+
+/* Old Linux GDB defined two more registers, which we might consider pseudo
+   registers.
+   - RET which was either eret, ilink1 or ilink2
+   - ORIG_R8, which was used to distinguish what was in RET.
+
+   @todo For now we omit these. It should be the server's problem to sort this
+         nonsense out! */
+/* #define ARC_RET_REGNUM          36 */
+/* #define ARC_ORIG_R8_REGNUM      37 */
+
+#define ARC_NUM_PSEUDO_REGS  0
+
+#define ARC_TOTAL_REGS      (ARC_NUM_REGS + ARC_NUM_PSEUDO_REGS)
+
+
+/* -------------------------------------------------------------------------- */
+/* ABI constants and macros                                                   */
+/* -------------------------------------------------------------------------- */
+
+/* ARC processor ABI-related registers:
+ *
+ *    R0  .. R7 are the registers used to pass arguments in function calls
+ *    R13 .. R26 are the callee-saved registers
+ *    when a return value is stored in registers it is in either R0 or in the pair (R0,R1).
+ */
+
+#define ARC_ABI_GLOBAL_POINTER                 26
+#define ARC_ABI_FRAME_POINTER                  27
+#define ARC_ABI_STACK_POINTER                  28
+
+#define ARC_ABI_FIRST_CALLEE_SAVED_REGISTER    13
+#define ARC_ABI_LAST_CALLEE_SAVED_REGISTER     26
+
+#define ARC_ABI_FIRST_ARGUMENT_REGISTER         0
+#define ARC_ABI_LAST_ARGUMENT_REGISTER          7
+
+#define ARC_ABI_RETURN_REGNUM                   0
+#define ARC_ABI_RETURN_LOW_REGNUM               0
+#define ARC_ABI_RETURN_HIGH_REGNUM              1
+
+#define IS_ARGUMENT_REGISTER(hw_regnum)         (ARC_ABI_FIRST_ARGUMENT_REGISTER <= (hw_regnum) && (hw_regnum) <= ARC_ABI_LAST_ARGUMENT_REGISTER)
+
+#define ARC_FIRST_EXTENSION_CORE_REGISTER      32
+#define ARC_LAST_EXTENSION_CORE_REGISTER       59
+#define ARC_NUM_EXTENSION_CORE_REGS            (ARC_LAST_EXTENSION_CORE_REGISTER - ARC_FIRST_EXTENSION_CORE_REGISTER + 1)
+#define ARC_NUM_STANDARD_CORE_REGS             (ARC_MAX_CORE_REGS - ARC_NUM_EXTENSION_CORE_REGS)
+
+
+#define IS_EXTENSION_CORE_REGISTER(hw_regnum)				\
+  ((ARC_FIRST_EXTENSION_CORE_REGISTER <= (hw_regnum))			\
+   && (hw_regnum) <= ARC_LAST_EXTENSION_CORE_REGISTER)
+
+
+/* 3 instructions before and after callee saves, and max number of saves;
+   assume each is 4-byte inst. See arc_scan_prologue () for details. */
+#define MAX_PROLOGUE_LENGTH   ((6 + (ARC_ABI_LAST_CALLEE_SAVED_REGISTER     \
+				     - ARC_ABI_FIRST_CALLEE_SAVED_REGISTER  \
+				     + 1)) * 4)
+
+
+/* -------------------------------------------------------------------------- */
+/* Useful constants                                                           */
+/* -------------------------------------------------------------------------- */
+
+#define BYTES_IN_REGISTER  4
+#define BYTES_IN_WORD      4
+#define BYTES_IN_ADDRESS  (BYTES_IN_REGISTER)
+
+#define REGISTER_NOT_PRESENT   (-1)   /* special value for sc_reg_offset[reg] */
+
+
+/* -------------------------------------------------------------------------- */
+/* Debug support                                                              */
+/* -------------------------------------------------------------------------- */
+
+/*! Debug a function entry point.
+
+    @todo. The use of ##__VA_ARGS__ is a GCC extension. */
+#define ARC_ENTRY_DEBUG(fmt, ...)					\
+  if (arc_debug)							\
+    {									\
+      fprintf_unfiltered (gdb_stdlog, "--- entered %s:%s(" fmt ")\n",	\
+                          __FILE__, __FUNCTION__, ##__VA_ARGS__);	\
+    }
+
+
+/* -------------------------------------------------------------------------- */
+/* Globally visible datatypes                                                 */
+/* -------------------------------------------------------------------------- */
+
+/*! Enum of the various ARC architectures.
+
+    @note A4 and A5 now removed. */
+enum arc_processor_version
+{
+  NO_ARCHITECTURE,
+  ARC700,
+  ARC600,
+  UNSUPPORTED_ARCHITECTURE
+};
+
+/*! Enum for type of access allowed to registers */
+enum arc_reg_access
+{
+  READ_ONLY,
+  READ_WRITE,
+  WRITE_ONLY
+};
+
+/*! Struct for definition of ARC core registers. */
+struct arc_core_reg_def
+{
+    int                 gdb_regno;
+    uint32_t            mask;
+    enum arc_reg_access access;
+    int                 exists;
+};
+
+/*! struct aux_reg_def is opaque here. */
+struct arc_aux_reg_def;
+
+/* this type is essentially private: no access to any of its fields should
+ * be performed outside of this module
+ */
+struct arc_reg_info
+{
+  enum arc_processor_version processor;
+  struct arc_aux_reg_def *aux_registers;
+  unsigned int aux_register_count;
+  int first_aux_gdb_regno;
+  unsigned int max_name_length;
+  int PC_number;
+  struct arc_core_reg_def core_registers[ARC_MAX_CORE_REGS];
+  unsigned int core_register_count;
+};
+
+/*! Structure describing an ARC variant. */
+struct arc_variant_info
+{
+  enum arc_processor_version processor_version;
+  struct arc_reg_info registers;
+};
+
+
 /*! Target dependencies.
 
     This structure holds target-dependent information.

@@ -42,23 +42,12 @@
 
 /* ARC header files */
 #include "arc-aux-registers.h"
-#include "arc-architecture.h"
-
-
-// complete structure definition here
-struct arc_variant_info
-{
-  ARC_ProcessorVersion processor_version;
-  ARC_RegisterInfo registers;
-};
 
 
 struct gdbarch *arc_jtag_initialize (struct gdbarch *gdbarch,
 				     struct gdbarch_list *arches);
 
 void _initialize_arc_jtag_tdep (void);
-
-void arc_check_pc_defined (struct gdbarch *gdbarch);
 
 #endif /* ARC_JTAG_TDEP_H */
 /******************************************************************************/
