@@ -767,7 +767,8 @@ osf-share/cma_deb_core.h osf-share/AT386/cma_thread_io.h \
 osf-share/cma_sched.h \
 common/gdb_signals.h common/gdb_thread_db.h common/i386-xstate.h \
 common/linux-ptrace.h \
-proc-utils.h arc-tdep.h arm-tdep.h ax-gdb.h ppcnbsd-tdep.h	\
+proc-utils.h arc-tdep.h arc-aux-registers.h arc-board.h \
+arc-elf-tdep.h arc-tdep.h arm-tdep.h ax-gdb.h ppcnbsd-tdep.h \
 cli-out.h gdb_expat.h breakpoint.h infcall.h obsd-tdep.h \
 exec.h m32r-tdep.h osabi.h gdbcore.h solib-som.h amd64bsd-nat.h \
 i386bsd-nat.h xml-support.h xml-tdesc.h alphabsd-tdep.h gdb_obstack.h \

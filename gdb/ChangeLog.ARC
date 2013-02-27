@@ -1,5 +1,55 @@
 2013-02-27  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
+	* Makefile.am (HFILES_NO_SRCDIR): Updated with ARC header files.
+	* arc-aux-registers.c: Replace ARC specific typedefs throughout by
+	their underlying types. Remove obsolete ARC specific headers and
+	add arc-elf-tdep.h as header.
+	(field_meaning, field_definition, parsing_data): Make name and
+	description fields non-constant. Replace ARC specific typedef'd
+	types by their underlying types.
+	(NO_DESCRIPTION, RESERVED, UNUSED): Make non-constant.
+	* arc-aux-registers.h: Remove ARC specific typedefs. Transfer
+	structs and enums to arc-tdep.h and arc-elf-tdep.h as appropriate.
+	Replace ARC specific typedef'd types by their underlying types.
+	* arc-board.c: Replace ARC specific typedef'd types by their
+	underlying types.
+	* arc-constants.h: Deleted.
+	* arc-elf-tdep.c: Replace ARC specific typedef'd types by their
+	underlying types. Remove obsolete ARC specific headers and add
+	arc-elf-tdep.h as header. Replace arc_jtag functions throughout by
+	arc_elf.
+	(ARC_NR_REGS, ARC_NR_PSEUDO_REGS): Macros added.
+	(EXTRACT): Macro deleted.
+	(check_architecture): Deleted.
+	(register_reggroup_p): Simplified.
+	(REGISTER_NAME_IS): Macro deleted.
+	(memory_range_command, arc_jtag_fill_memory_command)
+	(arc_jtag_break_memory_command, arc_jtag_watch_memory_command)
+	(arc_check_pc_defined): Deleted.
+	(arc_elf_init_abi): Replaces arc_jtag_initialize.
+	* arc-elf-tdep.h (arc_variant_info): Struct defn deleted.
+	(arc_check_pc_defined): Deleted.
+	* arc-linux-tdep.c (arc_linux_binutils_reg_to_regnum): Deleted.
+	(arc_linux_pseudo_register_read, arc_linux_pseudo_register_write):
+	Deleted.
+	(arc_linux_init_abi): Use PC rather than STOP_PC.
+	* arc-tdep.c (WORD_ALIGNED, WORDS_OCCUPIED, ROUND_UP_TO_WORDS):
+	Macros replaced by functions.
+	(arc_round_up_to_words): New function.
+	(IS_INSTRUCTION): Macro deleted.
+	(CHECK_OPERAND_STRING_AND_ACT, PUSH_BLINK, PUSH_BLINK_ACT)
+	(IS_PUSH_BLINK_FI, PUSH_FP_ACT, IS_PUSH_FP_FI, UPDATE_FP_ACT)
+	(IS_UPDATE_FP_FI, UPDATE_STACK_SPACE, IS_SUB_SP_FI): Macros
+	replaced by functions.
+	(arc_is_push_blink_fi, arc_is_push_fp_fi, arc_is_update_fp_fi)
+	(arc_is_sub_sp_fi, arc_is_core_register): New functions.
+	(arc_is_in_prologue): Replace macros by functions.
+	* arc-tdep.h: Insert arc-constants.h. Add arc specific enums and
+	structs from arc-aux-registers.h.
+	* configure.tgt (arc*-*-*): Add arc-board.o.
+
+2013-02-27  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
 	* regformats/reg-arc.dat: Updated to match new GDB register
 	sequence.
 
