@@ -140,10 +140,10 @@ SFILES=	$(srcdir)/gdbreplay.c $(srcdir)/inferiors.c $(srcdir)/dll.c \
 	$(srcdir)/win32-arm-low.c $(srcdir)/win32-i386-low.c \
 	$(srcdir)/win32-low.c $(srcdir)/wincecompat.c \
 	$(srcdir)/hostio.c $(srcdir)/hostio-errno.c \
-	$(srcdir)/common/vec.c \
-	$(srcdir)/common/common-utils.c $(srcdir)/common/xml-utils.c \
-	$(srcdir)/common/linux-osdata.c $(srcdir)/common/ptid.c \
-	$(srcdir)/common/buffer.c
+	$(srcdir)/../common/vec.c \
+	$(srcdir)/../common/common-utils.c $(srcdir)/../common/xml-utils.c \
+	$(srcdir)/../common/linux-osdata.c $(srcdir)/../common/ptid.c \
+	$(srcdir)/../common/buffer.c
 
 DEPFILES = @GDBSERVER_DEPFILES@
 
