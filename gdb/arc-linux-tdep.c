@@ -54,7 +54,6 @@
 #include "opcodes/arc-dis.h"
 
 /* ARC header files */
-#include "arc-constants.h"
 #include "arc-tdep.h"
 
 
@@ -229,43 +228,6 @@ static const int arc_linux_core_reg_offsets[ARC_NR_REGS] = {
 /*                               local functions                              */
 /* -------------------------------------------------------------------------- */
 
-/*! Map binutils/gcc register number to GDB register number
-
-    @todo This seems mad to me. This code must go!
-
-    Mapping from binutils/gcc register number to GDB register number ("regnum")
-
-    N.B. registers such as ARC_FP_REGNUM, ARC_SP_REGNUM, etc., actually have
-         different GDB register numbers in the arc-elf32 and arc-linux-uclibc
-         configurations of the ARC gdb. */
-static int
-arc_linux_binutils_reg_to_regnum (struct gdbarch *gdbarch, int reg)
-{
-  /* from gcc/config/arc/arc.h */
-
-  if (reg >= 0 && reg <= 26)
-    return reg;
-  else if (reg == ARC_ABI_FRAME_POINTER)	/* fp */
-    return ARC_FP_REGNUM;
-  else if (reg == ARC_ABI_STACK_POINTER)	/* sp */
-    return ARC_SP_REGNUM;
-  else if (reg == 29)		/* ilink1 */
-    return ARC_ILINK1_REGNUM;
-  else if (reg == 30)		/* ilink2 */
-    return ARC_ILINK2_REGNUM;
-  else if (reg == 31)		/* blink */
-    return ARC_BLINK_REGNUM;
-  else if (IS_EXTENSION_CORE_REGISTER (reg))	/* reserved */
-    ;
-  else if (reg == 60)		/* lp_count */
-    return ARC_LP_COUNT_REGNUM;
-
-  warning (_("unmapped register #%d encountered"), reg);
-  return -1;
-
-}	/* arc_linux_binutils_reg_to_regnum () */
-
-
 /*! Returns TRUE if the instruction at PC is a branch (of any kind).
 
     @param[out] fall_thru  Set to the address of the next insn.
@@ -326,9 +288,7 @@ arc_linux_next_pc (CORE_ADDR pc, CORE_ADDR *fall_thru, CORE_ADDR *target)
 	{
 	  ULONGEST val;
 	  regcache_cooked_read_unsigned (regcache,
-					 arc_linux_binutils_reg_to_regnum
-					 (gdbarch,
-					  instr.register_for_indirect_jump),
+					 instr.register_for_indirect_jump,
 					 &val);
 	  *target = val;
 	}
@@ -427,16 +387,12 @@ arc_linux_register_reggroup_p (int regnum, struct reggroup *group)
 {
   if (system_reggroup)
     {
-      if (regnum == ARC_ORIG_R8_REGNUM ||
-	  regnum == ARC_EFA_REGNUM ||
+      if (regnum == ARC_EFA_REGNUM ||
 	  regnum == ARC_ERET_REGNUM || regnum == ARC_ERSTATUS_REGNUM)
 	return 1;
     }
   else if (group == general_reggroup)
     {
-      if (regnum == ARC_RET_REGNUM)
-	return 0;
-
       return (regnum == ARC_STATUS32_REGNUM) ? 0 : 1;
     }
 
@@ -449,107 +405,6 @@ arc_linux_register_reggroup_p (int regnum, struct reggroup *group)
 /* -------------------------------------------------------------------------- */
 /*                       local functions called from gdb                      */
 /* -------------------------------------------------------------------------- */
-
-/*! Read a pseudo register
-
-    @todo This all needs rewriting. This is not a true understanding of what a
-          pseudo register actually is.
-
-    The Linux kernel stores only one of (ilink1, ilink2, eret). This is stored
-    in the ret "register".  ilink1 is stored when the kernel has been entered
-    because of a level 1 interrupt, etc.
-   
-    Same story for (status_l1, status_l2, erstatus).
-   
-    This disambiguity has been fixed by adding orig_r8 to pt_regs.
-   
-    FIXME: what is pt_regs????
-   
-    It will take the following values -
-       1. if an exception of any kind occurs then orig_r8 >= 0
-       2. Interrupt level 1 : orig == -1
-       3. Interrupt level 2 : orig == -2
-   
-    Registers whose value we don't know are given the value zero.
-   
-    The only pseudo-registers are:
-        ARC_ILINK1_REGNUM
-        ARC_ILINK2_REGNUM
-        ARC_ERET_REGNUM
-        ARC_STATUS32_L1_REGNUM
-        ARC_STATUS32_L2_REGNUM
-        ARC_ERSTATUS_REGNUM */
-static enum register_status
-arc_linux_pseudo_register_read (struct gdbarch *gdbarch,
-				struct regcache *regcache,
-				int gdb_regno, gdb_byte *buf)
-{
-  unsigned int *contents = (unsigned int *) buf;
-  unsigned int status32, ret;
-  LONGEST orig_r8;
-  enum register_status  res;
-
-  /* Get orig_r8 and give up if we don't have it. */
-  res = regcache_cooked_read_unsigned (regcache, ARC_ORIG_R8_REGNUM, &orig_r8);
-  if (res != REG_VALID)
-    {
-      return  res;
-    }
-
-  if ((gdb_regno == ARC_ILINK1_REGNUM)
-      || (gdb_regno == ARC_ILINK2_REGNUM)
-      || (gdb_regno == ARC_ERET_REGNUM))
-    {
-      if (((gdb_regno == ARC_ILINK1_REGNUM) && (orig_r8 == -1))
-	  || ((gdb_regno == ARC_ILINK2_REGNUM) && (orig_r8 == -2))
-	  || (orig_r8 >= 0))
-	{
-	  return regcache_cooked_read (regcache, ARC_RET_REGNUM, buf);
-	}
-      else
-	{
-	  return REG_UNAVAILABLE;
-	}
-    }
-  else if ((gdb_regno == ARC_STATUS32_L1_REGNUM)
-	   || (gdb_regno == ARC_STATUS32_L2_REGNUM)
-	   || (gdb_regno == ARC_ERSTATUS_REGNUM))
-    {
-      if (((gdb_regno == ARC_STATUS32_L1_REGNUM) && (orig_r8 == -1))
-	  || ((gdb_regno == ARC_STATUS32_L2_REGNUM) && (orig_r8 == -2))
-	  || (orig_r8 >= 0))
-	{
-	  return regcache_cooked_read (regcache, ARC_STATUS32_REGNUM, buf);
-	}
-      else
-	{
-	  return REG_UNAVAILABLE;
-	}
-    }
-  else
-    {
-      internal_error (__FILE__, __LINE__,
-		      _("%s: bad pseudo register number (%d)"), __FUNCTION__,
-		      gdb_regno);
-    }
-}	/* arc_linux_pseudo_register_read () */
-
-
-/*! Write a pseudo register.
-
-    None of our pseudo-regs are writable
-
-    @todo Should this really return an error? */
-static void
-arc_linux_pseudo_register_write (struct gdbarch *gdbarch,
-				 struct regcache *regcache,
-				 int gdb_regno, const gdb_byte * buf)
-{
-  internal_error (__FILE__, __LINE__,
-		  _("%s: pseudo-registers are unwritable"), __FUNCTION__);
-
-}	/* arc_linux_pseudo_register_write () */
-
 
 /*! Print registers in the correct order.
    
@@ -591,7 +446,7 @@ arc_linux_print_registers_info (struct gdbarch *gdbarch,
       PRINT (ARC_ERSTATUS_REGNUM);
 
       /* show the pc */
-      PRINT (ARC_STOP_PC_REGNUM);
+      PRINT (ARC_PC_REGNUM);
     }
 }	/* arc_linux_print_registers_info () */
 
@@ -683,9 +538,9 @@ arc_linux_write_pc (struct regcache *regcache, CORE_ADDR pc)
      system call will not be restarted. */
 
   /* @todo why -3 and not -1? -3 does not appear to be a defined valued for
-            orig_r8 (i.e. -2, -1 or >= 0) - perhaps it means "none of
-            these"? */
-  regcache_cooked_write_signed (regcache, ARC_ORIG_R8_REGNUM, -3);
+            orig_r8 (i.e. -2, -1 or >= 0) - perhaps it means "none of these"?
+            For now omitted, since we don't intend using this anyway. */
+  /* regcache_cooked_write_signed (regcache, ARC_ORIG_R8_REGNUM, -3); */
 
 }	/* arc_linux_write_pc () */
 
@@ -797,7 +652,7 @@ arc_linux_regset_from_core_section (struct gdbarch *core_arch,
 }	/* arc_linux_regset_from_core_section () */
 
 
-/*! Initialize for this ABI */
+/*! Initialize for the Linux ABI */
 static void
 arc_linux_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
@@ -809,7 +664,8 @@ arc_linux_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
   tdep->sigcontext_addr = arc_linux_sigcontext_addr;
   tdep->sc_reg_offset = arc_linux_sc_reg_offset;
   tdep->sc_num_regs = ARC_NR_REGS;
-  tdep->pc_regnum_in_sigcontext = ARC_RET_REGNUM;
+  /* @todo We don't have ARC_RET_REGNUM nay more, what do we use instead? */
+  /* tdep->pc_regnum_in_sigcontext = ARC_RET_REGNUM; */
 
   tdep->breakpoint_instruction = (info.byte_order == BFD_ENDIAN_BIG)
     ? be_breakpoint_instruction
@@ -825,22 +681,16 @@ arc_linux_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 
   /* ARC_NR_REGS and ARC_NR_PSEUDO_REGS are defined above, but ought to be
      more generally set. */
-  set_gdbarch_pc_regnum (gdbarch, ARC_STOP_PC_REGNUM);
+  set_gdbarch_pc_regnum (gdbarch, ARC_PC_REGNUM);
   set_gdbarch_num_regs (gdbarch, ARC_NR_REGS);
   set_gdbarch_num_pseudo_regs (gdbarch, ARC_NR_PSEUDO_REGS);
   set_gdbarch_print_registers_info (gdbarch, arc_linux_print_registers_info);
   set_gdbarch_register_name (gdbarch, arc_linux_register_name);
   set_gdbarch_cannot_store_register (gdbarch,
 				     arc_linux_cannot_store_register);
-  set_gdbarch_dwarf2_reg_to_regnum (gdbarch,
-				    arc_linux_binutils_reg_to_regnum);
-
   set_gdbarch_decr_pc_after_break (gdbarch, 0);
   set_gdbarch_software_single_step (gdbarch, arc_linux_software_single_step);
   set_gdbarch_write_pc (gdbarch, arc_linux_write_pc);
-  set_gdbarch_pseudo_register_read (gdbarch, arc_linux_pseudo_register_read);
-  set_gdbarch_pseudo_register_write (gdbarch,
-				     arc_linux_pseudo_register_write);
   set_gdbarch_regset_from_core_section (gdbarch,
 					arc_linux_regset_from_core_section);
   set_gdbarch_skip_solib_resolver (gdbarch, arc_linux_skip_solib_resolver);
@@ -866,6 +716,7 @@ arc_get_osabi (void)
 }	/* arc_get_osabi () */
 
 
+/*! Linux specific initialization function. */
 void
 _initialize_arc_linux_tdep (void)
 {
