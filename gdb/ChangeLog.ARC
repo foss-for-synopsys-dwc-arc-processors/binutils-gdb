@@ -1,5 +1,49 @@
 2013-02-28  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
+	* arc-aux-registers.c (start_ecr). Replace IS_EXTENSION_CORE_REGISTER.
+	(arc_initialize_aux_reg_info, arc_core_register_number): Replace
+	ARC_FIRST_EXTENSION_CORE_REGISTER by ARC_FIRST_EXT_CORE_REGNUM and
+	ARC_LAST_EXTENSION_CORE_REGISTER by ARC_LAST_EXT_CORE_REGNUM.
+	* arc-tdep.c (arc_is_in_prologue): Replace ARC_ABI_FRAME_POINTER
+	by ARC_FP_REGNUM and ARC_ABI_STACK_POINTER by ARC_SP_REGNUM.
+	(arc_print_frame_info, arc_find_this_sp, arc_is_callee_saved):
+	Replace ARC_ABI_FIRST_CALLEE_SAVED_REGISTER by
+	ARC_FIRST_CALLEE_SAVED_REGNUM and ARC_ABI_LAST_CALLEE_SAVED_REGISTER by
+	ARC_LAST_CALLEE_SAVED_REGNUM.
+	(push_dummy_call): Replace ARC_ABI_FIRST_ARGUMENT_REGISTER by
+	ARC_FIRST_ARG_REGNUM and ARC_ABI_LAST_ARGUMENT_REGISTER by
+	ARC_LAST_ARG_REGNUM.
+	(arc_extract_return_value, arc_store_return_value): Replace
+	ARC_ABI_RETURN_REGNUM by ARC_RET_REGNUM, ARC_ABI_RETURN_LOW_REGNUM
+	by ARC_RET_LOW_REGNUM and ARC_ABI_RETURN_REGNUM by
+	ARC_RET_HIGH_REGNUM.
+	(arc_unwind_cache_t): Replaced by struct arc_unwind_cache.
+	(arc_push_blink, arc_is_push_blink_fi, arc_is_push_fp_fi)
+	(arc_is_update_fp_fi, arc_is_sub_sp_fi, arc_print_frame_info)
+	(arc_create_cache, arc_find_this_sp, arc_is_callee_saved)
+	(arc_is_in_prologue, arc_scan_prologue, arc_frame_cache)
+	(arc_frame_prev_register, arc_sigtramp,frame_cache)
+	(arc_sigtramp_frame_prev_register): Replace arc_unwind_cache_t by
+	struct arc_unwind_cache.
+	* arc-tdep.h (ARC_ABI_GLOBAL_POINTER, ARC_ABI_FRAME_POINTER)
+	(ARC_ABI_STACK_POINTER): Deleted.
+	(ARC_FIRST_CALLEE_SAVED_REGNUM): Replaces
+	ARC_ABI_FIRST_CALLEE_SAVED_REGISTER.
+	(ARC_LAST_CALLEE_SAVED_REGNUM): Replaces
+	ARC_ABI_LAST_CALLEE_SAVED_REGISTER.
+	(ARC_FIRST_ARG_REGNUM): Replaces ARC_ABI_FIRST_ARGUMENT_REGISTER.
+	(ARC_LAST_ARG_REGNUM): Replaces ARC_ABI_LAST_ARGUMENT_REGISTER.
+	(ARC_RET_REGNUM): Replaces ARC_ABI_RETURN_REGNUM.
+	(ARC_RET_LOW_REGNUM): Replaces ARC_ABI_RETURN_LOW_REGNUM.
+	(ARC_RET_HIGH_REGNUM): Replaces ARC_ABI_RETURN_HIGH_REGNUM.
+	(ARC_FIRST_EXT_CORE_REGNUM): Replaces
+	ARC_FIRST_EXTENSION_CORE_REGISTER.
+	(ARC_LAST_EXT_CORE_REGNUM): Replaces
+	ARC_LAST_EXTENSION_CORE_REGISTER.
+	(ARC_NUM_EXT_CORE_REGS): Replace ARC_NUM_EXTENSION_CORE_REGS
+
+2013-02-28  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
 	* arc-tdep.c: Added GFDL license and updated commments
 	(arc_local_var_t): Deleted.
 	* arc-tdep.h: Added more Doxygen compatible commenting. Removed

@@ -34,15 +34,22 @@
 #define ARC_TDEP_H
 
 /* -------------------------------------------------------------------------- */
-/*! @file arc-tdep.h
+/*! @mainpage
+  
+    This is the documentation of the ARC specific components of the GNU
+    Debugger for the Synopsys ARC architecture. */
+/* -------------------------------------------------------------------------- */
+
+/* -------------------------------------------------------------------------- */
+/*  @file 
     # ARC Architecture Header for GDB
  
     Definitions specific to the architecture, but not any particular OS.
 
-    ## Local constants
+    ## Register numbering
 
-    Details of GDB core register and auxilliary register numbering. All this
-    should really be in the XML file.
+    Details of GDB core register and auxilliary register numbering should
+    really be in the XML file.
 
     ### GDB register numbers
 
@@ -66,16 +73,36 @@
     r32 through r59.
 
     ABI usage of core general registers, all having rw access:
-    - r0  - r3:   args
-    - r4  - r7:   args (32-bit instructions only)
-    - r8  - r9:   temp regs (32 bit instructions only)
-    - r10 - r11:  temp regs (32 bit & reduced instructsion set only)
-    - r12 - r15:  temp regs
-    - r16 - r25:  saved reg
+    - r0  .. r3:   args
+    - r4  .. r7:   args (32-bit instructions only)
+    - r8  .. r9:   temp regs (32 bit instructions only)
+    - r10 .. r11:  temp regs (32 bit & reduced instructsion set only)
+    - r12 .. r15:  temp regs
+    - r16 .. r25:  saved reg
+
+    ### Auxilliary registers.
+
+    These are the sequential register numbers by which these are known in
+    GDB.
+
+    @todo For now we hardcode only the key registers. Eventually these should
+           be sorted out through XML.
+
+    ## ABI related processor details
+
+    - r0  .. r7 are the registers used to pass arguments in function calls
+    - r13 .. r26 are the callee-saved registers
+    - when a return value is stored in registers it is in either R0 or in the
+      pair (R0,R1).
+
+    ### Other comments
 
     We'll also use Franck Jullien's OpenRISC GDB trick, of only accessing the
     core registers using G/g packets, requiring aux registers to be accessed
     using P/p packets. That way a G packet need not be too large. */
+/* -------------------------------------------------------------------------- */
+
+/* Core register definitions. */
 #define ARC_GP_REGNUM        26		/*!< Access __rw__ */
 #define ARC_FP_REGNUM        27		/*!< Access __rw__ */
 #define ARC_SP_REGNUM        28		/*!< Access __rw__ */
@@ -91,15 +118,6 @@
 #define ARC_PCL_REGNUM       63		/*!< Access __r__ */
 
 #define ARC_MAX_CORE_REGS  (ARC_PCL_REGNUM + 1)  /*!< Total core regs */
-
-/*! @file arc-tdep.h
-    ### Auxilliary registers.
-
-    These are the sequential register numbers by which these are known in
-    GDB.
-
-   @todo For now we hardcode only the key registers. Eventually these should
-         be sorted out through XML. */
 
 /* Baseline aux registers - architectural state. */
 #define ARC_PC_REGNUM               64	/*!< Access __rG__ */
@@ -135,71 +153,62 @@
 #define ARC_BTA_L1_REGNUM           85	/*!< Access __r__ */
 #define ARC_BTA_L2_REGNUM           86	/*!< Access __r__ */
 
+/*! Stop and resume pseudo register.
+
+    There is no one register which corresponds to the PC of the address where
+    we stopped. Depending on the type of exception, we may have the address of
+    the current instruction (TLB or protection exceptions) or the next
+    instruction (traps and syscalls) in our hand.
+
+    We define one pseudo register, which reads the address of the instruction
+    on which we stopped and writes the address of the instruction which we
+    will next execute.
+
+    @note Previously this was two registers STOP_PC for where we stopped and
+          RET for where we want to restart. They are unified as
+          STOP_RESUME_PC.
+
+    @todo This is still subject to some discussion. This is not yet regarded as
+          stable. */
+#define ARC_STOP_RESUME_PC_REGNUM      87 /*!< Access __rw__ */
+
+/*! Number of "real" registers. */
 #define ARC_NUM_REGS  (ARC_BTA_L2_REGNUM + 1)
 
-/* There is no one register which corresponds to the PC of the address where
-   we stopped. Depending on the type of exception, we may have the address of
-   the current instruction (TLB or protection exceptions) or the next
-   instruction (traps and syscalls) in our hand.
-
-   We define one pseudo register, which reads the address of the instruction
-   on which we stopped and writes the address of the instruction which we will
-   next execute.
-
-   @note Previously this was two registers STOP_PC for where we stopped and
-         RET for where we want to restart. They are unified as STOP_GO_PC.
-
-   @todo This is still subject to some discussion. This is not yet regarded as
-         stable. */
-#define ARC_STOP_GO_PC_REGNUM      87 /*!< Access __rw__ */
-
-#define ARC_TOTAL_REGS      (ARC_STOP_RET_PC_REGNUM)
-#define ARC_NUM_PSEUDO_REGS  (ARC_STOP_RE
-
-
+/*! Total "real" + pseudo registers. */
+#define ARC_TOTAL_REGS      (ARC_STOP_RET_PC_REGNUM + 1)
+/*! Number of pseudo registers. */
+#define ARC_NUM_PSEUDO_REGS (ARC_TOTAL_REGS - ARC_NUM_REGS)
 
 /* -------------------------------------------------------------------------- */
 /* ABI constants and macros                                                   */
 /* -------------------------------------------------------------------------- */
 
-/* ARC processor ABI-related registers:
- *
- *    R0  .. R7 are the registers used to pass arguments in function calls
- *    R13 .. R26 are the callee-saved registers
- *    when a return value is stored in registers it is in either R0 or in the pair (R0,R1).
- */
+#define ARC_FIRST_CALLEE_SAVED_REGNUM  13
+#define ARC_LAST_CALLEE_SAVED_REGNUM   26
 
-#define ARC_ABI_GLOBAL_POINTER                 26
-#define ARC_ABI_FRAME_POINTER                  27
-#define ARC_ABI_STACK_POINTER                  28
+#define ARC_FIRST_ARG_REGNUM            0
+#define ARC_LAST_ARG_REGNUM             7
 
-#define ARC_ABI_FIRST_CALLEE_SAVED_REGISTER    13
-#define ARC_ABI_LAST_CALLEE_SAVED_REGISTER     26
+#define ARC_RET_REGNUM                  0
+#define ARC_RET_LOW_REGNUM              0
+#define ARC_RET_HIGH_REGNUM             1
 
-#define ARC_ABI_FIRST_ARGUMENT_REGISTER         0
-#define ARC_ABI_LAST_ARGUMENT_REGISTER          7
+#define IS_ARGUMENT_REGISTER(regnum)					\
+  ((ARC_FIRST_ARG_REGNUM <= (regnum)) && ((regnum) <= ARC_LAST_ARG_REGNUM))
 
-#define ARC_ABI_RETURN_REGNUM                   0
-#define ARC_ABI_RETURN_LOW_REGNUM               0
-#define ARC_ABI_RETURN_HIGH_REGNUM              1
-
-#define IS_ARGUMENT_REGISTER(hw_regnum)         (ARC_ABI_FIRST_ARGUMENT_REGISTER <= (hw_regnum) && (hw_regnum) <= ARC_ABI_LAST_ARGUMENT_REGISTER)
-
-#define ARC_FIRST_EXTENSION_CORE_REGISTER      32
-#define ARC_LAST_EXTENSION_CORE_REGISTER       59
-#define ARC_NUM_EXTENSION_CORE_REGS            (ARC_LAST_EXTENSION_CORE_REGISTER - ARC_FIRST_EXTENSION_CORE_REGISTER + 1)
-#define ARC_NUM_STANDARD_CORE_REGS             (ARC_MAX_CORE_REGS - ARC_NUM_EXTENSION_CORE_REGS)
-
-
-#define IS_EXTENSION_CORE_REGISTER(hw_regnum)				\
-  ((ARC_FIRST_EXTENSION_CORE_REGISTER <= (hw_regnum))			\
-   && (hw_regnum) <= ARC_LAST_EXTENSION_CORE_REGISTER)
+#define ARC_FIRST_EXT_CORE_REGNUM      32
+#define ARC_LAST_EXT_CORE_REGNUM       59
+#define ARC_NUM_EXT_CORE_REGS				\
+  (ARC_LAST_EXT_CORE_REGNUM - ARC_FIRST_EXT_CORE_REGNUM + 1)
+#define ARC_NUM_STANDARD_CORE_REGS				\
+  (ARC_MAX_CORE_REGS - ARC_NUM_EXT_CORE_REGS)
 
 
 /* 3 instructions before and after callee saves, and max number of saves;
    assume each is 4-byte inst. See arc_scan_prologue () for details. */
-#define MAX_PROLOGUE_LENGTH   ((6 + (ARC_ABI_LAST_CALLEE_SAVED_REGISTER     \
-				     - ARC_ABI_FIRST_CALLEE_SAVED_REGISTER  \
+#define MAX_PROLOGUE_LENGTH   ((6 + (ARC_LAST_CALLEE_SAVED_REGNUM     \
+				     - ARC_FIRST_CALLEE_SAVED_REGNUM  \
 				     + 1)) * 4)
 
 

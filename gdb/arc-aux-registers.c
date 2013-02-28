@@ -742,7 +742,8 @@ start_ecr (struct gdb_xml_parser *parser,
     }
 
   /* sanity checking */
-  if (IS_EXTENSION_CORE_REGISTER (number))
+  if ((ARC_FIRST_EXT_CORE_REGNUM <= number)
+      && (number <= ARC_LAST_EXT_CORE_REGNUM))
     {
       ARC_CoreRegisterDefinition *reg = &info->core_registers[number];
 
@@ -1789,8 +1790,8 @@ arc_initialize_aux_reg_info (struct arc_reg_info * info)
     }
 
   /* we do not yet know if we have any extension registers */
-  for (i = ARC_FIRST_EXTENSION_CORE_REGISTER;
-       i <= ARC_LAST_EXTENSION_CORE_REGISTER; i++)
+  for (i = ARC_FIRST_EXT_CORE_REGNUM;
+       i <= ARC_LAST_EXT_CORE_REGNUM; i++)
     info->core_registers[i].exists = FALSE;
 
   /* R61 is reserved, R62 is not a real register.  */
@@ -1902,11 +1903,11 @@ arc_core_register_number (int gdb_regno)
   /* the lower-numbered set of non-extension core registers (i.e. excluding
    * R60 .. R63) have fixed gdb numbers which are the same as the h/w number
    */
-  if (gdb_regno < ARC_FIRST_EXTENSION_CORE_REGISTER)
+  if (gdb_regno < ARC_FIRST_EXT_CORE_REGNUM)
     return (unsigned int) gdb_regno;
 
   /* scan the rest of the array */
-  for (i = ARC_FIRST_EXTENSION_CORE_REGISTER;
+  for (i = ARC_FIRST_EXT_CORE_REGNUM;
        i < ELEMENTS_IN_ARRAY (info->core_registers); i++)
     {
       struct arc_core_reg_def *def = &info->core_registers[i];
