@@ -1,3 +1,11 @@
+2013-02-28  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	* arc-tdep.c: Added GFDL license and updated commments
+	(arc_local_var_t): Deleted.
+	* arc-tdep.h: Added more Doxygen compatible commenting. Removed
+	AUX registers addresses.
+	(ARC_STOP_GO_REGNUM): Added as pseudo reg.
+
 2013-02-27  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* Makefile.am (HFILES_NO_SRCDIR): Updated with ARC header files.

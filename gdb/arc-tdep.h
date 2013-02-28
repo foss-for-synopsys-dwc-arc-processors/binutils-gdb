@@ -29,158 +29,133 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
-/******************************************************************************/
-/*                                                                            */
-/*		       ARC Architecture Header for GDB                        */
-/*		       ===============================                        */
-/*                                                                            */
-/*  Definitions specific to the architecture, but not any particular OS.      */
-/*                                                                            */
-/******************************************************************************/
 
 #ifndef ARC_TDEP_H
 #define ARC_TDEP_H
 
-
-#ifndef FALSE
-#define FALSE 0
-#endif
-#ifndef TRUE
-#define TRUE 1
-#endif
-
 /* -------------------------------------------------------------------------- */
-/* Local constants, which should really be in the XML file. */
-/* -------------------------------------------------------------------------- */
+/*! @file arc-tdep.h
+    # ARC Architecture Header for GDB
+ 
+    Definitions specific to the architecture, but not any particular OS.
 
-/* Auxilliary register addresses. */
+    ## Local constants
 
-/* Baseline aux registers - architectural state. */
-#define ARC_PC_AUXADDR                0x006
-#define ARC_STATUS32_AUXADDR          0x00a
-#define ARC_BTA_AUXADDR               0x412
-#define ARC_ECR_AUXADDR               0x403
-#define ARC_ICAUSE1_AUXADDR           0x40A
-#define ARC_ICAUSE2_AUXADDR           0x40B
+    Details of GDB core register and auxilliary register numbering. All this
+    should really be in the XML file.
 
-/* Baseline aux registers - saved exception and interrupt state. */
-#define ARC_STATUS32_L1_AUXADDR       0x00b
-#define ARC_STATUS32_L2_AUXADDR       0x00c
-#define ARC_ERET_AUXADDR              0x400
-#define ARC_ERBTA_AUXADDR             0x401
-#define ARC_ERSTATUS_AUXADDR          0x402
+    ### GDB register numbers
 
-/* Baseline aux registers - programmable interrupt unit control & status
-   registers. */
-#define ARC_IRQ_LV12_AUXADDR          0x043
-#define ARC_IRQ_LEV_AUXADDR           0x200
-#define ARC_IRQ_HINT_AUXADDR          0x201
-#define ARC_IENABLE_AUXADDR           0x40c
-#define ARC_ITRIGGER_AUXADDR          0x40d
-#define ARC_IRQ_PULSE_CANCEL_AUXADDR  0x415
-#define ARC_IRQ_PENDING_AUXADDR       0x416
+    Not all are visible in user space, which is all the Linux
+    version of the tool chain can see. For each we show the access as:
 
-/* Optional instruction set aux registers - zero overhead loops. */
-#define ARC_LP_START_AUXADDR          0x002
-#define ARC_LP_END_AUXADDR            0x003
+    - __r__: readable by user, kernel or JTAG debugger
+    - __R__: readable by kernel or JTAG debugger
+    - __w__: writable by user, kernel or JTAG debugger
+    - __W__: writable by kernel or JTAG debugger
+    - __G__: writable by JTAG debugger
 
-/* Extended exception state auxilliary registers. */
-#define ARC_EFA_AUXADDR               0x404
-#define ARC_BTA_L1_AUXADDR            0x413
-#define ARC_BTA_L2_AUXADDR            0x414
+    ### Core register set.
 
-/* -------------------------------------------------------------------------- */
-/* GDB register numbers                                                       */
-/* -------------------------------------------------------------------------- */
+    Old GDB used to have a completely arbitrary mapping, and that mapping
+    differed between ELF32 and LINUX tool chains. In this version we use the
+    direct address number for the core registers (r0 through r63).
 
-/* Core register set. Old GDB used to have a completely arbitrary mapping,
-   and that mapping differed between ELF32 and LINUX tool chains. In this
-   version we use the direct address number for the core registers (r0
-   through r63).
+    `#define` constants are defined for named registers, but not the numbered
+    core registers r0 through r25 and the optional extension core registers
+    r32 through r59.
 
-   We'll also use Franck Jullien's OpenRISC GDB trick, of only accessing the
-   core registers using G/g packets, requiring aux registers to be accessed
-   using P/p packets. That way a G packet need not be too large. */
+    ABI usage of core general registers, all having rw access:
+    - r0  - r3:   args
+    - r4  - r7:   args (32-bit instructions only)
+    - r8  - r9:   temp regs (32 bit instructions only)
+    - r10 - r11:  temp regs (32 bit & reduced instructsion set only)
+    - r12 - r15:  temp regs
+    - r16 - r25:  saved reg
 
-/* Core general registers:
-   r0  - r3   args
-   r4  - r7   args (32-bit instructions only)
-   r8  - r9   temp regs (32 bit instructions only)
-   r10 - r11  temp regs (32 bit & reduced instructsion set only)
-   r12 - r15  temp regs
-   r16 - r25  saved regs */
-
-#define ARC_GP_REGNUM        26
-#define ARC_FP_REGNUM        27		/*!< Old Linux GDB defined as 33 */
-#define ARC_SP_REGNUM        28		/*!< Old Linux GDB defined as 34 */
-#define ARC_ILINK1_REGNUM    29		/*!< Old Linux GDB defined as 39 */
-#define ARC_ILINK2_REGNUM    30		/*!< Old Linux GDB defined as 40 */
-#define ARC_BLINK_REGNUM     31		/*!< Old Linux GDB defined as 32 */
+    We'll also use Franck Jullien's OpenRISC GDB trick, of only accessing the
+    core registers using G/g packets, requiring aux registers to be accessed
+    using P/p packets. That way a G packet need not be too large. */
+#define ARC_GP_REGNUM        26		/*!< Access __rw__ */
+#define ARC_FP_REGNUM        27		/*!< Access __rw__ */
+#define ARC_SP_REGNUM        28		/*!< Access __rw__ */
+#define ARC_ILINK1_REGNUM    29		/*!< Access __RW__ */
+#define ARC_ILINK2_REGNUM    30		/*!< Access __RW__ */
+#define ARC_BLINK_REGNUM     31		/*!< Access __rw__ */
 
 /* Extension core registers r32-r59 */
 
-#define ARC_LP_COUNT_REGNUM  60		/*!< Old Linux GDB defined as 30 */
-#define ARC_RESERVED_REGNUM  61
-#define ARC_LIMM_REGNUM      62
-#define ARC_PCL_REGNUM       63
+#define ARC_LP_COUNT_REGNUM  60		/*!< Access __rw__ */
+#define ARC_RESERVED_REGNUM  61		/*!< No access */
+#define ARC_LIMM_REGNUM      62		/*!< No access */
+#define ARC_PCL_REGNUM       63		/*!< Access __r__ */
 
-#define ARC_MAX_CORE_REGS  (ARC_PCL_REGNUM + 1)
+#define ARC_MAX_CORE_REGS  (ARC_PCL_REGNUM + 1)  /*!< Total core regs */
 
-/* Auxilliary registers. These are the sequential register numbers by which
-   these are known in GDB. They'll be mapped onto actual AUX register numbers
-   in due course.
+/*! @file arc-tdep.h
+    ### Auxilliary registers.
 
-   @todo Eventually these should be sorted out through XML. */
+    These are the sequential register numbers by which these are known in
+    GDB.
+
+   @todo For now we hardcode only the key registers. Eventually these should
+         be sorted out through XML. */
 
 /* Baseline aux registers - architectural state. */
-#define ARC_PC_REGNUM               64	/*!< Old Linux GDB defined as 38 */
-#define ARC_STATUS32_REGNUM         65	/*!< Old Linux GDB defined as 31 */
-#define ARC_BTA_REGNUM              66	/*!< Old Linux GDB defined as 27 */
-#define ARC_ECR_REGNUM              67	/*!< Not defined in old Linux GDB */
-#define ARC_ICAUSE1_REGNUM          68	/*!< Not defined in old Linux GDB */
-#define ARC_ICAUSE2_REGNUM          69	/*!< Not defined in old Linux GDB */
+#define ARC_PC_REGNUM               64	/*!< Access __rG__ */
+#define ARC_STATUS32_REGNUM         65	/*!< Access __rG__ */
+#define ARC_BTA_REGNUM              66	/*!< Access __RW__ */
+#define ARC_ECR_REGNUM              67	/*!< Access __RW__ */
+#define ARC_ICAUSE1_REGNUM          68	/*!< Access __RW__ */
+#define ARC_ICAUSE2_REGNUM          69	/*!< Access __RW__ */
 
 /* Baseline aux registers - saved exception and interrupt state. */
-#define ARC_STATUS32_L1_REGNUM      70	/*!< Old Linux GDB defined as 42 */
-#define ARC_STATUS32_L2_REGNUM      71	/*!< Old Linux GDB defined as 43 */
-#define ARC_ERET_REGNUM             72	/*!< Old Linux GDB defined as 41 */
-#define ARC_ERBTA_REGNUM            73	/*!< Not defined in old Linux GDB */
-#define ARC_ERSTATUS_REGNUM         74	/*!< Old Linux GDB defined as 44 */
+#define ARC_STATUS32_L1_REGNUM      70	/*!< Access __RW__ */
+#define ARC_STATUS32_L2_REGNUM      71	/*!< Access __RW__ */
+#define ARC_ERET_REGNUM             72	/*!< Access __RW__ */
+#define ARC_ERBTA_REGNUM            73	/*!< Access __RW__ */
+#define ARC_ERSTATUS_REGNUM         74	/*!< Access __RW__ */
 
 /* Baseline aux registers - programmable interrupt unit control & status
    registers. */
-#define ARC_AUX_IRQ_LV12_REGNUM     75	/*!< Not defined in old Linux GDB */
-#define ARC_AUX_IRQ_LEV_REGNUM      76	/*!< Not defined in old Linux GDB */
-#define ARC_AUX_IRQ_HINT_REGNUM     77	/*!< Not defined in old Linux GDB */
-#define ARC_AUX_IENABLE_REGNUM      78	/*!< Not defined in old Linux GDB */
-#define ARC_AUX_ITRIGGER_REGNUM     79	/*!< Not defined in old Linux GDB */
-#define ARC_AUX_IRQ_PULSE_CANCEL_REGNUM  80 /*!< Not defined in old Linux GDB */
-#define ARC_AUX_IRQ_PENDING_REGNUM  81	/*!< Not defined in old Linux GDB */
+#define ARC_AUX_IRQ_LV12_REGNUM     75	/*!< Access __r__ */
+#define ARC_AUX_IRQ_LEV_REGNUM      76	/*!< Access __r__ */
+#define ARC_AUX_IRQ_HINT_REGNUM     77	/*!< Access __r__ */
+#define ARC_AUX_IENABLE_REGNUM      78	/*!< Access __r__ */
+#define ARC_AUX_ITRIGGER_REGNUM     79	/*!< Access __r__ */
+#define ARC_AUX_IRQ_PULSE_CANCEL_REGNUM  80 /*!< Access __r__ */
+#define ARC_AUX_IRQ_PENDING_REGNUM  81	/*!< Access __r__ */
 
 /* Optional instruction set aux registers - zero overhead loops. */
-#define ARC_LP_START_REGNUM         82	/*!< Old Linux GDB defined as 28 */
-#define ARC_LP_END_REGNUM           83	/*!< Old Linux GDB defined as 29 */
+#define ARC_LP_START_REGNUM         82	/*!< Access __r__ */
+#define ARC_LP_END_REGNUM           83	/*!< Access __r__ */
 
 /* Extended exception state auxilliary registers. */
-#define ARC_EFA_REGNUM              84	/*!< Old Linux GDB defined as 35 */
-#define ARC_BTA_L1_REGNUM           85	/*!< Not defined in old Linux GDB */
-#define ARC_BTA_L2_REGNUM           86	/*!< Not defined in old Linux GDB */
+#define ARC_EFA_REGNUM              84	/*!< Access __r__ */
+#define ARC_BTA_L1_REGNUM           85	/*!< Access __r__ */
+#define ARC_BTA_L2_REGNUM           86	/*!< Access __r__ */
 
 #define ARC_NUM_REGS  (ARC_BTA_L2_REGNUM + 1)
 
-/* Old Linux GDB defined two more registers, which we might consider pseudo
-   registers.
-   - RET which was either eret, ilink1 or ilink2
-   - ORIG_R8, which was used to distinguish what was in RET.
+/* There is no one register which corresponds to the PC of the address where
+   we stopped. Depending on the type of exception, we may have the address of
+   the current instruction (TLB or protection exceptions) or the next
+   instruction (traps and syscalls) in our hand.
 
-   @todo For now we omit these. It should be the server's problem to sort this
-         nonsense out! */
-/* #define ARC_RET_REGNUM          36 */
-/* #define ARC_ORIG_R8_REGNUM      37 */
+   We define one pseudo register, which reads the address of the instruction
+   on which we stopped and writes the address of the instruction which we will
+   next execute.
 
-#define ARC_NUM_PSEUDO_REGS  0
+   @note Previously this was two registers STOP_PC for where we stopped and
+         RET for where we want to restart. They are unified as STOP_GO_PC.
 
-#define ARC_TOTAL_REGS      (ARC_NUM_REGS + ARC_NUM_PSEUDO_REGS)
+   @todo This is still subject to some discussion. This is not yet regarded as
+         stable. */
+#define ARC_STOP_GO_PC_REGNUM      87 /*!< Access __rw__ */
+
+#define ARC_TOTAL_REGS      (ARC_STOP_RET_PC_REGNUM)
+#define ARC_NUM_PSEUDO_REGS  (ARC_STOP_RE
+
 
 
 /* -------------------------------------------------------------------------- */
