@@ -194,7 +194,7 @@
 
 /* The frame unwind cache for the ARC */
 
-struct arc_unwind_cache;
+struct arc_unwind_cache
 {
   /* BLINK save location offset from previous SP (-ve value) */
   int blink_save_offset_from_prev_sp;
@@ -282,7 +282,7 @@ arc_round_up_to_words (unsigned int  bytes)
     @param[out] info  Frame unwind cache to be updated.
     @param[in]  offset  Offset of the new frame. */
 static void
-arc_push_blink (arc_unwind_cache_t *info, int offset)
+arc_push_blink (struct arc_unwind_cache *info, int offset)
 {
   info->delta_sp += offset;
   info->blink_save_offset_from_prev_sp = (int) info->delta_sp;
@@ -301,7 +301,7 @@ arc_push_blink (arc_unwind_cache_t *info, int offset)
     @return            Non-zero (true) if this was "push blink". Zero (false)
                        otherwise. */
 static int
-arc_is_push_blink_fi (arc_unwind_cache_t *info, struct arcDisState *state)
+arc_is_push_blink_fi (struct arc_unwind_cache *info, struct arcDisState *state)
 {
   if (strstr (state->operandBuffer, "blink") == state->operandBuffer)
     {
@@ -334,7 +334,7 @@ arc_is_push_blink_fi (arc_unwind_cache_t *info, struct arcDisState *state)
     @return            Non-zero (true) if this was "push fp". Zero (false)
                        otherwise. */
 static int
-arc_is_push_fp_fi (arc_unwind_cache_t *info, struct arcDisState *state)
+arc_is_push_fp_fi (struct arc_unwind_cache *info, struct arcDisState *state)
 {
   if (strstr (state->operandBuffer, "fp") == state->operandBuffer)
     {
@@ -359,7 +359,7 @@ arc_is_push_fp_fi (arc_unwind_cache_t *info, struct arcDisState *state)
     @return            Non-zero (true) if this was "push fp". Zero (false)
                        otherwise. */
 static int
-arc_is_update_fp_fi (arc_unwind_cache_t *info, struct arcDisState *state)
+arc_is_update_fp_fi (struct arc_unwind_cache *info, struct arcDisState *state)
 {
   if ((0 == strcmp(state->instrBuffer, "mov"))
       && (strstr (state->operandBuffer, "fp,sp") == state->operandBuffer))
@@ -386,7 +386,7 @@ arc_is_update_fp_fi (arc_unwind_cache_t *info, struct arcDisState *state)
     @return            Non-zero (true) if this was "push fp". Zero (false)
                        otherwise. */
 static int
-arc_is_sub_sp_fi (arc_unwind_cache_t *info, struct arcDisState *state)
+arc_is_sub_sp_fi (struct arc_unwind_cache *info, struct arcDisState *state)
 {
   if (((0 == strcmp(state->instrBuffer, "sub"))
        || (0 == strcmp(state->instrBuffer, "sub_s")))
@@ -420,7 +420,7 @@ arc_is_core_register (int  regnum)
 
     Used for internal debugging only. */  
 static void
-arc_print_frame_info (char *message, arc_unwind_cache_t *info,
+arc_print_frame_info (char *message, struct arc_unwind_cache *info,
 		      int addresses_known)
 {
   unsigned int i;
@@ -440,8 +440,8 @@ arc_print_frame_info (char *message, arc_unwind_cache_t *info,
   fprintf_unfiltered (gdb_stdlog, "is_leaf = %d, uses_fp = %d\n",
 		      info->is_leaf, info->uses_fp);
 
-  for (i = ARC_ABI_FIRST_CALLEE_SAVED_REGISTER;
-       i < ARC_ABI_LAST_CALLEE_SAVED_REGISTER; i++)
+  for (i = ARC_FIRST_CALLEE_SAVED_REGNUM;
+       i < ARC_LAST_CALLEE_SAVED_REGNUM; i++)
     {
       if (info->saved_regs_mask & (1 << i))
 	fprintf_unfiltered (gdb_stdlog, "saved register R%02d %s %s\n",
@@ -561,10 +561,10 @@ arc_set_disassembler (struct objfile *objfile)
 
     The implementations has changed since GDB 6.8, since we are now provided
     with the address of THIS frame, rather than the NEXT frame. */
-static arc_unwind_cache_t *
+static struct arc_unwind_cache *
 arc_create_cache (struct frame_info *this_frame)
 {
-  arc_unwind_cache_t *cache = FRAME_OBSTACK_ZALLOC (arc_unwind_cache_t);
+  struct arc_unwind_cache *cache = FRAME_OBSTACK_ZALLOC (struct arc_unwind_cache);
 
   /* Zero all fields.  */
   cache->blink_save_offset_from_prev_sp = 0;
@@ -656,7 +656,7 @@ arc_frame_base_address (struct frame_info  *this_frame,
 
     This is also the frame's ID's stack address. */
 static void
-arc_find_this_sp (arc_unwind_cache_t * info,
+arc_find_this_sp (struct arc_unwind_cache * info,
 		  struct frame_info *this_frame)
 {
   struct gdbarch *gdbarch;
@@ -687,8 +687,8 @@ arc_find_this_sp (arc_unwind_cache_t * info,
       info->prev_sp =
 	info->frame_base + (CORE_ADDR) info->old_sp_offset_from_fp;
 
-      for (i = ARC_ABI_FIRST_CALLEE_SAVED_REGISTER;
-	   i < ARC_ABI_LAST_CALLEE_SAVED_REGISTER; i++)
+      for (i = ARC_FIRST_CALLEE_SAVED_REGNUM;
+	   i < ARC_LAST_CALLEE_SAVED_REGNUM; i++)
 	{
 	  /* If this register has been saved, add the previous stack pointer
 	   * to the offset from the previous stack pointer at which the
@@ -769,10 +769,10 @@ arc_find_this_sp (arc_unwind_cache_t * info,
     If it is, the information in the frame unwind cache is updated. */
 static int
 arc_is_callee_saved (unsigned int reg, int offset,
-		     arc_unwind_cache_t * info)
+		     struct arc_unwind_cache * info)
 {
-  if (ARC_ABI_FIRST_CALLEE_SAVED_REGISTER <= reg
-      && reg <= ARC_ABI_LAST_CALLEE_SAVED_REGISTER)
+  if (ARC_FIRST_CALLEE_SAVED_REGNUM <= reg
+      && reg <= ARC_LAST_CALLEE_SAVED_REGNUM)
     {
       if (arc_debug)
 	{
@@ -850,7 +850,7 @@ arc_is_callee_saved (unsigned int reg, int offset,
 
     If it is, the information in the frame unwind cache may be updated. */
 static int
-arc_is_in_prologue (arc_unwind_cache_t * info, struct arcDisState *instr)
+arc_is_in_prologue (struct arc_unwind_cache * info, struct arcDisState *instr)
 {
   /* Might be a push or a pop */
   if (instr->_opcode == 0x3)
@@ -858,7 +858,7 @@ arc_is_in_prologue (arc_unwind_cache_t * info, struct arcDisState *instr)
       if (instr->_addrWriteBack != (char) 0)
 	{
 	  /* This is a st.a  */
-	  if (instr->ea_reg1 == ARC_ABI_STACK_POINTER)
+	  if (instr->ea_reg1 == ARC_SP_REGNUM)
 	    {
 	      if (instr->_offset == -4)
 		{
@@ -900,7 +900,7 @@ arc_is_in_prologue (arc_unwind_cache_t * info, struct arcDisState *instr)
 	      /* Is this a store of some register onto the stack using the
 	       * stack pointer?
 	       */
-	      if (instr->ea_reg1 == ARC_ABI_STACK_POINTER)
+	      if (instr->ea_reg1 == ARC_SP_REGNUM)
 		{
 		  /* st <reg>, [sp,offset] */
 
@@ -915,7 +915,7 @@ arc_is_in_prologue (arc_unwind_cache_t * info, struct arcDisState *instr)
 	       * frame pointer? We check for argument registers getting saved
 	       * and restored.
 	       */
-	      if (instr->ea_reg1 == ARC_ABI_FRAME_POINTER)
+	      if (instr->ea_reg1 == ARC_FP_REGNUM)
 		{
 		  if (IS_ARGUMENT_REGISTER
 		      (instr->source_operand.registerNum))
@@ -1046,7 +1046,7 @@ arc_is_in_prologue (arc_unwind_cache_t * info, struct arcDisState *instr)
        sub  sp , sp , #immediate ; create space for local vars on the stack */
 static CORE_ADDR
 arc_scan_prologue (CORE_ADDR entrypoint,
-		   struct frame_info *this_frame, arc_unwind_cache_t * info)
+		   struct frame_info *this_frame, struct arc_unwind_cache * info)
 {
   struct gdbarch *gdbarch;
   int pc_regnum;
@@ -1166,7 +1166,7 @@ arc_extract_return_value (struct gdbarch *gdbarch, struct type *type,
       ULONGEST val;
 
       /* Get the return value from one register. */
-      regcache_cooked_read_unsigned (regcache, ARC_ABI_RETURN_REGNUM, &val);
+      regcache_cooked_read_unsigned (regcache, ARC_RET_REGNUM, &val);
       store_unsigned_integer (valbuf, (int) len,
 			      gdbarch_byte_order (gdbarch), val);
 
@@ -1181,9 +1181,9 @@ arc_extract_return_value (struct gdbarch *gdbarch, struct type *type,
       ULONGEST low, high;
 
       /* Get the return value from two registers. */
-      regcache_cooked_read_unsigned (regcache, ARC_ABI_RETURN_LOW_REGNUM,
+      regcache_cooked_read_unsigned (regcache, ARC_RET_LOW_REGNUM,
 				     &low);
-      regcache_cooked_read_unsigned (regcache, ARC_ABI_RETURN_HIGH_REGNUM,
+      regcache_cooked_read_unsigned (regcache, ARC_RET_HIGH_REGNUM,
 				     &high);
 
       store_unsigned_integer (valbuf, BYTES_IN_REGISTER,
@@ -1223,7 +1223,7 @@ arc_store_return_value (struct gdbarch *gdbarch, struct type *type,
       /* Put the return value into one register. */
       val = extract_unsigned_integer (valbuf, (int) len,
 				      gdbarch_byte_order (gdbarch));
-      regcache_cooked_write_unsigned (regcache, ARC_ABI_RETURN_REGNUM, val);
+      regcache_cooked_write_unsigned (regcache, ARC_RET_REGNUM, val);
 
       if (arc_debug)
 	{
@@ -1243,9 +1243,9 @@ arc_store_return_value (struct gdbarch *gdbarch, struct type *type,
 				  (int) len - BYTES_IN_REGISTER,
 				  gdbarch_byte_order (gdbarch));
 
-      regcache_cooked_write_unsigned (regcache, ARC_ABI_RETURN_LOW_REGNUM,
+      regcache_cooked_write_unsigned (regcache, ARC_RET_LOW_REGNUM,
 				      low);
-      regcache_cooked_write_unsigned (regcache, ARC_ABI_RETURN_HIGH_REGNUM,
+      regcache_cooked_write_unsigned (regcache, ARC_RET_HIGH_REGNUM,
 				      high);
 
       if (arc_debug)
@@ -1323,7 +1323,7 @@ arc_skip_prologue (struct gdbarch *gdbarch, CORE_ADDR pc)
 
     This function has changed from GDB 6.8. It now takes a reference to THIS
     frame, not the NEXT frame. */
-static arc_unwind_cache_t *
+static struct arc_unwind_cache *
 arc_frame_cache (struct frame_info *this_frame, void **this_cache)
 {
   ARC_ENTRY_DEBUG ("")
@@ -1332,7 +1332,7 @@ arc_frame_cache (struct frame_info *this_frame, void **this_cache)
     {
         CORE_ADDR  entrypoint =
 	  (CORE_ADDR) get_frame_register_unsigned (this_frame, ARC_PC_REGNUM);
-        arc_unwind_cache_t *cache      = arc_create_cache (this_frame);
+        struct arc_unwind_cache *cache      = arc_create_cache (this_frame);
 
         /* return the newly-created cache */
         *this_cache = cache;
@@ -1392,7 +1392,7 @@ arc_frame_prev_register (struct frame_info *this_frame,
 			 void **this_cache,
 			 int regnum)
 {
-  arc_unwind_cache_t *info = arc_frame_cache (this_frame, this_cache);
+  struct arc_unwind_cache *info = arc_frame_cache (this_frame, this_cache);
 
   ARC_ENTRY_DEBUG ("regnum %d", regnum)
 
@@ -1595,7 +1595,7 @@ arc_dummy_id (struct gdbarch *gdbarch, struct frame_info *this_frame)
     frame, not the NEXT frame.
 
     Allow frame unwinding to happen from within signal handlers. */
-static arc_unwind_cache_t *
+static struct arc_unwind_cache *
 arc_sigtramp_frame_cache (struct frame_info *this_frame, void **this_cache)
 {
   ARC_ENTRY_DEBUG ("")
@@ -1603,7 +1603,7 @@ arc_sigtramp_frame_cache (struct frame_info *this_frame, void **this_cache)
   if (*this_cache == NULL)
     {
       struct gdbarch_tdep *tdep = gdbarch_tdep (get_frame_arch (this_frame));
-      arc_unwind_cache_t *cache = arc_create_cache (this_frame);
+      struct arc_unwind_cache *cache = arc_create_cache (this_frame);
 
       *this_cache = cache;
 
@@ -1675,7 +1675,7 @@ arc_sigtramp_frame_prev_register (struct frame_info *this_frame,
 				  int regnum)
 {
   /* Make sure we've initialized the cache. */
-  arc_unwind_cache_t *info = arc_sigtramp_frame_cache (this_frame, this_cache);
+  struct arc_unwind_cache *info = arc_sigtramp_frame_cache (this_frame, this_cache);
 
   ARC_ENTRY_DEBUG ("")
 
@@ -1809,7 +1809,7 @@ arc_push_dummy_call (struct gdbarch *gdbarch,
 		     struct value **args,
 		     CORE_ADDR sp, int struct_return, CORE_ADDR struct_addr)
 {
-  int arg_reg = ARC_ABI_FIRST_ARGUMENT_REGISTER;
+  int arg_reg = ARC_FIRST_ARG_REGNUM;
 
   ARC_ENTRY_DEBUG ("nargs = %d", nargs)
 
@@ -1885,7 +1885,7 @@ arc_push_dummy_call (struct gdbarch *gdbarch,
 
       /* Now load as much as possible of the memory image into registers. */
       data = memory_image;
-      while (arg_reg <= ARC_ABI_LAST_ARGUMENT_REGISTER)
+      while (arg_reg <= ARC_LAST_ARG_REGNUM)
 	{
 	  if (arc_debug)
 	    {
