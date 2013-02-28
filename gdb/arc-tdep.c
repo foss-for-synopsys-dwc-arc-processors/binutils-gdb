@@ -27,19 +27,27 @@
    GNU General Public License for more details.
   
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-/******************************************************************************/
+   --------------------------------------------------------------------------
+
+   The comments within this file are also licensed under under the terms of
+   the GNU Free Documentation License as published by the Free Software
+   Foundation; either version 1.3 of the License, or (at your option) any
+   later version. See the file fdi.texi in the gdb/doc directory for copying
+   conditions.
+
+   You should have received a copy of the GNU Free Documentation License along
+   with this program. If not, see <http://www.gnu.org/licenses/>.  */
+
+/* -------------------------------------------------------------------------- */
 /*                                                                            */
 /* Outline:                                                                   */
-/*     This module provides support for the ARC processor family's target     */
+/*     This file provides support for the ARC processor family's target       */
 /*     dependencies.  In particular, it has knowledge of the processor ABI.   */
 /*                                                                            */
-/*     See                                                                    */
-/*                       System V ABI Supplement                              */
-/*                               4093-004                                     */
-/*                                                                            */
-/*     for a complete definition of the ABI.                                  */
+/*     See the Synopsys DesignWare ARC Instruction Set Architecture and ABI   */
+/*     manuals for more details.                                              */
 /*                                                                            */
 /*                                                                            */
 /* Stack Frame Layout:                                                        */
@@ -108,47 +116,42 @@
 /*     words passed in registers P .. 7 are spilled into the top of the frame */
 /*     so that the anonymous parameter words occupy a continous region.       */
 /*                                                                            */
-/*     (*) if saved.                                                          */
+/*     (*) if saved; blink may not be saved in leaf functions.                */
 /*                                                                            */
 /* Build Configuration:                                                       */
 /*     The ARC gdb may be built in two different configurations, according to */
 /*     the nature of the target that it is to debug:                          */
 /*                                                                            */
-/*     1) arc-elf32:                                                          */
+/*     1) arc-elf32-gdb:                                                      */
 /*           for debugging 'bare-metal' builds of user code (i.e. built with  */
 /*           newlib)                                                          */
 /*                                                                            */
-/*           ARC-specific modules:                                            */
-/*                arc-embed                                                   */
-/*                arc-jtag-tdep                                               */
-/*                arc-jtag                                                    */
-/*                arc-jtag-ops                                                */
-/*                arc-jtag-actionpoints                                       */
-/*                arc-jtag-fileio                                             */
-/*                arc-aux-registers                                           */
-/*                arc-architecture                                            */
-/*                arc-board                                                   */
+/*           ARC-specific files:                                              */
+/*                arc-tdep.[ch]                                               */
+/*                arc-elf-tdep.[ch]                                           */
+/*                arc-aux-registers.[ch]                                      */
+/*                arc-board.[ch]                                              */
 /*                                                                            */
-/*     2) arc-linux-uclibc:                                                   */
+/*     2) arc-linux-uclibc-gdb:                                               */
 /*           for deugging user mode Linux applications, via communication to  */
 /*           the remote gdbserver process, running on Linux for ARC700        */
 /*                                                                            */
 /*           ARC-specific modules:                                            */
-/*                arc-tdep                                                    */
-/*                arc-linux-tdep                                              */
+/*                arc-tdep.[ch]                                               */
+/*                arc-linux-tdep.[ch]                                         */
 /*                                                                            */
-/*     Note that the arc-embed.c and arc-tdep.c files are textually identical */
-/*     except for the inclusion of a different configuration header file.     */
-/*     This is simply a device for building the two different configurations, */
-/*     and should be replaced by a better method which avoids duplication of  */
-/*     the source.                                                            */
+/*     arc-tdep.[ch] provides operations which are common to both             */
+/*     configurations. Operations which are specific to one, or which have    */
+/*     different variants in each configuration, are provided by the other    */
+/*     files.                                                                 */
 /*                                                                            */
-/*     This module (arc-embed/arc-tdep) provides operations which are common  */
-/*     to both configurations; operations which are specific to one, or which */
-/*     have different variants in each configuration, are provided by the     */
-/*     other modules.                                                         */
+/* Doxygen commenting:                                                        */
+/*     Doxygen (www.doxygen.org) format comments are used throughout,         */
+/*     allowing machine generated documentation to be generated from those    */
+/*     comments. All comments are licensed under the GNU Free Documentation   */
+/*     License (GFDL).                                                        */
 /*                                                                            */
-/******************************************************************************/
+/* -------------------------------------------------------------------------- */
 
 /* system header files */
 #include <string.h>
@@ -189,21 +192,9 @@
 /*                               local types                                  */
 /* -------------------------------------------------------------------------- */
 
-typedef struct
-{
-  const char *name;
-  CORE_ADDR address;
-  int is_argument;
-  int is_callee;
-  int is_array;
-  unsigned int size;
-  unsigned int element_size;
-} arc_local_var_t;
-
-
 /* The frame unwind cache for the ARC */
 
-typedef struct
+struct arc_unwind_cache;
 {
   /* BLINK save location offset from previous SP (-ve value) */
   int blink_save_offset_from_prev_sp;
@@ -241,7 +232,7 @@ typedef struct
   /* Offsets for each register in the stack frame */
   struct trad_frame_saved_reg *saved_regs;
   unsigned int saved_regs_mask;
-} arc_unwind_cache_t;
+};
 
 
 /* -------------------------------------------------------------------------- */
