@@ -1,3 +1,85 @@
+2013-03-03  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	* arc-aux-registers.c (arc_aux_register_count): Replace
+	ARC_NUM_STANDARD_CORE_REGS with ARC_NUM_STD_CORE_REGS.
+	* arc-elf-tdep.c (arc_elf_init_abi): Don't set tdep
+	register_reggroupt_p. Don't set gdbarch_num_regs or
+	gdbarch_num_pseudo_regs. Don't set DWARF2 reg number translater
+	(no longer needed). Don't call gdbarch_register_names. Don't set
+	gdbarch_print_registers_info. Don't set
+	gdbarch_cannot_store_register.
+	(arc_elf_register_reggroup_p, arc_elf_binutils_reg_to_regnum)
+	(register_names, arc_elf_register_name, print_one_aux_register)
+	(arc_elf_print_registers_info, PRINT, PRINT_HW, PRINT_BY_NAME)
+	(arc_elf_cannot_store_register, ARC_NR_REGS, ARC_NR_PSEUDO_REGS)
+	(WATCH_MEMORY_COMMAND, BREAK_MEMORY_COMMAND, FILL_MEMORY_COMMAND)
+	(WATCH_MEMORY_COMMAND_USAGE, BREAK_MEMORY_COMMAND_USAGE)
+	(FILL_MEMORY_COMMAND_USAGE): Deleted.
+	* arc-linux-tdep.c (register_names): Size is now ARC_TOTAL_REGS.
+	(arc_linux_sc_reg_offset, arc_linux_core_reg_offsets): Size is now
+	ARC_NUM_REAL_REGS.
+	(arc_linux_supply_gregset): Use ARC_NUM_REAL_REGS.
+	(arc_linux_init_abi): Use ARC_NUM_REAL_REGS and
+	ARC_NUM_PSEUDO_REGS. Don't set tdep register_reggroupt_p. Don't
+	set gdbarch_write_pc. Don't set gdbarch_num_regs or
+	gdbarch_num_pseudo_regs. Don't set
+	gdbarch_print_registers_info. Don't set
+	gdbarch_cannot_store_register. Don't set
+	gdbarch_decr_pc_after_break. Set
+	gdbarch_fetch_tls_load_module_address.
+	(arc_linux_write_pc, register_names, arc_linux_register_name)
+	(arc_linux_print_registers_info, PRINT)
+	(arc_linux_cannot_store_register): Deleted.
+	* arc-tdep.c (arc_round_up_to_words): Add gdbarch as an argument
+	to allow for future development.
+	(arc_is_in_prologue): replace IS_ARGUMENT_REGISTER with its
+	definition.
+	(arc_scan_prologue): Replace MAX_PROLOGUE_LENGTH by its
+	definition.
+	(arc_register_type): Fully type all registers.
+	(arc_frame_align): Used gdbarch_ptr_bit rather than BYTES_IN_WORD.
+	(arc_virtual_frame_pointer, arc_register_name)
+	(arc_push_dummy_code, arc_print_registers_info)
+	(arc_print_float_info, arc_cannot_fetch_register)
+	(arc_cannot_store_register, arc_get_longjmp_target): New functions.
+	(arc_gdbarch_init): Reorganize to match gdbarch.h, remove
+	obsolete/unecessary functions, add new functions, mostly
+	transferred from ELF and Linux specific versions. Define OSABI
+	before allocating gdbarch.
+	* arc-tep.h (ARC_NUM_STD_CORE_REGS): Replaces
+	ARC_NUM_STANDARD_CORE_REGS.
+	(ARC_AUX_LP_START_REGNUM, ARC_AUX_LP_END_REGNUM)
+	(ARC_AUX_PC_REGNUM, ARC_AUX_STATUS32_REGNUM)
+	(ARC_AUX_STATUS32_L1_REGNUM, ARC_AUX_STATUS32_L2_REGNUM)
+	(ARC_AUX_AUX_IRQ_LV12_REGNUM, ARC_AUX_AUX_IRQ_LEV_REGNUM)
+	(ARC_AUX_AUX_IRQ_HINT_REGNUM, ARC_AUX_ERET_REGNUM)
+	(ARC_AUX_ERBTA_REGNUM, ARC_AUX_ERSTATUS_REGNUM)
+	(ARC_AUX_ECR_REGNUM, ARC_AUX_EFA_REGNUM, ARC_AUX_ICAUSE1_REGNUM)
+	(ARC_AUX_ICAUSE2_REGNUM, ARC_AUX_AUX_IENABLE_REGNUM)
+	(ARC_AUX_AUX_ITRIGGER_REGNUM, ARC_AUX_BTA_REGNUM)
+	(ARC_AUX_BTA_L1_REGNUM, ARC_AUX_BTA_L2_REGNUM)
+	(ARC_AUX_AUX_IRQ_PULSE_CANCEL_REGNUM)
+	(ARC_AUX_AUX_IRQ_PENDING_REGNUM): Defined for aux registers
+	supported.
+	(ARC_LP_START_REGNUM, ARC_LP_END_REGNUM, ARC_PC_REGNUM)
+	(ARC_STATUS32_REGNUM, ARC_STATUS32_L1_REGNUM)
+	(ARC_STATUS32_L2_REGNUM, ARC_AUX_IRQ_LV12_REGNUM)
+	(ARC_AUX_IRQ_LEV_REGNUM, ARC_AUX_IRQ_HINT_REGNUM, ARC_ERET_REGNUM)
+	(ARC_ERBTA_REGNUM, ARC_ERSTATUS_REGNUM, ARC_ECR_REGNUM)
+	(ARC_EFA_REGNUM, ARC_ICAUSE1_REGNUM, ARC_ICAUSE2_REGNUM)
+	(ARC_AUX_IENABLE_REGNUM, ARC_AUX_ITRIGGER_REGNUM, ARC_BTA_REGNUM)
+	(ARC_BTA_L1_REGNUM, ARC_BTA_L2_REGNUM)
+	(ARC_AUX_IRQ_PULSE_CANCEL_REGNUM, ARC_AUX_IRQ_PENDING_REGNUM):
+	Deleted.
+	(ARC_IS_ARC_REG): Deleted.
+	(MAX_PROLOGUE_LENGTH): Deleted.
+	(ARC_NUM_REAL_REGS): Replaces ARC_NUM_REGS.
+	(gdbarch_tdep): Remove register_reggroup_p field.
+	(ARC_PC_REGNUM): Renamed from ARC_STOP_GO_REGNUM and now a raw,
+	not pseudo register.
+	(ARC_UCLIBC_JB_PC, ARC_NEWLIB_JB_PC): Created.
+	* doxygen.config: Print static function details.
+
 2013-02-28  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* arc-aux-registers.c (start_ecr). Replace IS_EXTENSION_CORE_REGISTER.

@@ -2112,7 +2112,7 @@ arc_core_register_count (struct gdbarch *gdbarch)
 {
   struct arc_reg_info *info = INFO_OF (gdbarch);
 
-  return (info) ? info->core_register_count : ARC_NUM_STANDARD_CORE_REGS;
+  return (info) ? info->core_register_count : ARC_NUM_STD_CORE_REGS;
 }
 
 

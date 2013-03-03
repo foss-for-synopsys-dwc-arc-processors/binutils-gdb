@@ -61,11 +61,6 @@
 /*                               local data                                   */
 /* -------------------------------------------------------------------------- */
 
-/* Linux specific values */
-#define ARC_NR_REGS           39
-#define ARC_NR_PSEUDO_REGS     6
-#define ARC_NR_ALL_REGS      (ARC_NR_PSEUDO_REGS + ARC_NR_REGS)
-#define STATUS32_L            0x00000100
 
 
 /* Default breakpoint instruction used for ARC700 Linux */
@@ -84,47 +79,13 @@ static const gdb_byte arc_sigtramp_insns[] = { 0x8a, 0x20, 0xc1, 0x1d,
 #define SIGTRAMP_INSNS_LENGTH     sizeof(arc_sigtramp_insns)
 
 
-/* N.B. the array size is specified in the declaration so that the compiler
-         will warn of "excess elements in array initializer" if there is a
-         mismatch (but not of too few elements, unfortunately!). */
-static const char *register_names[ARC_NR_REGS + ARC_NR_PSEUDO_REGS] = {
-  "r0", "r1", "r2", "r3", "r4", "r5", "r6",
-  "r7", "r8", "r9", "r10", "r11", "r12", "r13",
-  "r14", "r15", "r16", "r17", "r18", "r19", "r20",
-  "r21", "r22", "r23", "r24", "r25", "r26",
-
-  "bta",
-  "lp_start",
-  "lp_end",
-  "lp_count",
-  "status32",
-  "blink",
-  "fp",
-  "sp",
-  "efa",
-
-  /* linux-only registers */
-  "ret",
-  "orig_r8",
-  "pc",				/* stop pc */
-
-  /* pseudo-regs */
-  "ilink1",
-  "ilink2",
-  "eret",
-  "status_l1",
-  "status_l2",
-  "erstatus"
-};
-
-
 /*! Mapping between the general-purpose registers in `struct sigcontext' format
     and GDB's register cache layout.
 
     arc_linux_sc_reg_offset[i] is the sigcontext offset of GDB regnum `i'. */
 
 /* From <asm/sigcontext.h>.  */
-static const int arc_linux_sc_reg_offset[ARC_NR_REGS] = {
+static const int arc_linux_sc_reg_offset[ARC_NUM_RAW_REGS] = {
   23 * BYTES_IN_REGISTER,	/* r0       */
   22 * BYTES_IN_REGISTER,	/* r1       */
   21 * BYTES_IN_REGISTER,	/* r2       */
@@ -173,7 +134,7 @@ static const int arc_linux_sc_reg_offset[ARC_NR_REGS] = {
  * From include/asm-arc/user.h in the ARC Linux sources.
  */
 
-static const int arc_linux_core_reg_offsets[ARC_NR_REGS] = {
+static const int arc_linux_core_reg_offsets[ARC_NUM_RAW_REGS] = {
   22 * BYTES_IN_REGISTER,	/* r0       */
   21 * BYTES_IN_REGISTER,	/* r1       */
   20 * BYTES_IN_REGISTER,	/* r2       */
@@ -214,14 +175,6 @@ static const int arc_linux_core_reg_offsets[ARC_NR_REGS] = {
   24 * BYTES_IN_REGISTER,	/* orig_r8  */
   40 * BYTES_IN_REGISTER,	/* stop_pc  */
 };
-
-
-/* -------------------------------------------------------------------------- */
-/*                               local macros                                 */
-/* -------------------------------------------------------------------------- */
-
-#define PRINT(regnum) \
-    default_print_registers_info (gdbarch, file, frame, regnum, all)
 
 
 /* -------------------------------------------------------------------------- */
@@ -309,12 +262,12 @@ arc_linux_next_pc (CORE_ADDR pc, CORE_ADDR *fall_thru, CORE_ADDR *target)
 
         if (STATUS32[L] == 0 && arc_linux_next_pc == lp_end && lp_count > 1)
             arc_linux_next_pc = lp_start; */
-  regcache_cooked_read_unsigned (regcache, ARC_LP_START_REGNUM, &lp_start);
-  regcache_cooked_read_unsigned (regcache, ARC_LP_END_REGNUM, &lp_end);
+  regcache_cooked_read_unsigned (regcache, ARC_AUX_LP_START_REGNUM, &lp_start);
+  regcache_cooked_read_unsigned (regcache, ARC_AUX_LP_END_REGNUM, &lp_end);
   regcache_cooked_read_unsigned (regcache, ARC_LP_COUNT_REGNUM, &lp_count);
-  regcache_cooked_read_unsigned (regcache, ARC_STATUS32_REGNUM, &status32);
+  regcache_cooked_read_unsigned (regcache, ARC_AUX_STATUS32_REGNUM, &status32);
 
-  if (!(status32 & STATUS32_L) && *fall_thru == lp_end && lp_count > 1)
+  if (!(status32 & 0x00000100) && *fall_thru == lp_end && lp_count > 1)
     {
       /* the instruction is in effect a jump back to the start of the loop */
       two_targets = TRUE;
@@ -377,113 +330,11 @@ arc_linux_sigcontext_addr (struct frame_info *next_frame)
 }	/* arc_linux_sigcontext_addr () */
 
 
-/*! Identify if a register is in a group.
-
-    @return  0 means the register is not in the group, 1 means the register is
-             in the group,  -1 means the tdep has nothing to say about this
-             register and group. */
-static int
-arc_linux_register_reggroup_p (int regnum, struct reggroup *group)
-{
-  if (system_reggroup)
-    {
-      if (regnum == ARC_EFA_REGNUM ||
-	  regnum == ARC_ERET_REGNUM || regnum == ARC_ERSTATUS_REGNUM)
-	return 1;
-    }
-  else if (group == general_reggroup)
-    {
-      return (regnum == ARC_STATUS32_REGNUM) ? 0 : 1;
-    }
-
-  /* let the caller sort it out! */
-  return -1;
-
-}	/* arc_linux_register_reggroup_p () */
-
-
 /* -------------------------------------------------------------------------- */
-/*                       local functions called from gdb                      */
+/*		   ARC specific GDB architectural functions		      */
+/*									      */
+/* Functions are listed in the order they are used in arc_linux_init_abi.     */
 /* -------------------------------------------------------------------------- */
-
-/*! Print registers in the correct order.
-   
-    Why not have the regnums in the right order in the first place?
-    Because some of the registers have to be pseudo-registers because of
-    the way the kernel is written, and because gdb assumes that
-    pseudo-registers have regnums greater than real register regnums. */
-static void
-arc_linux_print_registers_info (struct gdbarch *gdbarch,
-				struct ui_file *file,
-				struct frame_info *frame, int regnum, int all)
-{
-  if (regnum >= 0)
-    PRINT (regnum);
-  else				/* if regnum < 0, print all registers */
-    {
-      int i;
-
-      /* r0 .. r26 */
-      for (i = 0; i <= 26; i++)
-	PRINT (i);
-
-      PRINT (ARC_FP_REGNUM);
-      PRINT (ARC_SP_REGNUM);
-      PRINT (ARC_ILINK1_REGNUM);
-      PRINT (ARC_ILINK2_REGNUM);
-      PRINT (ARC_BLINK_REGNUM);
-      PRINT (ARC_LP_COUNT_REGNUM);
-
-      /* now the aux registers */
-
-      PRINT (ARC_BTA_REGNUM);
-      PRINT (ARC_LP_START_REGNUM);
-      PRINT (ARC_LP_END_REGNUM);
-      PRINT (ARC_EFA_REGNUM);
-      PRINT (ARC_ERET_REGNUM);
-      PRINT (ARC_STATUS32_L1_REGNUM);
-      PRINT (ARC_STATUS32_L2_REGNUM);
-      PRINT (ARC_ERSTATUS_REGNUM);
-
-      /* show the pc */
-      PRINT (ARC_PC_REGNUM);
-    }
-}	/* arc_linux_print_registers_info () */
-
-
-/* return the name of the given register */
-static const char *
-arc_linux_register_name (struct gdbarch *gdbarch, int gdb_regno)
-{
-  gdb_assert ((0 <= gdb_regno) && (gdb_regno < ARC_NR_ALL_REGS));
-
-  return register_names[gdb_regno];
-
-}	/* arc_linux_register_name () */
-
-
-/* determine whether the given register is read-only */
-static int
-arc_linux_cannot_store_register (struct gdbarch *gdbarch, int gdb_regno)
-{
-  if (gdb_regno == ARC_EFA_REGNUM ||
-      gdb_regno == ARC_ERET_REGNUM ||
-      gdb_regno == ARC_STATUS32_L1_REGNUM ||
-      gdb_regno == ARC_STATUS32_L2_REGNUM ||
-      gdb_regno == ARC_ERSTATUS_REGNUM ||
-      gdb_regno == ARC_ILINK1_REGNUM || gdb_regno == ARC_ILINK2_REGNUM)
-    {
-      /* No warning should be printed.  arc_cannot_store_register being
-         called does not imply that someone is actually writing to regnum.  */
-
-      /* warning(_("writing to read-only register: %s"), gdbarch_register_name(gdbarch, gdb_regno)); */
-      return 1;
-    }
-
-  return 0;
-
-}	/* arc_linux_cannot_store_register () */
-
 
 /*! Single step in software.
 
@@ -516,33 +367,6 @@ arc_linux_software_single_step (struct frame_info *frame)
   return 1;			/* returns always true for now */
 
 }	/* arc_linux_software_single_step () */
-
-
-/*! Set the program counter for process PTID to PC.  */
-static void
-arc_linux_write_pc (struct regcache *regcache, CORE_ADDR pc)
-{
-  regcache_cooked_write_unsigned (regcache, ARC_PC_REGNUM, pc);
-
-  /* We must be careful with modifying the program counter.  If we just
-     interrupted a system call, the kernel might try to restart it when we
-     resume the inferior.  On restarting the system call, the kernel will try
-     backing up the program counter even though it no longer points at the
-     system call.  This typically results in a SIGSEGV or SIGILL.  We can
-     prevent this by writing `-1' in the "orig_r8" pseudo-register.
-    
-     Note that "orig_r8" is saved when setting up a dummy call frame.  This
-     means that it is properly restored when that frame is popped, and that
-     the interrupted system call will be restarted when we resume the inferior
-     on return from a function call from within GDB.  In all other cases the
-     system call will not be restarted. */
-
-  /* @todo why -3 and not -1? -3 does not appear to be a defined valued for
-            orig_r8 (i.e. -2, -1 or >= 0) - perhaps it means "none of these"?
-            For now omitted, since we don't intend using this anyway. */
-  /* regcache_cooked_write_signed (regcache, ARC_ORIG_R8_REGNUM, -3); */
-
-}	/* arc_linux_write_pc () */
 
 
 /*! Find where to put a breakpoint after the resolver.
@@ -612,7 +436,7 @@ arc_linux_supply_gregset (const struct regset *regset,
   const bfd_byte *buf = gregs;
   unsigned int reg;
 
-  for (reg = 0; reg < ARC_NR_REGS; reg++)
+  for (reg = 0; reg < ARC_NUM_RAW_REGS; reg++)
     {
       if (arc_linux_core_reg_offsets[reg] != REGISTER_NOT_PRESENT)
 	regcache_raw_supply (regcache,
@@ -663,7 +487,7 @@ arc_linux_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
   tdep->is_sigtramp = arc_linux_is_sigtramp;
   tdep->sigcontext_addr = arc_linux_sigcontext_addr;
   tdep->sc_reg_offset = arc_linux_sc_reg_offset;
-  tdep->sc_num_regs = ARC_NR_REGS;
+  tdep->sc_num_regs = ARC_NUM_RAW_REGS;
   /* @todo We don't have ARC_RET_REGNUM nay more, what do we use instead? */
   /* tdep->pc_regnum_in_sigcontext = ARC_RET_REGNUM; */
 
@@ -672,25 +496,18 @@ arc_linux_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
     : breakpoint_instruction;
   tdep->breakpoint_size = (unsigned int) sizeof (breakpoint_instruction);
 
-  tdep->register_reggroup_p = arc_linux_register_reggroup_p;
-
   tdep->lowest_pc = 0x74;	/* @todo why this? */
   tdep->processor_variant_info = NULL;
 
-  /* Pass target-dependent info to gdb. */
-
-  /* ARC_NR_REGS and ARC_NR_PSEUDO_REGS are defined above, but ought to be
-     more generally set. */
-  set_gdbarch_pc_regnum (gdbarch, ARC_PC_REGNUM);
-  set_gdbarch_num_regs (gdbarch, ARC_NR_REGS);
-  set_gdbarch_num_pseudo_regs (gdbarch, ARC_NR_PSEUDO_REGS);
-  set_gdbarch_print_registers_info (gdbarch, arc_linux_print_registers_info);
-  set_gdbarch_register_name (gdbarch, arc_linux_register_name);
-  set_gdbarch_cannot_store_register (gdbarch,
-				     arc_linux_cannot_store_register);
-  set_gdbarch_decr_pc_after_break (gdbarch, 0);
+  /* Set up target dependent GDB architecture entries. */
+  set_gdbarch_fetch_tls_load_module_address (gdbarch,
+                                             svr4_fetch_objfile_link_map);
   set_gdbarch_software_single_step (gdbarch, arc_linux_software_single_step);
-  set_gdbarch_write_pc (gdbarch, arc_linux_write_pc);
+
+
+
+
+
   set_gdbarch_regset_from_core_section (gdbarch,
 					arc_linux_regset_from_core_section);
   set_gdbarch_skip_solib_resolver (gdbarch, arc_linux_skip_solib_resolver);
