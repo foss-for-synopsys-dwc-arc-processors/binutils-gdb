@@ -27,158 +27,170 @@
    GNU General Public License for more details.
   
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+   --------------------------------------------------------------------------
+
+   The comments within this file are also licensed under under the terms of
+   the GNU Free Documentation License as published by the Free Software
+   Foundation; either version 1.3 of the License, or (at your option) any
+   later version. See the file fdi.texi in the gdb/doc directory for copying
+   conditions.
+
+   You should have received a copy of the GNU Free Documentation License along
+   with this program. If not, see <http://www.gnu.org/licenses/>.  */
+
+/* -------------------------------------------------------------------------- */
 
 #ifndef ARC_TDEP_H
 #define ARC_TDEP_H
 
 /* -------------------------------------------------------------------------- */
-/*! @mainpage
-  
-    This is the documentation of the ARC specific components of the GNU
-    Debugger for the Synopsys ARC architecture. */
-/* -------------------------------------------------------------------------- */
-
-/* -------------------------------------------------------------------------- */
-/*  @file 
-    # ARC Architecture Header for GDB
+/*!@file 
+   # ARC General Target Dependant Header for GDB
  
-    Definitions specific to the architecture, but not any particular OS.
+   Definitions specific to the architecture, but not any particular OS.
 
-    ## Register numbering
+   ## Register numbering
 
-    Details of GDB core register and auxilliary register numbering should
-    really be in the XML file.
+   Details of GDB core register and auxilliary register numbering should
+   really be in the XML file.
 
-    ### GDB register numbers
+   ### GDB register numbers
 
-    Not all are visible in user space, which is all the Linux
-    version of the tool chain can see. For each we show the access as:
+   Not all are visible in user space, which is all the Linux version of the
+   tool chain can see. For each we show the access as:
 
-    - __r__: readable by user, kernel or JTAG debugger
-    - __R__: readable by kernel or JTAG debugger
-    - __w__: writable by user, kernel or JTAG debugger
-    - __W__: writable by kernel or JTAG debugger
-    - __G__: writable by JTAG debugger
+   - __r__: readable by user, kernel or JTAG debugger
+   - __R__: readable by kernel or JTAG debugger
+   - __w__: writable by user, kernel or JTAG debugger
+   - __W__: writable by kernel or JTAG debugger
+   - __G__: writable by JTAG debugger
 
-    ### Core register set.
+   ### Core register set.
 
-    Old GDB used to have a completely arbitrary mapping, and that mapping
-    differed between ELF32 and LINUX tool chains. In this version we use the
-    direct address number for the core registers (r0 through r63).
+   Old GDB used to have a completely arbitrary mapping, and that mapping
+   differed between ELF32 and LINUX tool chains. In this version we use the
+   direct address number for the core registers (r0 through r63).
 
-    `#define` constants are defined for named registers, but not the numbered
-    core registers r0 through r25 and the optional extension core registers
-    r32 through r59.
+   `#define` constants are defined for named registers, but not the numbered
+   core registers r0 through r25 and the optional extension core registers
+   r32 through r59.
 
-    ABI usage of core general registers, all having rw access:
-    - r0  .. r3:   args
-    - r4  .. r7:   args (32-bit instructions only)
-    - r8  .. r9:   temp regs (32 bit instructions only)
-    - r10 .. r11:  temp regs (32 bit & reduced instructsion set only)
-    - r12 .. r15:  temp regs
-    - r16 .. r25:  saved reg
+   ABI usage of core general registers, all having rw access:
+   - r0  .. r3:   args
+   - r4  .. r7:   args (32-bit instructions only)
+   - r8  .. r9:   temp regs (32 bit instructions only)
+   - r10 .. r11:  temp regs (32 bit & reduced instructsion set only)
+   - r12 .. r15:  temp regs
+   - r16 .. r25:  saved reg
 
-    ### Auxilliary registers.
+   ### Auxilliary registers.
 
-    These are the sequential register numbers by which these are known in
-    GDB.
+   These are the sequential register numbers by which these are known in
+   GDB.
 
-    @todo For now we hardcode only the key registers. Eventually these should
-           be sorted out through XML.
+   @todo For now we hardcode only the key registers. Eventually these should
+         be sorted out through XML.
 
-    ## ABI related processor details
+   ## ABI related processor details
 
-    - r0  .. r7 are the registers used to pass arguments in function calls
-    - r13 .. r26 are the callee-saved registers
-    - when a return value is stored in registers it is in either R0 or in the
-      pair (R0,R1).
+   - r0  .. r7 are the registers used to pass arguments in function calls
+   - r13 .. r26 are the callee-saved registers
+   - when a return value is stored in registers it is in either R0 or in the
+     pair (R0,R1).
 
-    ### Other comments
+   ### Other comments
 
-    We'll also use Franck Jullien's OpenRISC GDB trick, of only accessing the
-    core registers using G/g packets, requiring aux registers to be accessed
-    using P/p packets. That way a G packet need not be too large. */
+   We'll also use Franck Jullien's OpenRISC GDB trick, of only accessing the
+   core registers using G/g packets, requiring aux registers to be accessed
+   using P/p packets. That way a G packet need not be too large. */
 /* -------------------------------------------------------------------------- */
 
 /* Core register definitions. */
-#define ARC_GP_REGNUM        26		/*!< Access __rw__ */
-#define ARC_FP_REGNUM        27		/*!< Access __rw__ */
-#define ARC_SP_REGNUM        28		/*!< Access __rw__ */
-#define ARC_ILINK1_REGNUM    29		/*!< Access __RW__ */
-#define ARC_ILINK2_REGNUM    30		/*!< Access __RW__ */
-#define ARC_BLINK_REGNUM     31		/*!< Access __rw__ */
+#define ARC_GP_REGNUM               26	/*!< Access __rw__ */
+#define ARC_FP_REGNUM               27	/*!< Access __rw__ */
+#define ARC_SP_REGNUM               28	/*!< Access __rw__ */
+#define ARC_ILINK1_REGNUM           29	/*!< Access __RW__ */
+#define ARC_ILINK2_REGNUM           30	/*!< Access __RW__ */
+#define ARC_BLINK_REGNUM            31	/*!< Access __rw__ */
 
 /* Extension core registers r32-r59 */
+#define ARC_FIRST_EXT_CORE_REGNUM   32	/*!< Access __rw__ */
+#define ARC_LAST_EXT_CORE_REGNUM    59	/*!< Access __rw__ */
 
-#define ARC_LP_COUNT_REGNUM  60		/*!< Access __rw__ */
-#define ARC_RESERVED_REGNUM  61		/*!< No access */
-#define ARC_LIMM_REGNUM      62		/*!< No access */
-#define ARC_PCL_REGNUM       63		/*!< Access __r__ */
+#define ARC_LP_COUNT_REGNUM         60	/*!< Access __rw__ */
+#define ARC_RESERVED_REGNUM         61	/*!< No access */
+#define ARC_LIMM_REGNUM             62	/*!< No access */
+#define ARC_PCL_REGNUM              63	/*!< Access __r__ */
 
-#define ARC_MAX_CORE_REGS  (ARC_PCL_REGNUM + 1)  /*!< Total core regs */
-
-/* Baseline aux registers - architectural state. */
-#define ARC_PC_REGNUM               64	/*!< Access __rG__ */
-#define ARC_STATUS32_REGNUM         65	/*!< Access __rG__ */
-#define ARC_BTA_REGNUM              66	/*!< Access __RW__ */
-#define ARC_ECR_REGNUM              67	/*!< Access __RW__ */
-#define ARC_ICAUSE1_REGNUM          68	/*!< Access __RW__ */
-#define ARC_ICAUSE2_REGNUM          69	/*!< Access __RW__ */
-
-/* Baseline aux registers - saved exception and interrupt state. */
-#define ARC_STATUS32_L1_REGNUM      70	/*!< Access __RW__ */
-#define ARC_STATUS32_L2_REGNUM      71	/*!< Access __RW__ */
-#define ARC_ERET_REGNUM             72	/*!< Access __RW__ */
-#define ARC_ERBTA_REGNUM            73	/*!< Access __RW__ */
-#define ARC_ERSTATUS_REGNUM         74	/*!< Access __RW__ */
-
-/* Baseline aux registers - programmable interrupt unit control & status
-   registers. */
-#define ARC_AUX_IRQ_LV12_REGNUM     75	/*!< Access __r__ */
-#define ARC_AUX_IRQ_LEV_REGNUM      76	/*!< Access __r__ */
-#define ARC_AUX_IRQ_HINT_REGNUM     77	/*!< Access __r__ */
-#define ARC_AUX_IENABLE_REGNUM      78	/*!< Access __r__ */
-#define ARC_AUX_ITRIGGER_REGNUM     79	/*!< Access __r__ */
-#define ARC_AUX_IRQ_PULSE_CANCEL_REGNUM  80 /*!< Access __r__ */
-#define ARC_AUX_IRQ_PENDING_REGNUM  81	/*!< Access __r__ */
-
-/* Optional instruction set aux registers - zero overhead loops. */
-#define ARC_LP_START_REGNUM         82	/*!< Access __r__ */
-#define ARC_LP_END_REGNUM           83	/*!< Access __r__ */
-
-/* Extended exception state auxilliary registers. */
-#define ARC_EFA_REGNUM              84	/*!< Access __r__ */
-#define ARC_BTA_L1_REGNUM           85	/*!< Access __r__ */
-#define ARC_BTA_L2_REGNUM           86	/*!< Access __r__ */
-
-/*! Stop and resume pseudo register.
+/*! Stop and resume PC register.
 
     There is no one register which corresponds to the PC of the address where
     we stopped. Depending on the type of exception, we may have the address of
     the current instruction (TLB or protection exceptions) or the next
     instruction (traps and syscalls) in our hand.
 
-    We define one pseudo register, which reads the address of the instruction
+    However this is not a pseudo register, since it has a physical
+    representation (actually several) and must be fetched from and restored to
+    the target.
+
+    We define one register, which reads the address of the instruction
     on which we stopped and writes the address of the instruction which we
-    will next execute.
+    will next execute. It is up to the server on the target to sort out what
+    it does with this value.
+
+    @note This register is distinguished from the auxilliary register PC,
+          which is named ARC_AUX_PC_REGNUM.
 
     @note Previously this was two registers STOP_PC for where we stopped and
-          RET for where we want to restart. They are unified as
-          STOP_RESUME_PC.
+          RET for where we want to restart. They are unified here.
 
     @todo This is still subject to some discussion. This is not yet regarded as
           stable. */
-#define ARC_STOP_RESUME_PC_REGNUM      87 /*!< Access __rw__ */
+#define ARC_PC_REGNUM               64 /*!< Access __rw__ */
 
-/*! Number of "real" registers. */
-#define ARC_NUM_REGS  (ARC_BTA_L2_REGNUM + 1)
+/* Auxilliary registers - subset for GDB. */
+#define ARC_AUX_LP_START_REGNUM              65	/*!< Access __rw_ */
+#define ARC_AUX_LP_END_REGNUM                66	/*!< Access __rw_ */
+#define ARC_AUX_STATUS32_REGNUM              67	/*!< Access __rG__ */
+#define ARC_AUX_STATUS32_L1_REGNUM           68	/*!< Access __RW__ */
+#define ARC_AUX_STATUS32_L2_REGNUM           69	/*!< Access __RW__ */
+#define ARC_AUX_AUX_IRQ_LV12_REGNUM          70	/*!< Access __RW_ */
+#define ARC_AUX_AUX_IRQ_LEV_REGNUM           71	/*!< Access __RW_ */
+#define ARC_AUX_AUX_IRQ_HINT_REGNUM          72	/*!< Access __RW_ */
+#define ARC_AUX_ERET_REGNUM                  73	/*!< Access __RW__ */
+#define ARC_AUX_ERBTA_REGNUM                 74	/*!< Access __RW__ */
+#define ARC_AUX_ERSTATUS_REGNUM              75	/*!< Access __RW__ */
+#define ARC_AUX_ECR_REGNUM                   76	/*!< Access __RW__ */
+#define ARC_AUX_EFA_REGNUM                   77	/*!< Access __RW_ */
+#define ARC_AUX_ICAUSE1_REGNUM               78	/*!< Access __RW__ */
+#define ARC_AUX_ICAUSE2_REGNUM               79	/*!< Access __RW__ */
+#define ARC_AUX_AUX_IENABLE_REGNUM           80	/*!< Access __RW_ */
+#define ARC_AUX_AUX_ITRIGGER_REGNUM          81	/*!< Access __RW_ */
+#define ARC_AUX_BTA_REGNUM                   82	/*!< Access __RW__ */
+#define ARC_AUX_BTA_L1_REGNUM                83	/*!< Access __RW_ */
+#define ARC_AUX_BTA_L2_REGNUM                84	/*!< Access __RW_ */
+#define ARC_AUX_AUX_IRQ_PULSE_CANCEL_REGNUM  85 /*!< Access __RW_ */
+#define ARC_AUX_AUX_IRQ_PENDING_REGNUM       86	/*!< Access __RW_ */
 
-/*! Total "real" + pseudo registers. */
-#define ARC_TOTAL_REGS      (ARC_STOP_RET_PC_REGNUM + 1)
+/* Some useful counts. */
+
+/*! Maximum number of core registers (i.e. with extension core regs). */
+#define ARC_MAX_CORE_REGS  (ARC_PCL_REGNUM + 1)  /*!< Total core regs */
+/*! Number of extension core registers. */
+#define ARC_EXT_CORE_REGS			\
+  (ARC_LAST_EXT_CORE_REGNUM - ARC_FIRST_EXT_CORE_REGNUM + 1)
+/*! Number of standard core registers (i.e. without extension core regs). */
+#define ARC_STD_CORE_REGS			\
+  (ARC_MAX_CORE_REGS - ARC_NUM_EXT_CORE_REGS)
+
+/*! Number of "raw" registers (i.e. core + aux). */
+#define ARC_NUM_RAW_REGS    (ARC_AUX_AUX_IRQ_PENDING_REGNUM + 1)
+/*! Total "raw" + pseudo registers. */
+#define ARC_TOTAL_REGS      (ARC_AUX_AUX_IRQ_PENDING_REGNUM + 1)
 /*! Number of pseudo registers. */
-#define ARC_NUM_PSEUDO_REGS (ARC_TOTAL_REGS - ARC_NUM_REGS)
+#define ARC_NUM_PSEUDO_REGS (ARC_TOTAL_REGS - ARC_NUM_RAW_REGS)
 
 /* -------------------------------------------------------------------------- */
 /* ABI constants and macros                                                   */
@@ -194,22 +206,10 @@
 #define ARC_RET_LOW_REGNUM              0
 #define ARC_RET_HIGH_REGNUM             1
 
-#define IS_ARGUMENT_REGISTER(regnum)					\
-  ((ARC_FIRST_ARG_REGNUM <= (regnum)) && ((regnum) <= ARC_LAST_ARG_REGNUM))
-
-#define ARC_FIRST_EXT_CORE_REGNUM      32
-#define ARC_LAST_EXT_CORE_REGNUM       59
-#define ARC_NUM_EXT_CORE_REGS				\
-  (ARC_LAST_EXT_CORE_REGNUM - ARC_FIRST_EXT_CORE_REGNUM + 1)
-#define ARC_NUM_STANDARD_CORE_REGS				\
-  (ARC_MAX_CORE_REGS - ARC_NUM_EXT_CORE_REGS)
-
-
-/* 3 instructions before and after callee saves, and max number of saves;
-   assume each is 4-byte inst. See arc_scan_prologue () for details. */
-#define MAX_PROLOGUE_LENGTH   ((6 + (ARC_LAST_CALLEE_SAVED_REGNUM     \
-				     - ARC_FIRST_CALLEE_SAVED_REGNUM  \
-				     + 1)) * 4)
+/*! Offset (in words) of PC in uClibc jmp_buf structure for longjmp () */
+#define ARC_UCLIBC_JB_PC  15
+/*! Offset (in words) of PC in Newlib jmp_buf structure for longjmp () */
+#define ARC_NEWLIB_JB_PC  19
 
 
 /* -------------------------------------------------------------------------- */
@@ -326,13 +326,6 @@ struct gdbarch_tdep
        arc-linux-tdep.c.  */
     int pc_regnum_in_sigcontext;
 
-    /* Returns 0, 1, or -1:
-     *    0 means the register is not in the group.
-     *    1 means the register is in the group.
-     *   -1 means the tdep has nothing to say about this register and group.
-     */
-    int (*register_reggroup_p) (int regnum, struct reggroup* group);
-  
     /* Breakpoint instruction to be used */
     const unsigned char* breakpoint_instruction;
     unsigned int         breakpoint_size;
