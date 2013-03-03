@@ -41,116 +41,123 @@
    with this program. If not, see <http://www.gnu.org/licenses/>.  */
 
 /* -------------------------------------------------------------------------- */
-/*                                                                            */
-/* Outline:                                                                   */
-/*     This file provides support for the ARC processor family's target       */
-/*     dependencies.  In particular, it has knowledge of the processor ABI.   */
-/*                                                                            */
-/*     See the Synopsys DesignWare ARC Instruction Set Architecture and ABI   */
-/*     manuals for more details.                                              */
-/*                                                                            */
-/*                                                                            */
-/* Stack Frame Layout:                                                        */
-/*     This shows the layout of the stack frame for the general case of a     */
-/*     function call; a given function might not have a variable number of    */
-/*     arguments or local variables, or might not save any registers, so it   */
-/*     would not have the corresponding frame areas.  Additionally, a leaf    */
-/*     function (i.e. one which calls no other functions) does not need to    */
-/*     save the contents of the BLINK register (which holds its return        */
-/*     address), and a function might not have a frame pointer.               */
-/*                                                                            */
-/*     N.B. the stack grows downward, so SP points below FP in memory; SP     */
-/*          always points to the last used word on the stack, not the first   */
-/*          one.                                                              */
-/*                                                                            */
-/*                   |                       |   |                            */
-/*                   |      arg word N       |   | caller's                   */
-/*                   |           :           |   | frame                      */
-/*                   |      arg word 10      |   |                            */
-/*                   |      arg word 9       |   |                            */
-/*       old SP ---> |-----------------------| --                             */
-/*                   |   var arg word 8      |   |                            */
-/*                   |           :           |   |                            */
-/*                   |   var arg word P+1    |   |                            */
-/*                   |-----------------------|   |                            */
-/*                   |                       |   |                            */
-/*                   |      callee-saved     |   |                            */
-/*                   |        registers      |   |                            */
-/*                   |                       |   |                            */
-/*                   |-----------------------|   |                            */
-/*                   |      saved blink (*)  |   |                            */
-/*                   |-----------------------|   | callee's                   */
-/*                   |      saved FP         |   | frame                      */
-/*           FP ---> |-----------------------|   |                            */
-/*                   |                       |   |                            */
-/*                   |         local         |   |                            */
-/*                   |       variables       |   |                            */
-/*                   |                       |   |                            */
-/*                   |       register        |   |                            */
-/*                   |      spill area       |   |                            */
-/*                   |                       |   |                            */
-/*                   |     outgoing args     |   |                            */
-/*                   |                       |   |                            */
-/*           SP ---> |-----------------------| --                             */
-/*                   |                       |                                */
-/*                   |         unused        |                                */
-/*                   |                       |                                */
-/*                               |                                            */
-/*                               |                                            */
-/*                               V                                            */
-/*                           downwards                                        */
-/*                                                                            */
-/*     The list of arguments to be passed to a function is considered to be a */
-/*     sequence of N words (as though all the parameters were stored in order */
-/*     in memory with each parameter occupying an integral number of words).  */
-/*     Words 1 .. 8 are passed in registers 0 .. 7; if the function has more  */
-/*     than 8 words of arguments then words 9 .. N are passed on the stack in */
-/*     the caller's frame.                                                    */
-/*                                                                            */
-/*     If the function has a variable number of arguments, e.g. it has a form */
-/*     such as                                                                */
-/*                      function(p1, p2, ...);                                */
-/*                                                                            */
-/*     and P words are required to hold the values of the named parameters    */
-/*     (which are passed in registers 0 .. P-1), then the remaining 8 - P     */
-/*     words passed in registers P .. 7 are spilled into the top of the frame */
-/*     so that the anonymous parameter words occupy a continous region.       */
-/*                                                                            */
-/*     (*) if saved; blink may not be saved in leaf functions.                */
-/*                                                                            */
-/* Build Configuration:                                                       */
-/*     The ARC gdb may be built in two different configurations, according to */
-/*     the nature of the target that it is to debug:                          */
-/*                                                                            */
-/*     1) arc-elf32-gdb:                                                      */
-/*           for debugging 'bare-metal' builds of user code (i.e. built with  */
-/*           newlib)                                                          */
-/*                                                                            */
-/*           ARC-specific files:                                              */
-/*                arc-tdep.[ch]                                               */
-/*                arc-elf-tdep.[ch]                                           */
-/*                arc-aux-registers.[ch]                                      */
-/*                arc-board.[ch]                                              */
-/*                                                                            */
-/*     2) arc-linux-uclibc-gdb:                                               */
-/*           for deugging user mode Linux applications, via communication to  */
-/*           the remote gdbserver process, running on Linux for ARC700        */
-/*                                                                            */
-/*           ARC-specific modules:                                            */
-/*                arc-tdep.[ch]                                               */
-/*                arc-linux-tdep.[ch]                                         */
-/*                                                                            */
-/*     arc-tdep.[ch] provides operations which are common to both             */
-/*     configurations. Operations which are specific to one, or which have    */
-/*     different variants in each configuration, are provided by the other    */
-/*     files.                                                                 */
-/*                                                                            */
-/* Doxygen commenting:                                                        */
-/*     Doxygen (www.doxygen.org) format comments are used throughout,         */
-/*     allowing machine generated documentation to be generated from those    */
-/*     comments. All comments are licensed under the GNU Free Documentation   */
-/*     License (GFDL).                                                        */
-/*                                                                            */
+/*!@mainpage GNU Debugger for the Synopsys ARC Architecture
+  
+   ## Stack Frame Layout:                                
+
+   This shows the layout of the stack frame for the general case of a
+   function call; a given function might not have a variable number of
+   arguments or local variables, or might not save any registers, so it would
+   not have the corresponding frame areas.  Additionally, a leaf function
+   (i.e. one which calls no other functions) does not need to save the
+   contents of the BLINK register (which holds its return address), and a
+   function might not have a frame pointer.
+                                                                               
+   @note The stack grows downward, so SP points below FP in memory; SP always
+         points to the last used word on the stack, not the first one.
+
+   @verbatim                                                                               
+                      |                       |   |                            
+                      |      arg word N       |   | caller's                   
+                      |           :           |   | frame                      
+                      |      arg word 10      |   |                            
+                      |      arg word 9       |   |                            
+          old SP ---> |-----------------------| --                             
+                      |   var arg word 8      |   |                            
+                      |           :           |   |                            
+                      |   var arg word P+1    |   |                            
+                      |-----------------------|   |                            
+                      |                       |   |                            
+                      |      callee-saved     |   |                            
+                      |        registers      |   |                            
+                      |                       |   |                            
+                      |-----------------------|   |                            
+                      |      saved blink (*)  |   |                            
+                      |-----------------------|   | callee's                   
+                      |      saved FP         |   | frame                      
+              FP ---> |-----------------------|   |                            
+                      |                       |   |                            
+                      |         local         |   |                            
+                      |       variables       |   |                            
+                      |                       |   |                            
+                      |       register        |   |                            
+                      |      spill area       |   |                            
+                      |                       |   |                            
+                      |     outgoing args     |   |                            
+                      |                       |   |                            
+              SP ---> |-----------------------| --                             
+                      |                       |                                
+                      |         unused        |                                
+                      |                       |                                
+                                  |                                            
+                                  |                                            
+                                  V                                            
+                              downwards                                        
+   @endverbatim
+
+   (*) if saved; blink may not be saved in leaf functions.
+                                                                               
+   The list of arguments to be passed to a function is considered to be a
+   sequence of _N_ words (as though all the parameters were stored in order in
+   memory with each parameter occupying an integral number of words).  Words
+   1..8 are passed in registers 0..7; if the function has more than 8 words of
+   arguments then words 9..@em N are passed on the stack in the caller's frame.
+                                                                               
+   If the function has a variable number of arguments, e.g. it has a form such
+   as
+
+      function(p1, p2, ...);
+                                                                               
+   and _P_ words are required to hold the values of the named parameters
+   (which are passed in registers 0..@em P -1), then the remaining 8 - _P_
+   words passed in registers _P_..7 are spilled into the top of the frame so
+   that the anonymous parameter words occupy a continous region.
+                                                                               
+   ## Build Configuration:
+
+   The ARC gdb may be built in two different configurations, according to 
+   the nature of the target that it is to debug:                          
+                                                                               
+   arc-tdep.[ch] provides operations which are common to both configurations.
+   Operations which are specific to one, or which have different variants in
+   each configuration, are provided by the other files.
+
+   ### arc-elf32-gdb
+
+   For debugging 'bare-metal' builds of user code (i.e. built with newlib)
+                                                                               
+   ARC-specific files:                                              
+   - arc-tdep.[ch]                                               
+   - arc-elf-tdep.[ch]                                           
+   - arc-aux-registers.[ch]                                      
+   - arc-board.[ch]                                              
+                                                                               
+   ### arc-linux-uclibc-gdb
+
+   For deugging user mode Linux applications, via communication to the remote
+   gdbserver process, running on Linux for ARC700
+                                                                               
+   ARC-specific files
+   - arc-tdep.[ch]                                               
+   - arc-linux-tdep.[ch]
+                                                                               
+   ## Doxygen commenting
+
+   [Doxygen](http://www.doxygen.org/) format comments are used throughout,
+   allowing machine generated documentation to be generated from those
+   comments. All comments are licensed under the GNU Free Documentation
+   License (GFDL). */
+
+/* -------------------------------------------------------------------------- */
+/*!@file
+                                                                               
+   # ARC General Target Dependent Code
+
+   This file provides support for the ARC processor family's target
+   dependencies.  In particular, it has knowledge of the processor ABI.
+                                                                               
+   See the Synopsys DesignWare ARC Instruction Set Architecture and ABI
+   manuals for more details. */
 /* -------------------------------------------------------------------------- */
 
 /* system header files */
@@ -192,51 +199,52 @@
 /*                               local types                                  */
 /* -------------------------------------------------------------------------- */
 
-/* The frame unwind cache for the ARC */
-
+/*! The frame unwind cache for the ARC. */
 struct arc_unwind_cache
 {
-  /* BLINK save location offset from previous SP (-ve value) */
+  /*! BLINK save location offset from previous SP (-ve value) */
   int blink_save_offset_from_prev_sp;
 
-  /* The stack pointer at the time this frame was created; i.e. the
-   * caller's stack pointer when this function was called.  It is used
-   * to identify this frame.
-   */
+  /*! The stack pointer at the time this frame was created; i.e. the caller's
+      stack pointer when this function was called.  It is used to identify this
+      frame. */
   CORE_ADDR prev_sp;
 
-  /* The frame base (as held in FP).
-   *
-   * N.B. this is NOT the address of the lowest word in the frame!
-   */
+  /*! The frame base (as held in FP).
+
+      @note This is NOT the address of the lowest word in the frame! */
   CORE_ADDR frame_base;
 
-  /* Change in SP from previous SP (-ve value) - this is computed by scanning
-   * the prologue of the function: initially 0, it is updated for each
-   * instruction which changes SP (either explicitly by a subtraction from SP
-   * or implicitly by a push operation), so at each point in the prologue it
-   * gives the difference between the previous SP (i.e. before the function
-   * was called) and the current SP at that point; at the end of the prologue
-   * it holds the total change in SP, i.e. the size of the frame.
-   */
+  /*! Change in SP from previous SP (-ve value)
+
+      This is computed by scanning the prologue of the function: initially 0,
+      it is updated for each instruction which changes SP (either explicitly
+      by a subtraction from SP or implicitly by a push operation), so at each
+      point in the prologue it gives the difference between the previous SP
+      (i.e. before the function was called) and the current SP at that point;
+      at the end of the prologue it holds the total change in SP, i.e. the
+      size of the frame. */
   LONGEST delta_sp;
 
-  /* offset of old stack pointer from frame base (+ve value) */
+  /*! offset of old stack pointer from frame base (+ve value) */
   LONGEST old_sp_offset_from_fp;
 
-  /* Is this a leaf function? */
+  /*! Is this a leaf function? */
   int is_leaf;
-  /* Is there a frame pointer? */
+
+  /*! Is there a frame pointer? */
   int uses_fp;
 
-  /* Offsets for each register in the stack frame */
+  /*! Offsets for each register in the stack frame */
   struct trad_frame_saved_reg *saved_regs;
+
+  /*! Mask of which registers are saved. */
   unsigned int saved_regs_mask;
 };
 
 
 /* -------------------------------------------------------------------------- */
-/*                               externally visible data                      */
+/*		     Externally visible data defined here		      */
 /* -------------------------------------------------------------------------- */
 
 /*! Global debug flag */
@@ -249,10 +257,15 @@ int arc_debug;
 
 /*! Round up a number of bytes to a whole number of words
 
-    @param[in] bytes  Number of bytes to round up.
-    @return           Number of bytes rounded up to a whole number of words. */
+    @todo BYTES_IN_WORD should be some form of architectural paramter, not a
+          magic constant.
+
+    @param[in] gdbarch  Current GDB architecture.
+    @param[in] bytes    Number of bytes to round up.
+    @return             Number of bytes rounded up to a whole number of
+                        words. */
 static int
-arc_round_up_to_words (unsigned int  bytes)
+arc_round_up_to_words (struct gdbarch *gdbarch, unsigned int  bytes)
 {
   return ((bytes + BYTES_IN_WORD - 1)	/ BYTES_IN_WORD) * BYTES_IN_WORD;
 
@@ -407,18 +420,14 @@ arc_is_sub_sp_fi (struct arc_unwind_cache *info, struct arcDisState *state)
 }	/* arc_is_sub_sp_fi () */
 
 
-/*! Is this an auxilliary register? */
-static int
-arc_is_core_register (int  regnum)
-{
-  return (0 <= regnum) && (regnum <= ARC_PCL_REGNUM);
-
-}	/* arc_is_core_register () */
-
-
 /*! Dump the frame info
 
-    Used for internal debugging only. */  
+    Used for internal debugging only.
+
+    @param[in] message         Text to include with the output
+    @param[in] info            Frame info to dump
+    @param[in] addresses_known Non-zero (TRUE) if have saved address, zero
+                               (FALSE) if have saved offset. */  
 static void
 arc_print_frame_info (char *message, struct arc_unwind_cache *info,
 		      int addresses_known)
@@ -453,32 +462,32 @@ arc_print_frame_info (char *message, struct arc_unwind_cache *info,
 }	/* arc_print_frame_info () */
 
 
-/*! Text of the instruction state returned by the disassembler.
+/*! Give name of instruction operand type.
 
-    Used for internal debugging only. */
+    Used for internal debugging only.
+
+    @param[in] value  The instruction type.
+    @result           Textual representation of the operand type */
 static const char *
 arc_debug_operand_type (enum ARC_Debugger_OperandType value)
 {
   switch (value)
     {
-    case ARC_LIMM:
-      return "LIMM";
-    case ARC_SHIMM:
-      return "SHIMM";
-    case ARC_REGISTER:
-      return "REGISTER";
-    case ARCOMPACT_REGISTER:
-      return "COMPACT REGISTER";
-    case ARC_UNDEFINED:
-      return "UNDEFINED";
+    case ARC_LIMM:           return "LIMM";
+    case ARC_SHIMM:          return "SHIMM";
+    case ARC_REGISTER:       return "REGISTER";
+    case ARCOMPACT_REGISTER: return "COMPACT REGISTER";
+    case ARC_UNDEFINED:      return "UNDEFINED";
+    default:                 return "?";
     }
-  return "?";
-}
+}	/*! arc_debug_operand_type () */
 
 
-/*! Print the instruction state.
+/*! Dump the instruction state.
 
-    Used for internal debugging only. */
+    Used for internal debugging only.
+
+    @parma[in] state  Instruction state to dump. */
 static void
 arc_print_insn_state (struct arcDisState state)
 {
@@ -512,7 +521,15 @@ arc_print_insn_state (struct arcDisState state)
 }	/* arc_print_insn_state () */
 
 
-/*! Wrapper for the target_read_memory function. */
+/*! Wrapper for the target_read_memory function.
+
+    Interface shim
+
+    @param[in]  memaddr  Address on target to read from
+    @param[out] myaddr   Buffer to read into
+    @param[in]  length   Number of bytes to read
+    @param[in]  info     Unused.
+    @result              Zero on success, error code otherwise. */
 static int
 arc_read_memory_for_disassembler (bfd_vma memaddr, bfd_byte *myaddr,
 				  unsigned int length,
@@ -529,7 +546,11 @@ arc_read_memory_for_disassembler (bfd_vma memaddr, bfd_byte *myaddr,
     We'll use a callback to set the real assembler, but we must have one
     present or GDB won't start.
 
-    @return 0 to indicate failure. */
+    @note This function is a placeholder, it should never be called.
+
+    @param[in] address  Unused
+    @param[in] info     Unused
+    @return             Zero to indicate failure. */
 static int
 arc_dummy_disassembler(bfd_vma address, disassemble_info* info)
 {
@@ -545,7 +566,9 @@ arc_dummy_disassembler(bfd_vma address, disassemble_info* info)
 
     We wait until an objfile is loaded, since the disassembler can use its
     OBFD to find out what extensions are defined. If we load a new objfile,
-    this will get redefined. */
+    this will get redefined.
+
+    @param[in] objfile  Object file info used to select disassembler. */
 static void
 arc_set_disassembler (struct objfile *objfile)
 {
@@ -557,14 +580,18 @@ arc_set_disassembler (struct objfile *objfile)
 }	/* arc_set_disassembler () */
 
 
-/*! Simple utility function to create a new frame cache structure
+/*! Utility function to create a new frame cache structure
 
-    The implementations has changed since GDB 6.8, since we are now provided
-    with the address of THIS frame, rather than the NEXT frame. */
+    @note The implementations has changed since GDB 6.8, since we are now
+          provided with the address of THIS frame, rather than the NEXT frame.
+
+    @param[in] this_frame  Frame for which cache is to be created.
+    @return                The new frame cache. */
 static struct arc_unwind_cache *
 arc_create_cache (struct frame_info *this_frame)
 {
-  struct arc_unwind_cache *cache = FRAME_OBSTACK_ZALLOC (struct arc_unwind_cache);
+  struct arc_unwind_cache *cache =
+    FRAME_OBSTACK_ZALLOC (struct arc_unwind_cache);
 
   /* Zero all fields.  */
   cache->blink_save_offset_from_prev_sp = 0;
@@ -583,63 +610,16 @@ arc_create_cache (struct frame_info *this_frame)
 }	/* arc_create_cache () */
 
 
-/*! Unwind the program counter.
-
-    @param[in] next_frame  NEXT frame from which the PC in THIS frame should be
-                           unwound.
-    @return  The value of the PC in THIS frame. */
-static CORE_ADDR
-arc_unwind_pc (struct gdbarch *gdbarch, struct frame_info *next_frame)
-{
-  int pc_regnum = gdbarch_pc_regnum (gdbarch);
-  CORE_ADDR pc =
-    (CORE_ADDR) frame_unwind_register_unsigned (next_frame, pc_regnum);
-
-  if (arc_debug)
-    {
-      fprintf_unfiltered (gdb_stdlog, "unwind PC: %s\n",
-			  print_core_address (gdbarch, pc));
-    }
-
-  return pc;
-
-}	/* arc_unwind_pc () */
-
-
-/*! Unwind the stack pointer.
-
-    @param[in] next_frame  NEXT frame from which the SP in THIS frame should be
-                           unwound.
-    @return  The value of the SP in THIS frame. */
-static CORE_ADDR
-arc_unwind_sp (struct gdbarch *gdbarch, struct frame_info *next_frame)
-{
-  int sp_regnum = gdbarch_sp_regnum (gdbarch);
-  CORE_ADDR sp =
-    (CORE_ADDR) frame_unwind_register_unsigned (next_frame, sp_regnum);
-
-  if (arc_debug)
-    {
-      fprintf_unfiltered (gdb_stdlog, "unwind SP: %s\n",
-			  print_core_address (gdbarch, sp));
-    }
-
-  return (CORE_ADDR) sp;
-
-}	/* arc_unwind_sp () */
-
-
 /*! Return the base address of the frame
-
-    The implementations has changed since GDB 6.8, since we are now provided
-    with the address of THIS frame, rather than the NEXT frame.
 
     For ARC, the base address is the frame pointer
 
+    @note The implementations has changed since GDB 6.8, since we are now
+          provided with the address of THIS frame, rather than the NEXT frame.
+
     @param[in] this_frame      The current stack frame.
     @param[in] prologue_cache  Any cached prologue for THIS function.
-
-    @return  The frame base address */
+    @return                    The frame base address */
 static CORE_ADDR
 arc_frame_base_address (struct frame_info  *this_frame,
 			 void              **prologue_cache) 
@@ -651,10 +631,13 @@ arc_frame_base_address (struct frame_info  *this_frame,
 
 /*! Compute THIS frame's stack pointer and base pointer.
 
-    This function has changed from GDB 6.8. It now takes a reference to THIS
-    frame, not the NEXT frame.
+    This is also the frame's ID's stack address.
 
-    This is also the frame's ID's stack address. */
+    @note This function has changed from GDB 6.8. It now takes a reference to
+          THIS frame, not the NEXT frame.
+
+    @param[out] info        Frame unwind cache to be populated.
+    @param[in]  this_frame  Frame info for THIS frame. */
 static void
 arc_find_this_sp (struct arc_unwind_cache * info,
 		  struct frame_info *this_frame)
@@ -766,7 +749,13 @@ arc_find_this_sp (struct arc_unwind_cache * info,
     prologue on the stack at a known offset from the current SP, is a
     callee-saved register.
 
-    If it is, the information in the frame unwind cache is updated. */
+    If it is, the information in the frame unwind cache is updated.
+ 
+    @param[in] reg     Register to be considered
+    @param[in] offset  Offset where the register is saved.
+    @param[in] info    Frame info for THIS frame.
+    @return            Non-zero (TRUE) if callee-saved, zero (FALSE)
+                       otherwise. */
 static int
 arc_is_callee_saved (unsigned int reg, int offset,
 		     struct arc_unwind_cache * info)
@@ -848,7 +837,12 @@ arc_is_callee_saved (unsigned int reg, int offset,
     Determine whether the given disassembled instruction may be part of a
     function prologue.
 
-    If it is, the information in the frame unwind cache may be updated. */
+    If it is, the information in the frame unwind cache may be updated.
+
+    @param[in] info  Frame cache for THIS frame
+    @param[in] instr Instruction to consider.
+    @result          Non-zero (TRUE) if instr is in prologue, zero (FALSE)
+                     otherwise. */
 static int
 arc_is_in_prologue (struct arc_unwind_cache * info, struct arcDisState *instr)
 {
@@ -885,7 +879,8 @@ arc_is_in_prologue (struct arc_unwind_cache * info, struct arcDisState *instr)
 			  (instr->source_operand.registerNum, instr->_offset,
 			   info))
 			{
-			  /* this is a push onto the stack, so change delta_sp */
+			  /* this is a push onto the stack, so change
+			     delta_sp */
 			  info->delta_sp += instr->_offset;
 			  return TRUE;
 			}
@@ -907,7 +902,8 @@ arc_is_in_prologue (struct arc_unwind_cache * info, struct arcDisState *instr)
 		  if (arc_is_callee_saved
 		      (instr->source_operand.registerNum, instr->_offset,
 		       info))
-		    /* this is NOT a push onto the stack, so do not change delta_sp */
+		    /* this is NOT a push onto the stack, so do not change
+		       delta_sp */
 		    return TRUE;
 		}
 
@@ -917,8 +913,9 @@ arc_is_in_prologue (struct arc_unwind_cache * info, struct arcDisState *instr)
 	       */
 	      if (instr->ea_reg1 == ARC_FP_REGNUM)
 		{
-		  if (IS_ARGUMENT_REGISTER
-		      (instr->source_operand.registerNum))
+		  int regnum = instr->source_operand.registerNum;
+		  if ((ARC_FIRST_ARG_REGNUM <= regnum)
+		      && (regnum <= ARC_LAST_ARG_REGNUM))
 		    {
 		      /* Saving argument registers. Don't set the bits in the
 		       * saved mask, just skip.
@@ -975,7 +972,8 @@ arc_is_in_prologue (struct arc_unwind_cache * info, struct arcDisState *instr)
 	      /* st_s <reg>,[sp,<offset>] */
 
 	      if (arc_is_callee_saved (reg, offset, info))
-		/* this is NOT a push onto the stack, so do not change delta_sp */
+		/* this is NOT a push onto the stack, so do not change
+		   delta_sp */
 		return TRUE;
 	    }
 	}
@@ -987,9 +985,6 @@ arc_is_in_prologue (struct arc_unwind_cache * info, struct arcDisState *instr)
 
 
 /*! Scan the prologue.
-
-    This function has changed from GDB 6.8. It now takes a reference to THIS
-    frame, not the NEXT frame.
 
     Scan the prologue and update the corresponding frame cache for the frame
     unwinder for unwinding frames without debug info. In such a situation GDB
@@ -1043,10 +1038,19 @@ arc_is_in_prologue (struct arc_unwind_cache * info, struct arcDisState *instr)
        st.a fp , [sp,-4]         ; push fp (if fp has to be saved)
                                  ; - decrements sp
        mov  fp , sp              ; set the current frame up correctly
-       sub  sp , sp , #immediate ; create space for local vars on the stack */
+       sub  sp , sp , #immediate ; create space for local vars on the stack
+
+    @note This function has changed from GDB 6.8. It now takes a reference to
+          THIS frame, not the NEXT frame.
+
+    @param[in] entrypoint  Function entry point where prologue starts
+    @param[in] this_frame  Frame info for THIS frame.
+    @param[in] info        Frame cache
+    @return                Address of first instruction after prologue. */
 static CORE_ADDR
 arc_scan_prologue (CORE_ADDR entrypoint,
-		   struct frame_info *this_frame, struct arc_unwind_cache * info)
+		   struct frame_info *this_frame,
+		   struct arc_unwind_cache *info)
 {
   struct gdbarch *gdbarch;
   int pc_regnum;
@@ -1064,6 +1068,9 @@ arc_scan_prologue (CORE_ADDR entrypoint,
      arc_skip_prologue; otherwise, if we know the frame, we can find the pc
      within the function.
 
+     The maximum prologue length is computed on the 3 instructions before and
+     after callee saves, and max number of saves; assume each is 4-byte inst.
+
      N.B. That pc will usually be after the end of the prologue, but it could
           actually be within the prologue (i.e. execution has halted within
           the prologue, e.g. at a breakpoint); in that case, do NOT go beyond
@@ -1072,7 +1079,8 @@ arc_scan_prologue (CORE_ADDR entrypoint,
   prologue_ends_pc = entrypoint;
   final_pc = (this_frame)
     ? get_frame_register_unsigned (this_frame, pc_regnum)
-    : entrypoint + MAX_PROLOGUE_LENGTH;
+    : entrypoint + 4 * (6 + ARC_LAST_CALLEE_SAVED_REGNUM
+			- ARC_FIRST_CALLEE_SAVED_REGNUM + 1);
 
   if (info)
     {
@@ -1151,11 +1159,16 @@ arc_scan_prologue (CORE_ADDR entrypoint,
 
 /*! Get return value of a function.
 
-    Get the return value of a function from the registers used to return it,
-    according to the convention used by the ABI. */
+    Get the return value of a function from the registers/memory used to
+    return it, according to the convention used by the ABI.
+
+    @param[in]  gdbarch   Our GDB architecture
+    @param[in]  type      Returned value's type
+    @param[in]  regcache  Register cache to get values from.
+    @param[out] valbuf    Buffer for the returned value. */
 static void
 arc_extract_return_value (struct gdbarch *gdbarch, struct type *type,
-			  struct regcache *regcache, gdb_byte * valbuf)
+			  struct regcache *regcache, gdb_byte *valbuf)
 {
   unsigned int len = TYPE_LENGTH (type);
 
@@ -1205,9 +1218,15 @@ arc_extract_return_value (struct gdbarch *gdbarch, struct type *type,
 }	/* arc_extract_value () */
 
 
-/* This function loads the return value of a function into the registers used to
- * return it, according to the convention used by the ABI.
- */
+/*! Store the return value of a function.
+
+    Store the return value of a function into the registers/memory used to
+    return it, according to the convention used by the ABI.
+
+    @param[in]  gdbarch   Our GDB architecture
+    @param[in]  type      Returned value's type
+    @param[out] regcache  Register cache to put values in.
+    @param[in]  valbuf    Buffer with the value to return. */
 static void
 arc_store_return_value (struct gdbarch *gdbarch, struct type *type,
 			struct regcache *regcache, const gdb_byte * valbuf)
@@ -1258,28 +1277,671 @@ arc_store_return_value (struct gdbarch *gdbarch, struct type *type,
   else
     error (_("arc_store_return_value: type length too large."));
 
-}	/* arc_extract_return_value () */
+}	/* arc_store_return_value () */
 
 
 /* -------------------------------------------------------------------------- */
-/*                       local functions called from gdb                      */
+/*		   ARC specific GDB architectural functions		      */
+/*									      */
+/* Functions are listed in the order they are used in arc_gdbarch_init.       */
 /* -------------------------------------------------------------------------- */
 
-/*!  Standard register type for the ARC platform.
+/*! Return the virtual frame pointer.
+
+   GDB and the GNU tool chain is increasingly vague about the use of a "frame
+   pointer" (FP). With the ARC tool GCC, the FP (r2) is used to point to the
+   middle of the current stack frame, just below the saved FP and before local
+   variables, register spill area and outgoing args.  However for optimization
+   levels above O2 and in any case in leaf functions, the frame pointer is
+   usually not set at all. The exception being when handling nested functions.
+
+   We use this function to return a "virtual" frame pointer, marking the start
+   of the current stack frame as a register-offset pair.  If the FP is not
+   being used, then it should return SP, with an offset of the frame size.
+
+   The current implementation doesn't actually know the frame size, nor
+   whether the FP is actually being used, so for now we just return SP and an
+   offset of zero. This is no worse than other architectures, but is needed to
+   avoid assertion failures.
+
+   @todo Can we determine the frame size to get a correct offset?
+
+   @param[in]  gdbarch     The GDB architecture being used.
+   @param[in]  pc          Program counter where we need the virtual FP.
+   @param[out] reg_ptr     The base register used for the virtual FP.
+   @param[out] offset_ptr  The offset used for the virtual FP.                */
+/*----------------------------------------------------------------------------*/
+static void
+arc_virtual_frame_pointer (struct gdbarch *gdbarch,
+			    CORE_ADDR       pc,
+			    int            *reg_ptr,
+			    LONGEST        *offset_ptr)
+{
+  *reg_ptr    = ARC_SP_REGNUM;
+  *offset_ptr = 0;
+
+}	/* arc_virtual_frame_pointer () */
+
+
+/*! Return the name of the given register.
+
+    This will always give a register name, even if the register is not
+    represented on a particular architecture. It shouldn't be the naming
+    function that worries about that.
+
+    The array of names is sized, so we'll throw an error if we try to put in
+    too many strings (but not sadly if we put in too few).
+
+    @todo This will get more complicated when we start reading details of the
+          architecture from XML.
+
+    @param[in] gdbarch  The current GDB architecture.
+    @param[in] regnum   The register of interest.
+    @return             Textual name of the register. */
+static const char *
+arc_register_name (struct gdbarch *gdbarch, int regnum)
+{
+  static const char *register_names[ARC_TOTAL_REGS] = {
+    /* Core registers. */
+    "r0",              "r1",              "r2",              "r3",
+    "r4",              "r5",              "r6",              "r7",
+    "r8",              "r9",              "r10",             "r11",
+    "r12",             "r13",             "r14",             "r15",
+    "r16",             "r17",             "r18",             "r19",
+    "r20",             "r21",             "r22",             "r23",
+    "r24",             "r25",             "gp",              "fp",
+    "sp",              "ilink1",          "ilink2",          "blink",
+    /* Extension core registers. */
+    "r32",             "r33",             "r34",             "r35",
+    "r36",             "r37",             "r38",             "r39",
+    "r40",             "r41",             "r42",             "r43",
+    "r44",             "r45",             "r46",             "r47",
+    "r48",             "r49",             "r50",             "r51",
+    "r52",             "r53",             "r54",             "r55",
+    "r56",             "r57",             "r58",             "r59",
+    /* Core registers again. */
+    "lp_count",        "reserved",        "limm",            "pcl",
+    "pc",
+    /* Aux registers. */
+    "lp_start",        "lp_end",          "status32",        "status32_l1",
+    "status32_l2",     "aux_irq_lv12",    "aux_irq_lev",     "aux_irq_hint",
+    "eret",            "erbta",           "erstatus",        "ecr",
+    "efa",             "icause1",         "icause2",         "aux_ienable",
+    "aux_itrigger",    "bta",             "bta_l1",          "bta_l2",
+    "aux_irq_pulse_cancel",               "aux_irq_pending"
+  };
+
+  gdb_assert ((0 <= regnum) && (regnum < ARC_TOTAL_REGS));
+  return register_names[regnum];
+
+}	/* arc_register_name () */
+
+
+/*! Return the type of a register
  
-    It would be builtin_type_uint32 until we consider the DSP extensions. */
+    @param[in] gdbarch  Current GDB architecture
+    @param[in] regnum   Register number whose type we want.
+    @return             Type of the register. */
 static struct type *
 arc_register_type (struct gdbarch *gdbarch, int regnum)
 {
-  return builtin_type (gdbarch)->builtin_uint32;
+  switch (regnum)
+    {
+    case ARC_GP_REGNUM:
+    case ARC_FP_REGNUM:
+    case ARC_SP_REGNUM:
+    case ARC_AUX_EFA_REGNUM:
+      return builtin_type (gdbarch)->builtin_data_ptr;
 
+    case ARC_ILINK1_REGNUM:
+    case ARC_ILINK2_REGNUM:
+    case ARC_BLINK_REGNUM:
+    case ARC_PCL_REGNUM:
+    case ARC_AUX_ERET_REGNUM:
+    case ARC_AUX_ERBTA_REGNUM:
+    case ARC_AUX_BTA_REGNUM:
+    case ARC_AUX_BTA_L1_REGNUM:
+    case ARC_AUX_BTA_L2_REGNUM:
+      return builtin_type (gdbarch)->builtin_func_ptr;
+
+    default:
+      return builtin_type (gdbarch)->builtin_uint32;
+    }
 }	/* arc_register_type () */
+
+
+/*! Return the frame ID for a dummy stack frame
+
+    Tear down a dummy frame created by arc_push_dummy_call(). This data has
+    to be constructed manually from the data in our hand.
+
+    The stack pointer and program counter can be obtained from the frame info.
+
+    @note The implementations has changed since GDB 6.8, since we are now
+          provided with the address of THIS frame, rather than the NEXT frame.
+
+    @param[in] gdbarch     The architecture to use
+    @param[in] this_frame  Information about this frame
+    @return                Frame ID of this frame */
+static struct frame_id
+arc_dummy_id (struct gdbarch *gdbarch, struct frame_info *this_frame)
+{
+  return frame_id_build (get_frame_sp (this_frame), get_frame_pc (this_frame));
+
+}	/* arc_dummy_id () */
+
+
+/*! Push stack frame for a dummy call.
+
+    @param[in] gdbarch        Current gdbarch.
+    @param[in] function       Function to call.
+    @param[in] regcache       Current register cache
+    @param[in] bp_addr        Return address where breakpoint must be placed.
+    @param[in] sp             Current value of SP.
+    @param[in] struct_return  Non-zero (TRUE) if structures are returned by
+                              the function. 
+    @param[in] struct_addr    Hidden address for returning a struct.
+    @return                   SP of new frame. */
+static CORE_ADDR
+arc_push_dummy_call (struct gdbarch *gdbarch,
+		     struct value *function,
+		     struct regcache *regcache,
+		     CORE_ADDR bp_addr,
+		     int nargs,
+		     struct value **args,
+		     CORE_ADDR sp, int struct_return, CORE_ADDR struct_addr)
+{
+  int arg_reg = ARC_FIRST_ARG_REGNUM;
+
+  ARC_ENTRY_DEBUG ("nargs = %d", nargs)
+
+  /* Push the return address. */
+  regcache_cooked_write_unsigned (regcache, ARC_BLINK_REGNUM, bp_addr);
+
+  /* Are we returning a value using a structure return instead of a normal
+     value return? If so, struct_addr is the address of the reserved space for
+     the return structure to be written on the stack, and that address is
+     passed to that function as a hidden first argument.
+
+     @todo Ramana: What about 4 byte structures returned in R0 as claimed by
+           Metaware? */
+  if (struct_return)
+    {
+      /* pass the return address in the first argument register */
+      regcache_cooked_write_unsigned (regcache, arg_reg, struct_addr);
+
+      if (arc_debug)
+	{
+	  fprintf_unfiltered (gdb_stdlog,
+			      "struct return address %s passed in R%d",
+			      print_core_address (gdbarch, struct_addr),
+			      arg_reg);
+	}
+
+      arg_reg++;
+    }
+
+  if (nargs > 0)
+    {
+      unsigned int total_space = 0;
+      gdb_byte *memory_image;
+      gdb_byte *data;
+      int i;
+
+      /* How much space do the arguments occupy in total?
+
+         @note Must round each argument's size up to an integral number of
+               words. */
+      for (i = 0; i < nargs; i++)
+	{
+	  unsigned int len = TYPE_LENGTH (value_type (args[i]));
+	  unsigned int space = arc_round_up_to_words (gdbarch, len);
+
+	  total_space += space;
+
+	  if (arc_debug)
+	    {
+	      fprintf_unfiltered (gdb_stdlog, "arg %d: %d bytes -> %u\n", i,
+				  len, arc_round_up_to_words (gdbarch, len));
+	    }
+	}
+
+      /* Allocate a buffer to hold a memory image of the arguments. */
+      memory_image = XCALLOC (total_space, gdb_byte);
+      if (memory_image == NULL)
+	{
+	  /* could not do the call! */
+	  return 0;
+	}
+
+      /* Now copy all of the arguments into the buffer, correctly aligned */
+      data = memory_image;
+      for (i = 0; i < nargs; i++)
+	{
+	  unsigned int len = TYPE_LENGTH (value_type (args[i]));
+	  unsigned int space = arc_round_up_to_words (gdbarch, len);
+
+	  (void) memcpy (data, value_contents (args[i]), (size_t) len);
+	  data += space;
+	}
+
+      /* Now load as much as possible of the memory image into registers. */
+      data = memory_image;
+      while (arg_reg <= ARC_LAST_ARG_REGNUM)
+	{
+	  if (arc_debug)
+	    {
+	      fprintf_unfiltered (gdb_stdlog,
+				  "passing 0x%08lX in register R%d\n",
+				  *(unsigned long *) data, arg_reg);
+	    }
+
+	  regcache_cooked_write_unsigned (regcache,
+					  arg_reg, *(unsigned long *) data);
+
+	  data += BYTES_IN_REGISTER;
+	  total_space -= BYTES_IN_REGISTER;
+
+	  /* if all the data is now in registers */
+	  if (total_space == 0)
+	    break;
+
+	  arg_reg++;
+	}
+
+      /* If there is any data left, push it onto the stack (in a single write
+	 operation). */
+      if (total_space > 0)
+	{
+	  if (arc_debug)
+	    {
+	      fprintf_unfiltered (gdb_stdlog, "passing %d bytes on stack\n",
+				  total_space);
+	    }
+
+	  sp -= total_space;
+	  write_memory (sp, data, (int) total_space);
+	}
+
+      xfree (memory_image);
+    }
+
+  /* Finally, update the SP register. */
+  regcache_cooked_write_unsigned (regcache, ARC_SP_REGNUM, sp);
+
+  return sp;
+
+}	/* arc_push_dummy_call () */
+
+
+/*! Push dummy call return code sequence.
+
+    We don't actually push any code. We just identify where a breakpoint can
+    be inserted to which we are can return and the resume address where we
+    should be called.
+
+    ARC does not necessarily have an executable stack, so we can't put the
+    return breakpoint there. Instead we put it at the entry point fo the
+    function. This means the SP is unchanged.
+
+    @note For ARC this is new for GDB 7.5. The GDB 6.8 implementation used the
+          old call_dummy_location, whose use is now deprecated. Fro simplicity
+          we have just lifted the code that call_dummy_location associated
+          with using the entry point (AT_ENTRY_POINT) for dummy return.
+
+    @param[in]  gdbarch     Current GDB architecture
+    @param[in]  sp          Current stack pointer
+    @param[in]  funaddr     Address of the function to be called.
+    @param[in]  args        Args to pass.
+    @param[in]  nargs       Number of args to pass.
+    @param[in]  value_type  Type of value returned?
+    @param[out] real_pc     Resume address when the function is called.
+    @param[out] bp_addr     Address where breakpoint should be set.
+    @param[in]  regcache    Register cache for current frame.
+    @return                 The updated stack pointer. */
+static CORE_ADDR
+arc_push_dummy_code (struct gdbarch *gdbarch, CORE_ADDR sp, CORE_ADDR funaddr,
+		     struct value **args, int nargs, struct type *value_type,
+		     CORE_ADDR *real_pc, CORE_ADDR *bp_addr,
+		     struct regcache *regcache)
+{
+  *real_pc = funaddr;
+  *bp_addr = entry_point_address ();
+  return sp;
+    
+}	/* arc_push_dummy_code *() */
+
+
+/*! Print registers.
+
+    This supports the "info registers" command.
+
+    We print the core registers + PC. If "all" is specified, this is followed
+    by aux registers. We currently have no pseudo registers relevant here.
+
+    For now we use the default_print_registers_info () function to print out
+    each individual register.
+
+    @note We assume that regnum is either -1 or a valid register number.
+
+    @todo We need to be cleverer about dealing with extension core registers
+          and auxilliary registers, based on what the architecture tdep
+          structure has to say.
+
+    @param[in] gdbarch  The current GDB architecture.
+    @param[in] file     The GDB file handle to which to write.
+    @param[in] frame    The current stack frame.
+    @param[in] regnum   The register to print, or -1 to print all (with or
+                        without aux regs as determined by next arg).
+    @param[in] all      If non-zero (TRUE), then print core regs + aux regs,
+                        otherwise just print the core regs. */
+static void
+arc_print_registers_info (struct gdbarch *gdbarch, struct ui_file *file,
+			  struct frame_info *frame, int regnum, int all)
+{
+  if (regnum >= 0)
+    {
+      /* Print a single register */
+      default_print_registers_info (gdbarch, file, frame, regnum, all);
+    }
+  else
+    {
+      /* Print all the registers, as determined by the "all" parameter. */
+      int r;
+
+      for (r = 0; r <= ARC_MAX_CORE_REGS; r++)
+	{
+	  default_print_registers_info (gdbarch, file, frame, r, all);
+	}
+      default_print_registers_info (gdbarch, file, frame, ARC_PC_REGNUM, all);
+
+      /* If "all" is non-zero (TRUE), also print out the aux regs. */
+
+      for (r = ARC_MAX_CORE_REGS + 1; r < ARC_TOTAL_REGS; r++)
+	{
+	  default_print_registers_info (gdbarch, file, frame, r, all);
+	}
+    }
+}	/* arc_print_registers_info () */
+
+
+/*! Print floating point registers.
+
+    This supports the "info float" command.
+
+    The ARC architecture does not have floating point registers as such, but
+    the software FPU allows registers and pairs of registers to be used to
+    hold FP values, and this function allows the general registers to be
+    displayed as floating point values.
+
+    We print the core general and general extension registers, both as single
+    precision FP, and as double precision pairs. We assume no aux register
+    constains FP values.
+
+    @todo This is a placeholder. We need to write code (lift ideas from
+          default_print_register_info).
+
+    @todo We need to be cleverer about dealing with extension core registers
+          and auxilliary registers, based on what the architecture tdep
+          structure has to say.
+
+    @todo We should consider whether we ought to define a set of pseudo regs
+          for FP values.
+
+    @param[in] gdbarch  The current GDB architecture.
+    @param[in] file     The GDB file handle to which to write.
+    @param[in] frame    The current stack frame.
+    @param[in] args     */
+static void
+arc_print_float_info (struct gdbarch *gdbarch, struct ui_file *file,
+		      struct frame_info *frame, int regnum, int all)
+{
+  fputs_filtered ("Core registers may hold values for use by the soft FPU.\n",
+		  file);
+
+}	/* arc_print_float_info () */
+
+
+/*! Determine whether a register can be read.
+
+    This varies according to target. A Linux target can only see registers
+    readable in user space, an ELF target can see any register visible via the
+    JTAG debug interface.
+
+    @todo We'll need a more complex interface once the aux registers are
+          defined via XML.
+
+    @param[in] gdbarch  The current GDB architecture.
+    @param[in] regnum   The register of interest.
+    @return             Non-zero (TRUE) if we _cannot_ read the register,
+                        false otherwise. */
+static int
+arc_cannot_fetch_register (struct gdbarch *gdbarch, int regnum)
+{
+  enum gdb_osabi osabi = gdbarch_osabi (gdbarch);
+
+  /* Default is to be able to read regs, pick out the others explicitly. */
+  switch (regnum)
+    {
+    case ARC_RESERVED_REGNUM:
+    case ARC_LIMM_REGNUM:
+      return 1;				/* Never readable. */
+
+    case ARC_ILINK1_REGNUM:
+    case ARC_ILINK2_REGNUM:
+    case ARC_AUX_STATUS32_L1_REGNUM:
+    case ARC_AUX_STATUS32_L2_REGNUM:
+    case ARC_AUX_AUX_IRQ_LV12_REGNUM:
+    case ARC_AUX_AUX_IRQ_LEV_REGNUM:
+    case ARC_AUX_AUX_IRQ_HINT_REGNUM:
+    case ARC_AUX_ERET_REGNUM:
+    case ARC_AUX_ERBTA_REGNUM:
+    case ARC_AUX_ERSTATUS_REGNUM:
+    case ARC_AUX_ECR_REGNUM:
+    case ARC_AUX_EFA_REGNUM:
+    case ARC_AUX_ICAUSE1_REGNUM:
+    case ARC_AUX_ICAUSE2_REGNUM:
+    case ARC_AUX_AUX_IENABLE_REGNUM:
+    case ARC_AUX_AUX_ITRIGGER_REGNUM:
+    case ARC_AUX_BTA_REGNUM:
+    case ARC_AUX_BTA_L1_REGNUM:
+    case ARC_AUX_BTA_L2_REGNUM:
+    case ARC_AUX_AUX_IRQ_PULSE_CANCEL_REGNUM:
+    case ARC_AUX_AUX_IRQ_PENDING_REGNUM:
+      return osabi == GDB_OSABI_LINUX;	/* Privileged/debugger read only. */
+
+    default:
+      return 0;				/* Always readable. */
+    }
+}	/* arc_cannot_fetch_register () */
+
+
+/*! Determine whether a register can be written.
+
+    This varies according to target. A Linux target can only write registers
+    writable in user space, an ELF target can write any register writable via
+    the JTAG debug interface.
+
+    @todo We'll need a more complex interface once the aux registers are
+          defined via XML.
+
+    @param[in] gdbarch  The current GDB architecture.
+    @param[in] regnum   The register of interest.
+    @return             Non-zero (TRUE) if we _cannot_ write the register,
+                        false otherwise. */
+static int
+arc_cannot_store_register (struct gdbarch *gdbarch, int regnum)
+{
+  enum gdb_osabi osabi = gdbarch_osabi (gdbarch);
+
+  /* Default is to be able to write regs, pick out the others explicitly. */
+  switch (regnum)
+    {
+    case ARC_RESERVED_REGNUM:
+    case ARC_LIMM_REGNUM:
+    case ARC_PCL_REGNUM:
+      return 1;				/* Never writable. */
+
+    case ARC_ILINK1_REGNUM:
+    case ARC_ILINK2_REGNUM:
+    case ARC_AUX_STATUS32_REGNUM:
+    case ARC_AUX_STATUS32_L1_REGNUM:
+    case ARC_AUX_STATUS32_L2_REGNUM:
+    case ARC_AUX_AUX_IRQ_LV12_REGNUM:
+    case ARC_AUX_AUX_IRQ_LEV_REGNUM:
+    case ARC_AUX_AUX_IRQ_HINT_REGNUM:
+    case ARC_AUX_ERET_REGNUM:
+    case ARC_AUX_ERBTA_REGNUM:
+    case ARC_AUX_ERSTATUS_REGNUM:
+    case ARC_AUX_ECR_REGNUM:
+    case ARC_AUX_EFA_REGNUM:
+    case ARC_AUX_ICAUSE1_REGNUM:
+    case ARC_AUX_ICAUSE2_REGNUM:
+    case ARC_AUX_AUX_IENABLE_REGNUM:
+    case ARC_AUX_AUX_ITRIGGER_REGNUM:
+    case ARC_AUX_BTA_REGNUM:
+    case ARC_AUX_BTA_L1_REGNUM:
+    case ARC_AUX_BTA_L2_REGNUM:
+    case ARC_AUX_AUX_IRQ_PULSE_CANCEL_REGNUM:
+    case ARC_AUX_AUX_IRQ_PENDING_REGNUM:
+      return osabi == GDB_OSABI_LINUX;	/* Privileged/debugger write only. */
+
+    default:
+      return 0;				/* Always writable. */
+    }
+}	/* arc_cannot_store_register () */
+
+
+/* Get a longjmp target.
+
+   We've just landed at a longjmp breakpoint. Detemine the address the longjmp
+   will jump to.
+
+   We need to use the frame info to get the register pointing to the jmp_buf,
+   then extract the PC from that.
+
+   Since jmp_buf is the first argument to longjmp () it will be in r0. Where
+   we then go depends on the OS. If we are using Linux, we have in uClibc
+   (libc/sysdeps/linux/arc/bits/setjmp.h):
+
+   /verbatim
+   typedef int __jmp_buf[13+1+1+1];    //r13-r25, fp, sp, blink
+   /endverbatim
+
+   If we are using newlib, we have in libc/include/machine/setjmp.h:
+
+   /verbatim
+   #ifdef __arc__
+   #define _JBLEN 25 // r13-r30,blink,lp_count,lp_start,lp_end,mlo,mhi,status32
+   #endif
+   /endverbatim
+
+   We don't have full information on which library are using, but it is
+   reasonable to assume that if we have GDB_OSABI_LINUX, we are using uClibc,
+   and otherwise newlib.
+
+   @param[in]  frame  Frame info for THIS frame.
+   @param[out] pc     Address longjmp will jump to.
+   @return            Non-zero (TRUE) if we found the target, zero (FALSE)
+                      otherwise. */
+static int
+arc_get_longjmp_target (struct frame_info *frame, CORE_ADDR *pc)
+{
+  CORE_ADDR jb_addr;
+  struct gdbarch *gdbarch = get_frame_arch (frame);
+  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  int  element_size = gdbarch_ptr_bit (gdbarch) / TARGET_CHAR_BIT;
+  void *buf = alloca (element_size);
+  enum gdb_osabi osabi = gdbarch_osabi (gdbarch);
+  int  pc_offset = (GDB_OSABI_LINUX == osabi)
+    ? ARC_UCLIBC_JB_PC * element_size
+    : ARC_NEWLIB_JB_PC * element_size;
+
+  jb_addr = get_frame_register_unsigned (frame, ARC_FIRST_ARG_REGNUM);
+
+  if (target_read_memory (jb_addr + pc_offset, buf, element_size))
+    {
+      return  0;		/* Failed to read from buf */
+    }
+  else
+    {
+      *pc = extract_unsigned_integer (buf, element_size, byte_order);
+      return 1;
+    }
+}	/* arc_get_longjmp_target () */
+
+
+/*! Determine how a result of particular type is returned.
+
+    Return the convention used by the ABI for returning a result of the given
+    type from a function; it may also be required to:
+   
+    1. set the return value (this is for the situation where the debugger user
+       has issued a "return <value>" command to request immediate return from
+       the current function with the given result; or
+   
+    2. get the return value ((this is for the situation where the debugger
+       user has executed a "call <function>" command to execute the specified
+       function in the target program, and that function has a non-void result
+       which must be returned to the user.
+
+    @param[in] gdbarch  Current GDB architecture
+    @param[in] function  The function being returned form (unused).
+    @param[in] valtype   The type of the value to return.
+    @param[in] regcache  Register cache for the current frame.
+    @param[in] readbuf   If non-NULL get the return value into the buffer
+    @param[in] writebuf  If non-NULL set the return value from the buffer
+    @return              The return convention used. */
+static enum return_value_convention
+arc_return_value (struct gdbarch *gdbarch,
+		  struct value *function,
+		  struct type *valtype,
+		  struct regcache *regcache,
+		  gdb_byte *readbuf, const gdb_byte * writebuf)
+{
+  /* If the return type is a struct, or a union, or would occupy more than two
+     registers, the ABI uses the "struct return convention": the calling
+     function passes a hidden first parameter to the callee (in R0).  That
+     parameter is the address at which the value being returned should be
+     stored.  Otherwise, the result is returned in registers. */
+  int is_struct_return = (TYPE_CODE (valtype) == TYPE_CODE_STRUCT ||
+			  TYPE_CODE (valtype) == TYPE_CODE_UNION ||
+			  TYPE_LENGTH (valtype) > 2 * BYTES_IN_REGISTER);
+
+  ARC_ENTRY_DEBUG ("readbuf = %p, writebuf = %p", readbuf, writebuf)
+
+  if (writebuf != NULL)
+    {
+      /* Case 1. GDB should not ask us to set a struct return value: it should
+                 know the struct return location and write the value there
+                 itself. */
+      gdb_assert (!is_struct_return);
+      arc_store_return_value (gdbarch, valtype, regcache, writebuf);
+    }
+  else if (readbuf != NULL)
+    {
+      /* Case 2. GDB should not ask us to get a struct return value: it should
+	         know the struct return location and read the value from there
+	         itself. */
+      gdb_assert (!is_struct_return);
+      arc_extract_return_value (gdbarch, valtype, regcache, readbuf);
+    }
+
+  return is_struct_return
+    ? RETURN_VALUE_STRUCT_CONVENTION
+    : RETURN_VALUE_REGISTER_CONVENTION;
+
+}	/* arc_return_value () */
 
 
 /*! Skip the prologue for the function at pc.
 
     This is done by checking from the line information read from the DWARF, if
-    possible; otherwise, we scan the function prologue to find its end. */
+    possible; otherwise, we scan the function prologue to find its end.
+
+    @param[in] gdbarch  Current GDB architecture
+    @param[in] pc       PC somewhere in the prologue.
+    @return             Address of first instruction after prologue. */
 static CORE_ADDR
 arc_skip_prologue (struct gdbarch *gdbarch, CORE_ADDR pc)
 {
@@ -1310,19 +1972,110 @@ arc_skip_prologue (struct gdbarch *gdbarch, CORE_ADDR pc)
 	}
     }
 
-  /* Find the address of the first instruction after the prologue by
-   * scanning through it - no other information is needed, so pass NULL
-   * for the other parameters.
-   */
+  /* Find the address of the first instruction after the prologue by scanning
+     through it - no other information is needed, so pass NULL for the other
+     parameters.  */
   return arc_scan_prologue (pc, NULL, NULL);
 
 }	/* arc_skip_prologue () */
 
 
+/*! Get breakpoint which is approriate for address at which it is to be set.
+
+    Return whatever is in the ARC-private tdep structure (this has been set up
+    according to the correct target / architecture chosen).
+   
+    Fortunately, the ARC processor does not have separate instruction sets
+    (like the ARM's normal 32-bit and 16-bit Thumb instructions), so the bp
+    instruction to be used does not depend on the address (although the ARC
+    does have both 16- and * 32-bit instructions, they may be freely
+    intermixed).
+
+    @param[in]     gdbarch  Current GDB architecture
+    @param[in,out] pcptr    Pointer to the PC where we want to place a
+                            breakpoint
+    @param[out]    lenptr   Number of bytes used by the breakpoint.
+    @return                 The byte sequence of a breakpoint instruction. */
+static const unsigned char *
+arc_breakpoint_from_pc (struct gdbarch *gdbarch, CORE_ADDR * pcptr,
+			int *lenptr)
+{
+
+  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  *lenptr = (int) tdep->breakpoint_size;
+  return tdep->breakpoint_instruction;
+
+}	/* arc_breakpoint_from_pc () */
+
+
+/*! Unwind the program counter.
+
+    @param[in] next_frame  NEXT frame from which the PC in THIS frame should be
+                           unwound.
+    @return                The value of the PC in THIS frame. */
+static CORE_ADDR
+arc_unwind_pc (struct gdbarch *gdbarch, struct frame_info *next_frame)
+{
+  int pc_regnum = gdbarch_pc_regnum (gdbarch);
+  CORE_ADDR pc =
+    (CORE_ADDR) frame_unwind_register_unsigned (next_frame, pc_regnum);
+
+  if (arc_debug)
+    {
+      fprintf_unfiltered (gdb_stdlog, "unwind PC: %s\n",
+			  print_core_address (gdbarch, pc));
+    }
+
+  return pc;
+
+}	/* arc_unwind_pc () */
+
+
+/*! Unwind the stack pointer.
+
+    @param[in] next_frame  NEXT frame from which the SP in THIS frame should be
+                           unwound.
+    @return                The value of the SP in THIS frame. */
+static CORE_ADDR
+arc_unwind_sp (struct gdbarch *gdbarch, struct frame_info *next_frame)
+{
+  int sp_regnum = gdbarch_sp_regnum (gdbarch);
+  CORE_ADDR sp =
+    (CORE_ADDR) frame_unwind_register_unsigned (next_frame, sp_regnum);
+
+  if (arc_debug)
+    {
+      fprintf_unfiltered (gdb_stdlog, "unwind SP: %s\n",
+			  print_core_address (gdbarch, sp));
+    }
+
+  return (CORE_ADDR) sp;
+
+}	/* arc_unwind_sp () */
+
+
+/*! Adjust the stack pointer to align frame.
+
+    @param[in] gdbarch  Current GDB architecture
+    @param[in] sp       SP to align.
+    @return             Aligned SP. */
+static CORE_ADDR
+arc_frame_align (struct gdbarch *gdbarch, CORE_ADDR sp)
+{
+  int  bpw = gdbarch_ptr_bit (gdbarch) / TARGET_CHAR_BIT;
+  return sp & ~(((CORE_ADDR) bpw) - 1);
+
+}	/* arc_frame_align () */
+
+
 /*! Frame unwinder for normal frames.
 
-    This function has changed from GDB 6.8. It now takes a reference to THIS
-    frame, not the NEXT frame. */
+    @note This function has changed from GDB 6.8. It now takes a reference to
+          THIS frame, not the NEXT frame.
+
+    @param[in]     this_frame  Frame info for THIS frame.
+    @param[in,out] this_cache  Frame cache for THIS frame, created if necessary.
+    @return                    The frame cache (new or existing) */
 static struct arc_unwind_cache *
 arc_frame_cache (struct frame_info *this_frame, void **this_cache)
 {
@@ -1331,16 +2084,15 @@ arc_frame_cache (struct frame_info *this_frame, void **this_cache)
   if ((*this_cache) == NULL)
     {
         CORE_ADDR  entrypoint =
-	  (CORE_ADDR) get_frame_register_unsigned (this_frame, ARC_PC_REGNUM);
-        struct arc_unwind_cache *cache      = arc_create_cache (this_frame);
+	  (CORE_ADDR) get_frame_register_unsigned (this_frame,
+						   ARC_PC_REGNUM);
+        struct arc_unwind_cache *cache = arc_create_cache (this_frame);
 
         /* return the newly-created cache */
         *this_cache = cache;
 
-        /* Prologue analysis does the rest... */
-        /* Currently our scan prologue does not support getting input for the
-         * frame unwinder.
-         */
+        /* Prologue analysis does the rest... Currently our prologue scanner
+	   does not support getting input for the frame unwinder. */
         (void) arc_scan_prologue (entrypoint, this_frame, cache);
     }
 
@@ -1351,11 +2103,16 @@ arc_frame_cache (struct frame_info *this_frame, void **this_cache)
 
 /*! Get the frame_id of a normal frame.
 
-    This function has changed from GDB 6.8. It now takes a reference to THIS
-    frame, not the NEXT frame.
+    @note There seemed to be a bucket load of irrelevant code about stopping
+          backtraces in the old code, which we've stripped out.
 
-    There seemed to be a bucket load of irrelevant code about stopping
-    backtraces in the old code, which we've stripped out. */
+    @note This function has changed from GDB 6.8. It now takes a reference to
+          THIS frame, not the NEXT frame.
+
+    @param[in]     this_frame  Frame info for THIS frame.
+    @param[in,out] this_cache  Frame cache for THIS frame, created if
+                               necessary.
+    @param[out]    this_id     Frame id for THIS frame. */
 static void
 arc_frame_this_id (struct frame_info *this_frame,
 		   void **this_cache, struct frame_id *this_id)
@@ -1365,28 +2122,28 @@ arc_frame_this_id (struct frame_info *this_frame,
   ARC_ENTRY_DEBUG ("")
 
   stack_addr = arc_frame_cache (this_frame, this_cache)->frame_base;
-  code_addr = get_frame_register_unsigned (this_frame, ARC_PC_REGNUM);
+  code_addr = get_frame_register_unsigned (this_frame,
+					   ARC_PC_REGNUM);
   *this_id = frame_id_build (stack_addr, code_addr);
 
 }	/* arc_frame_this_id () */
 
 
-/*! Get a register from a normal frame.
-
-    This function has changed from GDB 6.8. It now takes a reference to THIS
-    frame, not the NEXT frame. It returns it results via a structure, not its
-    argument list.
+/*! Unwind a register from a normal frame.
 
     Given a pointer to the THIS frame, return the details of a register in the
     PREVIOUS frame.
+
+    @note This function has changed from GDB 6.8. It now takes a reference to
+          THIS frame, not the NEXT frame. It returns it results via a
+          structure, not its argument list.
 
     @param[in] this_frame  The stack frame under consideration
     @param[in] this_cache  Any cached prologue associated with THIS frame,
                            which may therefore tell us about registers in the
 			   PREVIOUS frame. 
     @param[in] regnum      The register of interest in the PREVIOUS frame
-
-    @return  A value structure representing the register. */
+    @return                 A value structure representing the register. */
 static struct value *
 arc_frame_prev_register (struct frame_info *this_frame,
 			 void **this_cache,
@@ -1419,182 +2176,47 @@ arc_frame_prev_register (struct frame_info *this_frame,
 
             The old code explicitly set *lvalp to not_lval and stored a value
             in the buffer . Do we need to do something special for SP? */
-
   return trad_frame_get_prev_register (this_frame, info->saved_regs, regnum);
 
 }	/* arc_frame_prev_register () */
 
 
-/*! Get breakpoint which is approriate for address at which it is to be set.
+/*! Identify some properties of particular registers for the DWARF unwinder.
 
-    Return whatever is in the ARC-private tdep structure (this has been set up
-    according to the correct target / architecture chosen).
-   
-    Fortunately, the ARC processor does not have separate instruction sets
-    (like the ARM's normal 32-bit and 16-bit Thumb instructions), so the bp
-    instruction to be used does not depend on the address (although the ARC
-    does have both 16- and * 32-bit instructions, they may be freely
-    intermixed). */
-static const unsigned char *
-arc_breakpoint_from_pc (struct gdbarch *gdbarch, CORE_ADDR * pcptr,
-			int *lenptr)
-{
-
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
-  *lenptr = (int) tdep->breakpoint_size;
-  return tdep->breakpoint_instruction;
-
-}	/* arc_breakpoint_from_pc () */
-
-
-/*! Identify if a register is in a group.
-
-      0 means the register is not in the group.
-      1 means the register is in the group.
-     -1 means the tdep has nothing to say about this register and group.
-
-    @todo Should we really raise an internal error if we don't know about
-          the group. Surely that is what -1 is for. */
-static int
-arc_register_reggroup_p (struct gdbarch *gdbarch,
-			 int regnum, struct reggroup *group)
-{
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
-  int tdep_answer = tdep->register_reggroup_p (regnum, group);
-
-  /* if the configuration-specific tdep knows about this register */
-  if (tdep_answer != -1)
-    return tdep_answer;
-
-  if (group == all_reggroup)
-    return 1;
-
-  if (group == save_reggroup || group == restore_reggroup)
-    {
-      /* don't save/restore read-only registers. */
-      return (!gdbarch_cannot_store_register (gdbarch, regnum));
-    }
-
-  if (group == system_reggroup)
-    {
-      if (regnum == ARC_ILINK1_REGNUM || regnum == ARC_ILINK2_REGNUM)
-	return 1;
-
-      return 0;
-    }
-
-  internal_error (__FILE__, __LINE__, _("bad register group"));
-  return -1;
-
-}	/* arc_register_reggroup_p () */
-
-
-/*! Identify some properties of particular registers for the DWARF unwinder. */
+    @param[in]  gdbarch  Current GDB architecture
+    @param[in]  regnum   Register or interest
+    @param[out] reg      DWARF register info.
+    @param[in]  info     Frame info for this frame (unused). */
 static void
 arc_dwarf2_frame_init_reg (struct gdbarch *gdbarch,
 			   int regnum,
 			   struct dwarf2_frame_state_reg *reg,
 			   struct frame_info *info)
 {
-  /*  ENTERARGS("Regno no:%d, 0x%x", regnum, (unsigned int) regnum); */
+  switch (regnum)
+    {
+    case ARC_PC_REGNUM:
+      /* The return address column. */
+      reg->how = DWARF2_FRAME_REG_RA;
+      break;
 
-  /* The return address column. */
-  if (regnum == ARC_PC_REGNUM)
-    reg->how = DWARF2_FRAME_REG_RA;
-
-  /* The call frame address. */
-  if (regnum == ARC_SP_REGNUM)
-    reg->how = DWARF2_FRAME_REG_CFA;
-
+    case ARC_SP_REGNUM:
+      /* The call frame address. */
+      reg->how = DWARF2_FRAME_REG_CFA;
+    }
 }	/* arc_dwarf2_frame_init_reg () */
-
-
-/*! Determine how a result of particular type is returned.
-
-    Return the convention used by the ABI for returning a result of the given
-    type from a function; it may also be required to:
-   
-      a) set the return value (this is for the situation where the debugger
-         user has issued a "return <value>" command to request immediate
-         return from the current function with the given result; or
-   
-      b) get the return value ((this is for the situation where the debugger
-         user has executed a "call <function>" command to execute the
-         specified function in the target program, and that function has a
-         non-void result which must be returned to the user. */
-static enum return_value_convention
-arc_return_value (struct gdbarch *gdbarch,
-		  struct value *function,
-		  struct type *valtype,
-		  struct regcache *regcache,
-		  gdb_byte *readbuf, const gdb_byte * writebuf)
-{
-  /* If the return type is a struct, or a union, or would occupy more than two
-     registers, the ABI uses the "struct return convention": the calling
-     function passes a hidden first parameter to the callee (in R0).  That
-     parameter is the address at which the value being returned should be
-     stored.  Otherwise, the result is returned in registers. */
-  int is_struct_return = (TYPE_CODE (valtype) == TYPE_CODE_STRUCT ||
-			  TYPE_CODE (valtype) == TYPE_CODE_UNION ||
-			  TYPE_LENGTH (valtype) > 2 * BYTES_IN_REGISTER);
-
-  ARC_ENTRY_DEBUG ("readbuf = %p, writebuf = %p", readbuf, writebuf)
-
-  /* case a) */
-  if (writebuf != NULL)
-    {
-      /* gdb should not ask us to set a struct return value: it should
-       * know the struct return location and write the value there itself.
-       */
-      gdb_assert (!is_struct_return);
-      arc_store_return_value (gdbarch, valtype, regcache, writebuf);
-    }
-
-  /* case b) */
-  if (readbuf != NULL)
-    {
-      /* gdb should not ask us to get a struct return value: it should
-       * know the struct return location and read the value from there
-       * itself.
-       */
-      gdb_assert (!is_struct_return);
-      arc_extract_return_value (gdbarch, valtype, regcache, readbuf);
-    }
-
-  return (is_struct_return) ? RETURN_VALUE_STRUCT_CONVENTION
-    : RETURN_VALUE_REGISTER_CONVENTION;
-
-}	/* arc_return_value () */
-
-
-/*! Return the frame ID for a dummy stack frame
-
-    The implementations has changed since GDB 6.8, since we are now provided
-    with the address of THIS frame, rather than the NEXT frame.
-
-    Tear down a dummy frame created by or32_push_dummy_call(). This data has
-    to be constructed manually from the data in our hand.
-
-    The stack pointer and program counter can be obtained from the frame info.
-
-    @param[in] gdbarch     The architecture to use
-    @param[in] this_frame  Information about this frame
-
-    @return  Frame ID of this frame */
-static struct frame_id
-arc_dummy_id (struct gdbarch *gdbarch, struct frame_info *this_frame)
-{
-  return frame_id_build (get_frame_sp (this_frame), get_frame_pc (this_frame));
-
-}	/* arc_unwind_dummy_id () */
 
 
 /*! Signal trampoline frame unwinder.
  
-    This function has changed from GDB 6.8. It now takes a reference to THIS
-    frame, not the NEXT frame.
+    Allow frame unwinding to happen from within signal handlers.
 
-    Allow frame unwinding to happen from within signal handlers. */
+    @note This function has changed from GDB 6.8. It now takes a reference to
+          THIS frame, not the NEXT frame.
+
+    @param[in]     this_frame  Frame info for THIS frame.
+    @param[in,out] this_cache  Frame cache for THIS frame, created if necessary.
+    @return                    The frame cache (new or existing) */
 static struct arc_unwind_cache *
 arc_sigtramp_frame_cache (struct frame_info *this_frame, void **this_cache)
 {
@@ -1611,8 +2233,7 @@ arc_sigtramp_frame_cache (struct frame_info *this_frame, void **this_cache)
       cache->frame_base = arc_frame_base_address (this_frame, NULL);
 
       /* If the ARC-private target-dependent info has a table of offsets of
-       * saved register contents within a O/S signal context structure.
-       */
+         saved register contents within a O/S signal context structure. */
       if (tdep->sc_reg_offset)
 	{
 	  /* find the address of the sigcontext structure */
@@ -1620,15 +2241,17 @@ arc_sigtramp_frame_cache (struct frame_info *this_frame, void **this_cache)
 	  unsigned int i;
 
 	  /* For each register, if its contents have been saved within the
-	   * sigcontext structure, determine the address of those contents.
-	   */
+	    sigcontext structure, determine the address of those contents. */
 	  for (i = 0; i < tdep->sc_num_regs; i++)
-	    if (tdep->sc_reg_offset[i] != REGISTER_NOT_PRESENT)
-	      cache->saved_regs[i].addr =
-		(LONGEST) (addr + tdep->sc_reg_offset[i]);
+	    {
+	      if (tdep->sc_reg_offset[i] != REGISTER_NOT_PRESENT)
+		{
+		  cache->saved_regs[i].addr =
+		    (LONGEST) (addr + tdep->sc_reg_offset[i]);
+		}
+	    }
 	}
     }
-
   return *this_cache;
 
 }	/* arc_sigtramp_frame_cache () */
@@ -1636,8 +2259,13 @@ arc_sigtramp_frame_cache (struct frame_info *this_frame, void **this_cache)
 
 /*! Get the frame_id of a signal handler frame.
 
-    This function has changed from GDB 6.8. It now takes a reference to THIS
-    frame, not the NEXT frame. */
+    @note This function has changed from GDB 6.8. It now takes a reference to
+          THIS frame, not the NEXT frame.
+
+    @param[in]     this_frame  Frame info for THIS frame.
+    @param[in,out] this_cache  Frame cache for THIS frame, created if
+                               necessary.
+    @param[out]    this_id     Frame id for THIS frame. */
 static void
 arc_sigtramp_frame_this_id (struct frame_info *this_frame,
 			    void **this_cache, struct frame_id *this_id)
@@ -1647,7 +2275,8 @@ arc_sigtramp_frame_this_id (struct frame_info *this_frame,
   ARC_ENTRY_DEBUG ("")
 
   stack_addr = arc_sigtramp_frame_cache (this_frame, this_cache)->frame_base;
-  code_addr = get_frame_register_unsigned (this_frame, ARC_PC_REGNUM);
+  code_addr = get_frame_register_unsigned (this_frame,
+					   ARC_PC_REGNUM);
   *this_id = frame_id_build (stack_addr, code_addr);
 
 }	/* arc_sigtramp_frame_this_id () */
@@ -1655,27 +2284,27 @@ arc_sigtramp_frame_this_id (struct frame_info *this_frame,
 
 /*! Get a register from a signal handler frame.
 
-    This function has changed from GDB 6.8. It now takes a reference to THIS
-    frame, not the NEXT frame. It returns it results via a structure, not its
-    argument list.
-
     Given a pointer to the THIS frame, return the details of a register in the
     PREVIOUS frame.
+
+    @note This function has changed from GDB 6.8. It now takes a reference to
+          THIS frame, not the NEXT frame. It returns it results via a
+          structure, not its argument list.
 
     @param[in] this_frame  The stack frame under consideration
     @param[in] this_cache  Any cached prologue associated with THIS frame,
                            which may therefore tell us about registers in the
 			   PREVIOUS frame. 
     @param[in] regnum      The register of interest in the PREVIOUS frame
-
-    @return  A value structure representing the register. */
+    @return                 A value structure representing the register. */
 static struct value *
 arc_sigtramp_frame_prev_register (struct frame_info *this_frame,
 				  void **this_cache,
 				  int regnum)
 {
   /* Make sure we've initialized the cache. */
-  struct arc_unwind_cache *info = arc_sigtramp_frame_cache (this_frame, this_cache);
+  struct arc_unwind_cache *info =
+    arc_sigtramp_frame_cache (this_frame, this_cache);
 
   ARC_ENTRY_DEBUG ("")
 
@@ -1698,6 +2327,8 @@ arc_sigtramp_frame_prev_register (struct frame_info *this_frame,
 
     Only recognize a frame if we have a sigcontext_addr hander in the target
     dependency.
+
+    @param[in] this_frame  Frame info for THIS frame.
 
     @return Non-zero (TRUE) if this frame is accepted, zero (FALSE)
     otherwise. */
@@ -1726,21 +2357,6 @@ arc_sigtramp_frame_sniffer (const struct frame_unwind *self,
 }	/* arc_sigtramp_frame_sniffer () */
 
 
-/*! Structure defining the ARC signal frame unwind functions
-
-    We use a custom sniffer, since we must only accept this frame in the right
-    context. */
-static const struct frame_unwind arc_sigtramp_frame_unwind = {
-  .type          = SIGTRAMP_FRAME,
-  .this_id       = arc_sigtramp_frame_this_id,
-  .prev_register = arc_sigtramp_frame_prev_register,
-  .unwind_data   = NULL,
-  .sniffer       = arc_sigtramp_frame_sniffer,
-  .dealloc_cache = NULL,
-  .prev_arch     = NULL
-};
-
-
 /*! Structure defining the ARC ordinary frame unwind functions
 
     Since we are the fallback unwinder, we use the default frame sniffer,
@@ -1756,24 +2372,24 @@ static const struct frame_unwind arc_frame_unwind = {
 };
 
 
-/*! Function identifying the frame base sniffers for signal frames. */
-static const struct frame_base *
-arc_sigtramp_frame_base_sniffer (struct frame_info *this_frame)
-{
-  static const struct frame_base fb =
-    {
-      .unwind      = &arc_sigtramp_frame_unwind,
-      .this_base   = arc_frame_base_address,
-      .this_locals = arc_frame_base_address,
-      .this_args   = arc_frame_base_address
-    };
+/*! Structure defining the ARC signal frame unwind functions
 
-  return &fb;
-
-}	/* arc_sigtramp_frame_base_sniffer () */
+    We use a custom sniffer, since we must only accept this frame in the right
+    context. */
+static const struct frame_unwind arc_sigtramp_frame_unwind = {
+  .type          = SIGTRAMP_FRAME,
+  .this_id       = arc_sigtramp_frame_this_id,
+  .prev_register = arc_sigtramp_frame_prev_register,
+  .unwind_data   = NULL,
+  .sniffer       = arc_sigtramp_frame_sniffer,
+  .dealloc_cache = NULL,
+  .prev_arch     = NULL
+};
 
 
-/*! Function identifying the frame base sniffers for normal frames. */
+/*! Function identifying the frame base sniffers for normal frames.
+
+    @param[in] this_frame  Frame info for THIS frame. */
 static const struct frame_base *
 arc_frame_base_sniffer (struct frame_info *this_frame)
 {
@@ -1790,217 +2406,142 @@ arc_frame_base_sniffer (struct frame_info *this_frame)
 }	/* arc_frame_base_sniffer () */
 
 
-/*! Push stack frame for a dummy call.
+/*! Function identifying the frame base sniffers for signal frames.
 
-    @param[in] gdbarch        Current gdbarch.
-    @param[in] function       Function to call.
-    @param[in] regcache       Current register cache
-    @param[in] bp_addr        Return address where breakpoint must be placed.
-    @param[in] sp             Current value of SP.
-    @param[in] struct_return  Non-zero (TRUE) if structures are returned by
-                              the function. 
-    @param[in] struct_addr    Hidden address for returning a struct. */
-static CORE_ADDR
-arc_push_dummy_call (struct gdbarch *gdbarch,
-		     struct value *function,
-		     struct regcache *regcache,
-		     CORE_ADDR bp_addr,
-		     int nargs,
-		     struct value **args,
-		     CORE_ADDR sp, int struct_return, CORE_ADDR struct_addr)
+    @param[in] this_frame  Frame info for THIS frame. */
+static const struct frame_base *
+arc_sigtramp_frame_base_sniffer (struct frame_info *this_frame)
 {
-  int arg_reg = ARC_FIRST_ARG_REGNUM;
-
-  ARC_ENTRY_DEBUG ("nargs = %d", nargs)
-
-  /* Push the return address. */
-  regcache_cooked_write_unsigned (regcache, ARC_BLINK_REGNUM, bp_addr);
-
-  /* Are we returning a value using a structure return instead of a normal
-   * value return? If so, struct_addr is the address of the reserved space
-   * for the return structure to be written on the stack, and that address
-   * is passed to that function as a hidden first argument.
-   */
-  /* FIXME:: Ramana :: What about 4 byte structures returned in R0 as
-   *                   claimed by Metaware?
-   */
-  if (struct_return)
+  static const struct frame_base fb =
     {
-      /* pass the return address in the first argument register */
-      regcache_cooked_write_unsigned (regcache, arg_reg, struct_addr);
+      .unwind      = &arc_sigtramp_frame_unwind,
+      .this_base   = arc_frame_base_address,
+      .this_locals = arc_frame_base_address,
+      .this_args   = arc_frame_base_address
+    };
 
-      if (arc_debug)
-	{
-	  fprintf_unfiltered (gdb_stdlog,
-			      "struct return address %s passed in R%d",
-			      print_core_address (gdbarch, struct_addr),
-			      arg_reg);
-	}
+  return &fb;
 
-      arg_reg++;
-    }
-
-  if (nargs > 0)
-    {
-      unsigned int total_space = 0;
-      gdb_byte *memory_image;
-      gdb_byte *data;
-      int i;
-
-      /* How much space do the arguments occupy in total?
-       * N.B. must round each argument's size up to an integral number of words.
-       */
-      for (i = 0; i < nargs; i++)
-	{
-	  unsigned int len = TYPE_LENGTH (value_type (args[i]));
-	  unsigned int space = arc_round_up_to_words (len);
-
-	  total_space += space;
-
-	  if (arc_debug)
-	    {
-	      fprintf_unfiltered (gdb_stdlog, "arg %d: %d bytes -> %u\n", i,
-				  len, arc_round_up_to_words (len));
-	    }
-	}
-
-      /* Allocate a buffer to hold a memory image of the arguments. */
-      memory_image = XCALLOC (total_space, gdb_byte);
-      if (memory_image == NULL)
-	{
-	  /* could not do the call! */
-	  return 0;
-	}
-
-      /* now copy all of the arguments into the buffer, correctly aligned */
-      data = memory_image;
-      for (i = 0; i < nargs; i++)
-	{
-	  unsigned int len = TYPE_LENGTH (value_type (args[i]));
-	  unsigned int space = arc_round_up_to_words (len);
-
-	  (void) memcpy (data, value_contents (args[i]), (size_t) len);
-	  data += space;
-	}
-
-      /* Now load as much as possible of the memory image into registers. */
-      data = memory_image;
-      while (arg_reg <= ARC_LAST_ARG_REGNUM)
-	{
-	  if (arc_debug)
-	    {
-	      fprintf_unfiltered (gdb_stdlog,
-				  "passing 0x%08lX in register R%d\n",
-				  *(unsigned long *) data, arg_reg);
-	    }
-
-	  regcache_cooked_write_unsigned (regcache,
-					  arg_reg, *(unsigned long *) data);
-
-	  data += BYTES_IN_REGISTER;
-	  total_space -= BYTES_IN_REGISTER;
-
-	  /* if all the data is now in registers */
-	  if (total_space == 0)
-	    break;
-
-	  arg_reg++;
-	}
-
-      /* If there is any data left, push it onto the stack (in a single write operation). */
-      if (total_space > 0)
-	{
-	  if (arc_debug)
-	    {
-	      fprintf_unfiltered (gdb_stdlog, "passing %d bytes on stack\n",
-				  total_space);
-	    }
-
-	  sp -= total_space;
-	  write_memory (sp, data, (int) total_space);
-	}
-
-      xfree (memory_image);
-    }
-
-  /* Finally, update the SP register. */
-  regcache_cooked_write_unsigned (regcache, ARC_SP_REGNUM, sp);
-
-  return sp;
-
-}	/* arc_push_dummy_call () */
-
-
-/* Adjust the SP to align frame. */
-static CORE_ADDR
-arc_frame_align (struct gdbarch *gdbarch, CORE_ADDR sp)
-{
-  /* Align to the normal alignment on the stack).  */
-  return sp & (~(BYTES_IN_WORD - 1));
-
-}	/* arc_frame_align () */
-
-
-/*! Print info about floating point.
-
-    We don't have one, so just print a suitable message. */
-static void
-arc_print_float_info (struct gdbarch *gdbarch, struct ui_file *file,
-		      struct frame_info *frame, const char *args)
-{
-  printf_unfiltered (_("Software FPU\n"));
-}
+}	/* arc_sigtramp_frame_base_sniffer () */
 
 
 /*! Initialize GDB
 
-    See gdbarch.h for a description of the functions called. */
+    The functions set here are generic to *all* versions of GDB for ARC. The
+    set functions are generally presented in the order they appear in
+    gdbarch.h. For details, see the comments in that header file.
+
+    @param[in] info    Information about the architecture from BFD.
+    @param[in] arches  Linked list of prev GDB architectures (unused).
+    @return            A newly created GDB architecture. */
 static struct gdbarch *
 arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 {
+  struct gdbarch_tdep *tdep;
+  struct gdbarch *gdbarch;
+
+  /* Determine which OSABI we have. A different version of this function is
+     linked in for each GDB target. Must do this before we allocate the
+     gdbarch, since it is copied into the gdbarch! */
+  info.osabi = arc_get_osabi ();
+
   /* Allocate the ARC-private target-dependent information structure, and the
-   * gdb target-independent information structure.
-   */
-  struct gdbarch_tdep *tdep = xmalloc (sizeof (struct gdbarch_tdep));
-  struct gdbarch *gdbarch = gdbarch_alloc (&info, tdep);
+     GDB target-independent information structure. */
+  tdep = xmalloc (sizeof (struct gdbarch_tdep));
+  gdbarch = gdbarch_alloc (&info, tdep);
 
   memset (tdep, 0, sizeof (*tdep));
 
-  /* Put stuff in gdbarch that is generic to ARC. */
-
-  /* Breakpoint manipulation.  */
-  set_gdbarch_breakpoint_from_pc (gdbarch, arc_breakpoint_from_pc);
-
-  /* Characters are unsigned by default */
-  set_gdbarch_char_signed (gdbarch, 0);
-
+  /* gdbarch setup. */
+  /* Default gdbarch_bits_big_endian suffices. */
+  set_gdbarch_short_bit (gdbarch, 16);
+  set_gdbarch_int_bit (gdbarch, 32);
+  set_gdbarch_long_bit (gdbarch, 32);
+  set_gdbarch_long_long_bit (gdbarch, 64);
+  set_gdbarch_long_long_align_bit (gdbarch, 32);
+  /* No need for half_bit, since half precision FP is not supported. */
+  set_gdbarch_float_bit (gdbarch, 32);
+  set_gdbarch_float_format (gdbarch, floatformats_ieee_single);
+  set_gdbarch_double_bit (gdbarch, 64);
+  set_gdbarch_double_format (gdbarch, floatformats_ieee_double);
+  /* No need for long_double, since quad precison FP is not supported. */
+  set_gdbarch_ptr_bit (gdbarch, 32);
+  /* Default gdbarch_addr_bit suffices (same as gdbarch_ptr_bit) */
+  /* No need for gdbarch_dwarf2_addr_size */
+  set_gdbarch_char_signed (gdbarch, 0);	/* Default unsigned chars */
+  /* No need for read_pc or write_pc, since PC is normal register */
+  set_gdbarch_virtual_frame_pointer (gdbarch, arc_virtual_frame_pointer);
+  /* No need for special pseudo register read/write. */
+  set_gdbarch_num_regs (gdbarch, ARC_NUM_RAW_REGS);
+  set_gdbarch_num_pseudo_regs (gdbarch, ARC_NUM_PSEUDO_REGS);
+  /* We don't use Agent Expressions here (only MIPS does it seems) */
   set_gdbarch_sp_regnum (gdbarch, ARC_SP_REGNUM);
+  set_gdbarch_pc_regnum (gdbarch, ARC_PC_REGNUM);
+  set_gdbarch_ps_regnum (gdbarch, ARC_AUX_STATUS32_REGNUM);
+  set_gdbarch_fp0_regnum (gdbarch, -1);		/* No FPU registers */
+  /* Don't try to convert STAB, ECOFF or SDB regnums. We don't really support
+     these debugging formats, and if used assume regnums are the same. */
+  /* No need to convert DWARF register numbers, since they are now the same
+     (this is a change from GDB 6.8 for ARC). */
+  set_gdbarch_register_name (gdbarch, arc_register_name);
   set_gdbarch_register_type (gdbarch, arc_register_type);
+  set_gdbarch_dummy_id (gdbarch, arc_dummy_id);
+  /* No need for deprecated_fp_regnum */
+  set_gdbarch_push_dummy_call (gdbarch, arc_push_dummy_call);
+  /* call_dummy_location obsoleted by push_dummy_code */
+  set_gdbarch_push_dummy_code (gdbarch, arc_push_dummy_code);
+  set_gdbarch_print_registers_info (gdbarch, arc_print_registers_info);
   set_gdbarch_print_float_info (gdbarch, arc_print_float_info);
-
-  /* Advance PC across function entry code. */
+  /* No vector registers need printing. */
+  /* Default gdbarch_register_sim_regno suffices */
+  set_gdbarch_cannot_fetch_register (gdbarch, arc_cannot_fetch_register);
+  set_gdbarch_cannot_store_register (gdbarch, arc_cannot_store_register);
+  set_gdbarch_get_longjmp_target (gdbarch, arc_get_longjmp_target);
+  set_gdbarch_believe_pcc_promotion (gdbarch, 1);
+  /* No need for gdbarch_convert_register_p, gdbarch_register_to_value or
+     gdbarch_value_to_register, since values are represented the same in
+     memory and registers. */
+  /* No need for gdbarch_value_from_register, since there is no special
+     treatment of values from registers. */
+  /* No need for gdbarch_pointer_to_address or gdbarch_address_to_pointer,
+     since pointers and addresses are the same thing for ARC. */
+  /* No special conversion need between integers and addresses. */
+  set_gdbarch_return_value (gdbarch, arc_return_value);
+  /* No special treatment of return values stored in hidden first params. */
   set_gdbarch_skip_prologue (gdbarch, arc_skip_prologue);
-
-  /* The stack grows downward. */
+  /* Nothing special for skipping main prologue */
   set_gdbarch_inner_than (gdbarch, core_addr_lessthan);
+  set_gdbarch_breakpoint_from_pc (gdbarch, arc_breakpoint_from_pc);
+  /* No need for gdbarch_remote_breakpoint_from_pc, since all breakpoints are
+     client side memory breakpoints. */
+  /* No need for gdbarch_adjust_breakpoint_address. */
+  /* Default gdbarch_memory_insert_breakpoint and
+     gdbarch_memory_remove_breakpoint suffice. */
+  set_gdbarch_decr_pc_after_break (gdbarch, 0);
+  /* Default gdbarch_remote_register_number suffices. */
+  /* Whether to support TLS is target specific (yes for Linux, no for ELF) */
+  /* We don't need to skip any args when printing frame local args. */
   set_gdbarch_unwind_pc (gdbarch, arc_unwind_pc);
   set_gdbarch_unwind_sp (gdbarch, arc_unwind_sp);
-  set_gdbarch_dummy_id (gdbarch, arc_dummy_id);
-  set_gdbarch_return_value (gdbarch, arc_return_value);
+  /* We can't work out how many frame args (only the VAX can) */
+  set_gdbarch_frame_align (gdbarch, arc_frame_align);
+  /* Don't need gdbarch_stabs_argument_has_addr. */
+  /* Default red zone suffices. */
+  /* Default conversion from function pointer to address suffices. */
+  /* No need to remove or smash address bits. */
+  /* Whether we need software single-step is target specific (yes for Linux,
+     no for ELF). */
+
 
   /* Add the arc register groups.  */
   reggroup_add (gdbarch, general_reggroup);
   reggroup_add (gdbarch, all_reggroup);
   reggroup_add (gdbarch, system_reggroup);
-  set_gdbarch_register_reggroup_p (gdbarch, arc_register_reggroup_p);
+  /* Default gdbarch_register_reggroup_p suffices. */
 
   set_gdbarch_cannot_step_breakpoint (gdbarch, 1);
-  /*set_gdbarch_frame_args_skip (gdbarch, 8); */
-  set_gdbarch_frame_align (gdbarch, arc_frame_align);
 
   /* Dummy Frame handling */
-  set_gdbarch_push_dummy_call (gdbarch, arc_push_dummy_call);
-  set_gdbarch_call_dummy_location (gdbarch, AT_ENTRY_POINT);
 
   /* Disassembly. We use an observer, since although only ARCompact is
      supported, if we wait for an object file it will have information about
@@ -2024,7 +2565,6 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   
   /* Put OS specific stuff into gdbarch. This can override any of the generic
      ones specified above. */
-  info.osabi = arc_get_osabi ();
   gdbarch_init_osabi (info, gdbarch);
 
   return gdbarch;			/* Newly created architecture. */
@@ -2033,7 +2573,9 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 
 /*! Dump out the target specific information.
 
-  @todo. Why is this empty! */
+  @todo. Why is this empty!
+    @param[in] gdbarch  Current GDB architecture
+ */
 static void
 arc_dump_tdep (struct gdbarch *gdbarch, struct ui_file *file)
 {
@@ -2044,6 +2586,9 @@ arc_dump_tdep (struct gdbarch *gdbarch, struct ui_file *file)
 /*			 Externally visible functions                         */
 /* -------------------------------------------------------------------------- */
 
+/*
+    @param[in] gdbarch  Current GDB architecture
+*/
 void
 arc_initialize_disassembler (struct gdbarch *gdbarch, 
 			     struct disassemble_info *info)
