@@ -1,7 +1,7 @@
 #source: orphan-region.s
 #ld: -T orphan-region.ld -N
 #readelf: -S -l --wide
-#xfail: arc-*-* d30v-*-* dlx-*-* fr30-*-* frv-*-elf i860-*-* i960-*-*
+#xfail: arc*-*-* d30v-*-* dlx-*-* fr30-*-* frv-*-elf i860-*-* i960-*-*
 #xfail: iq*-*-* mn10200-*-* moxie-*-* msp*-*-* mt-*-* or32-*-* pj*-*-*
 #xfail: spu-*-* hppa*64*-*-* frv-*-*
 # if not using elf32.em, you don't get fancy orphan handling
