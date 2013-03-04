@@ -1,5 +1,9 @@
 2013-03-04  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
+	* regformats/reg-arc.dat: Updated to match GDB register sequence.
+
+2013-03-04  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
 	* arc-elf-tdep.c (arc_elf_cannot_fetch_register)
 	(arc_elf_cannot_store_register): Created.
 	(arc_elf_init_abi): Add calls to set gdbarch_cannot_fetch_register
