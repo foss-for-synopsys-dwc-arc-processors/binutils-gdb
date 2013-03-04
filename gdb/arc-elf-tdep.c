@@ -145,8 +145,6 @@ create_variant_info (struct gdbarch_tdep *tdep)
 static int
 arc_elf_cannot_fetch_register (struct gdbarch *gdbarch, int regnum)
 {
-  enum gdb_osabi osabi = gdbarch_osabi (gdbarch);
-
   /* Default is to be able to read regs, pick out the others explicitly. */
   switch (regnum)
     {
@@ -174,8 +172,6 @@ arc_elf_cannot_fetch_register (struct gdbarch *gdbarch, int regnum)
 static int
 arc_elf_cannot_store_register (struct gdbarch *gdbarch, int regnum)
 {
-  enum gdb_osabi osabi = gdbarch_osabi (gdbarch);
-
   /* Default is to be able to write regs, pick out the others explicitly. */
   switch (regnum)
     {
