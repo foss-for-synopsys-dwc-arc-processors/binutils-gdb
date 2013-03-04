@@ -293,7 +293,7 @@ arc_fill_gregset (struct regcache *regcache, void *buf)
   collect_register_by_name (regcache, "lp_count", &(regbuf->scratch.lp_count));
   /* reserved, limm and pcl not currently supported. */
   /* If you write the PC, that means the return address. */
-  collect_register_by_name (regcache, "pc", &(regbuf->ret));
+  collect_register_by_name (regcache, "pc", &(regbuf->scratch.ret));
   /* Auxilliary registers */
   collect_register_by_name (regcache, "lp_start", &(regbuf->scratch.lp_start));
   collect_register_by_name (regcache, "lp_end", &(regbuf->scratch.lp_end));
@@ -377,7 +377,7 @@ arc_store_gregset (struct regcache *regcache, const void *buf)
   supply_register_by_name (regcache, "lp_count", &(regbuf->scratch.lp_count));
   /* limm, reserved and pcl not currently supported. */
   /* If you read the PC, that means the stop_pc address. */
-  collect_register_by_name (regcache, "pc", &(regbuf->stop_pc));
+  supply_register_by_name (regcache, "pc", &(regbuf->stop_pc));
   /* Auxilliary registers */
   supply_register_by_name (regcache, "lp_start", &(regbuf->scratch.lp_start));
   supply_register_by_name (regcache, "lp_end", &(regbuf->scratch.lp_end));
