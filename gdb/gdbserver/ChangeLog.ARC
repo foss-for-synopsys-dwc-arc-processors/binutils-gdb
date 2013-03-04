@@ -1,5 +1,12 @@
 2013-03-04  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
+	* linux-arc-low.c (arc_fill_regset): Use regbuf->scratch.ret
+	rather than regbuf->reg.
+	(arc_store_regset): Typo - use supply_register_by_name rather than
+	collect_register_by_name for stop_pc.
+
+2013-03-04  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
 	* linux-arc-low.c (orig_r8) Deleted.
 	(arc_cannot_store_register, arc_cannot_fetch_register): Updated to
 	correctly reflect user space r/w status of registers.
