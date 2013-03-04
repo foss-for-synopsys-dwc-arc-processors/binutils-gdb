@@ -351,8 +351,6 @@ arc_linux_sigcontext_addr (struct frame_info *next_frame)
 static int
 arc_linux_cannot_fetch_register (struct gdbarch *gdbarch, int regnum)
 {
-  enum gdb_osabi osabi = gdbarch_osabi (gdbarch);
-
   /* Default is to be able to read regs, pick out the others explicitly. */
   switch (regnum)
     {
@@ -411,11 +409,11 @@ arc_linux_cannot_fetch_register (struct gdbarch *gdbarch, int regnum)
 static int
 arc_linux_cannot_store_register (struct gdbarch *gdbarch, int regnum)
 {
-  enum gdb_osabi osabi = gdbarch_osabi (gdbarch);
-
   /* Default is to be able to write regs, pick out the others explicitly. */
   switch (regnum)
     {
+    case ARC_ILINK1_REGNUM:
+    case ARC_ILINK2_REGNUM:
     case 32: case 33: case 34: case 35:	/* Extension core registers */
     case 36: case 37: case 38: case 39:
     case 40: case 41: case 42: case 43:
@@ -426,8 +424,6 @@ arc_linux_cannot_store_register (struct gdbarch *gdbarch, int regnum)
     case ARC_RESERVED_REGNUM:
     case ARC_LIMM_REGNUM:
     case ARC_PCL_REGNUM:
-    case ARC_ILINK1_REGNUM:
-    case ARC_ILINK2_REGNUM:
     case ARC_AUX_STATUS32_REGNUM:
     case ARC_AUX_STATUS32_L1_REGNUM:
     case ARC_AUX_STATUS32_L2_REGNUM:
@@ -448,7 +444,7 @@ arc_linux_cannot_store_register (struct gdbarch *gdbarch, int regnum)
     case ARC_AUX_BTA_L2_REGNUM:
     case ARC_AUX_AUX_IRQ_PULSE_CANCEL_REGNUM:
     case ARC_AUX_AUX_IRQ_PENDING_REGNUM:
-      return osabi == GDB_OSABI_LINUX;	/* Privileged/debugger write only. */
+      return 1;				/* Privileged/debugger write only. */
 
     default:
       /* Only Aux regs available are LP_START, LP_END, STATUS32. Unlike fetch,
