@@ -29,8 +29,9 @@
 /*! This struct will eventually be provided in asm/ptrace.h in the 3.8 Linux
     kernel with library ABI v3. For now we provide it conditionally.
 
-    The meaning of orig_r0 is lost in the mists of time. For the meaning of
-    orig_r8, see the comments on the variable orig_r8 below. */
+    The meaning of orig_r0 is lost in the mists of time. orig_r8 tells you
+    what stop_pc, status32 and ret really refer to, but is dropped in ABI v3
+    and so not used here. */
 #ifdef ARC_LEGACY_PTRACE_ABI
 struct user_regs_struct {
 
@@ -83,35 +84,6 @@ struct user_regs_struct {
 };
 #endif
 
-/*! Register to deal with PTRACE overlay.
-
-    Three of the ptrace register slots (ret, bta and status32) have different
-    meanings depending on whether we are in an exception, a level 1 interrupt
-    or a level 2 interrupt. The meanings are determined by the orig_r8
-    register:
-   
-    >= 0 means any form of exception (e.g. a breakpoint)
-       - bta is erbta
-       - status32 is erstatus32
-       - ret is eret
-    -1 means level 1 interrupt
-       - bta is bta_l1
-       - status32 is status32_l1
-       - ret is ilink1
-    -2 means level 2 interrupt
-       - bta is bta_l2
-       - status32 is status32_l2
-       - ret is ilink1
-
-    Any other value is an error.
-
-    The value of orig_r8 is updated whenever we collect the PR_STATUS
-    regset. The default value assumes we are in an exception, since for
-    gdbserver that is most likely.
-
-    @todo Should the default be an erroneous value like -3? */
-static long int orig_r8 = 0;
-
 /*! Number of registers. */
 static long int arc_num_regs;
 
@@ -141,17 +113,47 @@ arc_arch_setup (void)
 
 /*! Can a register be written?
 
-    The only register in the general set that cannot be written is EFA.
+    We can only write the core registers excluding ilink1, ilink2, the
+    extension registers, reserved register, limm and PCL registers along with
+    the lp_start and lp_end aux registers.
+
+    @todo This is not terribly efficient, but that probably doesn't matter. If
+          it ever did matter, we should use the init function to build a table
+          of whether regs can be read or written, then this function is just a
+          table lookup.
 
     @param[in] regno  Number of reg to check.
-
-    @return  Non-zero if register cannot be written, zero otherwise. */
+    @return           Non-zero if register cannot be written, zero otherwise. */
 static int
 arc_cannot_store_register (int regno)
 {
-  /* We can write every register except efa. */
   return (regno < 0)
+    || (regno == find_regno ("ilink1"))
+    || (regno == find_regno ("ilink2"))
+    || ((32 <= regno) && (regno <= 59))		/* Extension core registers. */
+    || (regno == find_regno ("reserved"))
+    || (regno == find_regno ("limm"))
+    || (regno == find_regno ("pcl"))
+    || (regno == find_regno ("status32"))
+    || (regno == find_regno ("status32_l1"))
+    || (regno == find_regno ("status32_l2"))
+    || (regno == find_regno ("aux_irq_lv12"))
+    || (regno == find_regno ("aux_irq_lev"))
+    || (regno == find_regno ("aux_irq_hint"))
+    || (regno == find_regno ("eret"))
+    || (regno == find_regno ("erbta"))
+    || (regno == find_regno ("erstatus"))
+    || (regno == find_regno ("ecr"))
     || (regno == find_regno ("efa"))
+    || (regno == find_regno ("icause1"))
+    || (regno == find_regno ("icause2"))
+    || (regno == find_regno ("aux_ienable"))
+    || (regno == find_regno ("aux_itrigger"))
+    || (regno == find_regno ("bta"))
+    || (regno == find_regno ("bta_l1"))
+    || (regno == find_regno ("bta_l2"))
+    || (regno == find_regno ("aux_irq_pulse_cancel"))
+    || (regno == find_regno ("aux_irq_pending"))
     || (regno >= arc_num_regs);
 
 }	/* arc_cannot_store_register () */
@@ -159,15 +161,48 @@ arc_cannot_store_register (int regno)
 
 /*! Can a register be read?
 
-    All registers in the general set can be written.
+    We can only write the core registers excluding ilink1, ilink2, the
+    extension registers, reserved register and limm registers along with
+    the lp_start, lp_end, status32 and efa aux registers.
+
+    @note The EFA register is a bit odd, since it is a privileged register,
+          but it will help deal with breakpoints in delay slots.
+
+    @todo This is not terribly efficient, but that probably doesn't matter. If
+          it ever did matter, we should use the init function to build a table
+          of whether regs can be read or written, then this function is just a
+          table lookup.
 
     @param[in] regno  Number of reg to check.
-
-    @return  Non-zero if register cannot be read, zero otherwise. */
+    @return           Non-zero if register cannot be read, zero otherwise. */
 static int
 arc_cannot_fetch_register (int regno)
 {
-  return (regno < 0) || (regno >= arc_num_regs);
+  return (regno < 0)
+    || (regno == find_regno ("ilink1"))
+    || (regno == find_regno ("ilink2"))
+    || ((32 <= regno) && (regno <= 59))		/* Extension core registers. */
+    || (regno == find_regno ("reserved"))
+    || (regno == find_regno ("limm"))
+    || (regno == find_regno ("status32_l1"))
+    || (regno == find_regno ("status32_l2"))
+    || (regno == find_regno ("aux_irq_lv12"))
+    || (regno == find_regno ("aux_irq_lev"))
+    || (regno == find_regno ("aux_irq_hint"))
+    || (regno == find_regno ("eret"))
+    || (regno == find_regno ("erbta"))
+    || (regno == find_regno ("erstatus"))
+    || (regno == find_regno ("ecr"))
+    || (regno == find_regno ("icause1"))
+    || (regno == find_regno ("icause2"))
+    || (regno == find_regno ("aux_ienable"))
+    || (regno == find_regno ("aux_itrigger"))
+    || (regno == find_regno ("bta"))
+    || (regno == find_regno ("bta_l1"))
+    || (regno == find_regno ("bta_l2"))
+    || (regno == find_regno ("aux_irq_pulse_cancel"))
+    || (regno == find_regno ("aux_irq_pending"))
+    || (regno >= arc_num_regs);
 
 }	/* arc_cannot_fetch_register () */
 
@@ -175,8 +210,7 @@ arc_cannot_fetch_register (int regno)
 /*! Get the PC from the register cache.
 
     @param[in] regcache  Register cache
-
-    @return  The value of the PC. */
+    @return              The value of the PC. */
 static CORE_ADDR
 arc_get_pc (struct regcache *regcache)
 {
@@ -192,38 +226,14 @@ arc_get_pc (struct regcache *regcache)
 /*! Set the PC in the register cache.
 
     @param[out] regcache  Register cache
-    @param[in]  pc        value to write to the PC.
-
-    To set the PC, we actually don't write the stop_pc (which has no
-    effect). Instead we overwrite the return address, which in turn depends on
-    the value of orig_r8 to determine which return address matters. */
+    @param[in]  pc        Value to write to the PC. */
 static void
 arc_set_pc (struct regcache *regcache, CORE_ADDR pc)
 {
   unsigned long newpc = (unsigned long) pc;
 
-  /* Determin which return address to write */
-  if (orig_r8 >= 0)
-    {
-      /* Exception */
-      supply_register_by_name (regcache, "eret", &newpc);
-    }
-  else if (-1 == orig_r8)
-    {
-      /* Level 1 interrupt */
-      supply_register_by_name (regcache, "ilink1", &newpc);
-    }
-  else if (-2 == orig_r8)
-    {
-      /* Level 2 interrupt */
-      supply_register_by_name (regcache, "ilink2", &newpc);
-    }
-  else
-    {
-      /* Error. */
-      fprintf (stderr, "ERROR: arc_set_pc: orig_r8 is %ld: ignored.\n",
-	       orig_r8);
-    }
+  supply_register_by_name (regcache, "pc", &newpc);
+
 }	/* arc_set_pc () */
 
 
@@ -276,69 +286,38 @@ arc_fill_gregset (struct regcache *regcache, void *buf)
   collect_register_by_name (regcache, "gp", &(regbuf->scratch.gp));
   collect_register_by_name (regcache, "fp", &(regbuf->scratch.fp));
   collect_register_by_name (regcache, "sp", &(regbuf->scratch.sp));
-  /* ilink1 depedent on orig_r8 - see below. */
-  /* ilink2 depedent on orig_r8 - see below. */
+  /* ilink1 not currently supported. */
+  /* ilink2 not currently supported. */
   collect_register_by_name (regcache, "blink", &(regbuf->scratch.blink));
   /* Extension core regs 32-59 not currently supported. */
   collect_register_by_name (regcache, "lp_count", &(regbuf->scratch.lp_count));
-  /* limm and pcl not currently supported. */
+  /* reserved, limm and pcl not currently supported. */
+  /* If you write the PC, that means the return address. */
+  collect_register_by_name (regcache, "pc", &(regbuf->ret));
   /* Auxilliary registers */
-  collect_register_by_name (regcache, "pc", &(regbuf->stop_pc));
-  /* status32 not currently supported. */
-  /* bta depedent on orig_r8 - see below. */
-  /* ecr not currently supported. */
-  /* icause1 not currently supported. */
-  /* icause2 not currently supported. */
-  /* status32_l1 depedent on orig_r8 - see below. */
-  /* status32_l2 depedent on orig_r8 - see below. */
-  /* eret depedent on orig_r8 - see below. */
-  /* erbta depedent on orig_r8 - see below. */
-  /* erstatus depedent on orig_r8 - see below. */
+  collect_register_by_name (regcache, "lp_start", &(regbuf->scratch.lp_start));
+  collect_register_by_name (regcache, "lp_end", &(regbuf->scratch.lp_end));
+  /* status32 not writable. */
+  /* status32_l1 not currently supported. */
+  /* status32_l2 not currently supported. */
   /* aux_irq_lv12 not currently supported. */
   /* aux_irq_lev not currently supported. */
   /* aux_irq_hint not currently supported. */
+  /* eret not currently supported. */
+  /* erbta not currently supported. */
+  /* erstatus not currently supported. */
+  /* ecr not currently supported. */
+  /* efa not writable. */
+  /* icause1 not currently supported. */
+  /* icause2 not currently supported. */
   /* aux_ienable not currently supported. */
   /* aux_itrigger not currently supported. */
+  /* bta not currently supported. */
+  /* bta_l1 not currently supported. */
+  /* bta_l2 not currently supported. */
   /* aux_irq_pulse_cancel not currently supported. */
   /* aux_irq_pending not currently supported. */
-  collect_register_by_name (regcache, "lp_start", &(regbuf->scratch.lp_start));
-  collect_register_by_name (regcache, "lp_end", &(regbuf->scratch.lp_end));
-  collect_register_by_name (regcache, "efa", &(regbuf->efa));
-  /* bta_l1 depedent on orig_r8 - see below. */
-  /* bta_l2 depedent on orig_r8 - see below. */
 
-  /* Three registers in ptrace map to multiple GDB registers, depending on the
-     value of orig_r8. */
-  if (orig_r8 >= 0)
-    {
-      /* Exception */
-      collect_register_by_name (regcache, "erbta", &(regbuf->scratch.bta));
-      collect_register_by_name (regcache, "erstatus32",
-				&(regbuf->scratch.status32));
-      collect_register_by_name (regcache, "eret", &(regbuf->scratch.ret));
-    }
-  else if (-1 == orig_r8)
-    {
-      /* Level 1 interrupt */
-      collect_register_by_name (regcache, "bta_l1", &(regbuf->scratch.bta));
-      collect_register_by_name (regcache, "status32_l1",
-				&(regbuf->scratch.status32));
-      collect_register_by_name (regcache, "ilink1", &(regbuf->scratch.ret));
-    }
-  else if (-2 == orig_r8)
-    {
-      /* Level 2 interrupt */
-      collect_register_by_name (regcache, "bta_l2", &(regbuf->scratch.bta));
-      collect_register_by_name (regcache, "status32_l2",
-				&(regbuf->scratch.status32));
-      collect_register_by_name (regcache, "ilink2", &(regbuf->scratch.ret));
-    }
-  else
-    {
-      /* Error. */
-      fprintf (stderr, "ERROR: arc_fill_gregset: orig_r8 is %ld: ignored.\n",
-	       orig_r8);
-    }
 }	/* arc_fill_gregset () */
 
 
@@ -346,9 +325,6 @@ arc_fill_gregset (struct regcache *regcache, void *buf)
 
     We know the regset buffer supplied must therefore be a struct
     user_regs_struct.
-
-    We update the orig_r8 register with a new value to be used when
-    determining the use of bta, status32 and ret fields.
 
     @note This appears to be a unique approach to populating the regcache, but
           being name, rather than offset based, it is robust to future API
@@ -394,72 +370,38 @@ arc_store_gregset (struct regcache *regcache, const void *buf)
   supply_register_by_name (regcache, "gp", &(regbuf->scratch.gp));
   supply_register_by_name (regcache, "fp", &(regbuf->scratch.fp));
   supply_register_by_name (regcache, "sp", &(regbuf->scratch.sp));
-  /* ilink1 depedent on orig_r8 - see below. */
-  /* ilink2 depedent on orig_r8 - see below. */
+  /* ilink1 not currently supported. */
+  /* ilink2 not currently supported. */
   supply_register_by_name (regcache, "blink", &(regbuf->scratch.blink));
   /* Extension core regs 32-59 not currently supported. */
   supply_register_by_name (regcache, "lp_count", &(regbuf->scratch.lp_count));
-  /* limm and pcl not currently supported. */
+  /* limm, reserved and pcl not currently supported. */
+  /* If you read the PC, that means the stop_pc address. */
+  collect_register_by_name (regcache, "pc", &(regbuf->stop_pc));
   /* Auxilliary registers */
-  supply_register_by_name (regcache, "pc", &(regbuf->stop_pc));
-  /* status32 not currently supported. */
-  /* bta depedent on orig_r8 - see below. */
-  /* ecr not currently supported. */
-  /* icause1 not currently supported. */
-  /* icause2 not currently supported. */
-  /* status32_l1 depedent on orig_r8 - see below. */
-  /* status32_l2 depedent on orig_r8 - see below. */
-  /* eret depedent on orig_r8 - see below. */
-  /* erbta depedent on orig_r8 - see below. */
-  /* erstatus depedent on orig_r8 - see below. */
+  supply_register_by_name (regcache, "lp_start", &(regbuf->scratch.lp_start));
+  supply_register_by_name (regcache, "lp_end", &(regbuf->scratch.lp_end));
+  supply_register_by_name (regcache, "status32", &(regbuf->scratch.status32));
+  /* status32_l1 not currently supported. */
+  /* status32_l2 not currently supported. */
   /* aux_irq_lv12 not currently supported. */
   /* aux_irq_lev not currently supported. */
   /* aux_irq_hint not currently supported. */
+  /* eret not currently supported. */
+  /* erbta not currently supported. */
+  /* erstatus not currently supported. */
+  /* ecr not currently supported. */
+  supply_register_by_name (regcache, "efa", &(regbuf->efa));
+  /* icause1 not currently supported. */
+  /* icause2 not currently supported. */
   /* aux_ienable not currently supported. */
   /* aux_itrigger not currently supported. */
+  /* bta not currently supported. */
+  /* bta_l1 not currently supported. */
+  /* bta_l2 not currently supported. */
   /* aux_irq_pulse_cancel not currently supported. */
   /* aux_irq_pending not currently supported. */
-  supply_register_by_name (regcache, "lp_start", &(regbuf->scratch.lp_start));
-  supply_register_by_name (regcache, "lp_end", &(regbuf->scratch.lp_end));
-  supply_register_by_name (regcache, "efa", &(regbuf->efa));
-  /* bta_l1 depedent on orig_r8 - see below. */
-  /* bta_l2 depedent on orig_r8 - see below. */
 
-  /* Update orig_r8 from the ptrace structure. */
-  orig_r8 = regbuf->scratch.orig_r8;
-
-  /* Three registers in ptrace map to multiple GDB registers, depending on the
-     value of orig_r8. */
-  if (orig_r8 >= 0)
-    {
-      /* Exception */
-      supply_register_by_name (regcache, "erbta", &(regbuf->scratch.bta));
-      supply_register_by_name (regcache, "erstatus32",
-				&(regbuf->scratch.status32));
-      supply_register_by_name (regcache, "eret", &(regbuf->scratch.ret));
-    }
-  else if (-1 == orig_r8)
-    {
-      /* Level 1 interrupt */
-      supply_register_by_name (regcache, "bta_l1", &(regbuf->scratch.bta));
-      supply_register_by_name (regcache, "status32_l1",
-				&(regbuf->scratch.status32));
-      supply_register_by_name (regcache, "ilink1", &(regbuf->scratch.ret));
-    }
-  else if (-2 == orig_r8)
-    {
-      /* Level 2 interrupt */
-      supply_register_by_name (regcache, "bta_l2", &(regbuf->scratch.bta));
-      supply_register_by_name (regcache, "status32_l2",
-				&(regbuf->scratch.status32));
-      supply_register_by_name (regcache, "ilink2", &(regbuf->scratch.ret));
-    }
-  else
-    {
-      /* Error. */
-      fprintf (stderr, "ERROR: arc_store_gregset: orig_r8 is %ld: ignored.\n",
-	       orig_r8);
-    }
 }	/* arc_store_gregset () */
 
 
