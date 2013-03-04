@@ -65,31 +65,33 @@ expedite:fp,sp,eret
 32:r57
 32:r58
 32:r59
+# More core regs
 32:lp_count
 32:reserved
 32:limm
 32:pcl
-# Aux regs
+# PC is special
 32:pc
+# Aux regs
+32:lp_start
+32:lp_end
 32:status32
-32:bta
-32:ecr
-32:icause1
-32:icause2
 32:status32_l1
 32:status32_l2
-32:eret
-32:erbta
-32:erstatus
 32:aux_irq_lv12
 32:aux_irq_lev
 32:aux_irq_hint
+32:eret
+32:erbta
+32:erstatus
+32:ecr
+32:efa
+32:icause1
+32:icause2
 32:aux_ienable
 32:aux_itrigger
-32:aux_irq_pulse_cancel
-32:aux_irq_pending
-32:lp_start
-32:lp_end
-32:efa
+32:bta
 32:bta_l1
 32:bta_l2
+32:aux_irq_pulse_cancel
+32:aux_irq_pending
