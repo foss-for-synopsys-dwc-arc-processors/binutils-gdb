@@ -1,3 +1,13 @@
+2013-03-04  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	* linux-arc-low.c (orig_r8) Deleted.
+	(arc_cannot_store_register, arc_cannot_fetch_register): Updated to
+	correctly reflect user space r/w status of registers.
+	(arc_set_pc): Simplified - issues are dealt with in
+	arc_fill_gregset and arc_store_gregset.
+	(arc_fill_gregset, arc_store_gregset): No need for orig_r8 any
+	more (it goes in ARV v3 ABI anyway).
+
 2013-02-27  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* configure.srv (arc*-*-linux*): Remove srv_linux_usrregs and
