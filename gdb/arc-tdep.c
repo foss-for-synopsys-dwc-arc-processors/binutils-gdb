@@ -541,45 +541,6 @@ arc_read_memory_for_disassembler (bfd_vma memaddr, bfd_byte *myaddr,
 }	/* arc_read_memory_for_disassembler () */
 
 
-/*! Dummy disassembler.
-
-    We'll use a callback to set the real assembler, but we must have one
-    present or GDB won't start.
-
-    @note This function is a placeholder, it should never be called.
-
-    @param[in] address  Unused
-    @param[in] info     Unused
-    @return             Zero to indicate failure. */
-static int
-arc_dummy_disassembler(bfd_vma address, disassemble_info* info)
-{
-    error(_("disassembly not yet available (no executable file loaded)"));
-    return  0;
-
-}	/* arc_dummy_disassembler () */
-
-
-/*! Callback to set the disassembler
-
-    We use the new_objfile observer to trigger this function.
-
-    We wait until an objfile is loaded, since the disassembler can use its
-    OBFD to find out what extensions are defined. If we load a new objfile,
-    this will get redefined.
-
-    @param[in] objfile  Object file info used to select disassembler. */
-static void
-arc_set_disassembler (struct objfile *objfile)
-{
-  if (objfile)
-    {
-      set_gdbarch_print_insn (target_gdbarch,
-			      arc_get_disassembler (objfile->obfd));
-    }
-}	/* arc_set_disassembler () */
-
-
 /*! Utility function to create a new frame cache structure
 
     @note The implementations has changed since GDB 6.8, since we are now
@@ -1702,116 +1663,6 @@ arc_print_float_info (struct gdbarch *gdbarch, struct ui_file *file,
 }	/* arc_print_float_info () */
 
 
-/*! Determine whether a register can be read.
-
-    This varies according to target. A Linux target can only see registers
-    readable in user space, an ELF target can see any register visible via the
-    JTAG debug interface.
-
-    @todo We'll need a more complex interface once the aux registers are
-          defined via XML.
-
-    @param[in] gdbarch  The current GDB architecture.
-    @param[in] regnum   The register of interest.
-    @return             Non-zero (TRUE) if we _cannot_ read the register,
-                        false otherwise. */
-static int
-arc_cannot_fetch_register (struct gdbarch *gdbarch, int regnum)
-{
-  enum gdb_osabi osabi = gdbarch_osabi (gdbarch);
-
-  /* Default is to be able to read regs, pick out the others explicitly. */
-  switch (regnum)
-    {
-    case ARC_RESERVED_REGNUM:
-    case ARC_LIMM_REGNUM:
-      return 1;				/* Never readable. */
-
-    case ARC_ILINK1_REGNUM:
-    case ARC_ILINK2_REGNUM:
-    case ARC_AUX_STATUS32_L1_REGNUM:
-    case ARC_AUX_STATUS32_L2_REGNUM:
-    case ARC_AUX_AUX_IRQ_LV12_REGNUM:
-    case ARC_AUX_AUX_IRQ_LEV_REGNUM:
-    case ARC_AUX_AUX_IRQ_HINT_REGNUM:
-    case ARC_AUX_ERET_REGNUM:
-    case ARC_AUX_ERBTA_REGNUM:
-    case ARC_AUX_ERSTATUS_REGNUM:
-    case ARC_AUX_ECR_REGNUM:
-    case ARC_AUX_EFA_REGNUM:
-    case ARC_AUX_ICAUSE1_REGNUM:
-    case ARC_AUX_ICAUSE2_REGNUM:
-    case ARC_AUX_AUX_IENABLE_REGNUM:
-    case ARC_AUX_AUX_ITRIGGER_REGNUM:
-    case ARC_AUX_BTA_REGNUM:
-    case ARC_AUX_BTA_L1_REGNUM:
-    case ARC_AUX_BTA_L2_REGNUM:
-    case ARC_AUX_AUX_IRQ_PULSE_CANCEL_REGNUM:
-    case ARC_AUX_AUX_IRQ_PENDING_REGNUM:
-      return osabi == GDB_OSABI_LINUX;	/* Privileged/debugger read only. */
-
-    default:
-      return 0;				/* Always readable. */
-    }
-}	/* arc_cannot_fetch_register () */
-
-
-/*! Determine whether a register can be written.
-
-    This varies according to target. A Linux target can only write registers
-    writable in user space, an ELF target can write any register writable via
-    the JTAG debug interface.
-
-    @todo We'll need a more complex interface once the aux registers are
-          defined via XML.
-
-    @param[in] gdbarch  The current GDB architecture.
-    @param[in] regnum   The register of interest.
-    @return             Non-zero (TRUE) if we _cannot_ write the register,
-                        false otherwise. */
-static int
-arc_cannot_store_register (struct gdbarch *gdbarch, int regnum)
-{
-  enum gdb_osabi osabi = gdbarch_osabi (gdbarch);
-
-  /* Default is to be able to write regs, pick out the others explicitly. */
-  switch (regnum)
-    {
-    case ARC_RESERVED_REGNUM:
-    case ARC_LIMM_REGNUM:
-    case ARC_PCL_REGNUM:
-      return 1;				/* Never writable. */
-
-    case ARC_ILINK1_REGNUM:
-    case ARC_ILINK2_REGNUM:
-    case ARC_AUX_STATUS32_REGNUM:
-    case ARC_AUX_STATUS32_L1_REGNUM:
-    case ARC_AUX_STATUS32_L2_REGNUM:
-    case ARC_AUX_AUX_IRQ_LV12_REGNUM:
-    case ARC_AUX_AUX_IRQ_LEV_REGNUM:
-    case ARC_AUX_AUX_IRQ_HINT_REGNUM:
-    case ARC_AUX_ERET_REGNUM:
-    case ARC_AUX_ERBTA_REGNUM:
-    case ARC_AUX_ERSTATUS_REGNUM:
-    case ARC_AUX_ECR_REGNUM:
-    case ARC_AUX_EFA_REGNUM:
-    case ARC_AUX_ICAUSE1_REGNUM:
-    case ARC_AUX_ICAUSE2_REGNUM:
-    case ARC_AUX_AUX_IENABLE_REGNUM:
-    case ARC_AUX_AUX_ITRIGGER_REGNUM:
-    case ARC_AUX_BTA_REGNUM:
-    case ARC_AUX_BTA_L1_REGNUM:
-    case ARC_AUX_BTA_L2_REGNUM:
-    case ARC_AUX_AUX_IRQ_PULSE_CANCEL_REGNUM:
-    case ARC_AUX_AUX_IRQ_PENDING_REGNUM:
-      return osabi == GDB_OSABI_LINUX;	/* Privileged/debugger write only. */
-
-    default:
-      return 0;				/* Always writable. */
-    }
-}	/* arc_cannot_store_register () */
-
-
 /* Get a longjmp target.
 
    We've just landed at a longjmp breakpoint. Detemine the address the longjmp
@@ -2066,6 +1917,20 @@ arc_frame_align (struct gdbarch *gdbarch, CORE_ADDR sp)
   return sp & ~(((CORE_ADDR) bpw) - 1);
 
 }	/* arc_frame_align () */
+
+
+/* Skip the code for a trampoline.
+
+   @param[in] frame  Frame info for current frame.
+   @param[in] pc     PC at start of trampoline code.
+   @return           Address of start of function proper. */
+static CORE_ADDR
+arc_skip_trampoline_code (struct frame_info *frame, CORE_ADDR pc)
+{
+  fprintf_unfiltered (gdb_stdlog, "Attempt to skip trampoline code at %s.\n",
+		      print_core_address (get_frame_arch (frame), pc));
+
+}	/* arc_skip_trampoline_code () */
 
 
 /*! Frame unwinder for normal frames.
@@ -2494,8 +2359,7 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   set_gdbarch_print_float_info (gdbarch, arc_print_float_info);
   /* No vector registers need printing. */
   /* Default gdbarch_register_sim_regno suffices */
-  set_gdbarch_cannot_fetch_register (gdbarch, arc_cannot_fetch_register);
-  set_gdbarch_cannot_store_register (gdbarch, arc_cannot_store_register);
+  /* Which registers can be fetched and stored is target specific. */
   set_gdbarch_get_longjmp_target (gdbarch, arc_get_longjmp_target);
   set_gdbarch_believe_pcc_promotion (gdbarch, 1);
   /* No need for gdbarch_convert_register_p, gdbarch_register_to_value or
@@ -2531,26 +2395,40 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   /* No need to remove or smash address bits. */
   /* Whether we need software single-step is target specific (yes for Linux,
      no for ELF). */
-
-
-  /* Add the arc register groups.  */
-  reggroup_add (gdbarch, general_reggroup);
-  reggroup_add (gdbarch, all_reggroup);
-  reggroup_add (gdbarch, system_reggroup);
-  /* Default gdbarch_register_reggroup_p suffices. */
-
+  /* We can't single step through a delay slot */
+  set_gdbarch_print_insn (gdbarch, ARCompact_decodeInstr);
+  set_gdbarch_skip_trampoline_code (gdbarch, arc_skip_trampoline_code);
+  /* Whether we need to skip the shared object resolver is target specific
+     (yes for Linux, no for ELF). */
+  /* Don't need to know if we are in the epilogue. */
+  /* Don't need to make special msymbols for ELF of COFF. */
   set_gdbarch_cannot_step_breakpoint (gdbarch, 1);
-
-  /* Dummy Frame handling */
-
-  /* Disassembly. We use an observer, since although only ARCompact is
-     supported, if we wait for an object file it will have information about
-     extensions to be loaded.
-
-     @todo. Should we use a dummy_disassembler before this. GDB by default
-     will trigger gdbabort, but we could give a nicer message. */
-  set_gdbarch_print_insn(gdbarch, arc_dummy_disassembler);
-  observer_attach_new_objfile (arc_set_disassembler);
+  set_gdbarch_have_nonsteppable_watchpoint (gdbarch, 1);
+  /* No special address classes. */
+  /* Default gdbarch_register_reggroup_p suffices. */
+  /* No need for fetch_pointer_argument (Objective C support only) */
+  /* Core file handling is target specific (yes for Linux, no for ELF). */
+  /* No special handling needed for C++ vtables. */
+  /* No special code to skip permanent breakpoints. */
+  set_gdbarch_max_insn_length (gdbarch, 4);
+  /* @todo Currently we don't support displaced stepping. */
+  /* No need for instruction relocation or overlay support. */
+  /* No special handling of STABS static vars needed. */
+  /* No process recording (for reverse execution?) needed. */
+  /* No signal translation needed. */
+  /* No architecture specific symbol information. */
+  /* @todo We don't yet catch syscalls. */
+  /* No support for SystemTap. */
+  /* No gobal shared object list or breakpoints. */
+  /* @todo Should ELF report it has a shared address space? Probably not,
+           since it is a single thread. */
+  /* No fast tracepoint support. */
+  /* No special charset handling. */
+  /* No alternative file extensions for shared objects. */
+  /* Not a DOS-based file system. */
+  /* No bytecode handling needed. */
+  /* No special handling of "info proc" needed. */
+  /* No special global symbol search of objfiles needed. */
 
   /* Frame unwinders and sniffers. We use DWARF2 if it's available, for which
      we set up a register initialization function. Then we have ARC specific

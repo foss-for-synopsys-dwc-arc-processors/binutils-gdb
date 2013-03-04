@@ -126,6 +126,71 @@ create_variant_info (struct gdbarch_tdep *tdep)
 
 
 /* -------------------------------------------------------------------------- */
+/*		   ARC specific GDB architectural functions		      */
+/*									      */
+/* Functions are listed in the order they are used in arc_elf_init_abi.       */
+/* -------------------------------------------------------------------------- */
+
+/*! Determine whether a register can be read.
+
+    An ELF target can see any register visible via the JTAG debug interface.
+
+    @todo We'll need a more complex interface once the aux registers are
+          defined via XML.
+
+    @param[in] gdbarch  The current GDB architecture.
+    @param[in] regnum   The register of interest.
+    @return             Non-zero (TRUE) if we _cannot_ read the register,
+                        false otherwise. */
+static int
+arc_elf_cannot_fetch_register (struct gdbarch *gdbarch, int regnum)
+{
+  enum gdb_osabi osabi = gdbarch_osabi (gdbarch);
+
+  /* Default is to be able to read regs, pick out the others explicitly. */
+  switch (regnum)
+    {
+    case ARC_RESERVED_REGNUM:
+    case ARC_LIMM_REGNUM:
+      return 1;				/* Never readable. */
+
+    default:
+      return 0;				/* Readable via JTAG. */
+    }
+}	/* arc_elf_cannot_fetch_register () */
+
+
+/*! Determine whether a register can be written.
+
+    An ELF target can see any register visible via the JTAG debug interface.
+
+    @todo We'll need a more complex interface once the aux registers are
+          defined via XML.
+
+    @param[in] gdbarch  The current GDB architecture.
+    @param[in] regnum   The register of interest.
+    @return             Non-zero (TRUE) if we _cannot_ write the register,
+                        false otherwise. */
+static int
+arc_elf_cannot_store_register (struct gdbarch *gdbarch, int regnum)
+{
+  enum gdb_osabi osabi = gdbarch_osabi (gdbarch);
+
+  /* Default is to be able to write regs, pick out the others explicitly. */
+  switch (regnum)
+    {
+    case ARC_RESERVED_REGNUM:
+    case ARC_LIMM_REGNUM:
+    case ARC_PCL_REGNUM:
+      return 1;				/* Never writable. */
+
+    default:
+      return 0;				/* Writable via JTAG. */
+    }
+}	/* arc_elf_cannot_store_register () */
+
+
+/* -------------------------------------------------------------------------- */
 /*                               externally visible functions                 */
 /* -------------------------------------------------------------------------- */
 
@@ -172,6 +237,10 @@ arc_elf_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
   tdep->breakpoint_size = (unsigned int) sizeof (breakpoint_instruction);
 
   tdep->lowest_pc = 0;
+
+  /* Set up target dependent GDB architecture entries. */
+  set_gdbarch_cannot_fetch_register (gdbarch, arc_elf_cannot_fetch_register);
+  set_gdbarch_cannot_store_register (gdbarch, arc_elf_cannot_store_register);
 
 }
 
