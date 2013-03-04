@@ -1,3 +1,23 @@
+2013-03-04  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	* arc-elf-tdep.c (arc_elf_cannot_fetch_register)
+	(arc_elf_cannot_store_register): Created.
+	(arc_elf_init_abi): Add calls to set gdbarch_cannot_fetch_register
+	and gdbarch_cannot_store_register.
+	* arc-linux-tdep.c (arc_linux_cannot_fetch_register)
+	(arc_linux_cannot_store_register): Created.
+	(arc_linux_init_abi): Add calls to set
+	gdbarch_cannot_fetch_register and gdbarch_cannot_store_register.
+	* arc-tdep.c (arc_cannot_fetch_register)
+	(arc_cannot_store_register, arc_dummy_disassembler)
+	(arc_set_disassembler): Deleted.
+	(arc_skip_trampoline_code): New function.
+	(arc_gdbarch_init): Remove calls to set
+	gdbarch_cannot_fetch_register and
+	gdbarch_cannot_store_register. No need for observer to set
+	disassembler, since we now only support ARCompact.
+	Set gdbarch_skip_trampoline_code. Set non-steppable watchpoints.
+
 2013-03-03  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* arc-aux-registers.c (arc_aux_register_count): Replace
