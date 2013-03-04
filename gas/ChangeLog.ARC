@@ -1,3 +1,11 @@
+2012-03-04  Simon Cook  <simon.cook@embecosm.com>
+
+	* testsuite/gas/all/redef3.d: Replace arc-*-* with arc*-*-*.
+	* testsuite/gas/arc/ex_arc700.s: Likewise.
+	* testsuite/gas/arc/ld_arc700.s: Likewise.
+	* testsuite/gas/arc/warn.s: Likewise.
+	* testsuite/gas/lns/lns.exp: Likewise.
+
 2012-12-06  Simon Cook  <simon.cook@embecosm.com>
 
 	* config/tc-arc.c (md_assemble): Possible fix for fmt chars above 0x80.
