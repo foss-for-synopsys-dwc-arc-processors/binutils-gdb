@@ -1,3 +1,33 @@
+2013-03-04  Simon Cook  <simon.cook@embecosm.com>
+
+	* Makefile.am (ALL_EMULATION_SOURCES): Added big endian sources.
+	* Makefile.in: Regenerated.
+	* configure.tgt: Added big endian ARC configurations.
+	* emulparams/arcebelf.sh, emulparams/arcebelf_prof.sh,
+	emulparams/arceblinux.sh, emulparams/arceblinux_prof.sh: New files.
+	* testsuite/ld-discard/extern.d: Replace arc-*-* with arc*-*-*.
+	* testsuite/ld-discard/start.d: Likewise.
+	* testsuite/ld-discard/static.d: Likewise.
+	* testsuite/ld-elf/group1.d: Likewise.
+	* testsuite/ld-elf/group8a.d: Likewise.
+	* testsuite/ld-elf/group9a.d: Likewise.
+	* testsuite/ld-elf/group9b.d: Likewise.
+	* testsuite/ld-elf/linkonce2.d: Likewise.
+	* testsuite/ld-elf/merge.d: Likewise.
+	* testsuite/ld-elf/merge2.d: Likewise.
+	* testsuite/ld-elf/orphan-region.d: Likewise.
+	* testsuite/ld-elf/orphan.d: Likewise.
+	* testsuite/ld-elf/orphan3.d: Likewise.
+	* testsuite/ld-elf/pr12851.d: Likewise.
+	* testsuite/ld-elf/pr12975.d: Likewise.
+	* testsuite/ld-elf/pr13195.d: Likewise.
+	* testsuite/ld-elf/pr349.d: Likewise.
+	* testsuite/ld-elf/sec64k.exp: Likewise.
+	* testsuite/ld-elf/warn1.d: Likewise.
+	* testsuite/ld-elf/warn2.d: Likewise.
+	* testsuite/ld-elf/warn3.d: Likewise.
+	* testsuite/lib/ld-lib.exp: Likewise.
+
 2013-02-26  Simon Cook  <simon.cook@embecosm.com>
 
 	* configure.tgt (arc*-*-elf*): Add arclinux emulation scripts.
