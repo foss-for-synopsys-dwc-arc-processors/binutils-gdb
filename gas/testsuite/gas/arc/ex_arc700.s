@@ -16,7 +16,7 @@
 ; along with this program; see the file COPYING3.  If not see
 ; <http://www.gnu.org/licenses/>.  */
 ;
-; { dg-do assemble { target arc-*-* } }
+; { dg-do assemble { target arc*-*-* } }
 
 	ex	lp_count,[sp]	; { dg-error "ex operand error" }
 	

@@ -1501,7 +1501,7 @@ proc check_gc_sections_available { } {
 	# Some targets don't support gc-sections despite whatever's
 	# advertised by ld's options.
 	if {[istarget aarch64*-*-*]
-	     || [istarget arc-*-*]
+	     || [istarget arc*-*-*]
 	     || [istarget d30v-*-*]
 	     || [istarget dlx-*-*]
 	     || [istarget i960-*-*]
@@ -1545,7 +1545,7 @@ proc check_gc_sections_available { } {
 # Only used and accurate for ELF targets at the moment
 
 proc check_shared_lib_support { } {
-    if {![istarget arc-*-*]
+    if {![istarget arc*-*-*]
 	 && ![istarget avr-*-*]
 	 && ![istarget cr16-*-*]
 	 && ![istarget cris*-*-*]
