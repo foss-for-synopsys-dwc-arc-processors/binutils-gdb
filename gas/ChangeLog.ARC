@@ -1,3 +1,11 @@
+2012-03-04  Simon Cook  <simon.cook@embecosm.com>
+
+	* testsuite/gas/all/redef3.d: Replace arc-*-* with arc*-*-*.
+	* testsuite/gas/arc/ex_arc700.s: Likewise.
+	* testsuite/gas/arc/ld_arc700.s: Likewise.
+	* testsuite/gas/arc/warn.s: Likewise.
+	* testsuite/gas/lns/lns.exp: Likewise.
+
 2013-01-30  Claudiu Zissulescu <claziss@synopsys.com>
 
 	* config/tc-arc.c: Added ARCv2 support
