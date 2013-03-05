@@ -68,15 +68,6 @@ static const unsigned char breakpoint_instruction[] = { 0x3e, 0x78 };
 static const unsigned char be_breakpoint_instruction[] = { 0x78, 0x3e };
 
 
-/*! this array holds the object code of two instructions:
-
-    mov r8,nr_sigreturn
-    swi */
-static const gdb_byte arc_sigtramp_insns[] = { 0x8a, 0x20, 0xc1, 0x1d,
-  0x6f, 0x22, 0x3f, 0x00
-};
-
-#define SIGTRAMP_INSNS_LENGTH     sizeof(arc_sigtramp_insns)
 
 
 /*! Mapping between the general-purpose registers in `struct sigcontext' format
@@ -279,53 +270,85 @@ arc_linux_next_pc (CORE_ADDR pc, CORE_ADDR *fall_thru, CORE_ADDR *target)
 }	/* arc_linux_next_pc () */
 
 
-/*! Is the PREV frame a sigtramp function.
+/*! Is THIS frame a sigtramp function.
 
-    Return whether the frame preceding next_frame corresponds to a GNU/Linux
-    sigtramp routine. */
+    Does THIS frame correspond to a GNU/Linux sigtramp function? This is the
+    case if the PC is either at the start of, or in the middle of the two
+    instructions:
+
+    @verbatim
+    mov r8,nr_sigreturn
+    swi
+    @endverbatim
+
+    @note This function has changed from GDB 6.8. It now takes a reference to
+          THIS frame, not the NEXT frame.
+
+    @param[in] this_frame  The frame to consider.
+    @return                Non-zero (TRUE) if this is a sigtramp frame, zero
+                           (FALSE) otherwise. */
 static int
-arc_linux_is_sigtramp (struct frame_info *next_frame)
+arc_linux_is_sigtramp (struct frame_info *this_frame)
 {
-  /* find the PC for that previous frame */
-  struct gdbarch *gdbarch = get_frame_arch (next_frame);
-  CORE_ADDR pc = gdbarch_unwind_pc (gdbarch, next_frame);
-  gdb_byte buf[SIGTRAMP_INSNS_LENGTH];
+  static const gdb_byte arc_sigtramp_insns_le[] =
+    { 0x8a, 0x20, 0xc1, 0x1d,		/* mov  r8,nr_sigreturn */
+      0x6f, 0x22, 0x3f, 0x00		/* swi */
+    };
+  static const gdb_byte arc_sigtramp_insns_be[] =
+    { 0x1d, 0xc1, 0x20, 0x8a,		/* mov  r8,nr_sigreturn */
+      0x00, 0x3f, 0x22, 0x6f		/* swi */
+    };
 
-  /* read the memory at that PC (this gives us the code without any s/w
-   * breakpoints that may have been set in it)
-   */
-  if (!safe_frame_unwind_memory
-      (next_frame, pc, buf, (int) SIGTRAMP_INSNS_LENGTH))
-    /* failed to unwind frame */
-    return FALSE;
+  static const int INSNS_SIZE = sizeof (arc_sigtramp_insns_le);
+  struct gdbarch *gdbarch = get_frame_arch (this_frame);
+  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  const gdb_byte *arc_sigtramp_insns = byte_order == BFD_ENDIAN_LITTLE
+    ? arc_sigtramp_insns_le : arc_sigtramp_insns_be;
+  CORE_ADDR pc = get_frame_pc (this_frame);
+  gdb_byte buf[sizeof (arc_sigtramp_insns)];
 
-  /* is that code the sigtramp instruction sequence? */
-  if (memcmp (buf, arc_sigtramp_insns, SIGTRAMP_INSNS_LENGTH) == 0)
-    return TRUE;
+  /* Read the memory at the PC. Since we are stopped any breakpoints will
+     have been removed (despite the name, this really does take THIS frame). */
+  if (!safe_frame_unwind_memory (this_frame, pc, buf, INSNS_SIZE))
+    {
+      /* failed to unwind frame */
+      return FALSE;
+    }
 
-  /* no - look one instruction earlier in the code... */
-  if (!safe_frame_unwind_memory
-      (next_frame, pc - 4, buf, (int) SIGTRAMP_INSNS_LENGTH))
-    /* failed to unwind frame */
-    return FALSE;
+  /* Is that code the sigtramp instruction sequence? */
+  if (memcmp (buf, arc_sigtramp_insns, INSNS_SIZE) == 0)
+    {
+      return TRUE;
+    }
 
-  if (memcmp (buf, arc_sigtramp_insns, SIGTRAMP_INSNS_LENGTH) == 0)
-    return TRUE;
-
-  return FALSE;
+  /* No - look one instruction earlier in the code... */
+  if (!safe_frame_unwind_memory (this_frame, pc - 4, buf, (int) INSNS_SIZE))
+    {
+      /* failed to unwind frame */
+      return FALSE;
+    }
+  
+  return memcmp (buf, arc_sigtramp_insns, INSNS_SIZE) == 0;
 
 }	/* arc_linux_is_sigtramp () */
 
 
-/*! Get sigcontect of sigtramp frame.
+/*! Get sigcontext of sigtramp frame.
 
-    Assuming next_frame is a frame following a GNU/Linux sigtramp routine,
-    return the address of the associated sigcontext structure. */
+    Assuming THIS frame is a frame following a GNU/Linux sigtramp routine,
+    return the address of the associated sigcontext structure.
+
+    That structure can be found in the stack pointer of the frame.
+
+    @note This function has changed from GDB 6.8. It now takes a reference to
+          THIS frame, not the NEXT frame.
+
+    @param[in] this_frame  The frame to consider.
+    @return                The address of the sigcontext structure. */
 static CORE_ADDR
-arc_linux_sigcontext_addr (struct frame_info *next_frame)
+arc_linux_sigcontext_addr (struct frame_info *this_frame)
 {
-  return (CORE_ADDR) gdbarch_unwind_sp (get_frame_arch (next_frame),
-					next_frame);
+  return (CORE_ADDR) get_frame_sp (this_frame);
 
 }	/* arc_linux_sigcontext_addr () */
 
@@ -601,7 +624,6 @@ arc_linux_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
   struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
 
   /* Fill in target-dependent info in ARC-private structure. */
-
   tdep->is_sigtramp = arc_linux_is_sigtramp;
   tdep->sigcontext_addr = arc_linux_sigcontext_addr;
   tdep->sc_reg_offset = arc_linux_sc_reg_offset;
