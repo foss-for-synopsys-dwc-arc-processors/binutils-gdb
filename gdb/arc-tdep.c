@@ -2187,11 +2187,11 @@ arc_sigtramp_frame_prev_register (struct frame_info *this_frame,
 
 /*! Frame sniffer for signal handler frame.
 
-    The implementations has changed since GDB 6.8, since we are now provided
-    with the address of THIS frame, rather than the NEXT frame.
-
     Only recognize a frame if we have a sigcontext_addr hander in the target
     dependency.
+
+    @note This function has changed from GDB 6.8. It now takes a reference to
+          THIS frame, not the NEXT frame.
 
     @param[in] this_frame  Frame info for THIS frame.
 
