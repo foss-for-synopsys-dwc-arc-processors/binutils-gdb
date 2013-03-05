@@ -1,3 +1,11 @@
+2013-03-05  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	* arc-linux-tdep.c (SIGTRAMP_INSNS_LENGTH): Deleted.
+	(arc_sigtramp_insns): Moved into arc_linux_is_sigtramp.
+	(arc_linux_is_sigtramp): Define arc_sigtramp_insns locally,
+	replace SIGTRAMP_INSNS_LENGTH with sizeof. Make endian friendly.
+	(arc_linux_sigcontext_addr): Use THIS frame.
+
 2013-03-04  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* arc-elf-tdep.c (arc_elf_cannot_fetch_register)
