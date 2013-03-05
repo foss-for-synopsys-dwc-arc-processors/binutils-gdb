@@ -1,5 +1,11 @@
 2013-03-05  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
+	* linux-arc-low.c (arch_arc_setup): Convert offsets to byte
+	offsets.
+	(arc_fetch_register): Convert offset to byte offset.
+
+2013-03-05  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
 	* configure.srv (arc*-*-linux*): Add srv_usrregs for legacy.
 	* linux-arc-low.c: Reorder functions for clarity and tidy up
 	commenting generally.
