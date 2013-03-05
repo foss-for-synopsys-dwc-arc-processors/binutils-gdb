@@ -1,3 +1,17 @@
+2013-03-05  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	* configure.srv (arc*-*-linux*): Add srv_usrregs for legacy.
+	* linux-arc-low.c: Reorder functions for clarity and tidy up
+	commenting generally.
+	(struct user_regs_scratch): based on ptrace.h structs.
+	(arc_arch_setup): Initalize register map for ARC v2 ABI.
+	(arc_num_regs): Deleted and relaced by the_low_target.num_regs
+	throughout.
+	(arc_fetch_register, arc_breakpoint_at): New functions.
+	(target_regsets): Correct field names.
+	(the_low_target): Add entry for breakpoint_at and optionally
+	fetch_register.
+
 2013-03-04  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* linux-arc-low.c (arc_fill_regset): Use regbuf->scratch.ret
