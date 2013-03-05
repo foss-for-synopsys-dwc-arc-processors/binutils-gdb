@@ -134,6 +134,7 @@ arc_arch_setup (void)
 #ifdef ARC_LEGACY_PTRACE_ABI
   static int *regmap;
   struct user_regs_struct  pt_buf;
+  long int *pt_base;
 #endif
 
   /* The auto generated register initialization. */
@@ -146,39 +147,41 @@ arc_arch_setup (void)
      order. Unused registers have an offset of -1, to indicate they are not
      worth fetching. */
   regmap = xcalloc (the_low_target.num_regs, sizeof (*regmap));
-  regmap[0]  = &(pt_buf.scratch.r0)       - &(pt_buf.scratch.res);
-  regmap[1]  = &(pt_buf.scratch.r1)       - &(pt_buf.scratch.res);
-  regmap[2]  = &(pt_buf.scratch.r2)       - &(pt_buf.scratch.res);
-  regmap[3]  = &(pt_buf.scratch.r3)       - &(pt_buf.scratch.res);
-  regmap[4]  = &(pt_buf.scratch.r4)       - &(pt_buf.scratch.res);
-  regmap[5]  = &(pt_buf.scratch.r5)       - &(pt_buf.scratch.res);
-  regmap[6]  = &(pt_buf.scratch.r6)       - &(pt_buf.scratch.res);
-  regmap[7]  = &(pt_buf.scratch.r7)       - &(pt_buf.scratch.res);
-  regmap[8]  = &(pt_buf.scratch.r8)       - &(pt_buf.scratch.res);
-  regmap[9]  = &(pt_buf.scratch.r9)       - &(pt_buf.scratch.res);
-  regmap[10] = &(pt_buf.scratch.r10)      - &(pt_buf.scratch.res);
-  regmap[11] = &(pt_buf.scratch.r11)      - &(pt_buf.scratch.res);
-  regmap[12] = &(pt_buf.scratch.r12)      - &(pt_buf.scratch.res);
-  regmap[13] = &(pt_buf.callee.r13)       - &(pt_buf.scratch.res);
-  regmap[14] = &(pt_buf.callee.r14)       - &(pt_buf.scratch.res);
-  regmap[15] = &(pt_buf.callee.r15)       - &(pt_buf.scratch.res);
-  regmap[16] = &(pt_buf.callee.r16)       - &(pt_buf.scratch.res);
-  regmap[17] = &(pt_buf.callee.r17)       - &(pt_buf.scratch.res);
-  regmap[18] = &(pt_buf.callee.r18)       - &(pt_buf.scratch.res);
-  regmap[19] = &(pt_buf.callee.r19)       - &(pt_buf.scratch.res);
-  regmap[20] = &(pt_buf.callee.r20)       - &(pt_buf.scratch.res);
-  regmap[21] = &(pt_buf.callee.r21)       - &(pt_buf.scratch.res);
-  regmap[22] = &(pt_buf.callee.r22)       - &(pt_buf.scratch.res);
-  regmap[23] = &(pt_buf.callee.r23)       - &(pt_buf.scratch.res);
-  regmap[24] = &(pt_buf.callee.r24)       - &(pt_buf.scratch.res);
-  regmap[25] = &(pt_buf.callee.r25)       - &(pt_buf.scratch.res);
-  regmap[26] = &(pt_buf.scratch.r26)      - &(pt_buf.scratch.res);
-  regmap[27] = &(pt_buf.scratch.fp)       - &(pt_buf.scratch.res);
-  regmap[28] = &(pt_buf.scratch.sp)       - &(pt_buf.scratch.res);
+  pt_base = &(pt_buf.scratch.res);
+
+  regmap[0]  = (&(pt_buf.scratch.r0)       - pt_base) * sizeof (*pt_base);
+  regmap[1]  = (&(pt_buf.scratch.r1)       - pt_base) * sizeof (*pt_base);
+  regmap[2]  = (&(pt_buf.scratch.r2)       - pt_base) * sizeof (*pt_base);
+  regmap[3]  = (&(pt_buf.scratch.r3)       - pt_base) * sizeof (*pt_base);
+  regmap[4]  = (&(pt_buf.scratch.r4)       - pt_base) * sizeof (*pt_base);
+  regmap[5]  = (&(pt_buf.scratch.r5)       - pt_base) * sizeof (*pt_base);
+  regmap[6]  = (&(pt_buf.scratch.r6)       - pt_base) * sizeof (*pt_base);
+  regmap[7]  = (&(pt_buf.scratch.r7)       - pt_base) * sizeof (*pt_base);
+  regmap[8]  = (&(pt_buf.scratch.r8)       - pt_base) * sizeof (*pt_base);
+  regmap[9]  = (&(pt_buf.scratch.r9)       - pt_base) * sizeof (*pt_base);
+  regmap[10] = (&(pt_buf.scratch.r10)      - pt_base) * sizeof (*pt_base);
+  regmap[11] = (&(pt_buf.scratch.r11)      - pt_base) * sizeof (*pt_base);
+  regmap[12] = (&(pt_buf.scratch.r12)      - pt_base) * sizeof (*pt_base);
+  regmap[13] = (&(pt_buf.callee.r13)       - pt_base) * sizeof (*pt_base);
+  regmap[14] = (&(pt_buf.callee.r14)       - pt_base) * sizeof (*pt_base);
+  regmap[15] = (&(pt_buf.callee.r15)       - pt_base) * sizeof (*pt_base);
+  regmap[16] = (&(pt_buf.callee.r16)       - pt_base) * sizeof (*pt_base);
+  regmap[17] = (&(pt_buf.callee.r17)       - pt_base) * sizeof (*pt_base);
+  regmap[18] = (&(pt_buf.callee.r18)       - pt_base) * sizeof (*pt_base);
+  regmap[19] = (&(pt_buf.callee.r19)       - pt_base) * sizeof (*pt_base);
+  regmap[20] = (&(pt_buf.callee.r20)       - pt_base) * sizeof (*pt_base);
+  regmap[21] = (&(pt_buf.callee.r21)       - pt_base) * sizeof (*pt_base);
+  regmap[22] = (&(pt_buf.callee.r22)       - pt_base) * sizeof (*pt_base);
+  regmap[23] = (&(pt_buf.callee.r23)       - pt_base) * sizeof (*pt_base);
+  regmap[24] = (&(pt_buf.callee.r24)       - pt_base) * sizeof (*pt_base);
+  regmap[25] = (&(pt_buf.callee.r25)       - pt_base) * sizeof (*pt_base);
+  regmap[26] = (&(pt_buf.scratch.r26)      - pt_base) * sizeof (*pt_base);
+  regmap[27] = (&(pt_buf.scratch.fp)       - pt_base) * sizeof (*pt_base);
+  regmap[28] = (&(pt_buf.scratch.sp)       - pt_base) * sizeof (*pt_base);
   /* ilink1 & ilink2 not available. */
   regmap[29] = -1;
   regmap[31] = -1;
-  regmap[31] = &(pt_buf.scratch.blink)    - &(pt_buf.scratch.res);
+  regmap[31] = (&(pt_buf.scratch.blink)    - pt_base) * sizeof (*pt_base);
   /* Extension core regs r32-r59 not available. */
   regmap[32] = -1;
   regmap[33] = -1;
@@ -208,7 +211,7 @@ arc_arch_setup (void)
   regmap[57] = -1;
   regmap[58] = -1;
   regmap[59] = -1;
-  regmap[60] = &(pt_buf.scratch.lp_count) - &(pt_buf.scratch.res);
+  regmap[60] = (&(pt_buf.scratch.lp_count) - pt_base) * sizeof (*pt_base);
   /* Reserved, limm and pcl registers not available. */
   regmap[61] = -1;
   regmap[62] = -1;
@@ -216,10 +219,10 @@ arc_arch_setup (void)
   /* PC is a special case. On reading we should use stop_pc and on writing, we
      should use ret. We'll use arc_fetch_register to deal with the read case
      as a special. */
-  regmap[64] = &(pt_buf.scratch.ret)      - &(pt_buf.scratch.res);
-  regmap[65] = &(pt_buf.scratch.lp_start) - &(pt_buf.scratch.res);
-  regmap[66] = &(pt_buf.scratch.lp_end)   - &(pt_buf.scratch.res);
-  regmap[67] = &(pt_buf.scratch.status32) - &(pt_buf.scratch.res);
+  regmap[64] = (&(pt_buf.scratch.ret)      - pt_base) * sizeof (*pt_base);
+  regmap[65] = (&(pt_buf.scratch.lp_start) - pt_base) * sizeof (*pt_base);
+  regmap[66] = (&(pt_buf.scratch.lp_end)   - pt_base) * sizeof (*pt_base);
+  regmap[67] = (&(pt_buf.scratch.status32) - pt_base) * sizeof (*pt_base);
   /* status32_l1, status32_l2, aux_irq_lv12, aux_irq_lev, aux_irq_hint, eret,
      erbta, erstatus, ecr aux registers not available. */
   regmap[68] = -1;
@@ -231,7 +234,7 @@ arc_arch_setup (void)
   regmap[74] = -1;
   regmap[75] = -1;
   regmap[76] = -1;
-  regmap[77] = &(pt_buf.efa)              - &(pt_buf.scratch.res);
+  regmap[77] = (&(pt_buf.efa)              - pt_base) * sizeof (*pt_base);
   /* icause1, icause2, aux_ienable, aux_itrigger, bta, bta_l1, bta_l2,
      aux_irq_pulse_cancel, aux_irq_pending aux registers not available. */
   regmap[78] = -1;
@@ -371,8 +374,9 @@ arc_fetch_register (struct regcache *regcache,
     {
       struct user_regs_struct  pt_buf;
       int pid = lwpid_of (get_thread_lwp (current_inferior));
+      int offset = &(pt_buf.stop_pc) - &(pt_buf.scratch.res);
       long int reg = ptrace (PTRACE_PEEKUSER, pid,
-			     &(pt_buf.stop_pc) - &(pt_buf.scratch.res), 0);
+			     offset * sizeof (pt_buf.scratch.res), 0);
       supply_register_by_name (regcache, "pc", &reg);
       return  1;
     }
