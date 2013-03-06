@@ -1,3 +1,7 @@
+2013-03-06  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	* arc-tdep.h (ARC_ENTRY_DEBUG): Don't print the filename.
+
 2013-03-05  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* arc-linux-tdep.c (SIGTRAMP_INSNS_LENGTH): Deleted.
