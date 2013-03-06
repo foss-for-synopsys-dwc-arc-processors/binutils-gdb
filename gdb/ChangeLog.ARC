@@ -1,5 +1,33 @@
 2013-03-06  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
+	* arc-aux-registers.c (arc_processor_version, arc_reg_access): New
+	enums taken from arc-tdep.h.
+	(arc_core_reg_def, arc_aux_reg_def, arc_reg_info)
+	(arc_variant_info): New structs taken from arc-tdep.h.
+	(arc_processor_variant_info): New static instance, renamed and
+	moved out of _initialize_aux_regs.
+	(INFO_OF): Use arc_processor_variant_info.
+	(arc_create_variant_info): New function taken from arc_elf_tdep.c.
+	(_initialize_arc_aux_regs): Remove declaration of variant, call
+	arc_create_variant_info.
+	* arc-elf-tdep.c (arc_elf_init_abi): Don't set
+	pc_regnum_in_sigcontext, lowest_pc, breakpoint_instr,
+	breakpoint_size. Don't call create_variant_info, since now done in
+	arc-aux-registers.c.
+	* arc-linux-tdep.c (arc_linux_init_abi): Don't set lowest_pc,
+	arc_processor_variant_info, breakpoint_instr, breakpoint_size.
+	* arc-tdep.c (arc_sigtramp_frame_prev_register): Don't try to use
+	"ret" register for PC.
+	(arc_breakpoint_from_pc): Determine directly, don't use tdep.
+	(arc_register_name): Don't name registers not in the architecture.
+	(arc_register_type): PC should be func_ptr type.
+	(arc_print_registers_info): Correct logic for all registers.
+	* arc-tdep.h (gdbarch_tdep): Remove pc_regnum_in_sigcontext,
+	lowest_pc, arc_processor_variant_info, breakpoint_instr,
+	breakpoint_size
+
+2013-03-06  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
 	* arc-tdep.h (ARC_ENTRY_DEBUG): Don't print the filename.
 
 2013-03-05  Jeremy Bennett <jeremy.bennett@embecosm.com>
