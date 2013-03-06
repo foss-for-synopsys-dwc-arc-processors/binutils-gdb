@@ -233,8 +233,8 @@
 #define ARC_ENTRY_DEBUG(fmt, ...)					\
   if (arc_debug)							\
     {									\
-      fprintf_unfiltered (gdb_stdlog, "--- entered %s:%s(" fmt ")\n",	\
-                          __FILE__, __FUNCTION__, ##__VA_ARGS__);	\
+      fprintf_unfiltered (gdb_stdlog, "--- entered %s (" fmt ")\n",	\
+                          __FUNCTION__, ##__VA_ARGS__);			\
     }
 
 
