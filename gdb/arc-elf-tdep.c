@@ -106,24 +106,6 @@ typedef struct
 /*                               local data                                   */
 /* -------------------------------------------------------------------------- */
 
-/* ARC 700 */
-/* brk_s instruction */
-static const unsigned char breakpoint_instruction[] = { 0xff, 0x7f };
-
-
-/* -------------------------------------------------------------------------- */
-/*                               local functions                              */
-/* -------------------------------------------------------------------------- */
-
-static void
-create_variant_info (struct gdbarch_tdep *tdep)
-{
-  tdep->processor_variant_info = xmalloc (sizeof (struct arc_variant_info));
-  tdep->processor_variant_info->processor_version = NO_ARCHITECTURE;
-
-  arc_initialize_aux_reg_info (&tdep->processor_variant_info->registers);
-}
-
 
 /* -------------------------------------------------------------------------- */
 /*		   ARC specific GDB architectural functions		      */
@@ -210,10 +192,6 @@ arc_elf_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
   /* todo: Do we really need this. Seems an archaic JTAG thing. */
   /* arc_aux_pc_guard (gdbarch); */
 
-  /* This had some horribly contorted code, which relied on the initialize
-     function being called twice, creating a new tdep the first time, and then
-     initializing the registers a second time. It's amazing it ever worked! */
-  create_variant_info (tdep);
   /* have aux registers been defined for that arch`? */
   if (!arc_aux_regs_defined (gdbarch))
     {
@@ -227,12 +205,6 @@ arc_elf_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
   tdep->sigcontext_addr = NULL;
   tdep->sc_reg_offset = NULL;
   tdep->sc_num_regs = 0;
-  tdep->pc_regnum_in_sigcontext = 0;
-
-  tdep->breakpoint_instruction = breakpoint_instruction;
-  tdep->breakpoint_size = (unsigned int) sizeof (breakpoint_instruction);
-
-  tdep->lowest_pc = 0;
 
   /* Set up target dependent GDB architecture entries. */
   set_gdbarch_cannot_fetch_register (gdbarch, arc_elf_cannot_fetch_register);
