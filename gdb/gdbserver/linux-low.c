@@ -4468,7 +4468,14 @@ linux_read_memory (CORE_ADDR memaddr, unsigned char *myaddr, int len)
 
 /* Copy LEN bytes of data from debugger memory at MYADDR to inferior's
    memory at MEMADDR.  On failure (cannot write to the inferior)
-   returns the value of errno.  */
+   returns the value of errno.
+
+   6-Mar-13, Jeremy Bennett: [PR gdb/15236] This function can be called with
+   length 0 (for example with a zero length X packet). If memaddr is aligned
+   to sizeof (PTRACE_XFER_TYPE), then count will be zero and nothing may be
+   allocated for buffer (architecture dependent). The function must return
+   early in this circumstance, to avoid stack corruption when assigning
+   to buffer[0]. */
 
 static int
 linux_write_memory (CORE_ADDR memaddr, const unsigned char *myaddr, int len)
@@ -4486,6 +4493,10 @@ linux_write_memory (CORE_ADDR memaddr, const unsigned char *myaddr, int len)
     alloca (count * sizeof (PTRACE_XFER_TYPE));
 
   int pid = lwpid_of (get_thread_lwp (current_inferior));
+
+  if (0 == len) {
+    return 0;			/* Zero length write always succeeds. */
+  }
 
   if (debug_threads)
     {
