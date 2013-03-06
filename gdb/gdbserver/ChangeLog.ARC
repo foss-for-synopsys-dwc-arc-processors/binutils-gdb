@@ -1,3 +1,9 @@
+2013-03-06  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	PR gdb/15236
+	* linux-low.c (linux_write_memory): Return early success if len is
+	zero.
+
 2013-03-05  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* linux-arc-low.c (arch_arc_setup): Convert offsets to byte
