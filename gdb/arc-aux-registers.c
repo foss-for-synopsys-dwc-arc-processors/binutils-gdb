@@ -294,13 +294,69 @@ static const struct gdb_xml_element elements[] = {
 };
 
 
+/*! Enum of the various ARC architectures.
+
+    @note A4 and A5 now removed. */
+enum arc_processor_version
+{
+  NO_ARCHITECTURE,
+  ARC700,
+  ARC600,
+  UNSUPPORTED_ARCHITECTURE
+};
+
+/*! Enum for type of access allowed to registers */
+enum arc_reg_access
+{
+  READ_ONLY,
+  READ_WRITE,
+  WRITE_ONLY
+};
+
+/*! Struct for definition of ARC core registers. */
+struct arc_core_reg_def
+{
+    int                 gdb_regno;
+    uint32_t            mask;
+    enum arc_reg_access access;
+    int                 exists;
+};
+
+/*! struct aux_reg_def is opaque here. */
+struct arc_aux_reg_def;
+
+/* this type is essentially private: no access to any of its fields should
+ * be performed outside of this module
+ */
+struct arc_reg_info
+{
+  enum arc_processor_version processor;
+  struct arc_aux_reg_def *aux_registers;
+  unsigned int aux_register_count;
+  int first_aux_gdb_regno;
+  unsigned int max_name_length;
+  int PC_number;
+  struct arc_core_reg_def core_registers[ARC_MAX_CORE_REGS];
+  unsigned int core_register_count;
+};
+
+/*! Structure describing an ARC variant. */
+struct arc_variant_info
+{
+  enum arc_processor_version processor_version;
+  struct arc_reg_info registers;
+};
+
+/*! Structure to hold info about architecture variants. */
+static struct arc_variant_info *arc_processor_variant_info;
+
 /* -------------------------------------------------------------------------- */
 /*                               local macros                                 */
 /* -------------------------------------------------------------------------- */
 
 #define NAME_IS(ident)    (strcmp(name, ident) == 0)
 
-#define INFO_OF(gdbarch)  &gdbarch_tdep (gdbarch)->processor_variant_info->registers
+#define INFO_OF(gdbarch)  arc_processor_variant_info->registers
 
 #define EXTRACT(argument, type, result)                                    \
 {                                                                          \
@@ -2187,6 +2243,20 @@ arc_convert_aux_contents_for_write (int gdb_regno, void *buffer)
 }
 
 
+/* -------------------------------------------------------------------------- */
+/*                               local functions                              */
+/* -------------------------------------------------------------------------- */
+
+static void
+arc_create_variant_info (void)
+{
+  arc_processor_variant_info = xmalloc (sizeof (struct arc_variant_info));
+  arc_processor_variant_info->processor_version = NO_ARCHITECTURE;
+
+  arc_initialize_aux_reg_info (arc_processor_variant_info->registers);
+}
+
+
 void
 _initialize_arc_aux_regs (void)
 {
@@ -2197,11 +2267,10 @@ _initialize_arc_aux_regs (void)
    *      causes problems when linking!
    */
   struct gdbarch_info info;
-  static struct arc_variant_info variant;
   struct gdbarch_tdep *tdep = malloc (sizeof (struct gdbarch_tdep));
   struct gdbarch *gdbarch = gdbarch_alloc (&info, tdep);
 
-  tdep->processor_variant_info = &variant;
+  arc_create_variant_info ();
   current_gdbarch = gdbarch;
 #endif
 

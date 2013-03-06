@@ -242,60 +242,6 @@
 /* Globally visible datatypes                                                 */
 /* -------------------------------------------------------------------------- */
 
-/*! Enum of the various ARC architectures.
-
-    @note A4 and A5 now removed. */
-enum arc_processor_version
-{
-  NO_ARCHITECTURE,
-  ARC700,
-  ARC600,
-  UNSUPPORTED_ARCHITECTURE
-};
-
-/*! Enum for type of access allowed to registers */
-enum arc_reg_access
-{
-  READ_ONLY,
-  READ_WRITE,
-  WRITE_ONLY
-};
-
-/*! Struct for definition of ARC core registers. */
-struct arc_core_reg_def
-{
-    int                 gdb_regno;
-    uint32_t            mask;
-    enum arc_reg_access access;
-    int                 exists;
-};
-
-/*! struct aux_reg_def is opaque here. */
-struct arc_aux_reg_def;
-
-/* this type is essentially private: no access to any of its fields should
- * be performed outside of this module
- */
-struct arc_reg_info
-{
-  enum arc_processor_version processor;
-  struct arc_aux_reg_def *aux_registers;
-  unsigned int aux_register_count;
-  int first_aux_gdb_regno;
-  unsigned int max_name_length;
-  int PC_number;
-  struct arc_core_reg_def core_registers[ARC_MAX_CORE_REGS];
-  unsigned int core_register_count;
-};
-
-/*! Structure describing an ARC variant. */
-struct arc_variant_info
-{
-  enum arc_processor_version processor_version;
-  struct arc_reg_info registers;
-};
-
-
 /*! Target dependencies.
 
     This structure holds target-dependent information.
@@ -317,24 +263,6 @@ struct gdbarch_tdep
     /* Offset of registers in `struct sigcontext'. */
     const int*   sc_reg_offset;
     unsigned int sc_num_regs;
-
-    /* In our linux target, gdbarch_pc_regnum points to stop_pc, which is a
-       register that is made up by the kernel and does not actually exist.
-       stop_pc is NOT saved in the sigcontext; what is saved is the ret
-       "register".  Since ret is a linux-only register, its regnum is visible
-       only in arc-linux-tdep.c; hence initialize pc_regnum_in_sigcontext in
-       arc-linux-tdep.c.  */
-    int pc_regnum_in_sigcontext;
-
-    /* Breakpoint instruction to be used */
-    const unsigned char* breakpoint_instruction;
-    unsigned int         breakpoint_size;
-
-    /* For stopping backtraces.  */
-    CORE_ADDR lowest_pc;
-  
-    /* ARC processor variant information (may be NULL). */
-    struct arc_variant_info *processor_variant_info;
 };
 
 
