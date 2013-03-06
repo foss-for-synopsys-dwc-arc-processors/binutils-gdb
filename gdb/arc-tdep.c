@@ -1286,12 +1286,16 @@ arc_virtual_frame_pointer (struct gdbarch *gdbarch,
 
 /*! Return the name of the given register.
 
-    This will always give a register name, even if the register is not
-    represented on a particular architecture. It shouldn't be the naming
-    function that worries about that.
+    This should only give a register name, if the register is represented on a
+    particular architecture.
 
     The array of names is sized, so we'll throw an error if we try to put in
     too many strings (but not sadly if we put in too few).
+
+    Rather than duplicate information in gdbarch_cannot_fetch_register and
+    gdbarch_cannot_store_register, we use those functions to determine whether
+    we return a name - if a register can be neither fetched, nor stored, we
+    presume it is not on this architecture.
 
     @todo This will get more complicated when we start reading details of the
           architecture from XML.
@@ -1333,8 +1337,15 @@ arc_register_name (struct gdbarch *gdbarch, int regnum)
   };
 
   gdb_assert ((0 <= regnum) && (regnum < ARC_TOTAL_REGS));
-  return register_names[regnum];
-
+  if (gdbarch_cannot_fetch_register (gdbarch, regnum)
+      && gdbarch_cannot_store_register (gdbarch, regnum))
+    {
+      return "";
+    }
+  else
+    {
+      return register_names[regnum];
+    }
 }	/* arc_register_name () */
 
 
@@ -1358,6 +1369,7 @@ arc_register_type (struct gdbarch *gdbarch, int regnum)
     case ARC_ILINK2_REGNUM:
     case ARC_BLINK_REGNUM:
     case ARC_PCL_REGNUM:
+    case ARC_PC_REGNUM:
     case ARC_AUX_ERET_REGNUM:
     case ARC_AUX_ERBTA_REGNUM:
     case ARC_AUX_BTA_REGNUM:
@@ -1610,17 +1622,19 @@ arc_print_registers_info (struct gdbarch *gdbarch, struct ui_file *file,
       /* Print all the registers, as determined by the "all" parameter. */
       int r;
 
-      for (r = 0; r <= ARC_MAX_CORE_REGS; r++)
+      for (r = 0; r < ARC_MAX_CORE_REGS; r++)
 	{
 	  default_print_registers_info (gdbarch, file, frame, r, all);
 	}
       default_print_registers_info (gdbarch, file, frame, ARC_PC_REGNUM, all);
 
       /* If "all" is non-zero (TRUE), also print out the aux regs. */
-
-      for (r = ARC_MAX_CORE_REGS + 1; r < ARC_TOTAL_REGS; r++)
+      if (all)
 	{
-	  default_print_registers_info (gdbarch, file, frame, r, all);
+	  for (r = ARC_MAX_CORE_REGS + 1; r < ARC_TOTAL_REGS; r++)
+	    {
+	      default_print_registers_info (gdbarch, file, frame, r, all);
+	    }
 	}
     }
 }	/* arc_print_registers_info () */
@@ -1833,14 +1847,8 @@ arc_skip_prologue (struct gdbarch *gdbarch, CORE_ADDR pc)
 
 /*! Get breakpoint which is approriate for address at which it is to be set.
 
-    Return whatever is in the ARC-private tdep structure (this has been set up
-    according to the correct target / architecture chosen).
-   
-    Fortunately, the ARC processor does not have separate instruction sets
-    (like the ARM's normal 32-bit and 16-bit Thumb instructions), so the bp
-    instruction to be used does not depend on the address (although the ARC
-    does have both 16- and * 32-bit instructions, they may be freely
-    intermixed).
+    For ARC, breakpoint uses the 16-bit TRAP_S 1 instruction, which is 0x3e78
+    (little endian) or 0x783e (big endian).
 
     @param[in]     gdbarch  Current GDB architecture
     @param[in,out] pcptr    Pointer to the PC where we want to place a
@@ -1851,10 +1859,13 @@ static const unsigned char *
 arc_breakpoint_from_pc (struct gdbarch *gdbarch, CORE_ADDR * pcptr,
 			int *lenptr)
 {
+  static const unsigned char breakpoint_instr_be[] = { 0x78, 0x3e };
+  static const unsigned char breakpoint_instr_le[] = { 0x3e, 0x78 };
 
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
-  *lenptr = (int) tdep->breakpoint_size;
-  return tdep->breakpoint_instruction;
+  *lenptr = sizeof (breakpoint_instr_be);
+  return (gdbarch_byte_order (gdbarch) == BFD_ENDIAN_BIG)
+    ? breakpoint_instr_be
+    : breakpoint_instr_le;
 
 }	/* arc_breakpoint_from_pc () */
 
@@ -2152,6 +2163,11 @@ arc_sigtramp_frame_this_id (struct frame_info *this_frame,
     Given a pointer to the THIS frame, return the details of a register in the
     PREVIOUS frame.
 
+    @todo The old version of this used to look for the PC in the "ret"
+          register, since that was where it would be found for a
+          signal. However we no longer have this - we rely on the GDB server
+          to give us the correct value of the PC.
+
     @note This function has changed from GDB 6.8. It now takes a reference to
           THIS frame, not the NEXT frame. It returns it results via a
           structure, not its argument list.
@@ -2172,13 +2188,6 @@ arc_sigtramp_frame_prev_register (struct frame_info *this_frame,
     arc_sigtramp_frame_cache (this_frame, this_cache);
 
   ARC_ENTRY_DEBUG ("")
-
-  /* on a signal, the PC is in ret */
-  if (regnum == ARC_PC_REGNUM)
-    {
-      struct gdbarch_tdep *tdep = gdbarch_tdep (get_frame_arch (this_frame));
-      regnum = tdep->pc_regnum_in_sigcontext;
-    }
 
   return trad_frame_get_prev_register (this_frame, info->saved_regs, regnum);
 
@@ -2432,7 +2441,7 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 
   /* Frame unwinders and sniffers. We use DWARF2 if it's available, for which
      we set up a register initialization function. Then we have ARC specific
-     unwinders and sniffers for signal frames and ordinary frames. */
+     unwinders and sniffers for signal frames and then ordinary frames. */
   dwarf2_frame_set_init_reg (gdbarch, arc_dwarf2_frame_init_reg);
   dwarf2_append_unwinders (gdbarch);
   frame_unwind_append_unwinder (gdbarch, &arc_sigtramp_frame_unwind);

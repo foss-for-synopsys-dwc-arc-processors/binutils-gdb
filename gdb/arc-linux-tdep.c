@@ -63,10 +63,6 @@
 
 
 
-/* Default breakpoint instruction used for ARC700 Linux */
-static const unsigned char breakpoint_instruction[] = { 0x3e, 0x78 };
-static const unsigned char be_breakpoint_instruction[] = { 0x78, 0x3e };
-
 
 
 
@@ -174,6 +170,12 @@ static const int arc_linux_core_reg_offsets[ARC_NUM_RAW_REGS] = {
 
 /*! Returns TRUE if the instruction at PC is a branch (of any kind).
 
+    We always set a breakpoint at the next instruction, even if we have an
+    unconditional branch, which means it won't be executed.
+
+    @todo This doesn't work if we are looking at a delay slot. We need to do
+          something about that.
+
     @param[out] fall_thru  Set to the address of the next insn.
     @param[out] target     Set to the branch target. */
 static int
@@ -186,10 +188,8 @@ arc_linux_next_pc (CORE_ADDR pc, CORE_ADDR *fall_thru, CORE_ADDR *target)
   int two_targets = FALSE;
   ULONGEST  lp_end, lp_start, lp_count, status32;
 
-  /* Why on earth do we need to do this each time we call arc_linux_next_pc! */
-  arc_initialize_disassembler (gdbarch, &di);
-
   /* so what is the instruction at the given pc? */
+  arc_initialize_disassembler (gdbarch, &di);
   instr = arcAnalyzeInstr (pc, &di);
 
   /* by default, the next instruction is the one immediately after the one at
@@ -220,16 +220,16 @@ arc_linux_next_pc (CORE_ADDR pc, CORE_ADDR *fall_thru, CORE_ADDR *target)
     {
       two_targets = TRUE;
 
-      /* if it's a direct jump or call, the destination address is encoded in
-         the instruction, so we got it by disassembling the instruction;
-         otherwise, it's an indirect jump to the address held in the register
-         named in the instruction, so we must read that register */
       if (instr.flow == direct_jump || instr.flow == direct_call)
 	{
+	  /* It's a direct jump or call, so the destination address is encoded
+         in the instruction, so we got it by disassembling the instruction */
 	  *target = (CORE_ADDR) instr.targets[0];
 	}
       else
 	{
+	  /* It's an indirect jump to the address held in the register
+	     named in the instruction, so we must read that register */
 	  ULONGEST val;
 	  regcache_cooked_read_unsigned (regcache,
 					 instr.register_for_indirect_jump,
@@ -249,10 +249,7 @@ arc_linux_next_pc (CORE_ADDR pc, CORE_ADDR *fall_thru, CORE_ADDR *target)
     }
 
 
-  /* zero-overhead loops:
-
-        if (STATUS32[L] == 0 && arc_linux_next_pc == lp_end && lp_count > 1)
-            arc_linux_next_pc = lp_start; */
+  /* Zero-overhead loops */
   regcache_cooked_read_unsigned (regcache, ARC_AUX_LP_START_REGNUM, &lp_start);
   regcache_cooked_read_unsigned (regcache, ARC_AUX_LP_END_REGNUM, &lp_end);
   regcache_cooked_read_unsigned (regcache, ARC_LP_COUNT_REGNUM, &lp_count);
@@ -479,15 +476,19 @@ arc_linux_cannot_store_register (struct gdbarch *gdbarch, int regnum)
 
 /*! Single step in software.
 
-    This is called with insert_breakpoints_p = 1 before single-stepping and
-    with insert_breakpoints_p = 0 after the step.
+    Insert breakpoints at all the locations where the program could end up
+    after the current instruction.
 
-    @todo Makis noted in 6.8 that this is used to add breakpoints only and not
-          remove them so remove functionality for now. This needs monitoring
-          in case we see problems.  This code is now completely removed as it
-          break the way the higher layers are using breakpoints. It now uses
-          insert_single_step_breakpoint() function this code needs to be
-          validated */
+    One breakpoint is always the next instruction to be executed (may not be
+    the following instruction if there an unconditional branch). For a
+    conditional branch instruction, there will be a second instruction.
+
+    We don't need to worry about removing the breakpoints - GDB will tidy them
+    up for us automatically.
+
+    @param[in] frame  The current frame (THIS frame).
+    @return           Non-zero (TRUE) if the breakpoints are inserted
+ */
 static int
 arc_linux_software_single_step (struct frame_info *frame)
 {
@@ -536,7 +537,6 @@ arc_linux_skip_solib_resolver (struct gdbarch *gdbarch, CORE_ADDR pc)
      lookup_minimal_symbol didn't work, for some reason.  */
   struct symbol *resolver = lookup_symbol_global ("_dl_linux_resolver", NULL,
 						  VAR_DOMAIN);
-
   if (arc_debug)
     {
       if (resolver)
@@ -628,16 +628,6 @@ arc_linux_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
   tdep->sigcontext_addr = arc_linux_sigcontext_addr;
   tdep->sc_reg_offset = arc_linux_sc_reg_offset;
   tdep->sc_num_regs = ARC_NUM_RAW_REGS;
-  /* @todo We don't have ARC_RET_REGNUM nay more, what do we use instead? */
-  /* tdep->pc_regnum_in_sigcontext = ARC_RET_REGNUM; */
-
-  tdep->breakpoint_instruction = (info.byte_order == BFD_ENDIAN_BIG)
-    ? be_breakpoint_instruction
-    : breakpoint_instruction;
-  tdep->breakpoint_size = (unsigned int) sizeof (breakpoint_instruction);
-
-  tdep->lowest_pc = 0x74;	/* @todo why this? */
-  tdep->processor_variant_info = NULL;
 
   /* Set up target dependent GDB architecture entries. */
   set_gdbarch_cannot_fetch_register (gdbarch, arc_linux_cannot_fetch_register);
@@ -650,7 +640,8 @@ arc_linux_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
 					arc_linux_regset_from_core_section);
   /* No need for any other GDB architecture core file functions. */
 
-  /* GNU/Linux uses SVR4-style shared libraries. */
+  /* GNU/Linux uses SVR4-style shared libraries, with 32-bit ints, longs and
+     pointers (ILP32). */
   set_solib_svr4_fetch_link_map_offsets (gdbarch,
 					 svr4_ilp32_fetch_link_map_offsets);
 }
