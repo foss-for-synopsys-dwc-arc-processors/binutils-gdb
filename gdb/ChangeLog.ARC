@@ -1,3 +1,7 @@
+2013-03-07  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	* arc-tdep.c (arc_gdbarch_init): set decr_pc_after_break to 2.
+
 2013-03-06  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* arc-aux-registers.c (arc_processor_version, arc_reg_access): New
