@@ -1,3 +1,8 @@
+2013-03-08  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* arc-tdep.c (arc_gdbarch_init): Set decr_pc to 2.
+	* arc-embed.c (arc_gdbarch_init): Likewise.
+
 2012-12-12  Mischa Jonker  <mischa.jonker@synopsys.com>
 	* arc-tdep.c: Fix warning uninitialized 'previous_word'
 

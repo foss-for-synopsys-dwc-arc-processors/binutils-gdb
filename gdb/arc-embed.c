@@ -1731,7 +1731,7 @@ arc_gdbarch_init (struct gdbarch_info  info,
     /* Breakpoint manipulation.  */
     set_gdbarch_breakpoint_from_pc  (gdbarch, arc_breakpoint_from_pc);
 //  set_gdbarch_decr_pc_after_break (gdbarch, 4); // why was this done?
-    set_gdbarch_decr_pc_after_break (gdbarch, 0);
+    set_gdbarch_decr_pc_after_break (gdbarch, 2); // 16-bit trap_s 1
 
     info.osabi = CONFIG_OSABI;
     gdbarch_init_osabi(info, gdbarch);
