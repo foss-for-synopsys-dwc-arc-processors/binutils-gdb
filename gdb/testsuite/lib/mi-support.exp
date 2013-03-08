@@ -775,14 +775,14 @@ proc mi_run_cmd {args} {
 
     send_gdb "target sim\n"
     gdb_expect 120 {
-        -re "Connected to the simulator.*$gdb_prompt $" {
+        -re "Connected to the simulator.*$mi_gdb_prompt $" {
 	    verbose "Connected to simulator." 2
         }
     }
 
     send_gdb "load\n"
     gdb_expect 120 {
-        -re ".*$gdb_prompt $" {
+        -re ".*$mi_gdb_prompt $" {
          }
     }
 
