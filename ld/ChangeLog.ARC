@@ -1,3 +1,8 @@
+2013-03-12  Simon Cook  <simon.cook@embecosm.com>
+
+	* emulparams/arcelf.sh, emulparams/arcebelf.sh: Change TEMPLATE_NAME
+	to elf32.
+
 2013-03-04  Simon Cook  <simon.cook@embecosm.com>
 
 	* Makefile.am (ALL_EMULATION_SOURCES): Added big endian sources.
