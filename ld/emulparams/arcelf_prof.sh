@@ -1,6 +1,5 @@
 SCRIPT_NAME=elfarc
-TEMPLATE_NAME=generic
-EXTRA_EM_FILE=genelf
+TEMPLATE_NAME=elf32
 OUTPUT_FORMAT="elf32-littlearc"
 LITTLE_OUTPUT_FORMAT="elf32-littlearc"
 BIG_OUTPUT_FORMAT="elf32-bigarc"
