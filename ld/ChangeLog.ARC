@@ -1,5 +1,10 @@
 2013-03-12  Simon Cook  <simon.cook@embecosm.com>
 
+	* emulparams/arcelf_prof.sh, emulparams/arcebelf_prof.sh: Change
+	TEMPLATE_NAME to elf32.
+
+2013-03-12  Simon Cook  <simon.cook@embecosm.com>
+
 	* emulparams/arcelf.sh, emulparams/arcebelf.sh: Change TEMPLATE_NAME
 	to elf32.
 
