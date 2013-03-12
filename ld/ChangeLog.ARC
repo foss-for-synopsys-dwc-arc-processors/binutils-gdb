@@ -1,3 +1,8 @@
+2013-03-12  Simon Cook  <simon.cook@embecosm.com>
+
+	* emulparams/arcelf.sh, emulparams/arcebelf.sh: Change TEMPLATE_NAME
+	to elf32.
+
 2013-02-06  Simon Cook  <simon.cook@embecosm.com>
 
 	* emulparams/arcebelf.sh: Added big endian elf emulation parameters.
