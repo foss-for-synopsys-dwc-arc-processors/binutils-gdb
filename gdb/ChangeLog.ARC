@@ -1,5 +1,12 @@
 2013-03-13  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
+	* arc-tdep.c (arc_scan_prologue): Add GDBARCH parameter. No need
+	to get pc_regnum.
+	(arc_skip_trampoline_code): Return PC as result.
+	(arc_print_float_info): Correct type of parameters.
+
+2013-03-13  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
 	* arc-tdep.c (arc_frame_unwind, arg_sigtramp_frame_unwind): set
 	.stop_reason field.
 
