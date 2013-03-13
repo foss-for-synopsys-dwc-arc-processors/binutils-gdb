@@ -1005,24 +1005,32 @@ arc_is_in_prologue (struct arc_unwind_cache * info, struct arcDisState *instr)
           THIS frame, not the NEXT frame.
 
     @param[in] entrypoint  Function entry point where prologue starts
-    @param[in] this_frame  Frame info for THIS frame.
+    @param[in] gdbarch     Current architecture. May be NULL in which case
+                           this_frame _must_ be defined.
+    @param[in] this_frame  Frame info for THIS frame. May be NULL, in which
+                           case gdbarch _must_ be defined.
     @param[in] info        Frame cache
     @return                Address of first instruction after prologue. */
 static CORE_ADDR
 arc_scan_prologue (CORE_ADDR entrypoint,
+		   struct gdbarch *gdbarch,
 		   struct frame_info *this_frame,
 		   struct arc_unwind_cache *info)
 {
-  struct gdbarch *gdbarch;
-  int pc_regnum;
   CORE_ADDR prologue_ends_pc;
   CORE_ADDR final_pc;
   struct disassemble_info di;
 
   ARC_ENTRY_DEBUG ("this_frame = %p, info = %p", this_frame, info)
 
-  gdbarch = get_frame_arch (this_frame);
-  pc_regnum = gdbarch_pc_regnum (gdbarch);
+  if (!gdbarch)
+    {
+      /* We were called from arc_frame_cache, which we know should have
+	 this_frame defined. Otherwise we were called form arc_skip_prologue,
+	 which passes in the gdbarch. */
+      gdb_assert (this_frame);
+      gdbarch = get_frame_arch (this_frame);
+    }
 
   /* An arbitrary limit on the length of the prologue. If this_frame is NULL
      this means that there was no debug info and we are called from
@@ -1039,7 +1047,7 @@ arc_scan_prologue (CORE_ADDR entrypoint,
           executed yet, so have had no effect! */
   prologue_ends_pc = entrypoint;
   final_pc = (this_frame)
-    ? get_frame_register_unsigned (this_frame, pc_regnum)
+    ? get_frame_pc (this_frame)
     : entrypoint + 4 * (6 + ARC_LAST_CALLEE_SAVED_REGNUM
 			- ARC_FIRST_CALLEE_SAVED_REGNUM + 1);
 
@@ -1666,10 +1674,10 @@ arc_print_registers_info (struct gdbarch *gdbarch, struct ui_file *file,
     @param[in] gdbarch  The current GDB architecture.
     @param[in] file     The GDB file handle to which to write.
     @param[in] frame    The current stack frame.
-    @param[in] args     */
+    @param[in] args     Any arguments given to the info float command. */
 static void
 arc_print_float_info (struct gdbarch *gdbarch, struct ui_file *file,
-		      struct frame_info *frame, int regnum, int all)
+		      struct frame_info *frame, const char *args)
 {
   fputs_filtered ("Core registers may hold values for use by the soft FPU.\n",
 		  file);
@@ -1840,7 +1848,7 @@ arc_skip_prologue (struct gdbarch *gdbarch, CORE_ADDR pc)
   /* Find the address of the first instruction after the prologue by scanning
      through it - no other information is needed, so pass NULL for the other
      parameters.  */
-  return arc_scan_prologue (pc, NULL, NULL);
+  return arc_scan_prologue (pc, gdbarch, NULL, NULL);
 
 }	/* arc_skip_prologue () */
 
@@ -1932,6 +1940,8 @@ arc_frame_align (struct gdbarch *gdbarch, CORE_ADDR sp)
 
 /* Skip the code for a trampoline.
 
+   @todo Needs writing. For now we just return the PC.
+
    @param[in] frame  Frame info for current frame.
    @param[in] pc     PC at start of trampoline code.
    @return           Address of start of function proper. */
@@ -1940,6 +1950,7 @@ arc_skip_trampoline_code (struct frame_info *frame, CORE_ADDR pc)
 {
   fprintf_unfiltered (gdb_stdlog, "Attempt to skip trampoline code at %s.\n",
 		      print_core_address (get_frame_arch (frame), pc));
+  return pc;
 
 }	/* arc_skip_trampoline_code () */
 
@@ -1969,7 +1980,7 @@ arc_frame_cache (struct frame_info *this_frame, void **this_cache)
 
         /* Prologue analysis does the rest... Currently our prologue scanner
 	   does not support getting input for the frame unwinder. */
-        (void) arc_scan_prologue (entrypoint, this_frame, cache);
+        (void) arc_scan_prologue (entrypoint, NULL, this_frame, cache);
     }
 
     return *this_cache;
