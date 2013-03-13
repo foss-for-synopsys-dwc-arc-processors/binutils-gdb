@@ -1,3 +1,8 @@
+2013-03-13  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	* arc-tdep.c (arc_frame_unwind, arg_sigtramp_frame_unwind): set
+	.stop_reason field.
+
 2013-03-07  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* arc-tdep.c (arc_gdbarch_init): set decr_pc_after_break to 2.
