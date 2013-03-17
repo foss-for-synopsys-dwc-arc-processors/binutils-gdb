@@ -41,6 +41,7 @@ BUILD_LIB_DEPS = @BUILD_LIB_DEPS@
 
 # Header files.
 HFILES = \
+	arc-desc.h arc-opc.h \
 	epiphany-desc.h epiphany-opc.h \
 	fr30-desc.h fr30-opc.h \
 	frv-desc.h frv-opc.h \
@@ -75,9 +76,14 @@ HFILES = \
 TARGET_LIBOPCODES_CFILES = \
 	alpha-dis.c \
 	alpha-opc.c \
+	arc-asm.c \
+	arc-desc.c \
+	arc-dis-old.c \
 	arc-dis.c \
 	arc-ext.c \
+	arc-ibld.c \
 	arc-opc.c \
+	arc-opinst.c \
 	arm-dis.c \
 	avr-dis.c \
 	bfin-dis.c \
@@ -321,6 +327,7 @@ po/POTFILES.in: @MAINT@ Makefile
 	  && mv tmp $(srcdir)/po/POTFILES.in
 
 CLEANFILES = \
+	stamp-arc \
 	stamp-epiphany stamp-fr30 stamp-frv stamp-ip2k stamp-iq2000 stamp-lm32 \
 	stamp-m32c stamp-m32r stamp-mep stamp-mt \
 	stamp-openrisc stamp-xc16x stamp-xstormy16 \
@@ -339,9 +346,10 @@ CGENDEPS = \
 	$(CGENDIR)/opc-opinst.scm \
 	cgen-asm.in cgen-dis.in cgen-ibld.in
 
-CGEN_CPUS = epiphany fr30 frv ip2k iq2000 lm32 m32c m32r mep mt openrisc xc16x xstormy16
+CGEN_CPUS = arc epiphany fr30 frv ip2k iq2000 lm32 m32c m32r mep mt openrisc xc16x xstormy16
 
 if CGEN_MAINT
+ARC_DEPS = stamp-arc
 EPIPHANY_DEPS = stamp-epiphany
 FR30_DEPS = stamp-fr30
 FRV_DEPS = stamp-frv
@@ -387,6 +395,13 @@ run-cgen-all:
 .PHONY: run-cgen-all
 
 # For now, require developers to configure with --enable-cgen-maint.
+
+$(srcdir)/arc-desc.h $(srcdir)/arc-desc.c $(srcdir)/arc-opc.h $(srcdir)/arc-opc.c $(srcdir)/arc-ibld.c $(srcdir)/arc-opinst.c $(srcdir)/arc-asm.c $(srcdir)/arc-dis.c: $(ARC_DEPS)
+	@true
+stamp-arc: $(CGENDEPS) $(srcdir)/../cpu/arc.cpu $(srcdir)/../cpu/arc.opc
+	$(MAKE) run-cgen arch=arc prefix=arc options=opinst \
+		archfile=$(srcdir)/../cpu/arc.cpu \
+		opcfile=$(srcdir)/../cpu/arc.opc extrafiles=opinst
 
 $(srcdir)/epiphany-desc.h $(srcdir)/epiphany-desc.c $(srcdir)/epiphany-opc.h \
 		$(srcdir)/epiphany-opc.c $(srcdir)/epiphany-ibld.c \
