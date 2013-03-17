@@ -1,5 +1,9 @@
 2013-03-17  Joern Rennecke  <joern.rennecke@embecosm.com>
 
+	* arc-opinst.c: Regenerate.
+
+2013-03-17  Joern Rennecke  <joern.rennecke@embecosm.com>
+
 	* arc-opc.c, arc-dis.c, arc-dis.h: Rename to:
 	* arc-opc-old.c, arc-dis-old.c, arc-dis-old.h.
 	* arc-dis-old.c, arcompact-dis.c: Reflect header file name change.
