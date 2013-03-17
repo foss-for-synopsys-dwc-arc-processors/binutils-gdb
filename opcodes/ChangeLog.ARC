@@ -18,6 +18,10 @@
 	 * configure.in (bfd_arc_arch): Update file list.
 	 * Makefile.in, configure: Regenerate.
 
+	 * arc-asm.c, arc-desc.h, arc-ibld.c, arc-opc.h: Regenerate, using:
+	 Customer-Projects/synopsys/arc_gnu/branches/arc_gnu_4.8/srcw-20120503/cgen.
+	 * arc-desc.c, arc-dis.c, arc-opc.c, arc-opinst.c: Likewise.
+
 2013-01-30  Simon Cook  <simon.cook@embecosm.com>
 
 	* arc-opc.c (arc_opcodes): Applied Claudiu Zissulescu's fixes to
