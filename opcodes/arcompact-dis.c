@@ -29,7 +29,7 @@
 #include "dis-asm.h"
 #include "opcode/arc.h"
 #include "arc-ext.h"
-#include "arc-dis.h"
+#include "arc-dis-old.h"
 #include "arcompact-dis.h"
 #include "elf-bfd.h"
 #include "elf/arc.h"
