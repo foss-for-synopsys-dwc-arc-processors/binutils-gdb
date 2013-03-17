@@ -1,5 +1,13 @@
 2013-03-17  Joern Rennecke  <joern.rennecke@embecosm.com>
 
+	* decode5.c, decode5.h, decode6.c, decode6.h: Regenerate.
+	* decode7.c, decode7.h, cpuall.h: Likewise.
+	* model5.c, model6,c, model7.c: Likewise.
+	* sem5-switch.c, sem5.c, sem6-switch.c, sem6.c: Likewise.
+	* sem7-switch.c, sem7.c: Likewise.
+
+2013-03-17  Joern Rennecke  <joern.rennecke@embecosm.com>
+
 	* Makefile.in: Merge from;
 	Customer-Projects/synopsys/arc_gnu/branches/arc_gnu_4.8/srcw-20120503.
 	* arc5.c, arc6.c, arc7.c, configure.ac, sim-if.c, sim-main.h: Likewise.
