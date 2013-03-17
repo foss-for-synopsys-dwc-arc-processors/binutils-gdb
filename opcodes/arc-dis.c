@@ -4,22 +4,20 @@
    THIS FILE IS MACHINE GENERATED WITH CGEN.
    - the resultant file is machine generated, cgen-dis.in isn't
 
-   Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005
-   Free Software Foundation, Inc.
+   Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005, 2007,
+   2008, 2010  Free Software Foundation, Inc.
 
-   Copyright 2008-2012 Synopsys Inc.
+   This file is part of libopcodes.
 
-   This file is part of the GNU Binutils and GDB, the GNU debugger.
-
-   This program is free software; you can redistribute it and/or modify
+   This library is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
+   the Free Software Foundation; either version 3, or (at your option)
    any later version.
 
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
+   It is distributed in the hope that it will be useful, but WITHOUT
+   ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+   or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+   License for more details.
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation, Inc.,
@@ -38,12 +36,6 @@
 #include "arc-desc.h"
 #include "arc-opc.h"
 #include "opintl.h"
-
-#ifdef UNUSED
-/* Prototypes */
-int print_insn_arc (bfd_vma pc, disassemble_info *info);
-#endif
-
 
 /* Default text to print if an instruction isn't recognized.  */
 #define UNKNOWN_INSN_MSG _("*unknown*")
@@ -67,23 +59,27 @@ static int read_insn
 /* -- disassembler routines inserted here.  */
 
 /* -- dis.c */
-char arc_limm_str[11] = "0x";
+char limm_str[11] = "0x";
 
-/* Read a long immediate and write it hexadecimally into arc_limm_str.  */
+/* Read a long immediate and write it hexadecimally into limm_str.  */
 static void
 read_limm (CGEN_EXTRACT_INFO *ex_info, bfd_vma pc)
 {
-  char buf[2];
+  unsigned char buf[2];
   int i;
-  char *limmp = arc_limm_str + 2;
+  char *limmp = limm_str + 2;
   disassemble_info *dis_info = (disassemble_info *) ex_info->dis_info;
 
   for (i = 0; i < 2; i++, limmp +=4, pc += 2)
     {
-      int status = (*dis_info->read_memory_func) (pc, (unsigned char*)buf, 2, dis_info);
+      int status = (*dis_info->read_memory_func) (pc, buf, 2, dis_info);
 
       if (status != 0)
-        (*dis_info->memory_error_func) (status, pc, dis_info);
+	{
+	  (*dis_info->memory_error_func) (status, pc, dis_info);
+	  strcpy (limm_str+2, "<error>");
+	  break;
+	}
       sprintf (limmp, "%.4x",
 	       (unsigned) bfd_get_bits (buf, 16,
 					dis_info->endian == BFD_ENDIAN_BIG));
@@ -94,7 +90,7 @@ read_limm (CGEN_EXTRACT_INFO *ex_info, bfd_vma pc)
    of the opcode - 2 or 4 bytes - and the absence or presence of a (4 byte)
    long immediate.
    Also, if a long immediate is present, put its hexadecimal representation
-   into arc_limm_str.
+   into limm_str.
    ??? cgen-opc.c:cgen_lookup_insn has a 'sanity' check of the length
    that will fail if its input length differs from the result of
    CGEN_EXTRACT_FN.  Need to check when this could trigger.  */
@@ -137,7 +133,7 @@ arc_insn_length (unsigned long insn_value, const CGEN_INSN *insn,
 
 /* -- */
 
-static void arc_cgen_print_operand
+void arc_cgen_print_operand
   (CGEN_CPU_DESC, int, PTR, CGEN_FIELDS *, void const *, bfd_vma, int);
 
 /* Main entry point for printing operands.
@@ -155,7 +151,7 @@ static void arc_cgen_print_operand
    separate makes clear the interface between `print_insn_normal' and each of
    the handlers.  */
 
-static void
+void
 arc_cgen_print_operand (CGEN_CPU_DESC cd,
 			   int opindex,
 			   void * xinfo,
@@ -402,7 +398,7 @@ arc_cgen_print_operand (CGEN_CPU_DESC cd,
   }
 }
 
-static cgen_print_fn * const arc_cgen_print_handlers[] =
+cgen_print_fn * const arc_cgen_print_handlers[] = 
 {
   print_insn_normal,
 };
@@ -412,9 +408,9 @@ void
 arc_cgen_init_dis (CGEN_CPU_DESC cd)
 {
   arc_cgen_init_opcode_table (cd);
-  arc_cgen_init_ibld_table   (cd);
+  arc_cgen_init_ibld_table (cd);
   cd->print_handlers = & arc_cgen_print_handlers[0];
-  cd->print_operand  = arc_cgen_print_operand;
+  cd->print_operand = arc_cgen_print_operand;
 }
 
 
@@ -429,10 +425,6 @@ print_normal (CGEN_CPU_DESC cd ATTRIBUTE_UNUSED,
 	      int length ATTRIBUTE_UNUSED)
 {
   disassemble_info *info = (disassemble_info *) dis_info;
-
-#ifdef CGEN_PRINT_NORMAL
-  CGEN_PRINT_NORMAL (cd, info, value, attrs, pc, length);
-#endif
 
   /* Print the operand as directed by the attributes.  */
   if (CGEN_BOOL_ATTR (attrs, CGEN_OPERAND_SEM_ONLY))
@@ -454,10 +446,6 @@ print_address (CGEN_CPU_DESC cd ATTRIBUTE_UNUSED,
 	       int length ATTRIBUTE_UNUSED)
 {
   disassemble_info *info = (disassemble_info *) dis_info;
-
-#ifdef CGEN_PRINT_ADDRESS
-  CGEN_PRINT_ADDRESS (cd, info, value, attrs, pc, length);
-#endif
 
   /* Print the operand as directed by the attributes.  */
   if (CGEN_BOOL_ATTR (attrs, CGEN_OPERAND_SEM_ONLY))
@@ -600,7 +588,7 @@ print_insn (CGEN_CPU_DESC cd,
       int length;
       unsigned long insn_value_cropped;
 
-#ifdef CGEN_VALIDATE_INSN_SUPPORTED
+#ifdef CGEN_VALIDATE_INSN_SUPPORTED 
       /* Not needed as insn shouldn't be in hash lists if not supported.  */
       /* Supported by this cpu?  */
       if (! arc_cgen_insn_supported (cd, insn))
@@ -618,7 +606,7 @@ print_insn (CGEN_CPU_DESC cd,
          relevant part from the buffer. */
       if ((unsigned) (CGEN_INSN_BITSIZE (insn) / 8) < buflen &&
 	  (unsigned) (CGEN_INSN_BITSIZE (insn) / 8) <= sizeof (unsigned long))
-	insn_value_cropped = bfd_get_bits (buf, CGEN_INSN_BITSIZE (insn),
+	insn_value_cropped = bfd_get_bits (buf, CGEN_INSN_BITSIZE (insn), 
 					   info->endian == BFD_ENDIAN_BIG);
       else
 	insn_value_cropped = insn_value;
@@ -713,8 +701,6 @@ typedef struct cpu_desc_list
   CGEN_CPU_DESC cd;
 } cpu_desc_list;
 
-
-#ifdef UNUSED
 int
 print_insn_arc (bfd_vma pc, disassemble_info *info)
 {
@@ -739,7 +725,7 @@ print_insn_arc (bfd_vma pc, disassemble_info *info)
   arch = info->arch;
   if (arch == bfd_arch_unknown)
     arch = CGEN_BFD_ARCH;
-
+   
   /* There's no standard way to compute the machine or isa number
      so we leave it to the target.  */
 #ifdef CGEN_COMPUTE_MACH
@@ -780,7 +766,7 @@ print_insn_arc (bfd_vma pc, disassemble_info *info)
 	      break;
 	    }
 	}
-    }
+    } 
 
   /* If we haven't initialized yet, initialize the opcode table.  */
   if (! cd)
@@ -828,4 +814,3 @@ print_insn_arc (bfd_vma pc, disassemble_info *info)
   (*info->fprintf_func) (info->stream, UNKNOWN_INSN_MSG);
   return cd->default_insn_bitsize / 8;
 }
-#endif
