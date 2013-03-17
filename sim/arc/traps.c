@@ -258,6 +258,10 @@ arc_syscall (host_callback *cb, CB_SYSCALL *s)
 	}
       break;
       {
+	/* We can't use the cb_syscall facilities for the stat functions
+	   because the time fields are 64 bit, but
+           cb_store_target_to_endian stuffs everything into a 'long', yet
+	   we have to support hosts with 32 bit long.  */
 	struct stat st;
 	struct fio_arc_stat buf;
 	int retval;
@@ -266,33 +270,18 @@ arc_syscall (host_callback *cb, CB_SYSCALL *s)
 	char *path;
 
       case TARGET_SYS_stat:
-	/* 08-Jan-13: Jeremy Bennett. This doesn't link with the latest
-	              Simulator stuff. If we come here, just abort. Comment
-	              out the offending code. */
-	abort();
-	/* errcode = get_path (cb, s, s->arg1, &path); */
-	/* if (errcode) */
-	/*   { */
-	/*     s->result = -1; */
-	/*     s->errcode = cb_host_to_target_errno (cb, errcode); */
-	/*     break; */
-	/*   } */
-	/* retval = stat (path, &st); */
-	/* free (path); */
+	errcode = get_path (cb, s, s->arg1, &path);
+	if (errcode)
+	  {
+	    s->result = -1;
+	    s->errcode = cb_host_to_target_errno (cb, errcode);
+	    break;
+	  }
+	retval = cb->stat (cb, path, &st);
+	free (path);
 	goto do_stat;
       case TARGET_SYS_fstat:
-	/* 08-Jan-13: Jeremy Bennett. This doesn't link with the latest
-	              Simulator stuff. If we come here, just abort. Comment
-	              out the offending code. */
-	abort();
-	/* retval = fdbad (cb, s->arg1); */
-	/* if (retval) */
-	/*   { */
-	/*     s->result = -1; */
-	/*     s->errcode = TARGET_EINVAL; */
-	/*     break; */
-	/*   } */
-	/* retval = fstat (fdmap (cb, s->arg1), &st); */
+	retval = cb->fstat (cb, s->arg1, &st);
       do_stat:
 
 	s->result = retval;

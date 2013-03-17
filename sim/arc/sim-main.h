@@ -1,6 +1,6 @@
 /* Main header for the arc.
-   Copyright (C) 2004, 2005, 2006 Free Software Foundation, Inc.
-   Copyright (C) 2007 ARC International (UK) LTD  */
+   Copyright (C) 2004, 2005, 2006, 2007, 2008, 2009
+   Free Software Foundation, Inc.  */
 
 #ifndef SIM_MAIN_H
 #define SIM_MAIN_H
@@ -14,10 +14,6 @@ typedef struct _sim_cpu SIM_CPU;
 #include "arc-desc.h"
 #include "arc-opc.h"
 #include "arch.h"
-
-/* The size of an "int" needed to hold an instruction word.
-   This is usually 32 bits, but some architectures needs 64 bits.  */
-typedef CGEN_INSN_INT CGEN_INSN_WORD;
 
 /* These must be defined before sim-base.h.  */
 typedef USI sim_cia;

@@ -105,7 +105,9 @@ cb_get_string (host_callback *cb, CB_SYSCALL *sc, char *buf, int buflen,
    simulator_sysroot if the string starts with '/'.
    If an error occurs, no buffer is left malloc'd.  */
 
-static int
+extern int
+get_path (host_callback *cb, CB_SYSCALL *sc, TADDR addr, char **bufp);
+int
 get_path (host_callback *cb, CB_SYSCALL *sc, TADDR addr, char **bufp)
 {
   char *buf = xmalloc (MAX_PATH_LEN);

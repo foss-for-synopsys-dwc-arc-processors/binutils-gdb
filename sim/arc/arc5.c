@@ -1,6 +1,6 @@
 /* arc simulator support code
-   Copyright (C) 1996, 1997, 1998, 2003 Free Software Foundation, Inc.
-   Copyright (C) 2007 ARC International (UK) LTD
+   Copyright (C) 1996, 1997, 1998, 2003, 2007, 2008, 2009
+   Free Software Foundation, Inc.
 
    This file is part of GDB, the GNU debugger.
 
@@ -29,25 +29,25 @@
 
 
 #define STATUS_REGNUM         0
+#define IDENTITY_REGNUM       4
 #define BYTES_IN_REGISTER     4
 
 
 /* N.B. the a5f_h_auxr_get/set functions use the GET_H_AUXR/SET_H_AUXR macros:
- *      these have a special case for register number 0 (STATUS) which result in
- *      an 'invalid insn' internal error being raised (see CR 95530). 
- *
- *      Those macros are no doubt intended to be used in the execution of the
- *      object code running on the simulator (where access to the obsolete
- *      STATUS register, instead of the newer STATUS32 register, would indeed be
- *      an error), but they are also being used by this code that the debugger
- *      uses to interact with the simulator (via the sim_fetch_register/
- *      sim_store_register functions).
- *
- *      So we wish to avoid calling a5f_h_auxr_get/set for the STATUS register.
- *      Fortunately, the register is read-only so we can simply ignore a write;
- *      for a read, we must "short-circuit" the access by going straight to the
- *      default case of the GET_H_AUXR macro (which is "CPU (h_auxr[index])").
- */
+        these have a special case for register number 0 (STATUS) which result in
+        an 'invalid insn' internal error being raised (see CR 95530).
+
+        Those macros are no doubt intended to be used in the execution of the
+        object code running on the simulator (where access to the obsolete
+        STATUS register, instead of the newer STATUS32 register, would indeed be
+        an error), but they are also being used by this code that the debugger
+        uses to interact with the simulator (via the sim_fetch_register /
+        sim_store_register functions).
+
+        So we wish to avoid calling a5f_h_auxr_get/set for the STATUS register.
+        Fortunately, the register is read-only so we can simply ignore a write;
+        for a read, we must "short-circuit" the access by going straight to the
+        default case of the GET_H_AUXR macro (which is "CPU (h_auxr[index])").  */
 
 
 /* The contents of BUF are in target byte order.  */
@@ -57,6 +57,7 @@ a5f_fetch_register (SIM_CPU *current_cpu, int rn, unsigned char *buf, int len)
 {
   int               hw_regnum;
   ARC_RegisterClass reg_class;
+  SI                contents;
 
 // printf("*** a5f_fetch_register %d\n", rn);
 
@@ -65,35 +66,46 @@ a5f_fetch_register (SIM_CPU *current_cpu, int rn, unsigned char *buf, int len)
   switch (reg_class)
     {
     case ARC_UNKNOWN_REGISTER:
-      break;
+      return 0;
 
     case ARC_CORE_REGISTER:
-      /* R61 and R62 are reserved - so just return 0 */
+      /* R61 and R62 are reserved - so just return 0.  */
       if (hw_regnum == 61 || hw_regnum == 62)
-          break;
+          return 0;
 
-      /* N.B. the simulator does not seem to model PCL (R63) - so get the current
-       *      instruction address from PC (not ideal, but the best we can do!).
-       *
-       *      This probably explains the odd code in arc-sim-registers.c which
-       *      maps PCL onto PC!
-       */
-      SETTWI (buf, (hw_regnum == 63) ? a5f_h_pc_get (current_cpu)
-                                     : a5f_h_cr_get (current_cpu, hw_regnum));
-      return BYTES_IN_REGISTER;
+      /* N.B. the simulator does not model PCL (R63) if the
+	 instruction does not refer to it - so get the current
+	 instruction address from PC and compute PCL from it.  */
+      contents = (hw_regnum == 63 ? a5f_h_pc_get (current_cpu) & -4
+		  : a5f_h_cr_get (current_cpu, hw_regnum));
+      break;
 
     case ARC_AUX_REGISTER:
-      /* if it is the STATUS register, make the access directly */
-      SETTWI (buf, (hw_regnum == STATUS_REGNUM) ? CPU (h_auxr[STATUS_REGNUM])
-                                                : a5f_h_auxr_get (current_cpu, hw_regnum));
-      return BYTES_IN_REGISTER;
+      if (hw_regnum == IDENTITY_REGNUM)
+	{
+	  /* Construct a value from the target CPU architecture.  */
+	  switch (CPU_MACH(current_cpu)->num)
+	    {
+	    case MACH_A5    : contents = 0x10;  break;
+	    case MACH_ARC600: contents = 0x20;  break;
+	    case MACH_ARC700: contents = 0x30;  break;
+	    default         : contents = 0x00;  break;
+	    }
+	}
+      else
+	/* If it is the STATUS register, make the access directly.  */
+	contents
+	  = (hw_regnum == STATUS_REGNUM ? CPU (h_auxr[STATUS_REGNUM])
+	     : a5f_h_auxr_get (current_cpu, hw_regnum));
+      break;
 
     case ARC_PROGRAM_COUNTER:
-      SETTWI (buf, a5f_h_pc_get (current_cpu));
-      return BYTES_IN_REGISTER;
+      contents = a5f_h_pc_get (current_cpu);
+      break;
     }
 
-  return 0;
+  SETTWI (buf, contents);
+  return BYTES_IN_REGISTER;
 }
 
 
@@ -116,8 +128,7 @@ a5f_store_register (SIM_CPU *current_cpu, int rn, unsigned char *buf, int len)
 
     case ARC_CORE_REGISTER:
       /* R61 and R62 are reserved, and R63 is PCL which is read-only - so just
-       * do nothing for them
-       */
+	 do nothing for them.  */
       if (hw_regnum < 61)
       {
           a5f_h_cr_set (current_cpu, hw_regnum, GETTWI (buf));
@@ -126,7 +137,7 @@ a5f_store_register (SIM_CPU *current_cpu, int rn, unsigned char *buf, int len)
       break;
 
     case ARC_AUX_REGISTER:
-      /* the STATUS aux reg is read/only, so ignore the write attempt */
+      /* The STATUS aux reg is read/only, so ignore the write attempt.  */
       if (hw_regnum != STATUS_REGNUM)
       {
           a5f_h_auxr_set (current_cpu, hw_regnum, GETTWI (buf));
