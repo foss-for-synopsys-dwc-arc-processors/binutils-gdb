@@ -189,7 +189,7 @@
 
 /* ARC header files */
 #include "opcode/arc.h"
-#include "opcodes/arc-dis.h"
+#include "opcodes/arc-dis-old.h"
 #include "opcodes/arc-ext.h"
 #include "opcodes/arcompact-dis.h"
 #include "arc-tdep.h"
