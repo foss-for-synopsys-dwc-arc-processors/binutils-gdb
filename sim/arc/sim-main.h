@@ -15,6 +15,10 @@ typedef struct _sim_cpu SIM_CPU;
 #include "arc-opc.h"
 #include "arch.h"
 
+/* The size of an "int" needed to hold an instruction word.
+   This is usually 32 bits, but some architectures needs 64 bits.  */
+typedef CGEN_INSN_INT CGEN_INSN_WORD;
+
 /* These must be defined before sim-base.h.  */
 typedef USI sim_cia;
 
