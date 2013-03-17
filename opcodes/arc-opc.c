@@ -2,25 +2,23 @@
 
 THIS FILE IS MACHINE GENERATED WITH CGEN.
 
-Copyright 1996-2005 Free Software Foundation, Inc.
-
-Copyright 2008-2012 Synopsys Inc.
+Copyright 1996-2010 Free Software Foundation, Inc.
 
 This file is part of the GNU Binutils and/or GDB, the GNU debugger.
 
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2, or (at your option)
-any later version.
+   This file is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 3, or (at your option)
+   any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+   It is distributed in the hope that it will be useful, but WITHOUT
+   ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+   or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+   License for more details.
 
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
+   You should have received a copy of the GNU General Public License along
+   with this program; if not, write to the Free Software Foundation, Inc.,
+   51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
 
 */
 
@@ -29,25 +27,32 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "bfd.h"
 #include "symcat.h"
 #include "arc-desc.h"
-#include "arc-opc-cgen.h"
+#include "arc-opc.h"
 #include "libiberty.h"
 
 /* -- opc.c */
 unsigned int
-arc_cgen_dis_hash (const char * buf, int big_p)
+arc_cgen_dis_hash (const char * buf, CGEN_INSN_INT value)
 {
-  const unsigned char *ubuf = (unsigned char*) buf;
+  const unsigned char *ubuf = (unsigned const char *) buf;
   int b0 = ubuf[0], b1 = ubuf[1], w;
 
-  if (big_p)
-    w = (b0 << 8) + b1;
+  if ((value & 0xffff0000) || (b0 == 0 && b1 == 0))
+    w = (value >> 16) & 0xffff;
   else
-    w = (b1 << 8) + b0;
+    /* ??? For little endian, hash_insn_array uses the wrong endianness when
+       writing the buffer (little endian instead of middle-endian) and thus
+       we can still end up here for 32 bit conditional branches; fortunately,
+       in this case, the offset fields will be blank, so we still end up with
+       hash 0.  */
+    w = value;
 
   switch (w >> 11)
     {
-    case 0x01: /* branches */
-      return ((w >> 6) | w);
+    case 0x00: /* bcc branches */
+      return ((w >> 6) & 992) | (value & 037);
+    case 0x01: /* bbitn / brcc branches */
+      return ((w >> 6) & 992) | (value & 027);
     case 0x04: /* general operations */
     case 0x05: case 0x06: case 0x07: /* 32 bit extension instructions */
       return ((w >> 3) & 768) | (w & 255);
@@ -78,15 +83,11 @@ arc_cgen_dis_hash (const char * buf, int big_p)
 static int asm_hash_insn_p        (const CGEN_INSN *);
 static unsigned int asm_hash_insn (const char *);
 static int dis_hash_insn_p        (const CGEN_INSN *);
-static unsigned int dis_hash_insn (const char *, CGEN_INSN_INT, int);
+static unsigned int dis_hash_insn (const char *, CGEN_INSN_INT);
 
 /* Instruction formats.  */
 
-#if defined (__STDC__) || defined (ALMOST_STDC) || defined (HAVE_STRINGIZE)
 #define F(f) & arc_cgen_ifld_table[ARC_##f]
-#else
-#define F(f) & arc_cgen_ifld_table[ARC_/**/f]
-#endif
 static const CGEN_IFMT ifmt_empty ATTRIBUTE_UNUSED = {
   0, 0, 0x0, { { 0 } }
 };
@@ -319,6 +320,10 @@ static const CGEN_IFMT ifmt_lr_L_s12_ ATTRIBUTE_UNUSED = {
   32, 32, 0xf8ff0000, { { F (F_OPM) }, { F (F_OP_B) }, { F (F_GO_TYPE) }, { F (F_GO_OP) }, { F (F_F) }, { F (F_S12) }, { 0 } }
 };
 
+static const CGEN_IFMT ifmt_lr_L_u6_ ATTRIBUTE_UNUSED = {
+  32, 32, 0xf8ff0000, { { F (F_OPM) }, { F (F_OP_B) }, { F (F_GO_TYPE) }, { F (F_GO_OP) }, { F (F_F) }, { F (F_U6) }, { F (F_OP_A) }, { 0 } }
+};
+
 static const CGEN_IFMT ifmt_asl_L_r_r__RC ATTRIBUTE_UNUSED = {
   32, 32, 0xf8ff003f, { { F (F_OPM) }, { F (F_OP_B) }, { F (F_GO_TYPE) }, { F (F_GO_OP) }, { F (F_F) }, { F (F_OP_C) }, { F (F_OP_A) }, { 0 } }
 };
@@ -377,16 +382,8 @@ static const CGEN_IFMT ifmt_current_loop_end ATTRIBUTE_UNUSED = {
 
 #undef F
 
-#if defined (__STDC__) || defined (ALMOST_STDC) || defined (HAVE_STRINGIZE)
 #define A(a) (1 << CGEN_INSN_##a)
-#else
-#define A(a) (1 << CGEN_INSN_/**/a)
-#endif
-#if defined (__STDC__) || defined (ALMOST_STDC) || defined (HAVE_STRINGIZE)
 #define OPERAND(op) ARC_OPERAND_##op
-#else
-#define OPERAND(op) ARC_OPERAND_/**/op
-#endif
 #define MNEM CGEN_SYNTAX_MNEMONIC /* syntax value for mnemonic */
 #define OP(field) CGEN_SYNTAX_MAKE_FIELD (OPERAND (field))
 
@@ -2222,6 +2219,12 @@ static const CGEN_OPCODE arc_cgen_insn_opcode_table[MAX_INSNS] =
     { { MNEM, OP (_L), OP (F0), ' ', OP (RB), ',', '[', OP (S12), ']', 0 } },
     & ifmt_lr_L_s12_, { 0x20aa0000 }
   },
+/* lr$_L$F0 $RB,[$U6] */
+  {
+    { 0, 0, 0, 0 },
+    { { MNEM, OP (_L), OP (F0), ' ', OP (RB), ',', '[', OP (U6), ']', 0 } },
+    & ifmt_lr_L_u6_, { 0x206a0000 }
+  },
 /* sr$_L$F0 $RB,[$RC] */
   {
     { 0, 0, 0, 0 },
@@ -2233,6 +2236,12 @@ static const CGEN_OPCODE arc_cgen_insn_opcode_table[MAX_INSNS] =
     { 0, 0, 0, 0 },
     { { MNEM, OP (_L), OP (F0), ' ', OP (RB), ',', '[', OP (S12), ']', 0 } },
     & ifmt_lr_L_s12_, { 0x20ab0000 }
+  },
+/* sr$_L$F0 $RB,[$U6] */
+  {
+    { 0, 0, 0, 0 },
+    { { MNEM, OP (_L), OP (F0), ' ', OP (RB), ',', '[', OP (U6), ']', 0 } },
+    & ifmt_lr_L_u6_, { 0x206b0000 }
   },
 /* asl$_L$F $RB,$RC */
   {
@@ -3050,6 +3059,162 @@ static const CGEN_OPCODE arc_cgen_insn_opcode_table[MAX_INSNS] =
     { { MNEM, OP (_S), ' ', OP (R31), 0 } },
     & ifmt_pop_s_blink, { 0xc0f10000 }
   },
+/* mullw$_L$F $RB,$RB,$s12 */
+  {
+    { 0, 0, 0, 0 },
+    { { MNEM, OP (_L), OP (F), ' ', OP (RB), ',', OP (RB), ',', OP (S12), 0 } },
+    & ifmt_add_L_s12__RA_, { 0x28b10000 }
+  },
+/* mullw$Qcondi$F $RB,$RB,$U6 */
+  {
+    { 0, 0, 0, 0 },
+    { { MNEM, OP (QCONDI), OP (F), ' ', OP (RB), ',', OP (RB), ',', OP (U6), 0 } },
+    & ifmt_add_ccu6__RA_, { 0x28f10020 }
+  },
+/* mullw$_L$F $RA,$RB,$U6 */
+  {
+    { 0, 0, 0, 0 },
+    { { MNEM, OP (_L), OP (F), ' ', OP (RA), ',', OP (RB), ',', OP (U6), 0 } },
+    & ifmt_add_L_u6__RA_, { 0x28710000 }
+  },
+/* mullw$_L$F $RA,$RB,$RC */
+  {
+    { 0, 0, 0, 0 },
+    { { MNEM, OP (_L), OP (F), ' ', OP (RA), ',', OP (RB), ',', OP (RC), 0 } },
+    & ifmt_add_L_r_r__RA__RC, { 0x28310000 }
+  },
+/* mullw$Qcondi$F $RB,$RB,$RC */
+  {
+    { 0, 0, 0, 0 },
+    { { MNEM, OP (QCONDI), OP (F), ' ', OP (RB), ',', OP (RB), ',', OP (RC), 0 } },
+    & ifmt_add_cc__RA__RC, { 0x28f10000 }
+  },
+/* maclw$_L$F $RB,$RB,$s12 */
+  {
+    { 0, 0, 0, 0 },
+    { { MNEM, OP (_L), OP (F), ' ', OP (RB), ',', OP (RB), ',', OP (S12), 0 } },
+    & ifmt_add_L_s12__RA_, { 0x28b30000 }
+  },
+/* maclw$Qcondi$F $RB,$RB,$U6 */
+  {
+    { 0, 0, 0, 0 },
+    { { MNEM, OP (QCONDI), OP (F), ' ', OP (RB), ',', OP (RB), ',', OP (U6), 0 } },
+    & ifmt_add_ccu6__RA_, { 0x28f30020 }
+  },
+/* maclw$_L$F $RA,$RB,$U6 */
+  {
+    { 0, 0, 0, 0 },
+    { { MNEM, OP (_L), OP (F), ' ', OP (RA), ',', OP (RB), ',', OP (U6), 0 } },
+    & ifmt_add_L_u6__RA_, { 0x28730000 }
+  },
+/* maclw$_L$F $RA,$RB,$RC */
+  {
+    { 0, 0, 0, 0 },
+    { { MNEM, OP (_L), OP (F), ' ', OP (RA), ',', OP (RB), ',', OP (RC), 0 } },
+    & ifmt_add_L_r_r__RA__RC, { 0x28330000 }
+  },
+/* maclw$Qcondi$F $RB,$RB,$RC */
+  {
+    { 0, 0, 0, 0 },
+    { { MNEM, OP (QCONDI), OP (F), ' ', OP (RB), ',', OP (RB), ',', OP (RC), 0 } },
+    & ifmt_add_cc__RA__RC, { 0x28f30000 }
+  },
+/* machlw$_L$F $RB,$RB,$s12 */
+  {
+    { 0, 0, 0, 0 },
+    { { MNEM, OP (_L), OP (F), ' ', OP (RB), ',', OP (RB), ',', OP (S12), 0 } },
+    & ifmt_add_L_s12__RA_, { 0x28b60000 }
+  },
+/* machlw$Qcondi$F $RB,$RB,$U6 */
+  {
+    { 0, 0, 0, 0 },
+    { { MNEM, OP (QCONDI), OP (F), ' ', OP (RB), ',', OP (RB), ',', OP (U6), 0 } },
+    & ifmt_add_ccu6__RA_, { 0x28f60020 }
+  },
+/* machlw$_L$F $RA,$RB,$U6 */
+  {
+    { 0, 0, 0, 0 },
+    { { MNEM, OP (_L), OP (F), ' ', OP (RA), ',', OP (RB), ',', OP (U6), 0 } },
+    & ifmt_add_L_u6__RA_, { 0x28760000 }
+  },
+/* machlw$_L$F $RA,$RB,$RC */
+  {
+    { 0, 0, 0, 0 },
+    { { MNEM, OP (_L), OP (F), ' ', OP (RA), ',', OP (RB), ',', OP (RC), 0 } },
+    & ifmt_add_L_r_r__RA__RC, { 0x28360000 }
+  },
+/* machlw$Qcondi$F $RB,$RB,$RC */
+  {
+    { 0, 0, 0, 0 },
+    { { MNEM, OP (QCONDI), OP (F), ' ', OP (RB), ',', OP (RB), ',', OP (RC), 0 } },
+    & ifmt_add_cc__RA__RC, { 0x28f60000 }
+  },
+/* mululw$_L$F $RB,$RB,$s12 */
+  {
+    { 0, 0, 0, 0 },
+    { { MNEM, OP (_L), OP (F), ' ', OP (RB), ',', OP (RB), ',', OP (S12), 0 } },
+    & ifmt_add_L_s12__RA_, { 0x28b00000 }
+  },
+/* mululw$Qcondi$F $RB,$RB,$U6 */
+  {
+    { 0, 0, 0, 0 },
+    { { MNEM, OP (QCONDI), OP (F), ' ', OP (RB), ',', OP (RB), ',', OP (U6), 0 } },
+    & ifmt_add_ccu6__RA_, { 0x28f00020 }
+  },
+/* mululw$_L$F $RA,$RB,$U6 */
+  {
+    { 0, 0, 0, 0 },
+    { { MNEM, OP (_L), OP (F), ' ', OP (RA), ',', OP (RB), ',', OP (U6), 0 } },
+    & ifmt_add_L_u6__RA_, { 0x28700000 }
+  },
+/* mululw$_L$F $RA,$RB,$RC */
+  {
+    { 0, 0, 0, 0 },
+    { { MNEM, OP (_L), OP (F), ' ', OP (RA), ',', OP (RB), ',', OP (RC), 0 } },
+    & ifmt_add_L_r_r__RA__RC, { 0x28300000 }
+  },
+/* mululw$Qcondi$F $RB,$RB,$RC */
+  {
+    { 0, 0, 0, 0 },
+    { { MNEM, OP (QCONDI), OP (F), ' ', OP (RB), ',', OP (RB), ',', OP (RC), 0 } },
+    & ifmt_add_cc__RA__RC, { 0x28f00000 }
+  },
+/* machulw$_L$F $RB,$RB,$s12 */
+  {
+    { 0, 0, 0, 0 },
+    { { MNEM, OP (_L), OP (F), ' ', OP (RB), ',', OP (RB), ',', OP (S12), 0 } },
+    & ifmt_add_L_s12__RA_, { 0x28b50000 }
+  },
+/* machulw$Qcondi$F $RB,$RB,$U6 */
+  {
+    { 0, 0, 0, 0 },
+    { { MNEM, OP (QCONDI), OP (F), ' ', OP (RB), ',', OP (RB), ',', OP (U6), 0 } },
+    & ifmt_add_ccu6__RA_, { 0x28f50020 }
+  },
+/* machulw$_L$F $RA,$RB,$U6 */
+  {
+    { 0, 0, 0, 0 },
+    { { MNEM, OP (_L), OP (F), ' ', OP (RA), ',', OP (RB), ',', OP (U6), 0 } },
+    & ifmt_add_L_u6__RA_, { 0x28750000 }
+  },
+/* machulw$_L$F $RA,$RB,$RC */
+  {
+    { 0, 0, 0, 0 },
+    { { MNEM, OP (_L), OP (F), ' ', OP (RA), ',', OP (RB), ',', OP (RC), 0 } },
+    & ifmt_add_L_r_r__RA__RC, { 0x28350000 }
+  },
+/* machulw$Qcondi$F $RB,$RB,$RC */
+  {
+    { 0, 0, 0, 0 },
+    { { MNEM, OP (QCONDI), OP (F), ' ', OP (RB), ',', OP (RB), ',', OP (RC), 0 } },
+    & ifmt_add_cc__RA__RC, { 0x28f50000 }
+  },
+/*  */
+  {
+    { 0, 0, 0, 0 },
+    { { MNEM, 0 } },
+    & ifmt_current_loop_end, { 0x202f003e }
+  },
 /*  */
   {
     { 0, 0, 0, 0 },
@@ -3071,25 +3236,13 @@ static const CGEN_OPCODE arc_cgen_insn_opcode_table[MAX_INSNS] =
 
 /* Formats for ALIAS macro-insns.  */
 
-#if defined (__STDC__) || defined (ALMOST_STDC) || defined (HAVE_STRINGIZE)
 #define F(f) & arc_cgen_ifld_table[ARC_##f]
-#else
-#define F(f) & arc_cgen_ifld_table[ARC_/**/f]
-#endif
 #undef F
 
 /* Each non-simple macro entry points to an array of expansion possibilities.  */
 
-#if defined (__STDC__) || defined (ALMOST_STDC) || defined (HAVE_STRINGIZE)
 #define A(a) (1 << CGEN_INSN_##a)
-#else
-#define A(a) (1 << CGEN_INSN_/**/a)
-#endif
-#if defined (__STDC__) || defined (ALMOST_STDC) || defined (HAVE_STRINGIZE)
 #define OPERAND(op) ARC_OPERAND_##op
-#else
-#define OPERAND(op) ARC_OPERAND_/**/op
-#endif
 #define MNEM CGEN_SYNTAX_MNEMONIC /* syntax value for mnemonic */
 #define OP(field) CGEN_SYNTAX_MAKE_FIELD (OPERAND (field))
 
@@ -3155,7 +3308,7 @@ dis_hash_insn_p (insn)
 
 #ifndef CGEN_DIS_HASH
 #define CGEN_DIS_HASH_SIZE 256
-#define CGEN_DIS_HASH(buf, value, big_p) (*(unsigned char *) (buf))
+#define CGEN_DIS_HASH(buf, value) (*(unsigned char *) (buf))
 #endif
 
 /* The result is the hash value of the insn.
@@ -3172,12 +3325,11 @@ asm_hash_insn (mnem)
    VALUE is the first base_insn_bitsize bits as an int in host order.  */
 
 static unsigned int
-dis_hash_insn (buf, value, big_p)
+dis_hash_insn (buf, value)
      const char * buf ATTRIBUTE_UNUSED;
      CGEN_INSN_INT value ATTRIBUTE_UNUSED;
-     int big_p ATTRIBUTE_UNUSED;
 {
-  return CGEN_DIS_HASH (buf, value, big_p);
+  return CGEN_DIS_HASH (buf, value);
 }
 
 /* Set the recorded length of the insn in the CGEN_FIELDS struct.  */
@@ -3201,18 +3353,16 @@ arc_cgen_init_opcode_table (CGEN_CPU_DESC cd)
   const CGEN_OPCODE *oc = & arc_cgen_macro_insn_opcode_table[0];
   CGEN_INSN *insns = xmalloc (num_macros * sizeof (CGEN_INSN));
 
-/* ??? This is a manual patch to avoid a compiler warning about a zero-sized
-   memset.  cgen should be fixed not to emit or comment out this code when
-   <target>_cgen_macro_insn_table is empty.  */
-#if 0
-  memset (insns, 0, num_macros * sizeof (CGEN_INSN));
+  /* This test has been added to avoid a warning generated
+     if memset is called with a third argument of value zero.  */
+  if (num_macros >= 1)
+    memset (insns, 0, num_macros * sizeof (CGEN_INSN));
   for (i = 0; i < num_macros; ++i)
     {
       insns[i].base = &ib[i];
       insns[i].opcode = &oc[i];
       arc_cgen_build_insn_regex (& insns[i]);
     }
-#endif
   cd->macro_insn_table.init_entries = insns;
   cd->macro_insn_table.entry_size = sizeof (CGEN_IBASE);
   cd->macro_insn_table.num_init_entries = num_macros;
