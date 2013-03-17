@@ -239,6 +239,29 @@ static const CGEN_OPINST sfmt_blcc_ops[] ATTRIBUTE_UNUSED = {
   { END, (const char *)0, (enum cgen_hw_type)0, (enum cgen_mode)0, (enum cgen_operand_type)0, 0, 0 }
 };
 
+static const CGEN_OPINST sfmt_blcc_d_ops[] ATTRIBUTE_UNUSED = {
+  { INPUT, "Qcondb", HW_H_QCONDB, CGEN_MODE_BI, OP_ENT (QCONDB), 0, 0 },
+  { INPUT, "h_auxr_SI_34", HW_H_AUXR, CGEN_MODE_SI, 0, 34, COND_REF },
+  { INPUT, "h_auxr_SI_37", HW_H_AUXR, CGEN_MODE_SI, 0, 37, COND_REF },
+  { INPUT, "h_e1_BI", HW_H_E1, CGEN_MODE_BI, 0, 0, COND_REF },
+  { INPUT, "h_memory_HI_add__USI_pc_4", HW_H_MEMORY, CGEN_MODE_HI, 0, 0, COND_REF },
+  { INPUT, "h_memory_UHI_countp", HW_H_MEMORY, CGEN_MODE_UHI, 0, 0, COND_REF },
+  { INPUT, "h_prof_offset_SI_0", HW_H_PROF_OFFSET, CGEN_MODE_SI, 0, 0, COND_REF },
+  { INPUT, "h_status32_SI_0", HW_H_STATUS32, CGEN_MODE_SI, 0, 0, COND_REF },
+  { INPUT, "h_timer_expire_SI_0", HW_H_TIMER_EXPIRE, CGEN_MODE_SI, 0, 0, COND_REF },
+  { INPUT, "h_ubit_BI", HW_H_UBIT, CGEN_MODE_BI, 0, 0, COND_REF },
+  { INPUT, "label21a", HW_H_IADDR, CGEN_MODE_USI, OP_ENT (LABEL21A), 0, COND_REF },
+  { INPUT, "pc", HW_H_PC, CGEN_MODE_USI, 0, 0, COND_REF },
+  { OUTPUT, "h_auxr_SI_11", HW_H_AUXR, CGEN_MODE_SI, 0, 11, COND_REF },
+  { OUTPUT, "h_auxr_SI_33", HW_H_AUXR, CGEN_MODE_SI, 0, 33, COND_REF },
+  { OUTPUT, "h_cr_SI_29", HW_H_CR, CGEN_MODE_SI, 0, 29, COND_REF },
+  { OUTPUT, "h_cr_SI_31", HW_H_CR, CGEN_MODE_SI, 0, 31, COND_REF },
+  { OUTPUT, "h_e1_BI", HW_H_E1, CGEN_MODE_BI, 0, 0, COND_REF },
+  { OUTPUT, "h_memory_UHI_countp", HW_H_MEMORY, CGEN_MODE_UHI, 0, 0, COND_REF },
+  { OUTPUT, "pc", HW_H_PC, CGEN_MODE_USI, 0, 0, COND_REF },
+  { END, (const char *)0, (enum cgen_hw_type)0, (enum cgen_mode)0, (enum cgen_operand_type)0, 0, 0 }
+};
+
 static const CGEN_OPINST sfmt_bl_ops[] ATTRIBUTE_UNUSED = {
   { INPUT, "h_auxr_SI_34", HW_H_AUXR, CGEN_MODE_SI, 0, 34, 0 },
   { INPUT, "h_auxr_SI_37", HW_H_AUXR, CGEN_MODE_SI, 0, 37, COND_REF },
@@ -3224,7 +3247,7 @@ static const CGEN_OPINST *arc_cgen_opinst_table[MAX_INSNS] = {
   & sfmt_brcc_U6_ops[0],
   & sfmt_bl_s_ops[0],
   & sfmt_blcc_ops[0],
-  & sfmt_blcc_ops[0],
+  & sfmt_blcc_d_ops[0],
   & sfmt_bl_ops[0],
   & sfmt_bl_d_ops[0],
   & sfmt_ld_abs_ops[0],
