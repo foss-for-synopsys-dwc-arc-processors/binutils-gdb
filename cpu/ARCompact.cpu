@@ -2042,8 +2042,13 @@
   (sequence ()
     (set (reg h-cr 31) (add pc 4))
     (set pc label21a))
-  (sequence ()
-    (set (reg h-cr 31) (add pc 8))
+  (sequence ((HI nword))
+    ; The return address depends on the length of the next opcode
+    ; (Long immediate is not allowed in delay slot.)
+    (set nword (mem HI (add pc 4)))
+    (if (and (and nword (sra nword 1)) #xa000)
+      (set (reg h-cr 31) (add pc 6))
+      (set (reg h-cr 31) (add pc 8)))
     (delay-jump label21a))
 )
 
