@@ -51,7 +51,7 @@
 #include "regset.h"
 #include "dis-asm.h"
 #include "opcode/arc.h"
-#include "opcodes/arc-dis.h"
+#include "opcodes/arc-dis-old.h"
 
 /* ARC header files */
 #include "arc-tdep.h"

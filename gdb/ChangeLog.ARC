@@ -1,3 +1,8 @@
+2013-03-17  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* arc-tdep.c, arc-linux-tdep.c: Reflect header file name change from
+	arc-dis.h to arc-dis-old.h .
+
 2013-03-13  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* arc-tdep.c (arc_scan_prologue): Add GDBARCH parameter. No need
