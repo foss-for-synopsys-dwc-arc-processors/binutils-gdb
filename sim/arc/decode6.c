@@ -2,23 +2,23 @@
 
 THIS FILE IS MACHINE GENERATED WITH CGEN.
 
-Copyright 1996-2005 Free Software Foundation, Inc.
+Copyright 1996-2010 Free Software Foundation, Inc.
 
 This file is part of the GNU simulators.
 
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2, or (at your option)
-any later version.
+   This file is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 3, or (at your option)
+   any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+   It is distributed in the hope that it will be useful, but WITHOUT
+   ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+   or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+   License for more details.
 
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
+   You should have received a copy of the GNU General Public License along
+   with this program; if not, write to the Free Software Foundation, Inc.,
+   51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
 
 */
 
@@ -59,7 +59,7 @@ static const struct insn_sem arc600f_insn_sem[] =
   { ARC_INSN_BRCC_U6_D, ARC600F_INSN_BRCC_U6_D, ARC600F_SFMT_BRCC_U6 },
   { ARC_INSN_BL_S, ARC600F_INSN_BL_S, ARC600F_SFMT_BL_S },
   { ARC_INSN_BLCC, ARC600F_INSN_BLCC, ARC600F_SFMT_BLCC },
-  { ARC_INSN_BLCC_D, ARC600F_INSN_BLCC_D, ARC600F_SFMT_BLCC },
+  { ARC_INSN_BLCC_D, ARC600F_INSN_BLCC_D, ARC600F_SFMT_BLCC_D },
   { ARC_INSN_BL, ARC600F_INSN_BL, ARC600F_SFMT_BL },
   { ARC_INSN_BL_D, ARC600F_INSN_BL_D, ARC600F_SFMT_BL_D },
   { ARC_INSN_LD_ABS, ARC600F_INSN_LD_ABS, ARC600F_SFMT_LD_ABS },
@@ -370,20 +370,20 @@ static const struct insn_sem arc600f_insn_sem[] =
   { ARC_INSN_SEXB_L_R_R__RC, ARC600F_INSN_SEXB_L_R_R__RC, ARC600F_SFMT_SEXB_L_R_R__RC },
   { ARC_INSN_SEXB_L_U6_, ARC600F_INSN_SEXB_L_U6_, ARC600F_SFMT_SEXB_L_U6_ },
   { ARC_INSN_I16_GO_SEXB_S_GO, ARC600F_INSN_I16_GO_SEXB_S_GO, ARC600F_SFMT_I16_GO_SUB_S_GO },
-  { ARC_INSN_SEXW_L_R_R__RC, ARC600F_INSN_SEXW_L_R_R__RC, ARC600F_SFMT_SEXW_L_R_R__RC },
-  { ARC_INSN_SEXW_L_U6_, ARC600F_INSN_SEXW_L_U6_, ARC600F_SFMT_SEXW_L_U6_ },
+  { ARC_INSN_SEXW_L_R_R__RC, ARC600F_INSN_SEXW_L_R_R__RC, ARC600F_SFMT_SEXB_L_R_R__RC },
+  { ARC_INSN_SEXW_L_U6_, ARC600F_INSN_SEXW_L_U6_, ARC600F_SFMT_SEXB_L_U6_ },
   { ARC_INSN_I16_GO_SEXW_S_GO, ARC600F_INSN_I16_GO_SEXW_S_GO, ARC600F_SFMT_I16_GO_SUB_S_GO },
   { ARC_INSN_EXTB_L_R_R__RC, ARC600F_INSN_EXTB_L_R_R__RC, ARC600F_SFMT_SEXB_L_R_R__RC },
   { ARC_INSN_EXTB_L_U6_, ARC600F_INSN_EXTB_L_U6_, ARC600F_SFMT_SEXB_L_U6_ },
   { ARC_INSN_I16_GO_EXTB_S_GO, ARC600F_INSN_I16_GO_EXTB_S_GO, ARC600F_SFMT_I16_GO_SUB_S_GO },
-  { ARC_INSN_EXTW_L_R_R__RC, ARC600F_INSN_EXTW_L_R_R__RC, ARC600F_SFMT_SEXW_L_R_R__RC },
-  { ARC_INSN_EXTW_L_U6_, ARC600F_INSN_EXTW_L_U6_, ARC600F_SFMT_SEXW_L_U6_ },
+  { ARC_INSN_EXTW_L_R_R__RC, ARC600F_INSN_EXTW_L_R_R__RC, ARC600F_SFMT_SEXB_L_R_R__RC },
+  { ARC_INSN_EXTW_L_U6_, ARC600F_INSN_EXTW_L_U6_, ARC600F_SFMT_SEXB_L_U6_ },
   { ARC_INSN_I16_GO_EXTW_S_GO, ARC600F_INSN_I16_GO_EXTW_S_GO, ARC600F_SFMT_I16_GO_SUB_S_GO },
   { ARC_INSN_ABS_L_R_R__RC, ARC600F_INSN_ABS_L_R_R__RC, ARC600F_SFMT_ABS_L_R_R__RC },
   { ARC_INSN_ABS_L_U6_, ARC600F_INSN_ABS_L_U6_, ARC600F_SFMT_ABS_L_U6_ },
   { ARC_INSN_I16_GO_ABS_S_GO, ARC600F_INSN_I16_GO_ABS_S_GO, ARC600F_SFMT_I16_GO_SUB_S_GO },
-  { ARC_INSN_NOT_L_R_R__RC, ARC600F_INSN_NOT_L_R_R__RC, ARC600F_SFMT_NOT_L_R_R__RC },
-  { ARC_INSN_NOT_L_U6_, ARC600F_INSN_NOT_L_U6_, ARC600F_SFMT_NOT_L_U6_ },
+  { ARC_INSN_NOT_L_R_R__RC, ARC600F_INSN_NOT_L_R_R__RC, ARC600F_SFMT_SEXB_L_R_R__RC },
+  { ARC_INSN_NOT_L_U6_, ARC600F_INSN_NOT_L_U6_, ARC600F_SFMT_SEXB_L_U6_ },
   { ARC_INSN_I16_GO_NOT_S_GO, ARC600F_INSN_I16_GO_NOT_S_GO, ARC600F_SFMT_I16_GO_SUB_S_GO },
   { ARC_INSN_RLC_L_R_R__RC, ARC600F_INSN_RLC_L_R_R__RC, ARC600F_SFMT_RRC_L_R_R__RC },
   { ARC_INSN_RLC_L_U6_, ARC600F_INSN_RLC_L_U6_, ARC600F_SFMT_RRC_L_U6_ },
@@ -469,15 +469,15 @@ static const struct insn_sem arc600f_insn_sem[] =
   { ARC_INSN_SWAP_L_R_R__RC, ARC600F_INSN_SWAP_L_R_R__RC, ARC600F_SFMT_SWAP_L_R_R__RC },
   { ARC_INSN_SWAP_L_U6_, ARC600F_INSN_SWAP_L_U6_, ARC600F_SFMT_SWAP_L_U6_ },
   { ARC_INSN_NORM_L_R_R__RC, ARC600F_INSN_NORM_L_R_R__RC, ARC600F_SFMT_SWAP_L_R_R__RC },
-  { ARC_INSN_NORM_L_U6_, ARC600F_INSN_NORM_L_U6_, ARC600F_SFMT_NORM_L_U6_ },
+  { ARC_INSN_NORM_L_U6_, ARC600F_INSN_NORM_L_U6_, ARC600F_SFMT_SWAP_L_U6_ },
   { ARC_INSN_RND16_L_R_R__RC, ARC600F_INSN_RND16_L_R_R__RC, ARC600F_SFMT_RND16_L_R_R__RC },
   { ARC_INSN_RND16_L_U6_, ARC600F_INSN_RND16_L_U6_, ARC600F_SFMT_RND16_L_U6_ },
-  { ARC_INSN_ABSSW_L_R_R__RC, ARC600F_INSN_ABSSW_L_R_R__RC, ARC600F_SFMT_ABSSW_L_R_R__RC },
-  { ARC_INSN_ABSSW_L_U6_, ARC600F_INSN_ABSSW_L_U6_, ARC600F_SFMT_ABSSW_L_U6_ },
+  { ARC_INSN_ABSSW_L_R_R__RC, ARC600F_INSN_ABSSW_L_R_R__RC, ARC600F_SFMT_RND16_L_R_R__RC },
+  { ARC_INSN_ABSSW_L_U6_, ARC600F_INSN_ABSSW_L_U6_, ARC600F_SFMT_RND16_L_U6_ },
   { ARC_INSN_ABSS_L_R_R__RC, ARC600F_INSN_ABSS_L_R_R__RC, ARC600F_SFMT_RND16_L_R_R__RC },
-  { ARC_INSN_ABSS_L_U6_, ARC600F_INSN_ABSS_L_U6_, ARC600F_SFMT_ABSS_L_U6_ },
-  { ARC_INSN_NEGSW_L_R_R__RC, ARC600F_INSN_NEGSW_L_R_R__RC, ARC600F_SFMT_ABSSW_L_R_R__RC },
-  { ARC_INSN_NEGSW_L_U6_, ARC600F_INSN_NEGSW_L_U6_, ARC600F_SFMT_ABSSW_L_U6_ },
+  { ARC_INSN_ABSS_L_U6_, ARC600F_INSN_ABSS_L_U6_, ARC600F_SFMT_RND16_L_U6_ },
+  { ARC_INSN_NEGSW_L_R_R__RC, ARC600F_INSN_NEGSW_L_R_R__RC, ARC600F_SFMT_RND16_L_R_R__RC },
+  { ARC_INSN_NEGSW_L_U6_, ARC600F_INSN_NEGSW_L_U6_, ARC600F_SFMT_RND16_L_U6_ },
   { ARC_INSN_NEGS_L_R_R__RC, ARC600F_INSN_NEGS_L_R_R__RC, ARC600F_SFMT_RND16_L_R_R__RC },
   { ARC_INSN_NEGS_L_U6_, ARC600F_INSN_NEGS_L_U6_, ARC600F_SFMT_RND16_L_U6_ },
   { ARC_INSN_NORMW_L_R_R__RC, ARC600F_INSN_NORMW_L_R_R__RC, ARC600F_SFMT_SWAP_L_R_R__RC },
@@ -518,7 +518,8 @@ static const struct insn_sem arc600f_insn_sem[] =
   { ARC_INSN_ARC600_CURRENT_LOOP_END_AFTER_BRANCH, ARC600F_INSN_ARC600_CURRENT_LOOP_END_AFTER_BRANCH, ARC600F_SFMT_CURRENT_LOOP_END_AFTER_BRANCH },
 };
 
-static const struct insn_sem arc600f_insn_sem_invalid = {
+static const struct insn_sem arc600f_insn_sem_invalid =
+{
   VIRTUAL_INSN_X_INVALID, ARC600F_INSN_X_INVALID, ARC600F_SFMT_EMPTY
 };
 
@@ -582,14 +583,14 @@ arc600f_init_idesc_table (SIM_CPU *cpu)
 
 const IDESC *
 arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
-              CGEN_INSN_INT base_insn, CGEN_INSN_INT entire_insn,
+              CGEN_INSN_WORD base_insn, CGEN_INSN_WORD entire_insn,
               ARGBUF *abuf)
 {
   /* Result of decoder.  */
   ARC600F_INSN_TYPE itype;
 
   {
-    CGEN_INSN_INT insn = base_insn;
+    CGEN_INSN_WORD insn = base_insn;
 
     {
       unsigned int val = (((insn >> 20) & (1 << 10)) | ((insn >> 19) & (3 << 8)) | ((insn >> 16) & (255 << 0)));
@@ -600,29 +601,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20000000)
-              { itype = ARC600F_INSN_ADD_L_R_R__RA__RC; goto extract_sfmt_add_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_ADD_L_R_R__RA__RC; goto extract_sfmt_add_L_r_r__RA__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -640,20 +626,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20010000)
-              { itype = ARC600F_INSN_ADC_L_R_R__RA__RC; goto extract_sfmt_adc_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_ADC_L_R_R__RA__RC; goto extract_sfmt_adc_L_r_r__RA__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -662,29 +639,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20020000)
-              { itype = ARC600F_INSN_SUB_L_R_R__RA__RC; goto extract_sfmt_add_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_SUB_L_R_R__RA__RC; goto extract_sfmt_add_L_r_r__RA__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -702,20 +664,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20030000)
-              { itype = ARC600F_INSN_SBC_L_R_R__RA__RC; goto extract_sfmt_adc_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_SBC_L_R_R__RA__RC; goto extract_sfmt_adc_L_r_r__RA__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -724,29 +677,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20040000)
-              { itype = ARC600F_INSN_AND_L_R_R__RA__RC; goto extract_sfmt_and_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_AND_L_R_R__RA__RC; goto extract_sfmt_and_L_r_r__RA__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -764,20 +702,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20050000)
-              { itype = ARC600F_INSN_OR_L_R_R__RA__RC; goto extract_sfmt_and_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_OR_L_R_R__RA__RC; goto extract_sfmt_and_L_r_r__RA__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -786,29 +715,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20060000)
-              { itype = ARC600F_INSN_BIC_L_R_R__RA__RC; goto extract_sfmt_and_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_BIC_L_R_R__RA__RC; goto extract_sfmt_and_L_r_r__RA__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -826,20 +740,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20070000)
-              { itype = ARC600F_INSN_XOR_L_R_R__RA__RC; goto extract_sfmt_and_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_XOR_L_R_R__RA__RC; goto extract_sfmt_and_L_r_r__RA__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -848,29 +753,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20080000)
-              { itype = ARC600F_INSN_MAX_L_R_R__RA__RC; goto extract_sfmt_add_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_MAX_L_R_R__RA__RC; goto extract_sfmt_add_L_r_r__RA__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -888,20 +778,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20090000)
-              { itype = ARC600F_INSN_MIN_L_R_R__RA__RC; goto extract_sfmt_add_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_MIN_L_R_R__RA__RC; goto extract_sfmt_add_L_r_r__RA__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -910,29 +791,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x200a0000)
-              { itype = ARC600F_INSN_MOV_L_R_R__RC; goto extract_sfmt_mov_L_r_r__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_MOV_L_R_R__RC; goto extract_sfmt_mov_L_r_r__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -950,20 +816,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x200b0000)
-              { itype = ARC600F_INSN_TST_L_R_R__RC; goto extract_sfmt_tst_L_r_r__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_TST_L_R_R__RC; goto extract_sfmt_tst_L_r_r__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -972,29 +829,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x200c0000)
-              { itype = ARC600F_INSN_CMP_L_R_R__RC; goto extract_sfmt_cmp_L_r_r__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_CMP_L_R_R__RC; goto extract_sfmt_cmp_L_r_r__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -1012,20 +854,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x200d0000)
-              { itype = ARC600F_INSN_RCMP_L_R_R__RC; goto extract_sfmt_cmp_L_r_r__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_RCMP_L_R_R__RC; goto extract_sfmt_cmp_L_r_r__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -1034,29 +867,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x200e0000)
-              { itype = ARC600F_INSN_RSUB_L_R_R__RA__RC; goto extract_sfmt_add_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_RSUB_L_R_R__RA__RC; goto extract_sfmt_add_L_r_r__RA__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -1074,20 +892,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x200f0000)
-              { itype = ARC600F_INSN_BSET_L_R_R__RA__RC; goto extract_sfmt_and_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_BSET_L_R_R__RA__RC; goto extract_sfmt_and_L_r_r__RA__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -1096,29 +905,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20100000)
-              { itype = ARC600F_INSN_BCLR_L_R_R__RA__RC; goto extract_sfmt_and_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_BCLR_L_R_R__RA__RC; goto extract_sfmt_and_L_r_r__RA__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -1136,20 +930,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20110000)
-              { itype = ARC600F_INSN_BTST_L_R_R__RC; goto extract_sfmt_tst_L_r_r__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_BTST_L_R_R__RC; goto extract_sfmt_tst_L_r_r__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -1158,29 +943,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20120000)
-              { itype = ARC600F_INSN_BXOR_L_R_R__RA__RC; goto extract_sfmt_and_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_BXOR_L_R_R__RA__RC; goto extract_sfmt_and_L_r_r__RA__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -1198,20 +968,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20130000)
-              { itype = ARC600F_INSN_BMSK_L_R_R__RA__RC; goto extract_sfmt_and_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_BMSK_L_R_R__RA__RC; goto extract_sfmt_and_L_r_r__RA__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -1220,29 +981,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20140000)
-              { itype = ARC600F_INSN_ADD1_L_R_R__RA__RC; goto extract_sfmt_add_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_ADD1_L_R_R__RA__RC; goto extract_sfmt_add_L_r_r__RA__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -1260,20 +1006,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20150000)
-              { itype = ARC600F_INSN_ADD2_L_R_R__RA__RC; goto extract_sfmt_add_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_ADD2_L_R_R__RA__RC; goto extract_sfmt_add_L_r_r__RA__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -1282,29 +1019,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20160000)
-              { itype = ARC600F_INSN_ADD3_L_R_R__RA__RC; goto extract_sfmt_add_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_ADD3_L_R_R__RA__RC; goto extract_sfmt_add_L_r_r__RA__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -1322,20 +1044,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20170000)
-              { itype = ARC600F_INSN_SUB1_L_R_R__RA__RC; goto extract_sfmt_add_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_SUB1_L_R_R__RA__RC; goto extract_sfmt_add_L_r_r__RA__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -1344,29 +1057,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20180000)
-              { itype = ARC600F_INSN_SUB2_L_R_R__RA__RC; goto extract_sfmt_add_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_SUB2_L_R_R__RA__RC; goto extract_sfmt_add_L_r_r__RA__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -1384,20 +1082,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20190000)
-              { itype = ARC600F_INSN_SUB3_L_R_R__RA__RC; goto extract_sfmt_add_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_SUB3_L_R_R__RA__RC; goto extract_sfmt_add_L_r_r__RA__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -1406,29 +1095,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x201a0000)
-              { itype = ARC600F_INSN_MPY_L_R_R__RA__RC; goto extract_sfmt_mpy_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_MPY_L_R_R__RA__RC; goto extract_sfmt_mpy_L_r_r__RA__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -1446,20 +1120,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x201b0000)
-              { itype = ARC600F_INSN_MPYH_L_R_R__RA__RC; goto extract_sfmt_mpy_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_MPYH_L_R_R__RA__RC; goto extract_sfmt_mpy_L_r_r__RA__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -1468,29 +1133,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x201c0000)
-              { itype = ARC600F_INSN_MPYHU_L_R_R__RA__RC; goto extract_sfmt_mpy_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_MPYHU_L_R_R__RA__RC; goto extract_sfmt_mpy_L_r_r__RA__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -1508,20 +1158,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x201d0000)
-              { itype = ARC600F_INSN_MPYU_L_R_R__RA__RC; goto extract_sfmt_mpy_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_MPYU_L_R_R__RA__RC; goto extract_sfmt_mpy_L_r_r__RA__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -1572,24 +1213,12 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -1649,15 +1278,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -1666,29 +1289,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20200000)
-              { itype = ARC600F_INSN_J_L_R_R___RC_ILINK_; goto extract_sfmt_j_L_r_r___RC_ilink_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_J_L_R_R___RC_ILINK_; goto extract_sfmt_j_L_r_r___RC_ilink_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -1706,20 +1314,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20210000)
-              { itype = ARC600F_INSN_J_L_R_R_D___RC_; goto extract_sfmt_j_L_r_r_d___RC_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_J_L_R_R_D___RC_; goto extract_sfmt_j_L_r_r_d___RC_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -1728,29 +1327,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20220000)
-              { itype = ARC600F_INSN_JL_L_R_R___RC_NOILINK_; goto extract_sfmt_jl_L_r_r___RC_noilink_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_JL_L_R_R___RC_NOILINK_; goto extract_sfmt_jl_L_r_r___RC_noilink_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -1768,20 +1352,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20230000)
-              { itype = ARC600F_INSN_JL_L_R_R_D___RC_; goto extract_sfmt_jl_L_r_r_d___RC_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_JL_L_R_R_D___RC_; goto extract_sfmt_jl_L_r_r_d___RC_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -1799,20 +1374,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20290000)
-              { itype = ARC600F_INSN_FLAG_L_R_R__RC; goto extract_sfmt_flag_L_r_r__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_FLAG_L_R_R__RC; goto extract_sfmt_flag_L_r_r__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -1821,29 +1387,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x202a0000)
-              { itype = ARC600F_INSN_LR_L_R_R___RC_; goto extract_sfmt_lr_L_r_r___RC_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_LR_L_R_R___RC_; goto extract_sfmt_lr_L_r_r___RC_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -1861,20 +1412,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x202b0000)
-              { itype = ARC600F_INSN_SR_L_R_R___RC_; goto extract_sfmt_sr_L_r_r___RC_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_SR_L_R_R___RC_; goto extract_sfmt_sr_L_r_r___RC_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -1903,14 +1445,8 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               unsigned int val = (((insn >> 31) & (1 << 0)));
               switch (val)
               {
-              case 0 :
-                if ((entire_insn & 0xf8010030) == 0x10000)
-                  { itype = ARC600F_INSN_B_L; goto extract_sfmt_b_l; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-              case 1 :
-                if ((entire_insn & 0xf8000000) == 0x80000000)
-                  { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 0 : itype = ARC600F_INSN_B_L; goto extract_sfmt_b_l;
+              case 1 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
               default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               }
             }
@@ -1969,14 +1505,8 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               unsigned int val = (((insn >> 31) & (1 << 0)));
               switch (val)
               {
-              case 0 :
-                if ((entire_insn & 0xf8010030) == 0x10020)
-                  { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-              case 1 :
-                if ((entire_insn & 0xf8000000) == 0x80000000)
-                  { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 0 : itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l;
+              case 1 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
               default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               }
             }
@@ -1985,14 +1515,8 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               unsigned int val = (((insn >> 31) & (1 << 0)));
               switch (val)
               {
-              case 0 :
-                if ((entire_insn & 0xf8ff003f) == 0x202f0000)
-                  { itype = ARC600F_INSN_ASL_L_R_R__RC; goto extract_sfmt_asl_L_r_r__RC; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-              case 1 :
-                if ((entire_insn & 0xf8000000) == 0xa0000000)
-                  { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 0 : itype = ARC600F_INSN_ASL_L_R_R__RC; goto extract_sfmt_asl_L_r_r__RC;
+              case 1 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
               default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               }
             }
@@ -2001,14 +1525,8 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               unsigned int val = (((insn >> 31) & (1 << 0)));
               switch (val)
               {
-              case 0 :
-                if ((entire_insn & 0xf8ff003f) == 0x202f0001)
-                  { itype = ARC600F_INSN_ASR_L_R_R__RC; goto extract_sfmt_asr_L_r_r__RC; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-              case 1 :
-                if ((entire_insn & 0xf8000000) == 0xa0000000)
-                  { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 0 : itype = ARC600F_INSN_ASR_L_R_R__RC; goto extract_sfmt_asr_L_r_r__RC;
+              case 1 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
               default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               }
             }
@@ -2017,14 +1535,8 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               unsigned int val = (((insn >> 31) & (1 << 0)));
               switch (val)
               {
-              case 0 :
-                if ((entire_insn & 0xf8ff003f) == 0x202f0002)
-                  { itype = ARC600F_INSN_LSR_L_R_R__RC; goto extract_sfmt_asr_L_r_r__RC; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-              case 1 :
-                if ((entire_insn & 0xf8000000) == 0xa0000000)
-                  { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 0 : itype = ARC600F_INSN_LSR_L_R_R__RC; goto extract_sfmt_asr_L_r_r__RC;
+              case 1 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
               default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               }
             }
@@ -2033,14 +1545,8 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               unsigned int val = (((insn >> 31) & (1 << 0)));
               switch (val)
               {
-              case 0 :
-                if ((entire_insn & 0xf8ff003f) == 0x202f0003)
-                  { itype = ARC600F_INSN_ROR_L_R_R__RC; goto extract_sfmt_asr_L_r_r__RC; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-              case 1 :
-                if ((entire_insn & 0xf8000000) == 0xa0000000)
-                  { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 0 : itype = ARC600F_INSN_ROR_L_R_R__RC; goto extract_sfmt_asr_L_r_r__RC;
+              case 1 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
               default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               }
             }
@@ -2049,14 +1555,8 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               unsigned int val = (((insn >> 31) & (1 << 0)));
               switch (val)
               {
-              case 0 :
-                if ((entire_insn & 0xf8ff003f) == 0x202f0004)
-                  { itype = ARC600F_INSN_RRC_L_R_R__RC; goto extract_sfmt_rrc_L_r_r__RC; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-              case 1 :
-                if ((entire_insn & 0xf8000000) == 0xa0000000)
-                  { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 0 : itype = ARC600F_INSN_RRC_L_R_R__RC; goto extract_sfmt_rrc_L_r_r__RC;
+              case 1 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
               default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               }
             }
@@ -2065,14 +1565,8 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               unsigned int val = (((insn >> 31) & (1 << 0)));
               switch (val)
               {
-              case 0 :
-                if ((entire_insn & 0xf8ff003f) == 0x202f0005)
-                  { itype = ARC600F_INSN_SEXB_L_R_R__RC; goto extract_sfmt_sexb_L_r_r__RC; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-              case 1 :
-                if ((entire_insn & 0xf8000000) == 0xa0000000)
-                  { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 0 : itype = ARC600F_INSN_SEXB_L_R_R__RC; goto extract_sfmt_sexb_L_r_r__RC;
+              case 1 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
               default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               }
             }
@@ -2081,14 +1575,8 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               unsigned int val = (((insn >> 31) & (1 << 0)));
               switch (val)
               {
-              case 0 :
-                if ((entire_insn & 0xf8ff003f) == 0x202f0006)
-                  { itype = ARC600F_INSN_SEXW_L_R_R__RC; goto extract_sfmt_sexw_L_r_r__RC; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-              case 1 :
-                if ((entire_insn & 0xf8000000) == 0xa0000000)
-                  { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 0 : itype = ARC600F_INSN_SEXW_L_R_R__RC; goto extract_sfmt_sexb_L_r_r__RC;
+              case 1 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
               default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               }
             }
@@ -2097,14 +1585,8 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               unsigned int val = (((insn >> 31) & (1 << 0)));
               switch (val)
               {
-              case 0 :
-                if ((entire_insn & 0xf8ff003f) == 0x202f0007)
-                  { itype = ARC600F_INSN_EXTB_L_R_R__RC; goto extract_sfmt_sexb_L_r_r__RC; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-              case 1 :
-                if ((entire_insn & 0xf8000000) == 0xa0000000)
-                  { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 0 : itype = ARC600F_INSN_EXTB_L_R_R__RC; goto extract_sfmt_sexb_L_r_r__RC;
+              case 1 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
               default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               }
             }
@@ -2113,14 +1595,8 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               unsigned int val = (((insn >> 31) & (1 << 0)));
               switch (val)
               {
-              case 0 :
-                if ((entire_insn & 0xf8ff003f) == 0x202f0008)
-                  { itype = ARC600F_INSN_EXTW_L_R_R__RC; goto extract_sfmt_sexw_L_r_r__RC; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-              case 1 :
-                if ((entire_insn & 0xf8000000) == 0xa0000000)
-                  { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 0 : itype = ARC600F_INSN_EXTW_L_R_R__RC; goto extract_sfmt_sexb_L_r_r__RC;
+              case 1 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
               default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               }
             }
@@ -2129,14 +1605,8 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               unsigned int val = (((insn >> 31) & (1 << 0)));
               switch (val)
               {
-              case 0 :
-                if ((entire_insn & 0xf8ff003f) == 0x202f0009)
-                  { itype = ARC600F_INSN_ABS_L_R_R__RC; goto extract_sfmt_abs_L_r_r__RC; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-              case 1 :
-                if ((entire_insn & 0xf8000000) == 0xa0000000)
-                  { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 0 : itype = ARC600F_INSN_ABS_L_R_R__RC; goto extract_sfmt_abs_L_r_r__RC;
+              case 1 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
               default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               }
             }
@@ -2145,14 +1615,8 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               unsigned int val = (((insn >> 31) & (1 << 0)));
               switch (val)
               {
-              case 0 :
-                if ((entire_insn & 0xf8ff003f) == 0x202f000a)
-                  { itype = ARC600F_INSN_NOT_L_R_R__RC; goto extract_sfmt_not_L_r_r__RC; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-              case 1 :
-                if ((entire_insn & 0xf8000000) == 0xa0000000)
-                  { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 0 : itype = ARC600F_INSN_NOT_L_R_R__RC; goto extract_sfmt_sexb_L_r_r__RC;
+              case 1 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
               default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               }
             }
@@ -2161,14 +1625,8 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               unsigned int val = (((insn >> 31) & (1 << 0)));
               switch (val)
               {
-              case 0 :
-                if ((entire_insn & 0xf8ff003f) == 0x202f000b)
-                  { itype = ARC600F_INSN_RLC_L_R_R__RC; goto extract_sfmt_rrc_L_r_r__RC; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-              case 1 :
-                if ((entire_insn & 0xf8000000) == 0xa0000000)
-                  { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 0 : itype = ARC600F_INSN_RLC_L_R_R__RC; goto extract_sfmt_rrc_L_r_r__RC;
+              case 1 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
               default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               }
             }
@@ -2231,14 +1689,8 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               unsigned int val = (((insn >> 31) & (1 << 0)));
               switch (val)
               {
-              case 0 :
-                if ((entire_insn & 0xf8ff003f) == 0x202f003e)
-                  { itype = ARC600F_INSN_CURRENT_LOOP_END; goto extract_sfmt_current_loop_end; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-              case 1 :
-                if ((entire_insn & 0xf8000000) == 0xa0000000)
-                  { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 0 : itype = ARC600F_INSN_CURRENT_LOOP_END; goto extract_sfmt_current_loop_end;
+              case 1 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
               default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               }
             }
@@ -2250,29 +1702,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20300000)
-              { itype = ARC600F_INSN_LD_ABC; goto extract_sfmt_ld_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_LD_ABC; goto extract_sfmt_ld_abc;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -2281,29 +1718,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20320000)
-              { itype = ARC600F_INSN_LDB_ABC; goto extract_sfmt_ldb_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_LDB_ABC; goto extract_sfmt_ldb_abc;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -2321,20 +1743,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20330000)
-              { itype = ARC600F_INSN_LDB_X_ABC; goto extract_sfmt_ldb_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_LDB_X_ABC; goto extract_sfmt_ldb_abc;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -2343,29 +1756,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20340000)
-              { itype = ARC600F_INSN_LDW_ABC; goto extract_sfmt_ldw_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_LDW_ABC; goto extract_sfmt_ldw_abc;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -2383,20 +1781,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20350000)
-              { itype = ARC600F_INSN_LDW_X_ABC; goto extract_sfmt_ldw_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_LDW_X_ABC; goto extract_sfmt_ldw_abc;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -2405,29 +1794,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20400000)
-              { itype = ARC600F_INSN_ADD_L_U6__RA_; goto extract_sfmt_add_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_ADD_L_U6__RA_; goto extract_sfmt_add_L_u6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -2445,20 +1819,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20410000)
-              { itype = ARC600F_INSN_ADC_L_U6__RA_; goto extract_sfmt_adc_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_ADC_L_U6__RA_; goto extract_sfmt_adc_L_u6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -2467,29 +1832,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20420000)
-              { itype = ARC600F_INSN_SUB_L_U6__RA_; goto extract_sfmt_add_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_SUB_L_U6__RA_; goto extract_sfmt_add_L_u6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -2507,20 +1857,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20430000)
-              { itype = ARC600F_INSN_SBC_L_U6__RA_; goto extract_sfmt_adc_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_SBC_L_U6__RA_; goto extract_sfmt_adc_L_u6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -2529,29 +1870,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20440000)
-              { itype = ARC600F_INSN_AND_L_U6__RA_; goto extract_sfmt_and_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_AND_L_U6__RA_; goto extract_sfmt_and_L_u6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -2569,20 +1895,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20450000)
-              { itype = ARC600F_INSN_OR_L_U6__RA_; goto extract_sfmt_and_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_OR_L_U6__RA_; goto extract_sfmt_and_L_u6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -2591,29 +1908,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20460000)
-              { itype = ARC600F_INSN_BIC_L_U6__RA_; goto extract_sfmt_and_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_BIC_L_U6__RA_; goto extract_sfmt_and_L_u6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -2631,20 +1933,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20470000)
-              { itype = ARC600F_INSN_XOR_L_U6__RA_; goto extract_sfmt_and_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_XOR_L_U6__RA_; goto extract_sfmt_and_L_u6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -2653,29 +1946,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20480000)
-              { itype = ARC600F_INSN_MAX_L_U6__RA_; goto extract_sfmt_add_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_MAX_L_U6__RA_; goto extract_sfmt_add_L_u6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -2693,20 +1971,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20490000)
-              { itype = ARC600F_INSN_MIN_L_U6__RA_; goto extract_sfmt_add_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_MIN_L_U6__RA_; goto extract_sfmt_add_L_u6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -2715,29 +1984,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x204a0000)
-              { itype = ARC600F_INSN_MOV_L_U6_; goto extract_sfmt_mov_L_u6_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_MOV_L_U6_; goto extract_sfmt_mov_L_u6_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -2755,20 +2009,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x204b0000)
-              { itype = ARC600F_INSN_TST_L_U6_; goto extract_sfmt_tst_L_u6_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_TST_L_U6_; goto extract_sfmt_tst_L_u6_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -2777,29 +2022,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x204c0000)
-              { itype = ARC600F_INSN_CMP_L_U6_; goto extract_sfmt_cmp_L_u6_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_CMP_L_U6_; goto extract_sfmt_cmp_L_u6_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -2817,20 +2047,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x204d0000)
-              { itype = ARC600F_INSN_RCMP_L_U6_; goto extract_sfmt_cmp_L_u6_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_RCMP_L_U6_; goto extract_sfmt_cmp_L_u6_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -2839,29 +2060,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x204e0000)
-              { itype = ARC600F_INSN_RSUB_L_U6__RA_; goto extract_sfmt_add_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_RSUB_L_U6__RA_; goto extract_sfmt_add_L_u6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -2879,20 +2085,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x204f0000)
-              { itype = ARC600F_INSN_BSET_L_U6__RA_; goto extract_sfmt_and_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_BSET_L_U6__RA_; goto extract_sfmt_and_L_u6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -2901,29 +2098,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20500000)
-              { itype = ARC600F_INSN_BCLR_L_U6__RA_; goto extract_sfmt_and_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_BCLR_L_U6__RA_; goto extract_sfmt_and_L_u6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -2941,20 +2123,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20510000)
-              { itype = ARC600F_INSN_BTST_L_U6_; goto extract_sfmt_tst_L_u6_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_BTST_L_U6_; goto extract_sfmt_tst_L_u6_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -2963,29 +2136,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20520000)
-              { itype = ARC600F_INSN_BXOR_L_U6__RA_; goto extract_sfmt_and_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_BXOR_L_U6__RA_; goto extract_sfmt_and_L_u6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -3003,20 +2161,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20530000)
-              { itype = ARC600F_INSN_BMSK_L_U6__RA_; goto extract_sfmt_and_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_BMSK_L_U6__RA_; goto extract_sfmt_and_L_u6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -3025,29 +2174,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20540000)
-              { itype = ARC600F_INSN_ADD1_L_U6__RA_; goto extract_sfmt_add_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_ADD1_L_U6__RA_; goto extract_sfmt_add_L_u6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -3065,20 +2199,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20550000)
-              { itype = ARC600F_INSN_ADD2_L_U6__RA_; goto extract_sfmt_add_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_ADD2_L_U6__RA_; goto extract_sfmt_add_L_u6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -3087,29 +2212,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20560000)
-              { itype = ARC600F_INSN_ADD3_L_U6__RA_; goto extract_sfmt_add_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_ADD3_L_U6__RA_; goto extract_sfmt_add_L_u6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -3127,20 +2237,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20570000)
-              { itype = ARC600F_INSN_SUB1_L_U6__RA_; goto extract_sfmt_add_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_SUB1_L_U6__RA_; goto extract_sfmt_add_L_u6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -3149,29 +2250,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20580000)
-              { itype = ARC600F_INSN_SUB2_L_U6__RA_; goto extract_sfmt_add_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_SUB2_L_U6__RA_; goto extract_sfmt_add_L_u6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -3189,20 +2275,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20590000)
-              { itype = ARC600F_INSN_SUB3_L_U6__RA_; goto extract_sfmt_add_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_SUB3_L_U6__RA_; goto extract_sfmt_add_L_u6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -3211,29 +2288,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x205a0000)
-              { itype = ARC600F_INSN_MPY_L_U6__RA_; goto extract_sfmt_mpy_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_MPY_L_U6__RA_; goto extract_sfmt_mpy_L_u6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -3251,20 +2313,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x205b0000)
-              { itype = ARC600F_INSN_MPYH_L_U6__RA_; goto extract_sfmt_mpy_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_MPYH_L_U6__RA_; goto extract_sfmt_mpy_L_u6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -3273,29 +2326,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x205c0000)
-              { itype = ARC600F_INSN_MPYHU_L_U6__RA_; goto extract_sfmt_mpy_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_MPYHU_L_U6__RA_; goto extract_sfmt_mpy_L_u6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -3313,20 +2351,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x205d0000)
-              { itype = ARC600F_INSN_MPYU_L_U6__RA_; goto extract_sfmt_mpy_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_MPYU_L_U6__RA_; goto extract_sfmt_mpy_L_u6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -3335,29 +2364,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20600000)
-              { itype = ARC600F_INSN_J_L_U6_; goto extract_sfmt_j_L_u6_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_J_L_U6_; goto extract_sfmt_j_L_u6_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -3375,20 +2389,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20610000)
-              { itype = ARC600F_INSN_J_L_U6_D_; goto extract_sfmt_j_L_u6_d_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_J_L_U6_D_; goto extract_sfmt_j_L_u6_d_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -3397,29 +2402,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20620000)
-              { itype = ARC600F_INSN_JL_L_U6_; goto extract_sfmt_jl_L_u6_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_JL_L_U6_; goto extract_sfmt_jl_L_u6_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -3437,20 +2427,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20630000)
-              { itype = ARC600F_INSN_JL_L_U6_D_; goto extract_sfmt_jl_L_u6_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_JL_L_U6_D_; goto extract_sfmt_jl_L_u6_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -3468,20 +2449,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20690000)
-              { itype = ARC600F_INSN_FLAG_L_U6_; goto extract_sfmt_flag_L_u6_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_FLAG_L_U6_; goto extract_sfmt_flag_L_u6_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -3490,29 +2462,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x206a0000)
-              { itype = ARC600F_INSN_LR_L_U6_; goto extract_sfmt_lr_L_u6_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_LR_L_U6_; goto extract_sfmt_lr_L_u6_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -3530,20 +2487,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x206b0000)
-              { itype = ARC600F_INSN_SR_L_U6_; goto extract_sfmt_sr_L_u6_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_SR_L_U6_; goto extract_sfmt_sr_L_u6_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -3570,15 +2518,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
                   { itype = ARC600F_INSN_ASL_L_U6_; goto extract_sfmt_asl_L_u6_; }
                 itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               case 4 : /* fall through */
-              case 5 :
-                if ((entire_insn & 0xf8000000) == 0x80000000)
-                  { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
               case 6 : /* fall through */
-              case 7 :
-                if ((entire_insn & 0xf8000000) == 0xa0000000)
-                  { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
               default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               }
             }
@@ -3600,15 +2542,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
                   { itype = ARC600F_INSN_ASR_L_U6_; goto extract_sfmt_asr_L_u6_; }
                 itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               case 4 : /* fall through */
-              case 5 :
-                if ((entire_insn & 0xf8000000) == 0x80000000)
-                  { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
               case 6 : /* fall through */
-              case 7 :
-                if ((entire_insn & 0xf8000000) == 0xa0000000)
-                  { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
               default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               }
             }
@@ -3630,15 +2566,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
                   { itype = ARC600F_INSN_LSR_L_U6_; goto extract_sfmt_asr_L_u6_; }
                 itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               case 4 : /* fall through */
-              case 5 :
-                if ((entire_insn & 0xf8000000) == 0x80000000)
-                  { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
               case 6 : /* fall through */
-              case 7 :
-                if ((entire_insn & 0xf8000000) == 0xa0000000)
-                  { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
               default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               }
             }
@@ -3660,15 +2590,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
                   { itype = ARC600F_INSN_ROR_L_U6_; goto extract_sfmt_asr_L_u6_; }
                 itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               case 4 : /* fall through */
-              case 5 :
-                if ((entire_insn & 0xf8000000) == 0x80000000)
-                  { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
               case 6 : /* fall through */
-              case 7 :
-                if ((entire_insn & 0xf8000000) == 0xa0000000)
-                  { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
               default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               }
             }
@@ -3690,15 +2614,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
                   { itype = ARC600F_INSN_RRC_L_U6_; goto extract_sfmt_rrc_L_u6_; }
                 itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               case 4 : /* fall through */
-              case 5 :
-                if ((entire_insn & 0xf8000000) == 0x80000000)
-                  { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
               case 6 : /* fall through */
-              case 7 :
-                if ((entire_insn & 0xf8000000) == 0xa0000000)
-                  { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
               default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               }
             }
@@ -3720,15 +2638,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
                   { itype = ARC600F_INSN_SEXB_L_U6_; goto extract_sfmt_sexb_L_u6_; }
                 itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               case 4 : /* fall through */
-              case 5 :
-                if ((entire_insn & 0xf8000000) == 0x80000000)
-                  { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
               case 6 : /* fall through */
-              case 7 :
-                if ((entire_insn & 0xf8000000) == 0xa0000000)
-                  { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
               default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               }
             }
@@ -3747,18 +2659,12 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
                 itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               case 2 :
                 if ((entire_insn & 0xf8ff003f) == 0x206f0006)
-                  { itype = ARC600F_INSN_SEXW_L_U6_; goto extract_sfmt_sexw_L_u6_; }
+                  { itype = ARC600F_INSN_SEXW_L_U6_; goto extract_sfmt_sexb_L_u6_; }
                 itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               case 4 : /* fall through */
-              case 5 :
-                if ((entire_insn & 0xf8000000) == 0x80000000)
-                  { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
               case 6 : /* fall through */
-              case 7 :
-                if ((entire_insn & 0xf8000000) == 0xa0000000)
-                  { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
               default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               }
             }
@@ -3780,15 +2686,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
                   { itype = ARC600F_INSN_EXTB_L_U6_; goto extract_sfmt_sexb_L_u6_; }
                 itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               case 4 : /* fall through */
-              case 5 :
-                if ((entire_insn & 0xf8000000) == 0x80000000)
-                  { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
               case 6 : /* fall through */
-              case 7 :
-                if ((entire_insn & 0xf8000000) == 0xa0000000)
-                  { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
               default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               }
             }
@@ -3807,18 +2707,12 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
                 itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               case 2 :
                 if ((entire_insn & 0xf8ff003f) == 0x206f0008)
-                  { itype = ARC600F_INSN_EXTW_L_U6_; goto extract_sfmt_sexw_L_u6_; }
+                  { itype = ARC600F_INSN_EXTW_L_U6_; goto extract_sfmt_sexb_L_u6_; }
                 itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               case 4 : /* fall through */
-              case 5 :
-                if ((entire_insn & 0xf8000000) == 0x80000000)
-                  { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
               case 6 : /* fall through */
-              case 7 :
-                if ((entire_insn & 0xf8000000) == 0xa0000000)
-                  { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
               default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               }
             }
@@ -3840,15 +2734,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
                   { itype = ARC600F_INSN_ABS_L_U6_; goto extract_sfmt_abs_L_u6_; }
                 itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               case 4 : /* fall through */
-              case 5 :
-                if ((entire_insn & 0xf8000000) == 0x80000000)
-                  { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
               case 6 : /* fall through */
-              case 7 :
-                if ((entire_insn & 0xf8000000) == 0xa0000000)
-                  { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
               default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               }
             }
@@ -3867,18 +2755,12 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
                 itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               case 2 :
                 if ((entire_insn & 0xf8ff003f) == 0x206f000a)
-                  { itype = ARC600F_INSN_NOT_L_U6_; goto extract_sfmt_not_L_u6_; }
+                  { itype = ARC600F_INSN_NOT_L_U6_; goto extract_sfmt_sexb_L_u6_; }
                 itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               case 4 : /* fall through */
-              case 5 :
-                if ((entire_insn & 0xf8000000) == 0x80000000)
-                  { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
               case 6 : /* fall through */
-              case 7 :
-                if ((entire_insn & 0xf8000000) == 0xa0000000)
-                  { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
               default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               }
             }
@@ -3900,15 +2782,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
                   { itype = ARC600F_INSN_RLC_L_U6_; goto extract_sfmt_rrc_L_u6_; }
                 itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               case 4 : /* fall through */
-              case 5 :
-                if ((entire_insn & 0xf8000000) == 0x80000000)
-                  { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
               case 6 : /* fall through */
-              case 7 :
-                if ((entire_insn & 0xf8000000) == 0xa0000000)
-                  { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
               default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               }
             }
@@ -3928,15 +2804,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
                   { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
                 itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               case 4 : /* fall through */
-              case 5 :
-                if ((entire_insn & 0xf8000000) == 0x80000000)
-                  { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
               case 6 : /* fall through */
-              case 7 :
-                if ((entire_insn & 0xf8000000) == 0xa0000000)
-                  { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
               default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               }
             }
@@ -3952,10 +2822,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               case 16 : /* fall through */
               case 20 : /* fall through */
               case 24 : /* fall through */
-              case 28 :
-                if ((entire_insn & 0xf8010030) == 0x10000)
-                  { itype = ARC600F_INSN_B_L; goto extract_sfmt_b_l; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 28 : itype = ARC600F_INSN_B_L; goto extract_sfmt_b_l;
               case 2 : /* fall through */
               case 6 : /* fall through */
               case 10 : /* fall through */
@@ -3963,10 +2830,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               case 18 : /* fall through */
               case 22 : /* fall through */
               case 26 : /* fall through */
-              case 30 :
-                if ((entire_insn & 0xf8010030) == 0x10020)
-                  { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 30 : itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l;
               case 43 :
                 if ((entire_insn & 0xffff7fff) == 0x226f003f)
                   { itype = ARC600F_INSN_SWI; goto extract_sfmt_swi; }
@@ -4006,10 +2870,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               case 92 : /* fall through */
               case 93 : /* fall through */
               case 94 : /* fall through */
-              case 95 :
-                if ((entire_insn & 0xf8000000) == 0x80000000)
-                  { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 95 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
               case 96 : /* fall through */
               case 97 : /* fall through */
               case 98 : /* fall through */
@@ -4041,10 +2902,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               case 124 : /* fall through */
               case 125 : /* fall through */
               case 126 : /* fall through */
-              case 127 :
-                if ((entire_insn & 0xf8000000) == 0xa0000000)
-                  { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 127 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
               default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               }
             }
@@ -4056,29 +2914,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20700000)
-              { itype = ARC600F_INSN_LD__AW_ABC; goto extract_sfmt_ld__AW_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_LD__AW_ABC; goto extract_sfmt_ld__AW_abc;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -4087,29 +2930,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20720000)
-              { itype = ARC600F_INSN_LDB__AW_ABC; goto extract_sfmt_ldb__AW_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_LDB__AW_ABC; goto extract_sfmt_ldb__AW_abc;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -4127,20 +2955,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20730000)
-              { itype = ARC600F_INSN_LDB__AW_X_ABC; goto extract_sfmt_ldb__AW_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_LDB__AW_X_ABC; goto extract_sfmt_ldb__AW_abc;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -4149,29 +2968,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20740000)
-              { itype = ARC600F_INSN_LDW__AW_ABC; goto extract_sfmt_ldw__AW_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_LDW__AW_ABC; goto extract_sfmt_ldw__AW_abc;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -4189,20 +2993,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20750000)
-              { itype = ARC600F_INSN_LDW__AW_X_ABC; goto extract_sfmt_ldw__AW_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_LDW__AW_X_ABC; goto extract_sfmt_ldw__AW_abc;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -4211,29 +3006,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20800000)
-              { itype = ARC600F_INSN_ADD_L_S12__RA_; goto extract_sfmt_add_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_ADD_L_S12__RA_; goto extract_sfmt_add_L_s12__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -4251,20 +3031,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20810000)
-              { itype = ARC600F_INSN_ADC_L_S12__RA_; goto extract_sfmt_adc_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_ADC_L_S12__RA_; goto extract_sfmt_adc_L_s12__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -4273,29 +3044,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20820000)
-              { itype = ARC600F_INSN_SUB_L_S12__RA_; goto extract_sfmt_add_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_SUB_L_S12__RA_; goto extract_sfmt_add_L_s12__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -4313,20 +3069,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20830000)
-              { itype = ARC600F_INSN_SBC_L_S12__RA_; goto extract_sfmt_adc_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_SBC_L_S12__RA_; goto extract_sfmt_adc_L_s12__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -4335,29 +3082,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20840000)
-              { itype = ARC600F_INSN_AND_L_S12__RA_; goto extract_sfmt_and_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_AND_L_S12__RA_; goto extract_sfmt_and_L_s12__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -4375,20 +3107,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20850000)
-              { itype = ARC600F_INSN_OR_L_S12__RA_; goto extract_sfmt_and_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_OR_L_S12__RA_; goto extract_sfmt_and_L_s12__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -4397,29 +3120,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20860000)
-              { itype = ARC600F_INSN_BIC_L_S12__RA_; goto extract_sfmt_and_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_BIC_L_S12__RA_; goto extract_sfmt_and_L_s12__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -4437,20 +3145,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20870000)
-              { itype = ARC600F_INSN_XOR_L_S12__RA_; goto extract_sfmt_and_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_XOR_L_S12__RA_; goto extract_sfmt_and_L_s12__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -4459,29 +3158,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20880000)
-              { itype = ARC600F_INSN_MAX_L_S12__RA_; goto extract_sfmt_add_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_MAX_L_S12__RA_; goto extract_sfmt_add_L_s12__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -4499,20 +3183,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20890000)
-              { itype = ARC600F_INSN_MIN_L_S12__RA_; goto extract_sfmt_add_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_MIN_L_S12__RA_; goto extract_sfmt_add_L_s12__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -4521,29 +3196,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x208a0000)
-              { itype = ARC600F_INSN_MOV_L_S12_; goto extract_sfmt_mov_L_s12_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_MOV_L_S12_; goto extract_sfmt_mov_L_s12_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -4561,20 +3221,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x208b0000)
-              { itype = ARC600F_INSN_TST_L_S12_; goto extract_sfmt_tst_L_s12_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_TST_L_S12_; goto extract_sfmt_tst_L_s12_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -4583,29 +3234,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x208c0000)
-              { itype = ARC600F_INSN_CMP_L_S12_; goto extract_sfmt_cmp_L_s12_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_CMP_L_S12_; goto extract_sfmt_cmp_L_s12_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -4623,20 +3259,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x208d0000)
-              { itype = ARC600F_INSN_RCMP_L_S12_; goto extract_sfmt_cmp_L_s12_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_RCMP_L_S12_; goto extract_sfmt_cmp_L_s12_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -4645,29 +3272,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x208e0000)
-              { itype = ARC600F_INSN_RSUB_L_S12__RA_; goto extract_sfmt_add_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_RSUB_L_S12__RA_; goto extract_sfmt_add_L_s12__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -4685,20 +3297,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x208f0000)
-              { itype = ARC600F_INSN_BSET_L_S12__RA_; goto extract_sfmt_and_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_BSET_L_S12__RA_; goto extract_sfmt_and_L_s12__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -4707,29 +3310,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20900000)
-              { itype = ARC600F_INSN_BCLR_L_S12__RA_; goto extract_sfmt_and_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_BCLR_L_S12__RA_; goto extract_sfmt_and_L_s12__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -4747,20 +3335,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20910000)
-              { itype = ARC600F_INSN_BTST_L_S12_; goto extract_sfmt_tst_L_s12_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_BTST_L_S12_; goto extract_sfmt_tst_L_s12_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -4769,29 +3348,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20920000)
-              { itype = ARC600F_INSN_BXOR_L_S12__RA_; goto extract_sfmt_and_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_BXOR_L_S12__RA_; goto extract_sfmt_and_L_s12__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -4809,20 +3373,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20930000)
-              { itype = ARC600F_INSN_BMSK_L_S12__RA_; goto extract_sfmt_and_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_BMSK_L_S12__RA_; goto extract_sfmt_and_L_s12__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -4831,29 +3386,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20940000)
-              { itype = ARC600F_INSN_ADD1_L_S12__RA_; goto extract_sfmt_add_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_ADD1_L_S12__RA_; goto extract_sfmt_add_L_s12__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -4871,20 +3411,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20950000)
-              { itype = ARC600F_INSN_ADD2_L_S12__RA_; goto extract_sfmt_add_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_ADD2_L_S12__RA_; goto extract_sfmt_add_L_s12__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -4893,29 +3424,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20960000)
-              { itype = ARC600F_INSN_ADD3_L_S12__RA_; goto extract_sfmt_add_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_ADD3_L_S12__RA_; goto extract_sfmt_add_L_s12__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -4933,20 +3449,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20970000)
-              { itype = ARC600F_INSN_SUB1_L_S12__RA_; goto extract_sfmt_add_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_SUB1_L_S12__RA_; goto extract_sfmt_add_L_s12__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -4955,29 +3462,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20980000)
-              { itype = ARC600F_INSN_SUB2_L_S12__RA_; goto extract_sfmt_add_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_SUB2_L_S12__RA_; goto extract_sfmt_add_L_s12__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -4995,20 +3487,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20990000)
-              { itype = ARC600F_INSN_SUB3_L_S12__RA_; goto extract_sfmt_add_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_SUB3_L_S12__RA_; goto extract_sfmt_add_L_s12__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -5017,29 +3500,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x209a0000)
-              { itype = ARC600F_INSN_MPY_L_S12__RA_; goto extract_sfmt_mpy_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_MPY_L_S12__RA_; goto extract_sfmt_mpy_L_s12__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -5057,20 +3525,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x209b0000)
-              { itype = ARC600F_INSN_MPYH_L_S12__RA_; goto extract_sfmt_mpy_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_MPYH_L_S12__RA_; goto extract_sfmt_mpy_L_s12__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -5079,29 +3538,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x209c0000)
-              { itype = ARC600F_INSN_MPYHU_L_S12__RA_; goto extract_sfmt_mpy_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_MPYHU_L_S12__RA_; goto extract_sfmt_mpy_L_s12__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -5119,20 +3563,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x209d0000)
-              { itype = ARC600F_INSN_MPYU_L_S12__RA_; goto extract_sfmt_mpy_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_MPYU_L_S12__RA_; goto extract_sfmt_mpy_L_s12__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -5141,29 +3576,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20a00000)
-              { itype = ARC600F_INSN_J_L_S12_; goto extract_sfmt_j_L_s12_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_J_L_S12_; goto extract_sfmt_j_L_s12_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -5181,20 +3601,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20a10000)
-              { itype = ARC600F_INSN_J_L_S12_D_; goto extract_sfmt_j_L_s12_d_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_J_L_S12_D_; goto extract_sfmt_j_L_s12_d_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -5203,29 +3614,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20a20000)
-              { itype = ARC600F_INSN_JL_L_S12_; goto extract_sfmt_jl_L_s12_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_JL_L_S12_; goto extract_sfmt_jl_L_s12_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -5243,20 +3639,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20a30000)
-              { itype = ARC600F_INSN_JL_L_S12_D_; goto extract_sfmt_jl_L_s12_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_JL_L_S12_D_; goto extract_sfmt_jl_L_s12_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -5265,29 +3652,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20a80000)
-              { itype = ARC600F_INSN_LP_L_S12_; goto extract_sfmt_lp_L_s12_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_LP_L_S12_; goto extract_sfmt_lp_L_s12_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -5305,20 +3677,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20a90000)
-              { itype = ARC600F_INSN_FLAG_L_S12_; goto extract_sfmt_flag_L_s12_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_FLAG_L_S12_; goto extract_sfmt_flag_L_s12_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -5327,29 +3690,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20aa0000)
-              { itype = ARC600F_INSN_LR_L_S12_; goto extract_sfmt_lr_L_s12_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_LR_L_S12_; goto extract_sfmt_lr_L_s12_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -5367,20 +3715,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20ab0000)
-              { itype = ARC600F_INSN_SR_L_S12_; goto extract_sfmt_sr_L_s12_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_SR_L_S12_; goto extract_sfmt_sr_L_s12_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -5389,29 +3728,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20b00000)
-              { itype = ARC600F_INSN_LD_AB_ABC; goto extract_sfmt_ld__AW_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_LD_AB_ABC; goto extract_sfmt_ld__AW_abc;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -5420,29 +3744,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20b20000)
-              { itype = ARC600F_INSN_LDB_AB_ABC; goto extract_sfmt_ldb__AW_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_LDB_AB_ABC; goto extract_sfmt_ldb__AW_abc;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -5460,20 +3769,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20b30000)
-              { itype = ARC600F_INSN_LDB_AB_X_ABC; goto extract_sfmt_ldb__AW_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_LDB_AB_X_ABC; goto extract_sfmt_ldb__AW_abc;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -5482,29 +3782,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20b40000)
-              { itype = ARC600F_INSN_LDW_AB_ABC; goto extract_sfmt_ldw__AW_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_LDW_AB_ABC; goto extract_sfmt_ldw__AW_abc;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -5522,20 +3807,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20b50000)
-              { itype = ARC600F_INSN_LDW_AB_X_ABC; goto extract_sfmt_ldw__AW_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_LDW_AB_X_ABC; goto extract_sfmt_ldw__AW_abc;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -5544,32 +3820,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x20c00000)
-              { itype = ARC600F_INSN_ADD_CC__RA__RC; goto extract_sfmt_add_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x20c00020)
-              { itype = ARC600F_INSN_ADD_CCU6__RA_; goto extract_sfmt_add_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
+          case 2 : itype = ARC600F_INSN_ADD_CC__RA__RC; goto extract_sfmt_add_cc__RA__RC;
+          case 3 : itype = ARC600F_INSN_ADD_CCU6__RA_; goto extract_sfmt_add_ccu6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -5586,24 +3844,12 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
             if ((entire_insn & 0xf8010030) == 0x10020)
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x20c10000)
-              { itype = ARC600F_INSN_ADC_CC__RA__RC; goto extract_sfmt_adc_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x20c10020)
-              { itype = ARC600F_INSN_ADC_CCU6__RA_; goto extract_sfmt_adc_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 2 : itype = ARC600F_INSN_ADC_CC__RA__RC; goto extract_sfmt_adc_cc__RA__RC;
+          case 3 : itype = ARC600F_INSN_ADC_CCU6__RA_; goto extract_sfmt_adc_ccu6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -5612,32 +3858,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x20c20000)
-              { itype = ARC600F_INSN_SUB_CC__RA__RC; goto extract_sfmt_add_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x20c20020)
-              { itype = ARC600F_INSN_SUB_CCU6__RA_; goto extract_sfmt_add_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
+          case 2 : itype = ARC600F_INSN_SUB_CC__RA__RC; goto extract_sfmt_add_cc__RA__RC;
+          case 3 : itype = ARC600F_INSN_SUB_CCU6__RA_; goto extract_sfmt_add_ccu6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -5654,24 +3882,12 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
             if ((entire_insn & 0xf8010030) == 0x10020)
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x20c30000)
-              { itype = ARC600F_INSN_SBC_CC__RA__RC; goto extract_sfmt_adc_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x20c30020)
-              { itype = ARC600F_INSN_SBC_CCU6__RA_; goto extract_sfmt_adc_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 2 : itype = ARC600F_INSN_SBC_CC__RA__RC; goto extract_sfmt_adc_cc__RA__RC;
+          case 3 : itype = ARC600F_INSN_SBC_CCU6__RA_; goto extract_sfmt_adc_ccu6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -5680,32 +3896,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x20c40000)
-              { itype = ARC600F_INSN_AND_CC__RA__RC; goto extract_sfmt_and_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x20c40020)
-              { itype = ARC600F_INSN_AND_CCU6__RA_; goto extract_sfmt_and_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
+          case 2 : itype = ARC600F_INSN_AND_CC__RA__RC; goto extract_sfmt_and_cc__RA__RC;
+          case 3 : itype = ARC600F_INSN_AND_CCU6__RA_; goto extract_sfmt_and_ccu6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -5722,24 +3920,12 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
             if ((entire_insn & 0xf8010030) == 0x10020)
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x20c50000)
-              { itype = ARC600F_INSN_OR_CC__RA__RC; goto extract_sfmt_and_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x20c50020)
-              { itype = ARC600F_INSN_OR_CCU6__RA_; goto extract_sfmt_and_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 2 : itype = ARC600F_INSN_OR_CC__RA__RC; goto extract_sfmt_and_cc__RA__RC;
+          case 3 : itype = ARC600F_INSN_OR_CCU6__RA_; goto extract_sfmt_and_ccu6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -5748,32 +3934,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x20c60000)
-              { itype = ARC600F_INSN_BIC_CC__RA__RC; goto extract_sfmt_and_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x20c60020)
-              { itype = ARC600F_INSN_BIC_CCU6__RA_; goto extract_sfmt_and_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
+          case 2 : itype = ARC600F_INSN_BIC_CC__RA__RC; goto extract_sfmt_and_cc__RA__RC;
+          case 3 : itype = ARC600F_INSN_BIC_CCU6__RA_; goto extract_sfmt_and_ccu6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -5790,24 +3958,12 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
             if ((entire_insn & 0xf8010030) == 0x10020)
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x20c70000)
-              { itype = ARC600F_INSN_XOR_CC__RA__RC; goto extract_sfmt_and_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x20c70020)
-              { itype = ARC600F_INSN_XOR_CCU6__RA_; goto extract_sfmt_and_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 2 : itype = ARC600F_INSN_XOR_CC__RA__RC; goto extract_sfmt_and_cc__RA__RC;
+          case 3 : itype = ARC600F_INSN_XOR_CCU6__RA_; goto extract_sfmt_and_ccu6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -5816,32 +3972,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x20c80000)
-              { itype = ARC600F_INSN_MAX_CC__RA__RC; goto extract_sfmt_add_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x20c80020)
-              { itype = ARC600F_INSN_MAX_CCU6__RA_; goto extract_sfmt_add_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
+          case 2 : itype = ARC600F_INSN_MAX_CC__RA__RC; goto extract_sfmt_add_cc__RA__RC;
+          case 3 : itype = ARC600F_INSN_MAX_CCU6__RA_; goto extract_sfmt_add_ccu6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -5858,24 +3996,12 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
             if ((entire_insn & 0xf8010030) == 0x10020)
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x20c90000)
-              { itype = ARC600F_INSN_MIN_CC__RA__RC; goto extract_sfmt_add_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x20c90020)
-              { itype = ARC600F_INSN_MIN_CCU6__RA_; goto extract_sfmt_add_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 2 : itype = ARC600F_INSN_MIN_CC__RA__RC; goto extract_sfmt_add_cc__RA__RC;
+          case 3 : itype = ARC600F_INSN_MIN_CCU6__RA_; goto extract_sfmt_add_ccu6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -5884,32 +4010,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x20ca0000)
-              { itype = ARC600F_INSN_MOV_CC__RC; goto extract_sfmt_mov_cc__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x20ca0020)
-              { itype = ARC600F_INSN_MOV_CCU6_; goto extract_sfmt_mov_ccu6_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
+          case 2 : itype = ARC600F_INSN_MOV_CC__RC; goto extract_sfmt_mov_cc__RC;
+          case 3 : itype = ARC600F_INSN_MOV_CCU6_; goto extract_sfmt_mov_ccu6_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -5926,24 +4034,12 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
             if ((entire_insn & 0xf8010030) == 0x10020)
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x20cb0000)
-              { itype = ARC600F_INSN_TST_CC__RC; goto extract_sfmt_tst_cc__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x20cb0020)
-              { itype = ARC600F_INSN_TST_CCU6_; goto extract_sfmt_tst_ccu6_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 2 : itype = ARC600F_INSN_TST_CC__RC; goto extract_sfmt_tst_cc__RC;
+          case 3 : itype = ARC600F_INSN_TST_CCU6_; goto extract_sfmt_tst_ccu6_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -5952,32 +4048,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x20cc0000)
-              { itype = ARC600F_INSN_CMP_CC__RC; goto extract_sfmt_cmp_cc__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x20cc0020)
-              { itype = ARC600F_INSN_CMP_CCU6_; goto extract_sfmt_cmp_ccu6_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
+          case 2 : itype = ARC600F_INSN_CMP_CC__RC; goto extract_sfmt_cmp_cc__RC;
+          case 3 : itype = ARC600F_INSN_CMP_CCU6_; goto extract_sfmt_cmp_ccu6_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -5994,24 +4072,12 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
             if ((entire_insn & 0xf8010030) == 0x10020)
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x20cd0000)
-              { itype = ARC600F_INSN_RCMP_CC__RC; goto extract_sfmt_cmp_cc__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x20cd0020)
-              { itype = ARC600F_INSN_RCMP_CCU6_; goto extract_sfmt_cmp_ccu6_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 2 : itype = ARC600F_INSN_RCMP_CC__RC; goto extract_sfmt_cmp_cc__RC;
+          case 3 : itype = ARC600F_INSN_RCMP_CCU6_; goto extract_sfmt_cmp_ccu6_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -6020,32 +4086,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x20ce0000)
-              { itype = ARC600F_INSN_RSUB_CC__RA__RC; goto extract_sfmt_add_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x20ce0020)
-              { itype = ARC600F_INSN_RSUB_CCU6__RA_; goto extract_sfmt_add_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
+          case 2 : itype = ARC600F_INSN_RSUB_CC__RA__RC; goto extract_sfmt_add_cc__RA__RC;
+          case 3 : itype = ARC600F_INSN_RSUB_CCU6__RA_; goto extract_sfmt_add_ccu6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -6062,24 +4110,12 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
             if ((entire_insn & 0xf8010030) == 0x10020)
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x20cf0000)
-              { itype = ARC600F_INSN_BSET_CC__RA__RC; goto extract_sfmt_and_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x20cf0020)
-              { itype = ARC600F_INSN_BSET_CCU6__RA_; goto extract_sfmt_and_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 2 : itype = ARC600F_INSN_BSET_CC__RA__RC; goto extract_sfmt_and_cc__RA__RC;
+          case 3 : itype = ARC600F_INSN_BSET_CCU6__RA_; goto extract_sfmt_and_ccu6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -6088,32 +4124,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x20d00000)
-              { itype = ARC600F_INSN_BCLR_CC__RA__RC; goto extract_sfmt_and_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x20d00020)
-              { itype = ARC600F_INSN_BCLR_CCU6__RA_; goto extract_sfmt_and_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
+          case 2 : itype = ARC600F_INSN_BCLR_CC__RA__RC; goto extract_sfmt_and_cc__RA__RC;
+          case 3 : itype = ARC600F_INSN_BCLR_CCU6__RA_; goto extract_sfmt_and_ccu6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -6130,24 +4148,12 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
             if ((entire_insn & 0xf8010030) == 0x10020)
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x20d10000)
-              { itype = ARC600F_INSN_BTST_CC__RC; goto extract_sfmt_tst_cc__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x20d10020)
-              { itype = ARC600F_INSN_BTST_CCU6_; goto extract_sfmt_tst_ccu6_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 2 : itype = ARC600F_INSN_BTST_CC__RC; goto extract_sfmt_tst_cc__RC;
+          case 3 : itype = ARC600F_INSN_BTST_CCU6_; goto extract_sfmt_tst_ccu6_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -6156,32 +4162,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x20d20000)
-              { itype = ARC600F_INSN_BXOR_CC__RA__RC; goto extract_sfmt_and_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x20d20020)
-              { itype = ARC600F_INSN_BXOR_CCU6__RA_; goto extract_sfmt_and_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
+          case 2 : itype = ARC600F_INSN_BXOR_CC__RA__RC; goto extract_sfmt_and_cc__RA__RC;
+          case 3 : itype = ARC600F_INSN_BXOR_CCU6__RA_; goto extract_sfmt_and_ccu6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -6198,24 +4186,12 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
             if ((entire_insn & 0xf8010030) == 0x10020)
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x20d30000)
-              { itype = ARC600F_INSN_BMSK_CC__RA__RC; goto extract_sfmt_and_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x20d30020)
-              { itype = ARC600F_INSN_BMSK_CCU6__RA_; goto extract_sfmt_and_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 2 : itype = ARC600F_INSN_BMSK_CC__RA__RC; goto extract_sfmt_and_cc__RA__RC;
+          case 3 : itype = ARC600F_INSN_BMSK_CCU6__RA_; goto extract_sfmt_and_ccu6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -6224,32 +4200,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x20d40000)
-              { itype = ARC600F_INSN_ADD1_CC__RA__RC; goto extract_sfmt_add_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x20d40020)
-              { itype = ARC600F_INSN_ADD1_CCU6__RA_; goto extract_sfmt_add_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
+          case 2 : itype = ARC600F_INSN_ADD1_CC__RA__RC; goto extract_sfmt_add_cc__RA__RC;
+          case 3 : itype = ARC600F_INSN_ADD1_CCU6__RA_; goto extract_sfmt_add_ccu6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -6266,24 +4224,12 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
             if ((entire_insn & 0xf8010030) == 0x10020)
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x20d50000)
-              { itype = ARC600F_INSN_ADD2_CC__RA__RC; goto extract_sfmt_add_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x20d50020)
-              { itype = ARC600F_INSN_ADD2_CCU6__RA_; goto extract_sfmt_add_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 2 : itype = ARC600F_INSN_ADD2_CC__RA__RC; goto extract_sfmt_add_cc__RA__RC;
+          case 3 : itype = ARC600F_INSN_ADD2_CCU6__RA_; goto extract_sfmt_add_ccu6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -6292,32 +4238,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x20d60000)
-              { itype = ARC600F_INSN_ADD3_CC__RA__RC; goto extract_sfmt_add_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x20d60020)
-              { itype = ARC600F_INSN_ADD3_CCU6__RA_; goto extract_sfmt_add_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
+          case 2 : itype = ARC600F_INSN_ADD3_CC__RA__RC; goto extract_sfmt_add_cc__RA__RC;
+          case 3 : itype = ARC600F_INSN_ADD3_CCU6__RA_; goto extract_sfmt_add_ccu6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -6334,24 +4262,12 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
             if ((entire_insn & 0xf8010030) == 0x10020)
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x20d70000)
-              { itype = ARC600F_INSN_SUB1_CC__RA__RC; goto extract_sfmt_add_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x20d70020)
-              { itype = ARC600F_INSN_SUB1_CCU6__RA_; goto extract_sfmt_add_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 2 : itype = ARC600F_INSN_SUB1_CC__RA__RC; goto extract_sfmt_add_cc__RA__RC;
+          case 3 : itype = ARC600F_INSN_SUB1_CCU6__RA_; goto extract_sfmt_add_ccu6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -6360,32 +4276,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x20d80000)
-              { itype = ARC600F_INSN_SUB2_CC__RA__RC; goto extract_sfmt_add_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x20d80020)
-              { itype = ARC600F_INSN_SUB2_CCU6__RA_; goto extract_sfmt_add_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
+          case 2 : itype = ARC600F_INSN_SUB2_CC__RA__RC; goto extract_sfmt_add_cc__RA__RC;
+          case 3 : itype = ARC600F_INSN_SUB2_CCU6__RA_; goto extract_sfmt_add_ccu6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -6402,24 +4300,12 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
             if ((entire_insn & 0xf8010030) == 0x10020)
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x20d90000)
-              { itype = ARC600F_INSN_SUB3_CC__RA__RC; goto extract_sfmt_add_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x20d90020)
-              { itype = ARC600F_INSN_SUB3_CCU6__RA_; goto extract_sfmt_add_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 2 : itype = ARC600F_INSN_SUB3_CC__RA__RC; goto extract_sfmt_add_cc__RA__RC;
+          case 3 : itype = ARC600F_INSN_SUB3_CCU6__RA_; goto extract_sfmt_add_ccu6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -6428,32 +4314,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x20da0000)
-              { itype = ARC600F_INSN_MPY_CC__RA__RC; goto extract_sfmt_mpy_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x20da0020)
-              { itype = ARC600F_INSN_MPY_CCU6__RA_; goto extract_sfmt_mpy_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
+          case 2 : itype = ARC600F_INSN_MPY_CC__RA__RC; goto extract_sfmt_mpy_cc__RA__RC;
+          case 3 : itype = ARC600F_INSN_MPY_CCU6__RA_; goto extract_sfmt_mpy_ccu6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -6470,24 +4338,12 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
             if ((entire_insn & 0xf8010030) == 0x10020)
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x20db0000)
-              { itype = ARC600F_INSN_MPYH_CC__RA__RC; goto extract_sfmt_mpy_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x20db0020)
-              { itype = ARC600F_INSN_MPYH_CCU6__RA_; goto extract_sfmt_mpy_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 2 : itype = ARC600F_INSN_MPYH_CC__RA__RC; goto extract_sfmt_mpy_cc__RA__RC;
+          case 3 : itype = ARC600F_INSN_MPYH_CCU6__RA_; goto extract_sfmt_mpy_ccu6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -6496,32 +4352,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x20dc0000)
-              { itype = ARC600F_INSN_MPYHU_CC__RA__RC; goto extract_sfmt_mpy_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x20dc0020)
-              { itype = ARC600F_INSN_MPYHU_CCU6__RA_; goto extract_sfmt_mpy_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
+          case 2 : itype = ARC600F_INSN_MPYHU_CC__RA__RC; goto extract_sfmt_mpy_cc__RA__RC;
+          case 3 : itype = ARC600F_INSN_MPYHU_CCU6__RA_; goto extract_sfmt_mpy_ccu6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -6538,24 +4376,12 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
             if ((entire_insn & 0xf8010030) == 0x10020)
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x20dd0000)
-              { itype = ARC600F_INSN_MPYU_CC__RA__RC; goto extract_sfmt_mpy_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x20dd0020)
-              { itype = ARC600F_INSN_MPYU_CCU6__RA_; goto extract_sfmt_mpy_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 2 : itype = ARC600F_INSN_MPYU_CC__RA__RC; goto extract_sfmt_mpy_cc__RA__RC;
+          case 3 : itype = ARC600F_INSN_MPYU_CCU6__RA_; goto extract_sfmt_mpy_ccu6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -6564,32 +4390,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x20e00000)
-              { itype = ARC600F_INSN_J_CC___RC_ILINK_; goto extract_sfmt_j_cc___RC_ilink_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x20e00020)
-              { itype = ARC600F_INSN_J_CCU6_; goto extract_sfmt_j_ccu6_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
+          case 2 : itype = ARC600F_INSN_J_CC___RC_ILINK_; goto extract_sfmt_j_cc___RC_ilink_;
+          case 3 : itype = ARC600F_INSN_J_CCU6_; goto extract_sfmt_j_ccu6_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -6606,24 +4414,12 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
             if ((entire_insn & 0xf8010030) == 0x10020)
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x20e10000)
-              { itype = ARC600F_INSN_J_CC_D___RC_; goto extract_sfmt_j_cc_d___RC_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x20e10020)
-              { itype = ARC600F_INSN_J_CCU6_D_; goto extract_sfmt_j_ccu6_d_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 2 : itype = ARC600F_INSN_J_CC_D___RC_; goto extract_sfmt_j_cc_d___RC_;
+          case 3 : itype = ARC600F_INSN_J_CCU6_D_; goto extract_sfmt_j_ccu6_d_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -6632,32 +4428,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x20e20000)
-              { itype = ARC600F_INSN_JL_CC___RC_NOILINK_; goto extract_sfmt_jl_cc___RC_noilink_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x20e20020)
-              { itype = ARC600F_INSN_JL_CCU6_; goto extract_sfmt_jl_ccu6_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
+          case 2 : itype = ARC600F_INSN_JL_CC___RC_NOILINK_; goto extract_sfmt_jl_cc___RC_noilink_;
+          case 3 : itype = ARC600F_INSN_JL_CCU6_; goto extract_sfmt_jl_ccu6_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -6674,24 +4452,12 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
             if ((entire_insn & 0xf8010030) == 0x10020)
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x20e30000)
-              { itype = ARC600F_INSN_JL_CC_D___RC_; goto extract_sfmt_jl_cc_d___RC_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x20e30020)
-              { itype = ARC600F_INSN_JL_CCU6_D_; goto extract_sfmt_jl_ccu6_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 2 : itype = ARC600F_INSN_JL_CC_D___RC_; goto extract_sfmt_jl_cc_d___RC_;
+          case 3 : itype = ARC600F_INSN_JL_CCU6_D_; goto extract_sfmt_jl_ccu6_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -6700,28 +4466,13 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x20e80020)
-              { itype = ARC600F_INSN_LPCC_CCU6; goto extract_sfmt_lpcc_ccu6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
+          case 3 : itype = ARC600F_INSN_LPCC_CCU6; goto extract_sfmt_lpcc_ccu6;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -6738,24 +4489,12 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
             if ((entire_insn & 0xf8010030) == 0x10020)
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x20e90000)
-              { itype = ARC600F_INSN_FLAG_CC__RC; goto extract_sfmt_flag_cc__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x20e90020)
-              { itype = ARC600F_INSN_FLAG_CCU6_; goto extract_sfmt_flag_ccu6_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 2 : itype = ARC600F_INSN_FLAG_CC__RC; goto extract_sfmt_flag_cc__RC;
+          case 3 : itype = ARC600F_INSN_FLAG_CCU6_; goto extract_sfmt_flag_ccu6_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -6764,29 +4503,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20f00000)
-              { itype = ARC600F_INSN_LD_AS_ABC; goto extract_sfmt_ld_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_LD_AS_ABC; goto extract_sfmt_ld_abc;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -6795,29 +4519,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20f20000)
-              { itype = ARC600F_INSN_LDB_AS_ABC; goto extract_sfmt_ldb_as_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_LDB_AS_ABC; goto extract_sfmt_ldb_as_abc;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -6835,20 +4544,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20f30000)
-              { itype = ARC600F_INSN_LDB_AS_X_ABC; goto extract_sfmt_ldb_as_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_LDB_AS_X_ABC; goto extract_sfmt_ldb_as_abc;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -6857,29 +4557,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010020) == 0x0)
-              { itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010020) == 0x20)
-              { itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BCC_L; goto extract_sfmt_bcc_l;
+          case 1 : itype = ARC600F_INSN_BCC_L_D; goto extract_sfmt_bcc_l;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20f40000)
-              { itype = ARC600F_INSN_LDW_AS_ABC; goto extract_sfmt_ldw_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_LDW_AS_ABC; goto extract_sfmt_ldw_abc;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -6897,20 +4582,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_B_L_D; goto extract_sfmt_b_l; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x20f50000)
-              { itype = ARC600F_INSN_LDW_AS_X_ABC; goto extract_sfmt_ldw_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_LDW_AS_X_ABC; goto extract_sfmt_ldw_abc;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x80000000)
-              { itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LD_S_ABU; goto extract_sfmt_ld_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa0000000)
-              { itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ST_S_ABU; goto extract_sfmt_st_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -6919,29 +4595,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8030020) == 0x8000000)
-              { itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8030020) == 0x8000020)
-              { itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc;
+          case 1 : itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc_d;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x28000000)
-              { itype = ARC600F_INSN_ASL_L_R_R__RA__RC; goto extract_sfmt_asl_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_ASL_L_R_R__RA__RC; goto extract_sfmt_asl_L_r_r__RA__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -6950,43 +4611,22 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 28) & (1 << 3)) | ((insn >> 27) & (1 << 2)) | ((insn >> 4) & (3 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
+          case 1 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
+          case 2 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
+          case 3 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 4 : /* fall through */
           case 5 : /* fall through */
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8ff0000) == 0x28010000)
-              { itype = ARC600F_INSN_LSR_L_R_R__RA__RC; goto extract_sfmt_asl_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_LSR_L_R_R__RA__RC; goto extract_sfmt_asl_L_r_r__RA__RC;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
-          case 11 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 11 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -7004,20 +4644,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_BL_D; goto extract_sfmt_bl_d; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x28020000)
-              { itype = ARC600F_INSN_ASR_L_R_R__RA__RC; goto extract_sfmt_asl_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_ASR_L_R_R__RA__RC; goto extract_sfmt_asl_L_r_r__RA__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -7026,43 +4657,22 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 28) & (1 << 3)) | ((insn >> 27) & (1 << 2)) | ((insn >> 4) & (3 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
+          case 1 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
+          case 2 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
+          case 3 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 4 : /* fall through */
           case 5 : /* fall through */
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8ff0000) == 0x28030000)
-              { itype = ARC600F_INSN_ROR_L_R_R__RA__RC; goto extract_sfmt_asl_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ROR_L_R_R__RA__RC; goto extract_sfmt_asl_L_r_r__RA__RC;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
-          case 11 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 11 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -7071,29 +4681,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8030020) == 0x8000000)
-              { itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8030020) == 0x8000020)
-              { itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc;
+          case 1 : itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc_d;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x28040000)
-              { itype = ARC600F_INSN_MUL64_L_R_R__RC; goto extract_sfmt_mul64_L_r_r__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_MUL64_L_R_R__RC; goto extract_sfmt_mul64_L_r_r__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -7102,43 +4697,22 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 28) & (1 << 3)) | ((insn >> 27) & (1 << 2)) | ((insn >> 4) & (3 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
+          case 1 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
+          case 2 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
+          case 3 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 4 : /* fall through */
           case 5 : /* fall through */
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8ff0000) == 0x28050000)
-              { itype = ARC600F_INSN_MULU64_L_R_R__RC; goto extract_sfmt_mul64_L_r_r__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_MULU64_L_R_R__RC; goto extract_sfmt_mul64_L_r_r__RC;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
-          case 11 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 11 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -7156,20 +4730,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_BL_D; goto extract_sfmt_bl_d; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x28060000)
-              { itype = ARC600F_INSN_ADDS_L_R_R__RA__RC; goto extract_sfmt_adds_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_ADDS_L_R_R__RA__RC; goto extract_sfmt_adds_L_r_r__RA__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -7178,43 +4743,22 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 28) & (1 << 3)) | ((insn >> 27) & (1 << 2)) | ((insn >> 4) & (3 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
+          case 1 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
+          case 2 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
+          case 3 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 4 : /* fall through */
           case 5 : /* fall through */
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8ff0000) == 0x28070000)
-              { itype = ARC600F_INSN_SUBS_L_R_R__RA__RC; goto extract_sfmt_adds_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_SUBS_L_R_R__RA__RC; goto extract_sfmt_adds_L_r_r__RA__RC;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
-          case 11 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 11 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -7223,29 +4767,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8030020) == 0x8000000)
-              { itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8030020) == 0x8000020)
-              { itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc;
+          case 1 : itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc_d;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x28080000)
-              { itype = ARC600F_INSN_DIVAW_L_R_R__RA__RC; goto extract_sfmt_divaw_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_DIVAW_L_R_R__RA__RC; goto extract_sfmt_divaw_L_r_r__RA__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -7343,36 +4872,18 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 28) & (1 << 3)) | ((insn >> 27) & (1 << 2)) | ((insn >> 4) & (3 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
+          case 1 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
+          case 2 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
+          case 3 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
-          case 11 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 11 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -7390,20 +4901,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_BL_D; goto extract_sfmt_bl_d; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x280a0000)
-              { itype = ARC600F_INSN_ASLS_L_R_R__RA__RC; goto extract_sfmt_asls_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_ASLS_L_R_R__RA__RC; goto extract_sfmt_asls_L_r_r__RA__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -7412,43 +4914,22 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 28) & (1 << 3)) | ((insn >> 27) & (1 << 2)) | ((insn >> 4) & (3 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
+          case 1 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
+          case 2 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
+          case 3 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 4 : /* fall through */
           case 5 : /* fall through */
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8ff0000) == 0x280b0000)
-              { itype = ARC600F_INSN_ASRS_L_R_R__RA__RC; goto extract_sfmt_asls_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ASRS_L_R_R__RA__RC; goto extract_sfmt_asls_L_r_r__RA__RC;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
-          case 11 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 11 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -7500,24 +4981,12 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8030020) == 0x8000000)
-              { itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8030020) == 0x8000020)
-              { itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc;
+          case 1 : itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc_d;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -7582,15 +5051,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_BL_D; goto extract_sfmt_bl_d; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -7599,29 +5062,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8030020) == 0x8000000)
-              { itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8030020) == 0x8000020)
-              { itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc;
+          case 1 : itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc_d;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x28280000)
-              { itype = ARC600F_INSN_ADDSDW_L_R_R__RA__RC; goto extract_sfmt_asls_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_ADDSDW_L_R_R__RA__RC; goto extract_sfmt_asls_L_r_r__RA__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -7630,43 +5078,22 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 28) & (1 << 3)) | ((insn >> 27) & (1 << 2)) | ((insn >> 4) & (3 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
+          case 1 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
+          case 2 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
+          case 3 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 4 : /* fall through */
           case 5 : /* fall through */
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8ff0000) == 0x28290000)
-              { itype = ARC600F_INSN_SUBSDW_L_R_R__RA__RC; goto extract_sfmt_asls_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_SUBSDW_L_R_R__RA__RC; goto extract_sfmt_asls_L_r_r__RA__RC;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
-          case 11 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 11 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -7682,10 +5109,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           case 4 : /* fall through */
           case 5 : /* fall through */
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
@@ -7693,10 +5117,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
           case 16 : /* fall through */
           case 17 : /* fall through */
           case 18 : /* fall through */
@@ -7704,10 +5125,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           case 20 : /* fall through */
           case 21 : /* fall through */
           case 22 : /* fall through */
-          case 23 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 23 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
           case 24 : /* fall through */
           case 25 : /* fall through */
           case 26 : /* fall through */
@@ -7715,23 +5133,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           case 28 : /* fall through */
           case 29 : /* fall through */
           case 30 : /* fall through */
-          case 31 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 31 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 32 :
             {
               unsigned int val = (((insn >> 3) & (1 << 0)));
               switch (val)
               {
-              case 0 :
-                if ((entire_insn & 0xf8ff003f) == 0x282f0000)
-                  { itype = ARC600F_INSN_SWAP_L_R_R__RC; goto extract_sfmt_swap_L_r_r__RC; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-              case 1 :
-                if ((entire_insn & 0xf8ff003f) == 0x282f0008)
-                  { itype = ARC600F_INSN_NORMW_L_R_R__RC; goto extract_sfmt_swap_L_r_r__RC; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 0 : itype = ARC600F_INSN_SWAP_L_R_R__RC; goto extract_sfmt_swap_L_r_r__RC;
+              case 1 : itype = ARC600F_INSN_NORMW_L_R_R__RC; goto extract_sfmt_swap_L_r_r__RC;
               default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               }
             }
@@ -7745,7 +5154,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 36 :
             if ((entire_insn & 0xf8ff003f) == 0x282f0004)
-              { itype = ARC600F_INSN_ABSSW_L_R_R__RC; goto extract_sfmt_abssw_L_r_r__RC; }
+              { itype = ARC600F_INSN_ABSSW_L_R_R__RC; goto extract_sfmt_rnd16_L_r_r__RC; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 37 :
             if ((entire_insn & 0xf8ff003f) == 0x282f0005)
@@ -7753,7 +5162,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 38 :
             if ((entire_insn & 0xf8ff003f) == 0x282f0006)
-              { itype = ARC600F_INSN_NEGSW_L_R_R__RC; goto extract_sfmt_abssw_L_r_r__RC; }
+              { itype = ARC600F_INSN_NEGSW_L_R_R__RC; goto extract_sfmt_rnd16_L_r_r__RC; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 39 :
             if ((entire_insn & 0xf8ff003f) == 0x282f0007)
@@ -7790,10 +5199,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           case 92 : /* fall through */
           case 93 : /* fall through */
           case 94 : /* fall through */
-          case 95 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 95 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 96 : /* fall through */
           case 97 : /* fall through */
           case 98 : /* fall through */
@@ -7825,10 +5231,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           case 124 : /* fall through */
           case 125 : /* fall through */
           case 126 : /* fall through */
-          case 127 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 127 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -7837,29 +5240,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8030020) == 0x8000000)
-              { itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8030020) == 0x8000020)
-              { itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc;
+          case 1 : itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc_d;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x28300000)
-              { itype = ARC600F_INSN_MULULW_L_R_R__RA__RC; goto extract_sfmt_mullw_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_MULULW_L_R_R__RA__RC; goto extract_sfmt_mullw_L_r_r__RA__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -7868,43 +5256,22 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 28) & (1 << 3)) | ((insn >> 27) & (1 << 2)) | ((insn >> 4) & (3 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
+          case 1 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
+          case 2 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
+          case 3 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 4 : /* fall through */
           case 5 : /* fall through */
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8ff0000) == 0x28310000)
-              { itype = ARC600F_INSN_MULLW_L_R_R__RA__RC; goto extract_sfmt_mullw_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_MULLW_L_R_R__RA__RC; goto extract_sfmt_mullw_L_r_r__RA__RC;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
-          case 11 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 11 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -7913,43 +5280,22 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 28) & (1 << 3)) | ((insn >> 27) & (1 << 2)) | ((insn >> 4) & (3 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
+          case 1 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
+          case 2 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
+          case 3 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 4 : /* fall through */
           case 5 : /* fall through */
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8ff0000) == 0x28330000)
-              { itype = ARC600F_INSN_MACLW_L_R_R__RA__RC; goto extract_sfmt_maclw_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_MACLW_L_R_R__RA__RC; goto extract_sfmt_maclw_L_r_r__RA__RC;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
-          case 11 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 11 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -7958,43 +5304,22 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 28) & (1 << 3)) | ((insn >> 27) & (1 << 2)) | ((insn >> 4) & (3 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
+          case 1 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
+          case 2 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
+          case 3 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 4 : /* fall through */
           case 5 : /* fall through */
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8ff0000) == 0x28350000)
-              { itype = ARC600F_INSN_MACHULW_L_R_R__RA__RC; goto extract_sfmt_machulw_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_MACHULW_L_R_R__RA__RC; goto extract_sfmt_machulw_L_r_r__RA__RC;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
-          case 11 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 11 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -8012,20 +5337,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_BL_D; goto extract_sfmt_bl_d; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x28360000)
-              { itype = ARC600F_INSN_MACHLW_L_R_R__RA__RC; goto extract_sfmt_maclw_L_r_r__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_MACHLW_L_R_R__RA__RC; goto extract_sfmt_maclw_L_r_r__RA__RC;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -8034,29 +5350,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8030020) == 0x8000000)
-              { itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8030020) == 0x8000020)
-              { itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc;
+          case 1 : itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc_d;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x28400000)
-              { itype = ARC600F_INSN_ASL_L_U6__RA_; goto extract_sfmt_asl_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_ASL_L_U6__RA_; goto extract_sfmt_asl_L_u6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -8065,43 +5366,22 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 28) & (1 << 3)) | ((insn >> 27) & (1 << 2)) | ((insn >> 4) & (3 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
+          case 1 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
+          case 2 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
+          case 3 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 4 : /* fall through */
           case 5 : /* fall through */
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8ff0000) == 0x28410000)
-              { itype = ARC600F_INSN_LSR_L_U6__RA_; goto extract_sfmt_asl_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_LSR_L_U6__RA_; goto extract_sfmt_asl_L_u6__RA_;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
-          case 11 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 11 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -8119,20 +5399,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_BL_D; goto extract_sfmt_bl_d; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x28420000)
-              { itype = ARC600F_INSN_ASR_L_U6__RA_; goto extract_sfmt_asl_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_ASR_L_U6__RA_; goto extract_sfmt_asl_L_u6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -8141,43 +5412,22 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 28) & (1 << 3)) | ((insn >> 27) & (1 << 2)) | ((insn >> 4) & (3 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
+          case 1 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
+          case 2 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
+          case 3 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 4 : /* fall through */
           case 5 : /* fall through */
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8ff0000) == 0x28430000)
-              { itype = ARC600F_INSN_ROR_L_U6__RA_; goto extract_sfmt_asl_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ROR_L_U6__RA_; goto extract_sfmt_asl_L_u6__RA_;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
-          case 11 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 11 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -8186,29 +5436,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8030020) == 0x8000000)
-              { itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8030020) == 0x8000020)
-              { itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc;
+          case 1 : itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc_d;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x28440000)
-              { itype = ARC600F_INSN_MUL64_L_U6_; goto extract_sfmt_mul64_L_u6_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_MUL64_L_U6_; goto extract_sfmt_mul64_L_u6_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -8217,43 +5452,22 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 28) & (1 << 3)) | ((insn >> 27) & (1 << 2)) | ((insn >> 4) & (3 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
+          case 1 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
+          case 2 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
+          case 3 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 4 : /* fall through */
           case 5 : /* fall through */
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8ff0000) == 0x28450000)
-              { itype = ARC600F_INSN_MULU64_L_U6_; goto extract_sfmt_mul64_L_u6_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_MULU64_L_U6_; goto extract_sfmt_mul64_L_u6_;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
-          case 11 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 11 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -8271,20 +5485,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_BL_D; goto extract_sfmt_bl_d; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x28460000)
-              { itype = ARC600F_INSN_ADDS_L_U6__RA_; goto extract_sfmt_adds_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_ADDS_L_U6__RA_; goto extract_sfmt_adds_L_u6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -8293,43 +5498,22 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 28) & (1 << 3)) | ((insn >> 27) & (1 << 2)) | ((insn >> 4) & (3 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
+          case 1 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
+          case 2 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
+          case 3 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 4 : /* fall through */
           case 5 : /* fall through */
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8ff0000) == 0x28470000)
-              { itype = ARC600F_INSN_SUBS_L_U6__RA_; goto extract_sfmt_adds_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_SUBS_L_U6__RA_; goto extract_sfmt_adds_L_u6__RA_;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
-          case 11 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 11 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -8338,29 +5522,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8030020) == 0x8000000)
-              { itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8030020) == 0x8000020)
-              { itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc;
+          case 1 : itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc_d;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x28480000)
-              { itype = ARC600F_INSN_DIVAW_L_U6__RA_; goto extract_sfmt_divaw_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_DIVAW_L_U6__RA_; goto extract_sfmt_divaw_L_u6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -8378,20 +5547,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_BL_D; goto extract_sfmt_bl_d; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x284a0000)
-              { itype = ARC600F_INSN_ASLS_L_U6__RA_; goto extract_sfmt_asls_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_ASLS_L_U6__RA_; goto extract_sfmt_asls_L_u6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -8400,43 +5560,22 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 28) & (1 << 3)) | ((insn >> 27) & (1 << 2)) | ((insn >> 4) & (3 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
+          case 1 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
+          case 2 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
+          case 3 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 4 : /* fall through */
           case 5 : /* fall through */
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8ff0000) == 0x284b0000)
-              { itype = ARC600F_INSN_ASRS_L_U6__RA_; goto extract_sfmt_asls_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ASRS_L_U6__RA_; goto extract_sfmt_asls_L_u6__RA_;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
-          case 11 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 11 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -8445,29 +5584,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8030020) == 0x8000000)
-              { itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8030020) == 0x8000020)
-              { itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc;
+          case 1 : itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc_d;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x28680000)
-              { itype = ARC600F_INSN_ADDSDW_L_U6__RA_; goto extract_sfmt_asls_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_ADDSDW_L_U6__RA_; goto extract_sfmt_asls_L_u6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -8476,43 +5600,22 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 28) & (1 << 3)) | ((insn >> 27) & (1 << 2)) | ((insn >> 4) & (3 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
+          case 1 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
+          case 2 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
+          case 3 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 4 : /* fall through */
           case 5 : /* fall through */
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8ff0000) == 0x28690000)
-              { itype = ARC600F_INSN_SUBSDW_L_U6__RA_; goto extract_sfmt_asls_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_SUBSDW_L_U6__RA_; goto extract_sfmt_asls_L_u6__RA_;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
-          case 11 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 11 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -8528,10 +5631,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           case 4 : /* fall through */
           case 5 : /* fall through */
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
@@ -8539,10 +5639,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
           case 16 : /* fall through */
           case 17 : /* fall through */
           case 18 : /* fall through */
@@ -8550,10 +5647,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           case 20 : /* fall through */
           case 21 : /* fall through */
           case 22 : /* fall through */
-          case 23 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 23 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
           case 24 : /* fall through */
           case 25 : /* fall through */
           case 26 : /* fall through */
@@ -8561,29 +5655,20 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           case 28 : /* fall through */
           case 29 : /* fall through */
           case 30 : /* fall through */
-          case 31 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 31 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 32 :
             {
               unsigned int val = (((insn >> 3) & (1 << 0)));
               switch (val)
               {
-              case 0 :
-                if ((entire_insn & 0xf8ff003f) == 0x286f0000)
-                  { itype = ARC600F_INSN_SWAP_L_U6_; goto extract_sfmt_swap_L_u6_; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-              case 1 :
-                if ((entire_insn & 0xf8ff003f) == 0x286f0008)
-                  { itype = ARC600F_INSN_NORMW_L_U6_; goto extract_sfmt_swap_L_u6_; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 0 : itype = ARC600F_INSN_SWAP_L_U6_; goto extract_sfmt_swap_L_u6_;
+              case 1 : itype = ARC600F_INSN_NORMW_L_U6_; goto extract_sfmt_swap_L_u6_;
               default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               }
             }
           case 33 :
             if ((entire_insn & 0xf8ff003f) == 0x286f0001)
-              { itype = ARC600F_INSN_NORM_L_U6_; goto extract_sfmt_norm_L_u6_; }
+              { itype = ARC600F_INSN_NORM_L_U6_; goto extract_sfmt_swap_L_u6_; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 35 :
             if ((entire_insn & 0xf8ff003f) == 0x286f0003)
@@ -8591,15 +5676,15 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 36 :
             if ((entire_insn & 0xf8ff003f) == 0x286f0004)
-              { itype = ARC600F_INSN_ABSSW_L_U6_; goto extract_sfmt_abssw_L_u6_; }
+              { itype = ARC600F_INSN_ABSSW_L_U6_; goto extract_sfmt_rnd16_L_u6_; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 37 :
             if ((entire_insn & 0xf8ff003f) == 0x286f0005)
-              { itype = ARC600F_INSN_ABSS_L_U6_; goto extract_sfmt_abss_L_u6_; }
+              { itype = ARC600F_INSN_ABSS_L_U6_; goto extract_sfmt_rnd16_L_u6_; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 38 :
             if ((entire_insn & 0xf8ff003f) == 0x286f0006)
-              { itype = ARC600F_INSN_NEGSW_L_U6_; goto extract_sfmt_abssw_L_u6_; }
+              { itype = ARC600F_INSN_NEGSW_L_U6_; goto extract_sfmt_rnd16_L_u6_; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 39 :
             if ((entire_insn & 0xf8ff003f) == 0x286f0007)
@@ -8636,10 +5721,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           case 92 : /* fall through */
           case 93 : /* fall through */
           case 94 : /* fall through */
-          case 95 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 95 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 96 : /* fall through */
           case 97 : /* fall through */
           case 98 : /* fall through */
@@ -8671,10 +5753,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           case 124 : /* fall through */
           case 125 : /* fall through */
           case 126 : /* fall through */
-          case 127 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 127 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -8683,29 +5762,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8030020) == 0x8000000)
-              { itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8030020) == 0x8000020)
-              { itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc;
+          case 1 : itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc_d;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x28700000)
-              { itype = ARC600F_INSN_MULULW_L_U6__RA_; goto extract_sfmt_mullw_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_MULULW_L_U6__RA_; goto extract_sfmt_mullw_L_u6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -8714,43 +5778,22 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 28) & (1 << 3)) | ((insn >> 27) & (1 << 2)) | ((insn >> 4) & (3 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
+          case 1 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
+          case 2 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
+          case 3 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 4 : /* fall through */
           case 5 : /* fall through */
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8ff0000) == 0x28710000)
-              { itype = ARC600F_INSN_MULLW_L_U6__RA_; goto extract_sfmt_mullw_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_MULLW_L_U6__RA_; goto extract_sfmt_mullw_L_u6__RA_;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
-          case 11 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 11 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -8759,43 +5802,22 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 28) & (1 << 3)) | ((insn >> 27) & (1 << 2)) | ((insn >> 4) & (3 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
+          case 1 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
+          case 2 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
+          case 3 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 4 : /* fall through */
           case 5 : /* fall through */
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8ff0000) == 0x28730000)
-              { itype = ARC600F_INSN_MACLW_L_U6__RA_; goto extract_sfmt_maclw_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_MACLW_L_U6__RA_; goto extract_sfmt_maclw_L_u6__RA_;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
-          case 11 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 11 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -8804,43 +5826,22 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 28) & (1 << 3)) | ((insn >> 27) & (1 << 2)) | ((insn >> 4) & (3 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
+          case 1 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
+          case 2 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
+          case 3 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 4 : /* fall through */
           case 5 : /* fall through */
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8ff0000) == 0x28750000)
-              { itype = ARC600F_INSN_MACHULW_L_U6__RA_; goto extract_sfmt_machulw_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_MACHULW_L_U6__RA_; goto extract_sfmt_machulw_L_u6__RA_;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
-          case 11 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 11 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -8858,20 +5859,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_BL_D; goto extract_sfmt_bl_d; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x28760000)
-              { itype = ARC600F_INSN_MACHLW_L_U6__RA_; goto extract_sfmt_maclw_L_u6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_MACHLW_L_U6__RA_; goto extract_sfmt_maclw_L_u6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -8880,29 +5872,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8030020) == 0x8000000)
-              { itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8030020) == 0x8000020)
-              { itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc;
+          case 1 : itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc_d;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x28800000)
-              { itype = ARC600F_INSN_ASL_L_S12__RA_; goto extract_sfmt_asl_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_ASL_L_S12__RA_; goto extract_sfmt_asl_L_s12__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -8911,43 +5888,22 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 28) & (1 << 3)) | ((insn >> 27) & (1 << 2)) | ((insn >> 4) & (3 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
+          case 1 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
+          case 2 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
+          case 3 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 4 : /* fall through */
           case 5 : /* fall through */
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8ff0000) == 0x28810000)
-              { itype = ARC600F_INSN_LSR_L_S12__RA_; goto extract_sfmt_asl_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_LSR_L_S12__RA_; goto extract_sfmt_asl_L_s12__RA_;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
-          case 11 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 11 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -8965,20 +5921,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_BL_D; goto extract_sfmt_bl_d; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x28820000)
-              { itype = ARC600F_INSN_ASR_L_S12__RA_; goto extract_sfmt_asl_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_ASR_L_S12__RA_; goto extract_sfmt_asl_L_s12__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -8987,43 +5934,22 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 28) & (1 << 3)) | ((insn >> 27) & (1 << 2)) | ((insn >> 4) & (3 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
+          case 1 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
+          case 2 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
+          case 3 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 4 : /* fall through */
           case 5 : /* fall through */
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8ff0000) == 0x28830000)
-              { itype = ARC600F_INSN_ROR_L_S12__RA_; goto extract_sfmt_asl_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ROR_L_S12__RA_; goto extract_sfmt_asl_L_s12__RA_;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
-          case 11 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 11 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -9032,29 +5958,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8030020) == 0x8000000)
-              { itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8030020) == 0x8000020)
-              { itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc;
+          case 1 : itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc_d;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x28840000)
-              { itype = ARC600F_INSN_MUL64_L_S12_; goto extract_sfmt_mul64_L_s12_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_MUL64_L_S12_; goto extract_sfmt_mul64_L_s12_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -9063,43 +5974,22 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 28) & (1 << 3)) | ((insn >> 27) & (1 << 2)) | ((insn >> 4) & (3 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
+          case 1 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
+          case 2 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
+          case 3 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 4 : /* fall through */
           case 5 : /* fall through */
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8ff0000) == 0x28850000)
-              { itype = ARC600F_INSN_MULU64_L_S12_; goto extract_sfmt_mul64_L_s12_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_MULU64_L_S12_; goto extract_sfmt_mul64_L_s12_;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
-          case 11 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 11 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -9117,20 +6007,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_BL_D; goto extract_sfmt_bl_d; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x28860000)
-              { itype = ARC600F_INSN_ADDS_L_S12__RA_; goto extract_sfmt_adds_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_ADDS_L_S12__RA_; goto extract_sfmt_adds_L_s12__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -9139,43 +6020,22 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 28) & (1 << 3)) | ((insn >> 27) & (1 << 2)) | ((insn >> 4) & (3 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
+          case 1 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
+          case 2 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
+          case 3 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 4 : /* fall through */
           case 5 : /* fall through */
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8ff0000) == 0x28870000)
-              { itype = ARC600F_INSN_SUBS_L_S12__RA_; goto extract_sfmt_adds_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_SUBS_L_S12__RA_; goto extract_sfmt_adds_L_s12__RA_;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
-          case 11 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 11 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -9184,29 +6044,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8030020) == 0x8000000)
-              { itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8030020) == 0x8000020)
-              { itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc;
+          case 1 : itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc_d;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x28880000)
-              { itype = ARC600F_INSN_DIVAW_L_S12__RA_; goto extract_sfmt_divaw_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_DIVAW_L_S12__RA_; goto extract_sfmt_divaw_L_s12__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -9224,20 +6069,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_BL_D; goto extract_sfmt_bl_d; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x288a0000)
-              { itype = ARC600F_INSN_ASLS_L_S12__RA_; goto extract_sfmt_asls_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_ASLS_L_S12__RA_; goto extract_sfmt_asls_L_s12__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -9246,43 +6082,22 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 28) & (1 << 3)) | ((insn >> 27) & (1 << 2)) | ((insn >> 4) & (3 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
+          case 1 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
+          case 2 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
+          case 3 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 4 : /* fall through */
           case 5 : /* fall through */
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8ff0000) == 0x288b0000)
-              { itype = ARC600F_INSN_ASRS_L_S12__RA_; goto extract_sfmt_asls_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ASRS_L_S12__RA_; goto extract_sfmt_asls_L_s12__RA_;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
-          case 11 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 11 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -9291,29 +6106,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8030020) == 0x8000000)
-              { itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8030020) == 0x8000020)
-              { itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc;
+          case 1 : itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc_d;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x28a80000)
-              { itype = ARC600F_INSN_ADDSDW_L_S12__RA_; goto extract_sfmt_asls_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_ADDSDW_L_S12__RA_; goto extract_sfmt_asls_L_s12__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -9322,43 +6122,22 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 28) & (1 << 3)) | ((insn >> 27) & (1 << 2)) | ((insn >> 4) & (3 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
+          case 1 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
+          case 2 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
+          case 3 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 4 : /* fall through */
           case 5 : /* fall through */
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8ff0000) == 0x28a90000)
-              { itype = ARC600F_INSN_SUBSDW_L_S12__RA_; goto extract_sfmt_asls_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_SUBSDW_L_S12__RA_; goto extract_sfmt_asls_L_s12__RA_;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
-          case 11 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 11 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -9367,29 +6146,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8030020) == 0x8000000)
-              { itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8030020) == 0x8000020)
-              { itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc;
+          case 1 : itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc_d;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x28b00000)
-              { itype = ARC600F_INSN_MULULW_L_S12__RA_; goto extract_sfmt_mullw_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_MULULW_L_S12__RA_; goto extract_sfmt_mullw_L_s12__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -9398,43 +6162,22 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 28) & (1 << 3)) | ((insn >> 27) & (1 << 2)) | ((insn >> 4) & (3 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
+          case 1 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
+          case 2 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
+          case 3 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 4 : /* fall through */
           case 5 : /* fall through */
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8ff0000) == 0x28b10000)
-              { itype = ARC600F_INSN_MULLW_L_S12__RA_; goto extract_sfmt_mullw_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_MULLW_L_S12__RA_; goto extract_sfmt_mullw_L_s12__RA_;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
-          case 11 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 11 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -9443,43 +6186,22 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 28) & (1 << 3)) | ((insn >> 27) & (1 << 2)) | ((insn >> 4) & (3 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
+          case 1 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
+          case 2 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
+          case 3 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 4 : /* fall through */
           case 5 : /* fall through */
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8ff0000) == 0x28b30000)
-              { itype = ARC600F_INSN_MACLW_L_S12__RA_; goto extract_sfmt_maclw_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_MACLW_L_S12__RA_; goto extract_sfmt_maclw_L_s12__RA_;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
-          case 11 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 11 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -9488,43 +6210,22 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 28) & (1 << 3)) | ((insn >> 27) & (1 << 2)) | ((insn >> 4) & (3 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
+          case 1 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
+          case 2 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
+          case 3 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 4 : /* fall through */
           case 5 : /* fall through */
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8ff0000) == 0x28b50000)
-              { itype = ARC600F_INSN_MACHULW_L_S12__RA_; goto extract_sfmt_machulw_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_MACHULW_L_S12__RA_; goto extract_sfmt_machulw_L_s12__RA_;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
-          case 11 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 11 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -9542,20 +6243,11 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_BL_D; goto extract_sfmt_bl_d; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8ff0000) == 0x28b60000)
-              { itype = ARC600F_INSN_MACHLW_L_S12__RA_; goto extract_sfmt_maclw_L_s12__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_MACHLW_L_S12__RA_; goto extract_sfmt_maclw_L_s12__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -9564,32 +6256,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8030020) == 0x8000000)
-              { itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8030020) == 0x8000020)
-              { itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x28c00000)
-              { itype = ARC600F_INSN_ASL_CC__RA__RC; goto extract_sfmt_asl_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x28c00020)
-              { itype = ARC600F_INSN_ASL_CCU6__RA_; goto extract_sfmt_asl_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc;
+          case 1 : itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc_d;
+          case 2 : itype = ARC600F_INSN_ASL_CC__RA__RC; goto extract_sfmt_asl_cc__RA__RC;
+          case 3 : itype = ARC600F_INSN_ASL_CCU6__RA_; goto extract_sfmt_asl_ccu6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -9598,46 +6272,22 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 28) & (1 << 3)) | ((insn >> 27) & (1 << 2)) | ((insn >> 4) & (3 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
+          case 1 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
+          case 2 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
+          case 3 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8ff0020) == 0x28c10000)
-              { itype = ARC600F_INSN_LSR_CC__RA__RC; goto extract_sfmt_asl_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LSR_CC__RA__RC; goto extract_sfmt_asl_cc__RA__RC;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8ff0020) == 0x28c10020)
-              { itype = ARC600F_INSN_LSR_CCU6__RA_; goto extract_sfmt_asl_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_LSR_CCU6__RA_; goto extract_sfmt_asl_ccu6__RA_;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
-          case 11 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 11 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -9654,24 +6304,12 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
             if ((entire_insn & 0xf8030030) == 0x8020020)
               { itype = ARC600F_INSN_BL_D; goto extract_sfmt_bl_d; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x28c20000)
-              { itype = ARC600F_INSN_ASR_CC__RA__RC; goto extract_sfmt_asl_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x28c20020)
-              { itype = ARC600F_INSN_ASR_CCU6__RA_; goto extract_sfmt_asl_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 2 : itype = ARC600F_INSN_ASR_CC__RA__RC; goto extract_sfmt_asl_cc__RA__RC;
+          case 3 : itype = ARC600F_INSN_ASR_CCU6__RA_; goto extract_sfmt_asl_ccu6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -9680,46 +6318,22 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 28) & (1 << 3)) | ((insn >> 27) & (1 << 2)) | ((insn >> 4) & (3 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
+          case 1 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
+          case 2 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
+          case 3 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8ff0020) == 0x28c30000)
-              { itype = ARC600F_INSN_ROR_CC__RA__RC; goto extract_sfmt_asl_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_ROR_CC__RA__RC; goto extract_sfmt_asl_cc__RA__RC;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8ff0020) == 0x28c30020)
-              { itype = ARC600F_INSN_ROR_CCU6__RA_; goto extract_sfmt_asl_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ROR_CCU6__RA_; goto extract_sfmt_asl_ccu6__RA_;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
-          case 11 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 11 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -9728,32 +6342,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8030020) == 0x8000000)
-              { itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8030020) == 0x8000020)
-              { itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x28c40000)
-              { itype = ARC600F_INSN_MUL64_CC__RC; goto extract_sfmt_mul64_cc__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x28c40020)
-              { itype = ARC600F_INSN_MUL64_CCU6_; goto extract_sfmt_mul64_ccu6_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc;
+          case 1 : itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc_d;
+          case 2 : itype = ARC600F_INSN_MUL64_CC__RC; goto extract_sfmt_mul64_cc__RC;
+          case 3 : itype = ARC600F_INSN_MUL64_CCU6_; goto extract_sfmt_mul64_ccu6_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -9762,46 +6358,22 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 28) & (1 << 3)) | ((insn >> 27) & (1 << 2)) | ((insn >> 4) & (3 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
+          case 1 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
+          case 2 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
+          case 3 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8ff0020) == 0x28c50000)
-              { itype = ARC600F_INSN_MULU64_CC__RC; goto extract_sfmt_mul64_cc__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_MULU64_CC__RC; goto extract_sfmt_mul64_cc__RC;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8ff0020) == 0x28c50020)
-              { itype = ARC600F_INSN_MULU64_CCU6_; goto extract_sfmt_mul64_ccu6_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_MULU64_CCU6_; goto extract_sfmt_mul64_ccu6_;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
-          case 11 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 11 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -9818,24 +6390,12 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
             if ((entire_insn & 0xf8030030) == 0x8020020)
               { itype = ARC600F_INSN_BL_D; goto extract_sfmt_bl_d; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x28c60000)
-              { itype = ARC600F_INSN_ADDS_CC__RA__RC; goto extract_sfmt_adds_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x28c60020)
-              { itype = ARC600F_INSN_ADDS_CCU6__RA_; goto extract_sfmt_adds_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 2 : itype = ARC600F_INSN_ADDS_CC__RA__RC; goto extract_sfmt_adds_cc__RA__RC;
+          case 3 : itype = ARC600F_INSN_ADDS_CCU6__RA_; goto extract_sfmt_adds_ccu6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -9844,46 +6404,22 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 28) & (1 << 3)) | ((insn >> 27) & (1 << 2)) | ((insn >> 4) & (3 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
+          case 1 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
+          case 2 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
+          case 3 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8ff0020) == 0x28c70000)
-              { itype = ARC600F_INSN_SUBS_CC__RA__RC; goto extract_sfmt_adds_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_SUBS_CC__RA__RC; goto extract_sfmt_adds_cc__RA__RC;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8ff0020) == 0x28c70020)
-              { itype = ARC600F_INSN_SUBS_CCU6__RA_; goto extract_sfmt_adds_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_SUBS_CCU6__RA_; goto extract_sfmt_adds_ccu6__RA_;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
-          case 11 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 11 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -9892,32 +6428,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8030020) == 0x8000000)
-              { itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8030020) == 0x8000020)
-              { itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x28c80000)
-              { itype = ARC600F_INSN_DIVAW_CC__RA__RC; goto extract_sfmt_divaw_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x28c80020)
-              { itype = ARC600F_INSN_DIVAW_CCU6__RA_; goto extract_sfmt_divaw_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc;
+          case 1 : itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc_d;
+          case 2 : itype = ARC600F_INSN_DIVAW_CC__RA__RC; goto extract_sfmt_divaw_cc__RA__RC;
+          case 3 : itype = ARC600F_INSN_DIVAW_CCU6__RA_; goto extract_sfmt_divaw_ccu6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -9934,24 +6452,12 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
             if ((entire_insn & 0xf8030030) == 0x8020020)
               { itype = ARC600F_INSN_BL_D; goto extract_sfmt_bl_d; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x28ca0000)
-              { itype = ARC600F_INSN_ASLS_CC__RA__RC; goto extract_sfmt_asls_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x28ca0020)
-              { itype = ARC600F_INSN_ASLS_CCU6__RA_; goto extract_sfmt_asls_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 2 : itype = ARC600F_INSN_ASLS_CC__RA__RC; goto extract_sfmt_asls_cc__RA__RC;
+          case 3 : itype = ARC600F_INSN_ASLS_CCU6__RA_; goto extract_sfmt_asls_ccu6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -9960,46 +6466,22 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 28) & (1 << 3)) | ((insn >> 27) & (1 << 2)) | ((insn >> 4) & (3 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
+          case 1 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
+          case 2 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
+          case 3 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8ff0020) == 0x28cb0000)
-              { itype = ARC600F_INSN_ASRS_CC__RA__RC; goto extract_sfmt_asls_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_ASRS_CC__RA__RC; goto extract_sfmt_asls_cc__RA__RC;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8ff0020) == 0x28cb0020)
-              { itype = ARC600F_INSN_ASRS_CCU6__RA_; goto extract_sfmt_asls_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ASRS_CCU6__RA_; goto extract_sfmt_asls_ccu6__RA_;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
-          case 11 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 11 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -10008,32 +6490,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8030020) == 0x8000000)
-              { itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8030020) == 0x8000020)
-              { itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x28e80000)
-              { itype = ARC600F_INSN_ADDSDW_CC__RA__RC; goto extract_sfmt_asls_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x28e80020)
-              { itype = ARC600F_INSN_ADDSDW_CCU6__RA_; goto extract_sfmt_asls_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc;
+          case 1 : itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc_d;
+          case 2 : itype = ARC600F_INSN_ADDSDW_CC__RA__RC; goto extract_sfmt_asls_cc__RA__RC;
+          case 3 : itype = ARC600F_INSN_ADDSDW_CCU6__RA_; goto extract_sfmt_asls_ccu6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -10042,46 +6506,22 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 28) & (1 << 3)) | ((insn >> 27) & (1 << 2)) | ((insn >> 4) & (3 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
+          case 1 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
+          case 2 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
+          case 3 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8ff0020) == 0x28e90000)
-              { itype = ARC600F_INSN_SUBSDW_CC__RA__RC; goto extract_sfmt_asls_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_SUBSDW_CC__RA__RC; goto extract_sfmt_asls_cc__RA__RC;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8ff0020) == 0x28e90020)
-              { itype = ARC600F_INSN_SUBSDW_CCU6__RA_; goto extract_sfmt_asls_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_SUBSDW_CCU6__RA_; goto extract_sfmt_asls_ccu6__RA_;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
-          case 11 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 11 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -10090,32 +6530,14 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 29) & (1 << 2)) | ((insn >> 28) & (1 << 1)) | ((insn >> 5) & (1 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8030020) == 0x8000000)
-              { itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8030020) == 0x8000020)
-              { itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x28f00000)
-              { itype = ARC600F_INSN_MULULW_CC__RA__RC; goto extract_sfmt_mullw_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x28f00020)
-              { itype = ARC600F_INSN_MULULW_CCU6__RA_; goto extract_sfmt_mullw_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BLCC; goto extract_sfmt_blcc;
+          case 1 : itype = ARC600F_INSN_BLCC_D; goto extract_sfmt_blcc_d;
+          case 2 : itype = ARC600F_INSN_MULULW_CC__RA__RC; goto extract_sfmt_mullw_cc__RA__RC;
+          case 3 : itype = ARC600F_INSN_MULULW_CCU6__RA_; goto extract_sfmt_mullw_ccu6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -10124,46 +6546,22 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 28) & (1 << 3)) | ((insn >> 27) & (1 << 2)) | ((insn >> 4) & (3 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
+          case 1 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
+          case 2 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
+          case 3 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8ff0020) == 0x28f10000)
-              { itype = ARC600F_INSN_MULLW_CC__RA__RC; goto extract_sfmt_mullw_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_MULLW_CC__RA__RC; goto extract_sfmt_mullw_cc__RA__RC;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8ff0020) == 0x28f10020)
-              { itype = ARC600F_INSN_MULLW_CCU6__RA_; goto extract_sfmt_mullw_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_MULLW_CCU6__RA_; goto extract_sfmt_mullw_ccu6__RA_;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
-          case 11 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 11 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -10172,46 +6570,22 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 28) & (1 << 3)) | ((insn >> 27) & (1 << 2)) | ((insn >> 4) & (3 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
+          case 1 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
+          case 2 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
+          case 3 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8ff0020) == 0x28f30000)
-              { itype = ARC600F_INSN_MACLW_CC__RA__RC; goto extract_sfmt_maclw_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_MACLW_CC__RA__RC; goto extract_sfmt_maclw_cc__RA__RC;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8ff0020) == 0x28f30020)
-              { itype = ARC600F_INSN_MACLW_CCU6__RA_; goto extract_sfmt_maclw_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_MACLW_CCU6__RA_; goto extract_sfmt_maclw_ccu6__RA_;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
-          case 11 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 11 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -10220,46 +6594,22 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 28) & (1 << 3)) | ((insn >> 27) & (1 << 2)) | ((insn >> 4) & (3 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf8010030) == 0x8010000)
-              { itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 1 :
-            if ((entire_insn & 0xf8010030) == 0x8010010)
-              { itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8010030) == 0x8010020)
-              { itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8010030) == 0x8010030)
-              { itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_BRCC_RC; goto extract_sfmt_brcc_RC;
+          case 1 : itype = ARC600F_INSN_BRCC_U6; goto extract_sfmt_brcc_U6;
+          case 2 : itype = ARC600F_INSN_BRCC_RC_D; goto extract_sfmt_brcc_RC;
+          case 3 : itype = ARC600F_INSN_BRCC_U6_D; goto extract_sfmt_brcc_U6;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8ff0020) == 0x28f50000)
-              { itype = ARC600F_INSN_MACHULW_CC__RA__RC; goto extract_sfmt_machulw_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_MACHULW_CC__RA__RC; goto extract_sfmt_machulw_cc__RA__RC;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8ff0020) == 0x28f50020)
-              { itype = ARC600F_INSN_MACHULW_CCU6__RA_; goto extract_sfmt_machulw_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_MACHULW_CCU6__RA_; goto extract_sfmt_machulw_ccu6__RA_;
           case 8 : /* fall through */
           case 9 : /* fall through */
           case 10 : /* fall through */
-          case 11 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 11 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -10276,24 +6626,12 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
             if ((entire_insn & 0xf8030030) == 0x8020020)
               { itype = ARC600F_INSN_BL_D; goto extract_sfmt_bl_d; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0020) == 0x28f60000)
-              { itype = ARC600F_INSN_MACHLW_CC__RA__RC; goto extract_sfmt_maclw_cc__RA__RC; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8ff0020) == 0x28f60020)
-              { itype = ARC600F_INSN_MACHLW_CCU6__RA_; goto extract_sfmt_maclw_ccu6__RA_; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 2 : itype = ARC600F_INSN_MACHLW_CC__RA__RC; goto extract_sfmt_maclw_cc__RA__RC;
+          case 3 : itype = ARC600F_INSN_MACHLW_CCU6__RA_; goto extract_sfmt_maclw_ccu6__RA_;
           case 4 : /* fall through */
-          case 5 :
-            if ((entire_insn & 0xf8000000) == 0x88000000)
-              { itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 5 : itype = ARC600F_INSN_LDB_S_ABU; goto extract_sfmt_ldb_s_abu;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8000000) == 0xa8000000)
-              { itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_STB_S_ABU; goto extract_sfmt_stb_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -10557,86 +6895,26 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 25) & (1 << 6)) | ((insn >> 24) & (1 << 5)) | ((insn >> 6) & (31 << 0)));
           switch (val)
           {
-          case 0 :
-            if ((entire_insn & 0xf80007c0) == 0x10000000)
-              { itype = ARC600F_INSN_LD_ABS; goto extract_sfmt_ld_abs; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf80007c0) == 0x10000080)
-              { itype = ARC600F_INSN_LDB_ABS; goto extract_sfmt_ldb_abs; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf80007c0) == 0x100000c0)
-              { itype = ARC600F_INSN_LDB_X_ABS; goto extract_sfmt_ldb_abs; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 4 :
-            if ((entire_insn & 0xf80007c0) == 0x10000100)
-              { itype = ARC600F_INSN_LDW_ABS; goto extract_sfmt_ldw_abs; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 5 :
-            if ((entire_insn & 0xf80007c0) == 0x10000140)
-              { itype = ARC600F_INSN_LDW_X_ABS; goto extract_sfmt_ldw_abs; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 8 :
-            if ((entire_insn & 0xf80007c0) == 0x10000200)
-              { itype = ARC600F_INSN_LD__AW_ABS; goto extract_sfmt_ld__AW_abs; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 10 :
-            if ((entire_insn & 0xf80007c0) == 0x10000280)
-              { itype = ARC600F_INSN_LDB__AW_ABS; goto extract_sfmt_ldb__AW_abs; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 11 :
-            if ((entire_insn & 0xf80007c0) == 0x100002c0)
-              { itype = ARC600F_INSN_LDB__AW_X_ABS; goto extract_sfmt_ldb__AW_abs; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 12 :
-            if ((entire_insn & 0xf80007c0) == 0x10000300)
-              { itype = ARC600F_INSN_LDW__AW_ABS; goto extract_sfmt_ldw__AW_abs; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 13 :
-            if ((entire_insn & 0xf80007c0) == 0x10000340)
-              { itype = ARC600F_INSN_LDW__AW_X_ABS; goto extract_sfmt_ldw__AW_abs; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 16 :
-            if ((entire_insn & 0xf80007c0) == 0x10000400)
-              { itype = ARC600F_INSN_LD_AB_ABS; goto extract_sfmt_ld__AW_abs; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 18 :
-            if ((entire_insn & 0xf80007c0) == 0x10000480)
-              { itype = ARC600F_INSN_LDB_AB_ABS; goto extract_sfmt_ldb__AW_abs; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 19 :
-            if ((entire_insn & 0xf80007c0) == 0x100004c0)
-              { itype = ARC600F_INSN_LDB_AB_X_ABS; goto extract_sfmt_ldb__AW_abs; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 20 :
-            if ((entire_insn & 0xf80007c0) == 0x10000500)
-              { itype = ARC600F_INSN_LDW_AB_ABS; goto extract_sfmt_ldw__AW_abs; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 21 :
-            if ((entire_insn & 0xf80007c0) == 0x10000540)
-              { itype = ARC600F_INSN_LDW_AB_X_ABS; goto extract_sfmt_ldw__AW_abs; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 24 :
-            if ((entire_insn & 0xf80007c0) == 0x10000600)
-              { itype = ARC600F_INSN_LD_AS_ABS; goto extract_sfmt_ld_abs; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 26 :
-            if ((entire_insn & 0xf80007c0) == 0x10000680)
-              { itype = ARC600F_INSN_LDB_AS_ABS; goto extract_sfmt_ldb_as_abs; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 27 :
-            if ((entire_insn & 0xf80007c0) == 0x100006c0)
-              { itype = ARC600F_INSN_LDB_AS_X_ABS; goto extract_sfmt_ldb_as_abs; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 28 :
-            if ((entire_insn & 0xf80007c0) == 0x10000700)
-              { itype = ARC600F_INSN_LDW_AS_ABS; goto extract_sfmt_ldw_abs; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 29 :
-            if ((entire_insn & 0xf80007c0) == 0x10000740)
-              { itype = ARC600F_INSN_LDW_AS_X_ABS; goto extract_sfmt_ldw_abs; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 0 : itype = ARC600F_INSN_LD_ABS; goto extract_sfmt_ld_abs;
+          case 2 : itype = ARC600F_INSN_LDB_ABS; goto extract_sfmt_ldb_abs;
+          case 3 : itype = ARC600F_INSN_LDB_X_ABS; goto extract_sfmt_ldb_abs;
+          case 4 : itype = ARC600F_INSN_LDW_ABS; goto extract_sfmt_ldw_abs;
+          case 5 : itype = ARC600F_INSN_LDW_X_ABS; goto extract_sfmt_ldw_abs;
+          case 8 : itype = ARC600F_INSN_LD__AW_ABS; goto extract_sfmt_ld__AW_abs;
+          case 10 : itype = ARC600F_INSN_LDB__AW_ABS; goto extract_sfmt_ldb__AW_abs;
+          case 11 : itype = ARC600F_INSN_LDB__AW_X_ABS; goto extract_sfmt_ldb__AW_abs;
+          case 12 : itype = ARC600F_INSN_LDW__AW_ABS; goto extract_sfmt_ldw__AW_abs;
+          case 13 : itype = ARC600F_INSN_LDW__AW_X_ABS; goto extract_sfmt_ldw__AW_abs;
+          case 16 : itype = ARC600F_INSN_LD_AB_ABS; goto extract_sfmt_ld__AW_abs;
+          case 18 : itype = ARC600F_INSN_LDB_AB_ABS; goto extract_sfmt_ldb__AW_abs;
+          case 19 : itype = ARC600F_INSN_LDB_AB_X_ABS; goto extract_sfmt_ldb__AW_abs;
+          case 20 : itype = ARC600F_INSN_LDW_AB_ABS; goto extract_sfmt_ldw__AW_abs;
+          case 21 : itype = ARC600F_INSN_LDW_AB_X_ABS; goto extract_sfmt_ldw__AW_abs;
+          case 24 : itype = ARC600F_INSN_LD_AS_ABS; goto extract_sfmt_ld_abs;
+          case 26 : itype = ARC600F_INSN_LDB_AS_ABS; goto extract_sfmt_ldb_as_abs;
+          case 27 : itype = ARC600F_INSN_LDB_AS_X_ABS; goto extract_sfmt_ldb_as_abs;
+          case 28 : itype = ARC600F_INSN_LDW_AS_ABS; goto extract_sfmt_ldw_abs;
+          case 29 : itype = ARC600F_INSN_LDW_AS_X_ABS; goto extract_sfmt_ldw_abs;
           case 64 : /* fall through */
           case 65 : /* fall through */
           case 66 : /* fall through */
@@ -10668,10 +6946,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           case 92 : /* fall through */
           case 93 : /* fall through */
           case 94 : /* fall through */
-          case 95 :
-            if ((entire_insn & 0xf8000000) == 0x90000000)
-              { itype = ARC600F_INSN_LDW_S_ABU; goto extract_sfmt_ldw_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 95 : itype = ARC600F_INSN_LDW_S_ABU; goto extract_sfmt_ldw_s_abu;
           case 96 : /* fall through */
           case 97 : /* fall through */
           case 98 : /* fall through */
@@ -10703,10 +6978,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           case 124 : /* fall through */
           case 125 : /* fall through */
           case 126 : /* fall through */
-          case 127 :
-            if ((entire_insn & 0xf8000000) == 0xb0000000)
-              { itype = ARC600F_INSN_STW_S_ABU; goto extract_sfmt_stw_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 127 : itype = ARC600F_INSN_STW_S_ABU; goto extract_sfmt_stw_s_abu;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -10809,10 +7081,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           case 44 : /* fall through */
           case 45 : /* fall through */
           case 46 : /* fall through */
-          case 47 :
-            if ((entire_insn & 0xf8000000) == 0x98000000)
-              { itype = ARC600F_INSN_LDW_S_X_ABU; goto extract_sfmt_ldw_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 47 : itype = ARC600F_INSN_LDW_S_X_ABU; goto extract_sfmt_ldw_s_abu;
           case 48 : /* fall through */
           case 49 : /* fall through */
           case 50 : /* fall through */
@@ -10828,10 +7097,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           case 60 : /* fall through */
           case 61 : /* fall through */
           case 62 : /* fall through */
-          case 63 :
-            if ((entire_insn & 0xf8e00000) == 0xb8000000)
-              { itype = ARC600F_INSN_ASL_S_SSB; goto extract_sfmt_sub_s_ssb; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 63 : itype = ARC600F_INSN_ASL_S_SSB; goto extract_sfmt_sub_s_ssb;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -10934,10 +7200,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           case 44 : /* fall through */
           case 45 : /* fall through */
           case 46 : /* fall through */
-          case 47 :
-            if ((entire_insn & 0xf8000000) == 0x98000000)
-              { itype = ARC600F_INSN_LDW_S_X_ABU; goto extract_sfmt_ldw_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 47 : itype = ARC600F_INSN_LDW_S_X_ABU; goto extract_sfmt_ldw_s_abu;
           case 48 : /* fall through */
           case 49 : /* fall through */
           case 50 : /* fall through */
@@ -10953,10 +7216,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           case 60 : /* fall through */
           case 61 : /* fall through */
           case 62 : /* fall through */
-          case 63 :
-            if ((entire_insn & 0xf8e00000) == 0xb8200000)
-              { itype = ARC600F_INSN_LSR_S_SSB; goto extract_sfmt_sub_s_ssb; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 63 : itype = ARC600F_INSN_LSR_S_SSB; goto extract_sfmt_sub_s_ssb;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -11059,10 +7319,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           case 44 : /* fall through */
           case 45 : /* fall through */
           case 46 : /* fall through */
-          case 47 :
-            if ((entire_insn & 0xf8000000) == 0x98000000)
-              { itype = ARC600F_INSN_LDW_S_X_ABU; goto extract_sfmt_ldw_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 47 : itype = ARC600F_INSN_LDW_S_X_ABU; goto extract_sfmt_ldw_s_abu;
           case 48 : /* fall through */
           case 49 : /* fall through */
           case 50 : /* fall through */
@@ -11078,10 +7335,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           case 60 : /* fall through */
           case 61 : /* fall through */
           case 62 : /* fall through */
-          case 63 :
-            if ((entire_insn & 0xf8e00000) == 0xb8400000)
-              { itype = ARC600F_INSN_ASR_S_SSB; goto extract_sfmt_sub_s_ssb; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 63 : itype = ARC600F_INSN_ASR_S_SSB; goto extract_sfmt_sub_s_ssb;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -11184,10 +7438,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           case 44 : /* fall through */
           case 45 : /* fall through */
           case 46 : /* fall through */
-          case 47 :
-            if ((entire_insn & 0xf8000000) == 0x98000000)
-              { itype = ARC600F_INSN_LDW_S_X_ABU; goto extract_sfmt_ldw_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 47 : itype = ARC600F_INSN_LDW_S_X_ABU; goto extract_sfmt_ldw_s_abu;
           case 48 : /* fall through */
           case 49 : /* fall through */
           case 50 : /* fall through */
@@ -11203,10 +7454,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           case 60 : /* fall through */
           case 61 : /* fall through */
           case 62 : /* fall through */
-          case 63 :
-            if ((entire_insn & 0xf8e00000) == 0xb8600000)
-              { itype = ARC600F_INSN_SUB_S_SSB; goto extract_sfmt_sub_s_ssb; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 63 : itype = ARC600F_INSN_SUB_S_SSB; goto extract_sfmt_sub_s_ssb;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -11309,10 +7557,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           case 44 : /* fall through */
           case 45 : /* fall through */
           case 46 : /* fall through */
-          case 47 :
-            if ((entire_insn & 0xf8000000) == 0x98000000)
-              { itype = ARC600F_INSN_LDW_S_X_ABU; goto extract_sfmt_ldw_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 47 : itype = ARC600F_INSN_LDW_S_X_ABU; goto extract_sfmt_ldw_s_abu;
           case 48 : /* fall through */
           case 49 : /* fall through */
           case 50 : /* fall through */
@@ -11328,10 +7573,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           case 60 : /* fall through */
           case 61 : /* fall through */
           case 62 : /* fall through */
-          case 63 :
-            if ((entire_insn & 0xf8e00000) == 0xb8800000)
-              { itype = ARC600F_INSN_BSET_S_SSB; goto extract_sfmt_sub_s_ssb; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 63 : itype = ARC600F_INSN_BSET_S_SSB; goto extract_sfmt_sub_s_ssb;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -11434,10 +7676,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           case 44 : /* fall through */
           case 45 : /* fall through */
           case 46 : /* fall through */
-          case 47 :
-            if ((entire_insn & 0xf8000000) == 0x98000000)
-              { itype = ARC600F_INSN_LDW_S_X_ABU; goto extract_sfmt_ldw_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 47 : itype = ARC600F_INSN_LDW_S_X_ABU; goto extract_sfmt_ldw_s_abu;
           case 48 : /* fall through */
           case 49 : /* fall through */
           case 50 : /* fall through */
@@ -11453,10 +7692,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           case 60 : /* fall through */
           case 61 : /* fall through */
           case 62 : /* fall through */
-          case 63 :
-            if ((entire_insn & 0xf8e00000) == 0xb8a00000)
-              { itype = ARC600F_INSN_BCLR_S_SSB; goto extract_sfmt_sub_s_ssb; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 63 : itype = ARC600F_INSN_BCLR_S_SSB; goto extract_sfmt_sub_s_ssb;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -11559,10 +7795,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           case 44 : /* fall through */
           case 45 : /* fall through */
           case 46 : /* fall through */
-          case 47 :
-            if ((entire_insn & 0xf8000000) == 0x98000000)
-              { itype = ARC600F_INSN_LDW_S_X_ABU; goto extract_sfmt_ldw_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 47 : itype = ARC600F_INSN_LDW_S_X_ABU; goto extract_sfmt_ldw_s_abu;
           case 48 : /* fall through */
           case 49 : /* fall through */
           case 50 : /* fall through */
@@ -11578,10 +7811,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           case 60 : /* fall through */
           case 61 : /* fall through */
           case 62 : /* fall through */
-          case 63 :
-            if ((entire_insn & 0xf8e00000) == 0xb8c00000)
-              { itype = ARC600F_INSN_BMSK_S_SSB; goto extract_sfmt_sub_s_ssb; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 63 : itype = ARC600F_INSN_BMSK_S_SSB; goto extract_sfmt_sub_s_ssb;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -11684,10 +7914,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           case 44 : /* fall through */
           case 45 : /* fall through */
           case 46 : /* fall through */
-          case 47 :
-            if ((entire_insn & 0xf8000000) == 0x98000000)
-              { itype = ARC600F_INSN_LDW_S_X_ABU; goto extract_sfmt_ldw_s_abu; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 47 : itype = ARC600F_INSN_LDW_S_X_ABU; goto extract_sfmt_ldw_s_abu;
           case 48 : /* fall through */
           case 49 : /* fall through */
           case 50 : /* fall through */
@@ -11703,10 +7930,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           case 60 : /* fall through */
           case 61 : /* fall through */
           case 62 : /* fall through */
-          case 63 :
-            if ((entire_insn & 0xf8e00000) == 0xb8e00000)
-              { itype = ARC600F_INSN_BTST_S_SSB; goto extract_sfmt_btst_s_ssb; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 63 : itype = ARC600F_INSN_BTST_S_SSB; goto extract_sfmt_btst_s_ssb;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -11722,18 +7946,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf8180000) == 0x60000000)
-              { itype = ARC600F_INSN_LD_S_ABC; goto extract_sfmt_ld_s_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8e00000) == 0xc0000000)
-              { itype = ARC600F_INSN_LD_S_ABSP; goto extract_sfmt_ld_s_absp; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8800000) == 0xe0000000)
-              { itype = ARC600F_INSN_ADD_S_R_U7; goto extract_sfmt_add_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_LD_S_ABC; goto extract_sfmt_ld_s_abc;
+          case 2 : itype = ARC600F_INSN_LD_S_ABSP; goto extract_sfmt_ld_s_absp;
+          case 3 : itype = ARC600F_INSN_ADD_S_R_U7; goto extract_sfmt_add_s_r_u7;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -11749,18 +7964,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf8180000) == 0x60080000)
-              { itype = ARC600F_INSN_LDB_S_ABC; goto extract_sfmt_ldb_s_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8e00000) == 0xc0000000)
-              { itype = ARC600F_INSN_LD_S_ABSP; goto extract_sfmt_ld_s_absp; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8800000) == 0xe0000000)
-              { itype = ARC600F_INSN_ADD_S_R_U7; goto extract_sfmt_add_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_LDB_S_ABC; goto extract_sfmt_ldb_s_abc;
+          case 2 : itype = ARC600F_INSN_LD_S_ABSP; goto extract_sfmt_ld_s_absp;
+          case 3 : itype = ARC600F_INSN_ADD_S_R_U7; goto extract_sfmt_add_s_r_u7;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -11776,18 +7982,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf8180000) == 0x60100000)
-              { itype = ARC600F_INSN_LDW_S_ABC; goto extract_sfmt_ldw_s_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8e00000) == 0xc0000000)
-              { itype = ARC600F_INSN_LD_S_ABSP; goto extract_sfmt_ld_s_absp; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8800000) == 0xe0000000)
-              { itype = ARC600F_INSN_ADD_S_R_U7; goto extract_sfmt_add_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_LDW_S_ABC; goto extract_sfmt_ldw_s_abc;
+          case 2 : itype = ARC600F_INSN_LD_S_ABSP; goto extract_sfmt_ld_s_absp;
+          case 3 : itype = ARC600F_INSN_ADD_S_R_U7; goto extract_sfmt_add_s_r_u7;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -11803,18 +8000,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf8180000) == 0x60180000)
-              { itype = ARC600F_INSN_ADD_S_ABC; goto extract_sfmt_add_s_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8e00000) == 0xc0000000)
-              { itype = ARC600F_INSN_LD_S_ABSP; goto extract_sfmt_ld_s_absp; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8800000) == 0xe0000000)
-              { itype = ARC600F_INSN_ADD_S_R_U7; goto extract_sfmt_add_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_ADD_S_ABC; goto extract_sfmt_add_s_abc;
+          case 2 : itype = ARC600F_INSN_LD_S_ABSP; goto extract_sfmt_ld_s_absp;
+          case 3 : itype = ARC600F_INSN_ADD_S_R_U7; goto extract_sfmt_add_s_r_u7;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -11830,18 +8018,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf8180000) == 0x60000000)
-              { itype = ARC600F_INSN_LD_S_ABC; goto extract_sfmt_ld_s_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8e00000) == 0xc0200000)
-              { itype = ARC600F_INSN_LDB_S_ABSP; goto extract_sfmt_ldb_s_absp; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8800000) == 0xe0000000)
-              { itype = ARC600F_INSN_ADD_S_R_U7; goto extract_sfmt_add_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_LD_S_ABC; goto extract_sfmt_ld_s_abc;
+          case 2 : itype = ARC600F_INSN_LDB_S_ABSP; goto extract_sfmt_ldb_s_absp;
+          case 3 : itype = ARC600F_INSN_ADD_S_R_U7; goto extract_sfmt_add_s_r_u7;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -11857,18 +8036,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf8180000) == 0x60080000)
-              { itype = ARC600F_INSN_LDB_S_ABC; goto extract_sfmt_ldb_s_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8e00000) == 0xc0200000)
-              { itype = ARC600F_INSN_LDB_S_ABSP; goto extract_sfmt_ldb_s_absp; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8800000) == 0xe0000000)
-              { itype = ARC600F_INSN_ADD_S_R_U7; goto extract_sfmt_add_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_LDB_S_ABC; goto extract_sfmt_ldb_s_abc;
+          case 2 : itype = ARC600F_INSN_LDB_S_ABSP; goto extract_sfmt_ldb_s_absp;
+          case 3 : itype = ARC600F_INSN_ADD_S_R_U7; goto extract_sfmt_add_s_r_u7;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -11884,18 +8054,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf8180000) == 0x60100000)
-              { itype = ARC600F_INSN_LDW_S_ABC; goto extract_sfmt_ldw_s_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8e00000) == 0xc0200000)
-              { itype = ARC600F_INSN_LDB_S_ABSP; goto extract_sfmt_ldb_s_absp; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8800000) == 0xe0000000)
-              { itype = ARC600F_INSN_ADD_S_R_U7; goto extract_sfmt_add_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_LDW_S_ABC; goto extract_sfmt_ldw_s_abc;
+          case 2 : itype = ARC600F_INSN_LDB_S_ABSP; goto extract_sfmt_ldb_s_absp;
+          case 3 : itype = ARC600F_INSN_ADD_S_R_U7; goto extract_sfmt_add_s_r_u7;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -11911,18 +8072,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf8180000) == 0x60180000)
-              { itype = ARC600F_INSN_ADD_S_ABC; goto extract_sfmt_add_s_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8e00000) == 0xc0200000)
-              { itype = ARC600F_INSN_LDB_S_ABSP; goto extract_sfmt_ldb_s_absp; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8800000) == 0xe0000000)
-              { itype = ARC600F_INSN_ADD_S_R_U7; goto extract_sfmt_add_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_ADD_S_ABC; goto extract_sfmt_add_s_abc;
+          case 2 : itype = ARC600F_INSN_LDB_S_ABSP; goto extract_sfmt_ldb_s_absp;
+          case 3 : itype = ARC600F_INSN_ADD_S_R_U7; goto extract_sfmt_add_s_r_u7;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -11938,18 +8090,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf8180000) == 0x60000000)
-              { itype = ARC600F_INSN_LD_S_ABC; goto extract_sfmt_ld_s_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8e00000) == 0xc0400000)
-              { itype = ARC600F_INSN_ST_S_ABSP; goto extract_sfmt_st_s_absp; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8800000) == 0xe0000000)
-              { itype = ARC600F_INSN_ADD_S_R_U7; goto extract_sfmt_add_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_LD_S_ABC; goto extract_sfmt_ld_s_abc;
+          case 2 : itype = ARC600F_INSN_ST_S_ABSP; goto extract_sfmt_st_s_absp;
+          case 3 : itype = ARC600F_INSN_ADD_S_R_U7; goto extract_sfmt_add_s_r_u7;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -11965,18 +8108,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf8180000) == 0x60080000)
-              { itype = ARC600F_INSN_LDB_S_ABC; goto extract_sfmt_ldb_s_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8e00000) == 0xc0400000)
-              { itype = ARC600F_INSN_ST_S_ABSP; goto extract_sfmt_st_s_absp; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8800000) == 0xe0000000)
-              { itype = ARC600F_INSN_ADD_S_R_U7; goto extract_sfmt_add_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_LDB_S_ABC; goto extract_sfmt_ldb_s_abc;
+          case 2 : itype = ARC600F_INSN_ST_S_ABSP; goto extract_sfmt_st_s_absp;
+          case 3 : itype = ARC600F_INSN_ADD_S_R_U7; goto extract_sfmt_add_s_r_u7;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -11992,18 +8126,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf8180000) == 0x60100000)
-              { itype = ARC600F_INSN_LDW_S_ABC; goto extract_sfmt_ldw_s_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8e00000) == 0xc0400000)
-              { itype = ARC600F_INSN_ST_S_ABSP; goto extract_sfmt_st_s_absp; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8800000) == 0xe0000000)
-              { itype = ARC600F_INSN_ADD_S_R_U7; goto extract_sfmt_add_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_LDW_S_ABC; goto extract_sfmt_ldw_s_abc;
+          case 2 : itype = ARC600F_INSN_ST_S_ABSP; goto extract_sfmt_st_s_absp;
+          case 3 : itype = ARC600F_INSN_ADD_S_R_U7; goto extract_sfmt_add_s_r_u7;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -12019,18 +8144,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf8180000) == 0x60180000)
-              { itype = ARC600F_INSN_ADD_S_ABC; goto extract_sfmt_add_s_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8e00000) == 0xc0400000)
-              { itype = ARC600F_INSN_ST_S_ABSP; goto extract_sfmt_st_s_absp; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8800000) == 0xe0000000)
-              { itype = ARC600F_INSN_ADD_S_R_U7; goto extract_sfmt_add_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_ADD_S_ABC; goto extract_sfmt_add_s_abc;
+          case 2 : itype = ARC600F_INSN_ST_S_ABSP; goto extract_sfmt_st_s_absp;
+          case 3 : itype = ARC600F_INSN_ADD_S_R_U7; goto extract_sfmt_add_s_r_u7;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -12046,18 +8162,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf8180000) == 0x60000000)
-              { itype = ARC600F_INSN_LD_S_ABC; goto extract_sfmt_ld_s_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8e00000) == 0xc0600000)
-              { itype = ARC600F_INSN_STB_S_ABSP; goto extract_sfmt_stb_s_absp; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8800000) == 0xe0000000)
-              { itype = ARC600F_INSN_ADD_S_R_U7; goto extract_sfmt_add_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_LD_S_ABC; goto extract_sfmt_ld_s_abc;
+          case 2 : itype = ARC600F_INSN_STB_S_ABSP; goto extract_sfmt_stb_s_absp;
+          case 3 : itype = ARC600F_INSN_ADD_S_R_U7; goto extract_sfmt_add_s_r_u7;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -12073,18 +8180,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf8180000) == 0x60080000)
-              { itype = ARC600F_INSN_LDB_S_ABC; goto extract_sfmt_ldb_s_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8e00000) == 0xc0600000)
-              { itype = ARC600F_INSN_STB_S_ABSP; goto extract_sfmt_stb_s_absp; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8800000) == 0xe0000000)
-              { itype = ARC600F_INSN_ADD_S_R_U7; goto extract_sfmt_add_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_LDB_S_ABC; goto extract_sfmt_ldb_s_abc;
+          case 2 : itype = ARC600F_INSN_STB_S_ABSP; goto extract_sfmt_stb_s_absp;
+          case 3 : itype = ARC600F_INSN_ADD_S_R_U7; goto extract_sfmt_add_s_r_u7;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -12100,18 +8198,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf8180000) == 0x60100000)
-              { itype = ARC600F_INSN_LDW_S_ABC; goto extract_sfmt_ldw_s_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8e00000) == 0xc0600000)
-              { itype = ARC600F_INSN_STB_S_ABSP; goto extract_sfmt_stb_s_absp; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8800000) == 0xe0000000)
-              { itype = ARC600F_INSN_ADD_S_R_U7; goto extract_sfmt_add_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_LDW_S_ABC; goto extract_sfmt_ldw_s_abc;
+          case 2 : itype = ARC600F_INSN_STB_S_ABSP; goto extract_sfmt_stb_s_absp;
+          case 3 : itype = ARC600F_INSN_ADD_S_R_U7; goto extract_sfmt_add_s_r_u7;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -12127,18 +8216,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf8180000) == 0x60180000)
-              { itype = ARC600F_INSN_ADD_S_ABC; goto extract_sfmt_add_s_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8e00000) == 0xc0600000)
-              { itype = ARC600F_INSN_STB_S_ABSP; goto extract_sfmt_stb_s_absp; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8800000) == 0xe0000000)
-              { itype = ARC600F_INSN_ADD_S_R_U7; goto extract_sfmt_add_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_ADD_S_ABC; goto extract_sfmt_add_s_abc;
+          case 2 : itype = ARC600F_INSN_STB_S_ABSP; goto extract_sfmt_stb_s_absp;
+          case 3 : itype = ARC600F_INSN_ADD_S_R_U7; goto extract_sfmt_add_s_r_u7;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -12154,18 +8234,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf8180000) == 0x60000000)
-              { itype = ARC600F_INSN_LD_S_ABC; goto extract_sfmt_ld_s_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8e00000) == 0xc0800000)
-              { itype = ARC600F_INSN_ADD_S_ABSP; goto extract_sfmt_add_s_absp; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8800000) == 0xe0800000)
-              { itype = ARC600F_INSN_CMP_S_R_U7; goto extract_sfmt_cmp_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_LD_S_ABC; goto extract_sfmt_ld_s_abc;
+          case 2 : itype = ARC600F_INSN_ADD_S_ABSP; goto extract_sfmt_add_s_absp;
+          case 3 : itype = ARC600F_INSN_CMP_S_R_U7; goto extract_sfmt_cmp_s_r_u7;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -12181,18 +8252,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf8180000) == 0x60080000)
-              { itype = ARC600F_INSN_LDB_S_ABC; goto extract_sfmt_ldb_s_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8e00000) == 0xc0800000)
-              { itype = ARC600F_INSN_ADD_S_ABSP; goto extract_sfmt_add_s_absp; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8800000) == 0xe0800000)
-              { itype = ARC600F_INSN_CMP_S_R_U7; goto extract_sfmt_cmp_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_LDB_S_ABC; goto extract_sfmt_ldb_s_abc;
+          case 2 : itype = ARC600F_INSN_ADD_S_ABSP; goto extract_sfmt_add_s_absp;
+          case 3 : itype = ARC600F_INSN_CMP_S_R_U7; goto extract_sfmt_cmp_s_r_u7;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -12208,18 +8270,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf8180000) == 0x60100000)
-              { itype = ARC600F_INSN_LDW_S_ABC; goto extract_sfmt_ldw_s_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8e00000) == 0xc0800000)
-              { itype = ARC600F_INSN_ADD_S_ABSP; goto extract_sfmt_add_s_absp; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8800000) == 0xe0800000)
-              { itype = ARC600F_INSN_CMP_S_R_U7; goto extract_sfmt_cmp_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_LDW_S_ABC; goto extract_sfmt_ldw_s_abc;
+          case 2 : itype = ARC600F_INSN_ADD_S_ABSP; goto extract_sfmt_add_s_absp;
+          case 3 : itype = ARC600F_INSN_CMP_S_R_U7; goto extract_sfmt_cmp_s_r_u7;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -12235,18 +8288,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf8180000) == 0x60180000)
-              { itype = ARC600F_INSN_ADD_S_ABC; goto extract_sfmt_add_s_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8e00000) == 0xc0800000)
-              { itype = ARC600F_INSN_ADD_S_ABSP; goto extract_sfmt_add_s_absp; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8800000) == 0xe0800000)
-              { itype = ARC600F_INSN_CMP_S_R_U7; goto extract_sfmt_cmp_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_ADD_S_ABC; goto extract_sfmt_add_s_abc;
+          case 2 : itype = ARC600F_INSN_ADD_S_ABSP; goto extract_sfmt_add_s_absp;
+          case 3 : itype = ARC600F_INSN_CMP_S_R_U7; goto extract_sfmt_cmp_s_r_u7;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -12263,10 +8307,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           switch (val)
           {
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8180000) == 0x60000000)
-              { itype = ARC600F_INSN_LD_S_ABC; goto extract_sfmt_ld_s_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_LD_S_ABC; goto extract_sfmt_ld_s_abc;
           case 4 :
             if ((entire_insn & 0xffe00000) == 0xc0a00000)
               { itype = ARC600F_INSN_ADD_S_ASSPSP; goto extract_sfmt_add_s_asspsp; }
@@ -12276,10 +8317,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_SUB_S_ASSPSP; goto extract_sfmt_add_s_asspsp; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8800000) == 0xe0800000)
-              { itype = ARC600F_INSN_CMP_S_R_U7; goto extract_sfmt_cmp_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_CMP_S_R_U7; goto extract_sfmt_cmp_s_r_u7;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -12296,10 +8334,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           switch (val)
           {
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8180000) == 0x60080000)
-              { itype = ARC600F_INSN_LDB_S_ABC; goto extract_sfmt_ldb_s_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_LDB_S_ABC; goto extract_sfmt_ldb_s_abc;
           case 4 :
             if ((entire_insn & 0xffe00000) == 0xc0a00000)
               { itype = ARC600F_INSN_ADD_S_ASSPSP; goto extract_sfmt_add_s_asspsp; }
@@ -12309,10 +8344,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_SUB_S_ASSPSP; goto extract_sfmt_add_s_asspsp; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8800000) == 0xe0800000)
-              { itype = ARC600F_INSN_CMP_S_R_U7; goto extract_sfmt_cmp_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_CMP_S_R_U7; goto extract_sfmt_cmp_s_r_u7;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -12329,10 +8361,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           switch (val)
           {
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8180000) == 0x60100000)
-              { itype = ARC600F_INSN_LDW_S_ABC; goto extract_sfmt_ldw_s_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_LDW_S_ABC; goto extract_sfmt_ldw_s_abc;
           case 4 :
             if ((entire_insn & 0xffe00000) == 0xc0a00000)
               { itype = ARC600F_INSN_ADD_S_ASSPSP; goto extract_sfmt_add_s_asspsp; }
@@ -12342,10 +8371,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_SUB_S_ASSPSP; goto extract_sfmt_add_s_asspsp; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8800000) == 0xe0800000)
-              { itype = ARC600F_INSN_CMP_S_R_U7; goto extract_sfmt_cmp_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_CMP_S_R_U7; goto extract_sfmt_cmp_s_r_u7;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -12362,10 +8388,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           switch (val)
           {
           case 2 : /* fall through */
-          case 3 :
-            if ((entire_insn & 0xf8180000) == 0x60180000)
-              { itype = ARC600F_INSN_ADD_S_ABC; goto extract_sfmt_add_s_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_ADD_S_ABC; goto extract_sfmt_add_s_abc;
           case 4 :
             if ((entire_insn & 0xffe00000) == 0xc0a00000)
               { itype = ARC600F_INSN_ADD_S_ASSPSP; goto extract_sfmt_add_s_asspsp; }
@@ -12375,10 +8398,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               { itype = ARC600F_INSN_SUB_S_ASSPSP; goto extract_sfmt_add_s_asspsp; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8800000) == 0xe0800000)
-              { itype = ARC600F_INSN_CMP_S_R_U7; goto extract_sfmt_cmp_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_CMP_S_R_U7; goto extract_sfmt_cmp_s_r_u7;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -12416,18 +8436,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf8180000) == 0x60000000)
-              { itype = ARC600F_INSN_LD_S_ABC; goto extract_sfmt_ld_s_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0000) == 0xc0c10000)
-              { itype = ARC600F_INSN_POP_S_B; goto extract_sfmt_pop_s_b; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8800000) == 0xe0800000)
-              { itype = ARC600F_INSN_CMP_S_R_U7; goto extract_sfmt_cmp_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_LD_S_ABC; goto extract_sfmt_ld_s_abc;
+          case 2 : itype = ARC600F_INSN_POP_S_B; goto extract_sfmt_pop_s_b;
+          case 3 : itype = ARC600F_INSN_CMP_S_R_U7; goto extract_sfmt_cmp_s_r_u7;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -12496,18 +8507,12 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf8180000) == 0x60100000)
-              { itype = ARC600F_INSN_LDW_S_ABC; goto extract_sfmt_ldw_s_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_LDW_S_ABC; goto extract_sfmt_ldw_s_abc;
           case 2 :
             if ((entire_insn & 0xffff0000) == 0xc0d10000)
               { itype = ARC600F_INSN_POP_S_BLINK; goto extract_sfmt_pop_s_blink; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8800000) == 0xe0800000)
-              { itype = ARC600F_INSN_CMP_S_R_U7; goto extract_sfmt_cmp_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_CMP_S_R_U7; goto extract_sfmt_cmp_s_r_u7;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -12547,18 +8552,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf8180000) == 0x60000000)
-              { itype = ARC600F_INSN_LD_S_ABC; goto extract_sfmt_ld_s_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8ff0000) == 0xc0e10000)
-              { itype = ARC600F_INSN_PUSH_S_B; goto extract_sfmt_push_s_b; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8800000) == 0xe0800000)
-              { itype = ARC600F_INSN_CMP_S_R_U7; goto extract_sfmt_cmp_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_LD_S_ABC; goto extract_sfmt_ld_s_abc;
+          case 2 : itype = ARC600F_INSN_PUSH_S_B; goto extract_sfmt_push_s_b;
+          case 3 : itype = ARC600F_INSN_CMP_S_R_U7; goto extract_sfmt_cmp_s_r_u7;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -12567,18 +8563,12 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf8180000) == 0x60100000)
-              { itype = ARC600F_INSN_LDW_S_ABC; goto extract_sfmt_ldw_s_abc; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_LDW_S_ABC; goto extract_sfmt_ldw_s_abc;
           case 2 :
             if ((entire_insn & 0xffff0000) == 0xc0f10000)
               { itype = ARC600F_INSN_PUSH_S_BLINK; goto extract_sfmt_push_s_blink; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8800000) == 0xe0800000)
-              { itype = ARC600F_INSN_CMP_S_R_U7; goto extract_sfmt_cmp_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 3 : itype = ARC600F_INSN_CMP_S_R_U7; goto extract_sfmt_cmp_s_r_u7;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -12653,33 +8643,15 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           case 4 : /* fall through */
           case 5 : /* fall through */
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8180000) == 0x68000000)
-              { itype = ARC600F_INSN_ADD_S_CBU3; goto extract_sfmt_add_s_cbu3; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 8 :
-            if ((entire_insn & 0xfe000000) == 0xc8000000)
-              { itype = ARC600F_INSN_LD_S_GPREL; goto extract_sfmt_ld_s_gprel; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 9 :
-            if ((entire_insn & 0xfe000000) == 0xca000000)
-              { itype = ARC600F_INSN_LDB_S_GPREL; goto extract_sfmt_ldb_s_gprel; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 10 :
-            if ((entire_insn & 0xfe000000) == 0xcc000000)
-              { itype = ARC600F_INSN_LDW_S_GPREL; goto extract_sfmt_ldw_s_gprel; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 11 :
-            if ((entire_insn & 0xfe000000) == 0xce000000)
-              { itype = ARC600F_INSN_ADD_S_GP; goto extract_sfmt_add_s_gp; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ADD_S_CBU3; goto extract_sfmt_add_s_cbu3;
+          case 8 : itype = ARC600F_INSN_LD_S_GPREL; goto extract_sfmt_ld_s_gprel;
+          case 9 : itype = ARC600F_INSN_LDB_S_GPREL; goto extract_sfmt_ldb_s_gprel;
+          case 10 : itype = ARC600F_INSN_LDW_S_GPREL; goto extract_sfmt_ldw_s_gprel;
+          case 11 : itype = ARC600F_INSN_ADD_S_GP; goto extract_sfmt_add_s_gp;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xe8000000)
-              { itype = ARC600F_INSN_BRCC_S; goto extract_sfmt_brcc_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_BRCC_S; goto extract_sfmt_brcc_s;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -12754,33 +8726,15 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           case 4 : /* fall through */
           case 5 : /* fall through */
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8180000) == 0x68080000)
-              { itype = ARC600F_INSN_SUB_S_CBU3; goto extract_sfmt_add_s_cbu3; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 8 :
-            if ((entire_insn & 0xfe000000) == 0xc8000000)
-              { itype = ARC600F_INSN_LD_S_GPREL; goto extract_sfmt_ld_s_gprel; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 9 :
-            if ((entire_insn & 0xfe000000) == 0xca000000)
-              { itype = ARC600F_INSN_LDB_S_GPREL; goto extract_sfmt_ldb_s_gprel; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 10 :
-            if ((entire_insn & 0xfe000000) == 0xcc000000)
-              { itype = ARC600F_INSN_LDW_S_GPREL; goto extract_sfmt_ldw_s_gprel; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 11 :
-            if ((entire_insn & 0xfe000000) == 0xce000000)
-              { itype = ARC600F_INSN_ADD_S_GP; goto extract_sfmt_add_s_gp; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_SUB_S_CBU3; goto extract_sfmt_add_s_cbu3;
+          case 8 : itype = ARC600F_INSN_LD_S_GPREL; goto extract_sfmt_ld_s_gprel;
+          case 9 : itype = ARC600F_INSN_LDB_S_GPREL; goto extract_sfmt_ldb_s_gprel;
+          case 10 : itype = ARC600F_INSN_LDW_S_GPREL; goto extract_sfmt_ldw_s_gprel;
+          case 11 : itype = ARC600F_INSN_ADD_S_GP; goto extract_sfmt_add_s_gp;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xe8000000)
-              { itype = ARC600F_INSN_BRCC_S; goto extract_sfmt_brcc_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_BRCC_S; goto extract_sfmt_brcc_s;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -12855,33 +8809,15 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           case 4 : /* fall through */
           case 5 : /* fall through */
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8180000) == 0x68100000)
-              { itype = ARC600F_INSN_ASL_S_CBU3; goto extract_sfmt_add_s_cbu3; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 8 :
-            if ((entire_insn & 0xfe000000) == 0xc8000000)
-              { itype = ARC600F_INSN_LD_S_GPREL; goto extract_sfmt_ld_s_gprel; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 9 :
-            if ((entire_insn & 0xfe000000) == 0xca000000)
-              { itype = ARC600F_INSN_LDB_S_GPREL; goto extract_sfmt_ldb_s_gprel; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 10 :
-            if ((entire_insn & 0xfe000000) == 0xcc000000)
-              { itype = ARC600F_INSN_LDW_S_GPREL; goto extract_sfmt_ldw_s_gprel; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 11 :
-            if ((entire_insn & 0xfe000000) == 0xce000000)
-              { itype = ARC600F_INSN_ADD_S_GP; goto extract_sfmt_add_s_gp; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ASL_S_CBU3; goto extract_sfmt_add_s_cbu3;
+          case 8 : itype = ARC600F_INSN_LD_S_GPREL; goto extract_sfmt_ld_s_gprel;
+          case 9 : itype = ARC600F_INSN_LDB_S_GPREL; goto extract_sfmt_ldb_s_gprel;
+          case 10 : itype = ARC600F_INSN_LDW_S_GPREL; goto extract_sfmt_ldw_s_gprel;
+          case 11 : itype = ARC600F_INSN_ADD_S_GP; goto extract_sfmt_add_s_gp;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xe8000000)
-              { itype = ARC600F_INSN_BRCC_S; goto extract_sfmt_brcc_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_BRCC_S; goto extract_sfmt_brcc_s;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -12956,33 +8892,15 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           case 4 : /* fall through */
           case 5 : /* fall through */
           case 6 : /* fall through */
-          case 7 :
-            if ((entire_insn & 0xf8180000) == 0x68180000)
-              { itype = ARC600F_INSN_ASR_S_CBU3; goto extract_sfmt_add_s_cbu3; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 8 :
-            if ((entire_insn & 0xfe000000) == 0xc8000000)
-              { itype = ARC600F_INSN_LD_S_GPREL; goto extract_sfmt_ld_s_gprel; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 9 :
-            if ((entire_insn & 0xfe000000) == 0xca000000)
-              { itype = ARC600F_INSN_LDB_S_GPREL; goto extract_sfmt_ldb_s_gprel; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 10 :
-            if ((entire_insn & 0xfe000000) == 0xcc000000)
-              { itype = ARC600F_INSN_LDW_S_GPREL; goto extract_sfmt_ldw_s_gprel; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 11 :
-            if ((entire_insn & 0xfe000000) == 0xce000000)
-              { itype = ARC600F_INSN_ADD_S_GP; goto extract_sfmt_add_s_gp; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 7 : itype = ARC600F_INSN_ASR_S_CBU3; goto extract_sfmt_add_s_cbu3;
+          case 8 : itype = ARC600F_INSN_LD_S_GPREL; goto extract_sfmt_ld_s_gprel;
+          case 9 : itype = ARC600F_INSN_LDB_S_GPREL; goto extract_sfmt_ldb_s_gprel;
+          case 10 : itype = ARC600F_INSN_LDW_S_GPREL; goto extract_sfmt_ldw_s_gprel;
+          case 11 : itype = ARC600F_INSN_ADD_S_GP; goto extract_sfmt_add_s_gp;
           case 12 : /* fall through */
           case 13 : /* fall through */
           case 14 : /* fall through */
-          case 15 :
-            if ((entire_insn & 0xf8000000) == 0xe8000000)
-              { itype = ARC600F_INSN_BRCC_S; goto extract_sfmt_brcc_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 15 : itype = ARC600F_INSN_BRCC_S; goto extract_sfmt_brcc_s;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -13054,14 +8972,8 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf8180000) == 0x70000000)
-              { itype = ARC600F_INSN_ADD_S_MCAH; goto extract_sfmt_add_s_mcah; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8000000) == 0xd0000000)
-              { itype = ARC600F_INSN_LD_S_PCREL; goto extract_sfmt_ld_s_pcrel; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_ADD_S_MCAH; goto extract_sfmt_add_s_mcah;
+          case 2 : itype = ARC600F_INSN_LD_S_PCREL; goto extract_sfmt_ld_s_pcrel;
           case 3 :
             {
               unsigned int val = (((insn >> 25) & (3 << 0)));
@@ -13069,14 +8981,8 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               {
               case 0 : /* fall through */
               case 1 : /* fall through */
-              case 2 :
-                if ((entire_insn & 0xf8000000) == 0xf0000000)
-                  { itype = ARC600F_INSN_B_S; goto extract_sfmt_b_s; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-              case 3 :
-                if ((entire_insn & 0xfe000000) == 0xf6000000)
-                  { itype = ARC600F_INSN_BCC_S; goto extract_sfmt_bcc_s; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 2 : itype = ARC600F_INSN_B_S; goto extract_sfmt_b_s;
+              case 3 : itype = ARC600F_INSN_BCC_S; goto extract_sfmt_bcc_s;
               default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               }
             }
@@ -13151,14 +9057,8 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf8180000) == 0x70080000)
-              { itype = ARC600F_INSN_MOV_S_MCAH; goto extract_sfmt_mov_s_mcah; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8000000) == 0xd0000000)
-              { itype = ARC600F_INSN_LD_S_PCREL; goto extract_sfmt_ld_s_pcrel; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_MOV_S_MCAH; goto extract_sfmt_mov_s_mcah;
+          case 2 : itype = ARC600F_INSN_LD_S_PCREL; goto extract_sfmt_ld_s_pcrel;
           case 3 :
             {
               unsigned int val = (((insn >> 25) & (3 << 0)));
@@ -13166,14 +9066,8 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               {
               case 0 : /* fall through */
               case 1 : /* fall through */
-              case 2 :
-                if ((entire_insn & 0xf8000000) == 0xf0000000)
-                  { itype = ARC600F_INSN_B_S; goto extract_sfmt_b_s; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-              case 3 :
-                if ((entire_insn & 0xfe000000) == 0xf6000000)
-                  { itype = ARC600F_INSN_BCC_S; goto extract_sfmt_bcc_s; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 2 : itype = ARC600F_INSN_B_S; goto extract_sfmt_b_s;
+              case 3 : itype = ARC600F_INSN_BCC_S; goto extract_sfmt_bcc_s;
               default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               }
             }
@@ -13248,14 +9142,8 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf8180000) == 0x70100000)
-              { itype = ARC600F_INSN_CMP_S_MCAH; goto extract_sfmt_cmp_s_mcah; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8000000) == 0xd0000000)
-              { itype = ARC600F_INSN_LD_S_PCREL; goto extract_sfmt_ld_s_pcrel; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_CMP_S_MCAH; goto extract_sfmt_cmp_s_mcah;
+          case 2 : itype = ARC600F_INSN_LD_S_PCREL; goto extract_sfmt_ld_s_pcrel;
           case 3 :
             {
               unsigned int val = (((insn >> 25) & (3 << 0)));
@@ -13263,14 +9151,8 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               {
               case 0 : /* fall through */
               case 1 : /* fall through */
-              case 2 :
-                if ((entire_insn & 0xf8000000) == 0xf0000000)
-                  { itype = ARC600F_INSN_B_S; goto extract_sfmt_b_s; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-              case 3 :
-                if ((entire_insn & 0xfe000000) == 0xf6000000)
-                  { itype = ARC600F_INSN_BCC_S; goto extract_sfmt_bcc_s; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 2 : itype = ARC600F_INSN_B_S; goto extract_sfmt_b_s;
+              case 3 : itype = ARC600F_INSN_BCC_S; goto extract_sfmt_bcc_s;
               default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               }
             }
@@ -13345,14 +9227,8 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf8180000) == 0x70180000)
-              { itype = ARC600F_INSN_MOV_S_MCAHB; goto extract_sfmt_mov_s_mcahb; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8000000) == 0xd0000000)
-              { itype = ARC600F_INSN_LD_S_PCREL; goto extract_sfmt_ld_s_pcrel; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_MOV_S_MCAHB; goto extract_sfmt_mov_s_mcahb;
+          case 2 : itype = ARC600F_INSN_LD_S_PCREL; goto extract_sfmt_ld_s_pcrel;
           case 3 :
             {
               unsigned int val = (((insn >> 25) & (3 << 0)));
@@ -13360,14 +9236,8 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
               {
               case 0 : /* fall through */
               case 1 : /* fall through */
-              case 2 :
-                if ((entire_insn & 0xf8000000) == 0xf0000000)
-                  { itype = ARC600F_INSN_B_S; goto extract_sfmt_b_s; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-              case 3 :
-                if ((entire_insn & 0xfe000000) == 0xf6000000)
-                  { itype = ARC600F_INSN_BCC_S; goto extract_sfmt_bcc_s; }
-                itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+              case 2 : itype = ARC600F_INSN_B_S; goto extract_sfmt_b_s;
+              case 3 : itype = ARC600F_INSN_BCC_S; goto extract_sfmt_bcc_s;
               default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
               }
             }
@@ -13379,18 +9249,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf8ff0000) == 0x78000000)
-              { itype = ARC600F_INSN_J_S; goto extract_sfmt_j_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8000000) == 0xd8000000)
-              { itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8000000) == 0xf8000000)
-              { itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_J_S; goto extract_sfmt_j_s;
+          case 2 : itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7;
+          case 3 : itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -13478,18 +9339,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf81f0000) == 0x78020000)
-              { itype = ARC600F_INSN_I16_GO_SUB_S_GO; goto extract_sfmt_I16_GO_SUB_s_go; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8000000) == 0xd8000000)
-              { itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8000000) == 0xf8000000)
-              { itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_I16_GO_SUB_S_GO; goto extract_sfmt_I16_GO_SUB_s_go;
+          case 2 : itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7;
+          case 3 : itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -13505,18 +9357,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf81f0000) == 0x78040000)
-              { itype = ARC600F_INSN_I16_GO_AND_S_GO; goto extract_sfmt_I16_GO_SUB_s_go; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8000000) == 0xd8000000)
-              { itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8000000) == 0xf8000000)
-              { itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_I16_GO_AND_S_GO; goto extract_sfmt_I16_GO_SUB_s_go;
+          case 2 : itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7;
+          case 3 : itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -13532,18 +9375,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf81f0000) == 0x78050000)
-              { itype = ARC600F_INSN_I16_GO_OR_S_GO; goto extract_sfmt_I16_GO_SUB_s_go; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8000000) == 0xd8000000)
-              { itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8000000) == 0xf8000000)
-              { itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_I16_GO_OR_S_GO; goto extract_sfmt_I16_GO_SUB_s_go;
+          case 2 : itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7;
+          case 3 : itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -13559,18 +9393,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf81f0000) == 0x78060000)
-              { itype = ARC600F_INSN_I16_GO_BIC_S_GO; goto extract_sfmt_I16_GO_SUB_s_go; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8000000) == 0xd8000000)
-              { itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8000000) == 0xf8000000)
-              { itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_I16_GO_BIC_S_GO; goto extract_sfmt_I16_GO_SUB_s_go;
+          case 2 : itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7;
+          case 3 : itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -13586,18 +9411,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf81f0000) == 0x78070000)
-              { itype = ARC600F_INSN_I16_GO_XOR_S_GO; goto extract_sfmt_I16_GO_SUB_s_go; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8000000) == 0xd8000000)
-              { itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8000000) == 0xf8000000)
-              { itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_I16_GO_XOR_S_GO; goto extract_sfmt_I16_GO_SUB_s_go;
+          case 2 : itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7;
+          case 3 : itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -13613,18 +9429,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf81f0000) == 0x780b0000)
-              { itype = ARC600F_INSN_TST_S_GO; goto extract_sfmt_tst_s_go; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8000000) == 0xd8000000)
-              { itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8000000) == 0xf8000000)
-              { itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_TST_S_GO; goto extract_sfmt_tst_s_go;
+          case 2 : itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7;
+          case 3 : itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -13640,18 +9447,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf81f0000) == 0x780c0000)
-              { itype = ARC600F_INSN_MUL64_S_GO; goto extract_sfmt_mul64_s_go; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8000000) == 0xd8000000)
-              { itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8000000) == 0xf8000000)
-              { itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_MUL64_S_GO; goto extract_sfmt_mul64_s_go;
+          case 2 : itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7;
+          case 3 : itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -13667,18 +9465,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf81f0000) == 0x780d0000)
-              { itype = ARC600F_INSN_I16_GO_SEXB_S_GO; goto extract_sfmt_I16_GO_SUB_s_go; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8000000) == 0xd8000000)
-              { itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8000000) == 0xf8000000)
-              { itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_I16_GO_SEXB_S_GO; goto extract_sfmt_I16_GO_SUB_s_go;
+          case 2 : itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7;
+          case 3 : itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -13694,18 +9483,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf81f0000) == 0x780e0000)
-              { itype = ARC600F_INSN_I16_GO_SEXW_S_GO; goto extract_sfmt_I16_GO_SUB_s_go; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8000000) == 0xd8000000)
-              { itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8000000) == 0xf8000000)
-              { itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_I16_GO_SEXW_S_GO; goto extract_sfmt_I16_GO_SUB_s_go;
+          case 2 : itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7;
+          case 3 : itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -13721,18 +9501,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf81f0000) == 0x780f0000)
-              { itype = ARC600F_INSN_I16_GO_EXTB_S_GO; goto extract_sfmt_I16_GO_SUB_s_go; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8000000) == 0xd8000000)
-              { itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8000000) == 0xf8000000)
-              { itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_I16_GO_EXTB_S_GO; goto extract_sfmt_I16_GO_SUB_s_go;
+          case 2 : itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7;
+          case 3 : itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -13748,18 +9519,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf81f0000) == 0x78100000)
-              { itype = ARC600F_INSN_I16_GO_EXTW_S_GO; goto extract_sfmt_I16_GO_SUB_s_go; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8000000) == 0xd8000000)
-              { itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8000000) == 0xf8000000)
-              { itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_I16_GO_EXTW_S_GO; goto extract_sfmt_I16_GO_SUB_s_go;
+          case 2 : itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7;
+          case 3 : itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -13775,18 +9537,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf81f0000) == 0x78110000)
-              { itype = ARC600F_INSN_I16_GO_ABS_S_GO; goto extract_sfmt_I16_GO_SUB_s_go; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8000000) == 0xd8000000)
-              { itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8000000) == 0xf8000000)
-              { itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_I16_GO_ABS_S_GO; goto extract_sfmt_I16_GO_SUB_s_go;
+          case 2 : itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7;
+          case 3 : itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -13802,18 +9555,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf81f0000) == 0x78120000)
-              { itype = ARC600F_INSN_I16_GO_NOT_S_GO; goto extract_sfmt_I16_GO_SUB_s_go; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8000000) == 0xd8000000)
-              { itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8000000) == 0xf8000000)
-              { itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_I16_GO_NOT_S_GO; goto extract_sfmt_I16_GO_SUB_s_go;
+          case 2 : itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7;
+          case 3 : itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -13829,18 +9573,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf81f0000) == 0x78130000)
-              { itype = ARC600F_INSN_I16_GO_NEG_S_GO; goto extract_sfmt_I16_GO_SUB_s_go; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8000000) == 0xd8000000)
-              { itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8000000) == 0xf8000000)
-              { itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_I16_GO_NEG_S_GO; goto extract_sfmt_I16_GO_SUB_s_go;
+          case 2 : itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7;
+          case 3 : itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -13856,18 +9591,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf81f0000) == 0x78140000)
-              { itype = ARC600F_INSN_I16_GO_ADD1_S_GO; goto extract_sfmt_I16_GO_SUB_s_go; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8000000) == 0xd8000000)
-              { itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8000000) == 0xf8000000)
-              { itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_I16_GO_ADD1_S_GO; goto extract_sfmt_I16_GO_SUB_s_go;
+          case 2 : itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7;
+          case 3 : itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -13883,18 +9609,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf81f0000) == 0x78150000)
-              { itype = ARC600F_INSN_I16_GO_ADD2_S_GO; goto extract_sfmt_I16_GO_SUB_s_go; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8000000) == 0xd8000000)
-              { itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8000000) == 0xf8000000)
-              { itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_I16_GO_ADD2_S_GO; goto extract_sfmt_I16_GO_SUB_s_go;
+          case 2 : itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7;
+          case 3 : itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -13910,18 +9627,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf81f0000) == 0x78160000)
-              { itype = ARC600F_INSN_I16_GO_ADD3_S_GO; goto extract_sfmt_I16_GO_SUB_s_go; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8000000) == 0xd8000000)
-              { itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8000000) == 0xf8000000)
-              { itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_I16_GO_ADD3_S_GO; goto extract_sfmt_I16_GO_SUB_s_go;
+          case 2 : itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7;
+          case 3 : itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -13937,18 +9645,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf81f0000) == 0x78180000)
-              { itype = ARC600F_INSN_I16_GO_ASLM_S_GO; goto extract_sfmt_I16_GO_SUB_s_go; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8000000) == 0xd8000000)
-              { itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8000000) == 0xf8000000)
-              { itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_I16_GO_ASLM_S_GO; goto extract_sfmt_I16_GO_SUB_s_go;
+          case 2 : itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7;
+          case 3 : itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -13964,18 +9663,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf81f0000) == 0x78190000)
-              { itype = ARC600F_INSN_I16_GO_LSRM_S_GO; goto extract_sfmt_I16_GO_SUB_s_go; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8000000) == 0xd8000000)
-              { itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8000000) == 0xf8000000)
-              { itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_I16_GO_LSRM_S_GO; goto extract_sfmt_I16_GO_SUB_s_go;
+          case 2 : itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7;
+          case 3 : itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -13991,18 +9681,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf81f0000) == 0x781a0000)
-              { itype = ARC600F_INSN_I16_GO_ASRM_S_GO; goto extract_sfmt_I16_GO_SUB_s_go; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8000000) == 0xd8000000)
-              { itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8000000) == 0xf8000000)
-              { itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_I16_GO_ASRM_S_GO; goto extract_sfmt_I16_GO_SUB_s_go;
+          case 2 : itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7;
+          case 3 : itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -14018,18 +9699,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf81f0000) == 0x781b0000)
-              { itype = ARC600F_INSN_I16_GO_ASL_S_GO; goto extract_sfmt_I16_GO_SUB_s_go; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8000000) == 0xd8000000)
-              { itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8000000) == 0xf8000000)
-              { itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_I16_GO_ASL_S_GO; goto extract_sfmt_I16_GO_SUB_s_go;
+          case 2 : itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7;
+          case 3 : itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -14045,18 +9717,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf81f0000) == 0x781c0000)
-              { itype = ARC600F_INSN_I16_GO_ASR_S_GO; goto extract_sfmt_I16_GO_SUB_s_go; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8000000) == 0xd8000000)
-              { itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8000000) == 0xf8000000)
-              { itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_I16_GO_ASR_S_GO; goto extract_sfmt_I16_GO_SUB_s_go;
+          case 2 : itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7;
+          case 3 : itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -14072,18 +9735,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf81f0000) == 0x781d0000)
-              { itype = ARC600F_INSN_I16_GO_LSR_S_GO; goto extract_sfmt_I16_GO_SUB_s_go; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8000000) == 0xd8000000)
-              { itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8000000) == 0xf8000000)
-              { itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_I16_GO_LSR_S_GO; goto extract_sfmt_I16_GO_SUB_s_go;
+          case 2 : itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7;
+          case 3 : itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -14099,18 +9753,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf81f0000) == 0x781e0000)
-              { itype = ARC600F_INSN_TRAP_S; goto extract_sfmt_trap_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8000000) == 0xd8000000)
-              { itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8000000) == 0xf8000000)
-              { itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_TRAP_S; goto extract_sfmt_trap_s;
+          case 2 : itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7;
+          case 3 : itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -14119,18 +9764,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf8ff0000) == 0x78200000)
-              { itype = ARC600F_INSN_J_S_D; goto extract_sfmt_j_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8000000) == 0xd8000000)
-              { itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8000000) == 0xf8000000)
-              { itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_J_S_D; goto extract_sfmt_j_s;
+          case 2 : itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7;
+          case 3 : itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -14139,18 +9775,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf8ff0000) == 0x78400000)
-              { itype = ARC600F_INSN_JL_S; goto extract_sfmt_jl_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8000000) == 0xd8000000)
-              { itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8000000) == 0xf8000000)
-              { itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_JL_S; goto extract_sfmt_jl_s;
+          case 2 : itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7;
+          case 3 : itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -14159,18 +9786,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf8ff0000) == 0x78600000)
-              { itype = ARC600F_INSN_JL_S_D; goto extract_sfmt_jl_s_d; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8000000) == 0xd8000000)
-              { itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8000000) == 0xf8000000)
-              { itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_JL_S_D; goto extract_sfmt_jl_s_d;
+          case 2 : itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7;
+          case 3 : itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -14179,18 +9797,9 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 30) & (1 << 1)) | ((insn >> 29) & (1 << 0)));
           switch (val)
           {
-          case 1 :
-            if ((entire_insn & 0xf8ff0000) == 0x78c00000)
-              { itype = ARC600F_INSN_SUB_S_GO_SUB_NE; goto extract_sfmt_sub_s_go_sub_ne; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8000000) == 0xd8000000)
-              { itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8000000) == 0xf8000000)
-              { itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 1 : itype = ARC600F_INSN_SUB_S_GO_SUB_NE; goto extract_sfmt_sub_s_go_sub_ne;
+          case 2 : itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7;
+          case 3 : itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -14199,30 +9808,12 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           unsigned int val = (((insn >> 27) & (1 << 4)) | ((insn >> 26) & (1 << 3)) | ((insn >> 24) & (7 << 0)));
           switch (val)
           {
-          case 8 :
-            if ((entire_insn & 0xffff0000) == 0x78e00000)
-              { itype = ARC600F_INSN_NOP_S; goto extract_sfmt_nop_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 9 :
-            if ((entire_insn & 0xffff0000) == 0x79e00000)
-              { itype = ARC600F_INSN_UNIMP_S; goto extract_sfmt_nop_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 12 :
-            if ((entire_insn & 0xffff0000) == 0x7ce00000)
-              { itype = ARC600F_INSN_J_SEQ__S; goto extract_sfmt_j_seq__S; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 13 :
-            if ((entire_insn & 0xffff0000) == 0x7de00000)
-              { itype = ARC600F_INSN_J_SNE__S; goto extract_sfmt_j_seq__S; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 14 :
-            if ((entire_insn & 0xffff0000) == 0x7ee00000)
-              { itype = ARC600F_INSN_J_S__S; goto extract_sfmt_j_s__S; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 15 :
-            if ((entire_insn & 0xffff0000) == 0x7fe00000)
-              { itype = ARC600F_INSN_J_S__S_D; goto extract_sfmt_j_s__S; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 8 : itype = ARC600F_INSN_NOP_S; goto extract_sfmt_nop_s;
+          case 9 : itype = ARC600F_INSN_UNIMP_S; goto extract_sfmt_nop_s;
+          case 12 : itype = ARC600F_INSN_J_SEQ__S; goto extract_sfmt_j_seq__S;
+          case 13 : itype = ARC600F_INSN_J_SNE__S; goto extract_sfmt_j_seq__S;
+          case 14 : itype = ARC600F_INSN_J_S__S; goto extract_sfmt_j_s__S;
+          case 15 : itype = ARC600F_INSN_J_S__S_D; goto extract_sfmt_j_s__S;
           case 16 : /* fall through */
           case 17 : /* fall through */
           case 18 : /* fall through */
@@ -14230,10 +9821,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           case 20 : /* fall through */
           case 21 : /* fall through */
           case 22 : /* fall through */
-          case 23 :
-            if ((entire_insn & 0xf8000000) == 0xd8000000)
-              { itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 23 : itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7;
           case 24 : /* fall through */
           case 25 : /* fall through */
           case 26 : /* fall through */
@@ -14241,10 +9829,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
           case 28 : /* fall through */
           case 29 : /* fall through */
           case 30 : /* fall through */
-          case 31 :
-            if ((entire_insn & 0xf8000000) == 0xf8000000)
-              { itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 31 : itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -14257,14 +9842,8 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
             if ((entire_insn & 0xffff0000) == 0x7fff0000)
               { itype = ARC600F_INSN_BRK_S; goto extract_sfmt_brk; }
             itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 2 :
-            if ((entire_insn & 0xf8000000) == 0xd8000000)
-              { itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
-          case 3 :
-            if ((entire_insn & 0xf8000000) == 0xf8000000)
-              { itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s; }
-            itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
+          case 2 : itype = ARC600F_INSN_MOV_S_R_U7; goto extract_sfmt_mov_s_r_u7;
+          case 3 : itype = ARC600F_INSN_BL_S; goto extract_sfmt_bl_s;
           default : itype = ARC600F_INSN_X_INVALID; goto extract_sfmt_empty;
           }
         }
@@ -14278,7 +9857,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_empty:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-#define FLD(f) abuf->fields.fmt_empty.f
+#define FLD(f) abuf->fields.sfmt_empty.f
 
 
   /* Record the fields for the semantic handler.  */
@@ -14291,7 +9870,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_b_s:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_b_s.f
     UINT f_cond_i2;
     SI f_rel10;
@@ -14317,7 +9896,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_bcc_s:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_bcc_s.f
     UINT f_cond_i3;
     SI f_rel7;
@@ -14343,7 +9922,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_brcc_s:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_brcc_s.f
     UINT f_op__b;
     UINT f_brscond;
@@ -14372,7 +9951,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_bcc_l:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_bcc_l.f
     UINT f_d21l;
     INT f_d21h;
@@ -14404,7 +9983,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_b_l:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_b_l.f
     UINT f_d21l;
     UINT f_d25m;
@@ -14435,7 +10014,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_brcc_RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_brcc_RC.f
     UINT f_op__b;
     UINT f_d9l;
@@ -14479,7 +10058,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_brcc_U6:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_brcc_U6.f
     UINT f_op__b;
     UINT f_d9l;
@@ -14523,7 +10102,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_bl_s:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_bl_s.f
     SI f_rel13bl;
 
@@ -14546,7 +10125,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_blcc:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_blcc.f
     UINT f_d21bl;
     INT f_d21h;
@@ -14575,10 +10154,42 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
     return idesc;
   }
 
+ extract_sfmt_blcc_d:
+  {
+    const IDESC *idesc = &arc600f_insn_data[itype];
+    CGEN_INSN_WORD insn = entire_insn;
+#define FLD(f) abuf->fields.sfmt_blcc.f
+    UINT f_d21bl;
+    INT f_d21h;
+    UINT f_cond_Q;
+    INT f_rel21bl;
+
+    f_d21bl = EXTRACT_MSB0_UINT (insn, 32, 5, 9);
+    f_d21h = EXTRACT_MSB0_SINT (insn, 32, 16, 10);
+    f_cond_Q = EXTRACT_MSB0_UINT (insn, 32, 27, 5);
+{
+  f_rel21bl = ((((((f_d21bl) << (2))) | (((f_d21h) << (11))))) + (((pc) & (-4))));
+}
+
+  /* Record the fields for the semantic handler.  */
+  FLD (f_cond_Q) = f_cond_Q;
+  FLD (i_label21a) = f_rel21bl;
+  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_blcc_d", "f_cond_Q 0x%x", 'x', f_cond_Q, "label21a 0x%x", 'x', f_rel21bl, (char *) 0));
+
+#if WITH_PROFILE_MODEL_P
+  /* Record the fields for profiling.  */
+  if (PROFILE_MODEL_P (current_cpu))
+    {
+    }
+#endif
+#undef FLD
+    return idesc;
+  }
+
  extract_sfmt_bl:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_bl.f
     UINT f_d21bl;
     UINT f_d25m;
@@ -14609,7 +10220,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_bl_d:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_bl.f
     UINT f_d21bl;
     UINT f_d25m;
@@ -14640,7 +10251,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_ld_abs:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_ld_abs.f
     UINT f_op__b;
     UINT f_u8;
@@ -14681,7 +10292,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_ld__AW_abs:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_ld_abs.f
     UINT f_op__b;
     UINT f_u8;
@@ -14722,7 +10333,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_ld_abc:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_r_r__RA__RC.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -14757,7 +10368,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_ld__AW_abc:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_r_r__RA__RC.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -14792,7 +10403,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_ld_s_abc:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_ld_s_abc.f
     UINT f_op__b;
     UINT f_op__c;
@@ -14815,7 +10426,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_ld_s_abu:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_ld_s_abu.f
     UINT f_op__b;
     UINT f_op__c;
@@ -14838,7 +10449,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_ld_s_absp:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_ld_s_abu.f
     UINT f_op__b;
     SI f_u5x4;
@@ -14858,7 +10469,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_ld_s_gprel:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_ld_s_gprel.f
     SI f_s9x4;
 
@@ -14875,7 +10486,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_ld_s_pcrel:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_ld_s_pcrel.f
     UINT f_op__b;
     SI f_u8x4;
@@ -14901,7 +10512,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_ldb_abs:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_ld_abs.f
     UINT f_op__b;
     UINT f_u8;
@@ -14942,7 +10553,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_ldb__AW_abs:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_ld_abs.f
     UINT f_op__b;
     UINT f_u8;
@@ -14983,7 +10594,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_ldb_as_abs:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_ld_abs.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -15015,7 +10626,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_ldb_abc:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_r_r__RA__RC.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -15050,7 +10661,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_ldb__AW_abc:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_r_r__RA__RC.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -15085,7 +10696,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_ldb_as_abc:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_r_r__RA__RC.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -15120,7 +10731,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_ldb_s_abc:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_ld_s_abc.f
     UINT f_op__b;
     UINT f_op__c;
@@ -15143,7 +10754,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_ldb_s_abu:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_ldb_s_abu.f
     UINT f_op__b;
     UINT f_op__c;
@@ -15166,7 +10777,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_ldb_s_absp:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_ld_s_abu.f
     UINT f_op__b;
     SI f_u5x4;
@@ -15186,7 +10797,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_ldb_s_gprel:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_ldb_s_gprel.f
     INT f_s9x1;
 
@@ -15203,7 +10814,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_ldw_abs:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_ld_abs.f
     UINT f_op__b;
     UINT f_u8;
@@ -15244,7 +10855,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_ldw__AW_abs:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_ld_abs.f
     UINT f_op__b;
     UINT f_u8;
@@ -15285,7 +10896,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_ldw_abc:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_r_r__RA__RC.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -15320,7 +10931,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_ldw__AW_abc:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_r_r__RA__RC.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -15355,7 +10966,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_ldw_s_abc:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_ld_s_abc.f
     UINT f_op__b;
     UINT f_op__c;
@@ -15378,7 +10989,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_ldw_s_abu:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_ldw_s_abu.f
     UINT f_op__b;
     UINT f_op__c;
@@ -15401,7 +11012,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_ldw_s_gprel:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_ldw_s_gprel.f
     SI f_s9x2;
 
@@ -15418,7 +11029,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_st_abs:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_st_abs.f
     UINT f_op__b;
     UINT f_u8;
@@ -15459,7 +11070,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_st__AW_abs:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_st_abs.f
     UINT f_op__b;
     UINT f_u8;
@@ -15500,7 +11111,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_st_s_abu:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_ld_s_abu.f
     UINT f_op__b;
     UINT f_op__c;
@@ -15523,7 +11134,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_st_s_absp:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_ld_s_abu.f
     UINT f_op__b;
     SI f_u5x4;
@@ -15543,7 +11154,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_stb_abs:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_st_abs.f
     UINT f_op__b;
     UINT f_u8;
@@ -15584,7 +11195,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_stb__AW_abs:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_st_abs.f
     UINT f_op__b;
     UINT f_u8;
@@ -15625,7 +11236,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_stb_as_abs:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_st_abs.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -15657,7 +11268,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_stb_s_abu:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_ldb_s_abu.f
     UINT f_op__b;
     UINT f_op__c;
@@ -15680,7 +11291,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_stb_s_absp:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_ld_s_abu.f
     UINT f_op__b;
     SI f_u5x4;
@@ -15700,7 +11311,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_stw_abs:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_st_abs.f
     UINT f_op__b;
     UINT f_u8;
@@ -15741,7 +11352,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_stw__AW_abs:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_st_abs.f
     UINT f_op__b;
     UINT f_u8;
@@ -15782,7 +11393,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_stw_s_abu:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_ldw_s_abu.f
     UINT f_op__b;
     UINT f_op__c;
@@ -15805,7 +11416,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_add_L_s12__RA_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_s12__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -15846,7 +11457,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_add_ccu6__RA_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_ccu6__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -15884,7 +11495,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_add_L_u6__RA_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_u6__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -15922,7 +11533,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_add_L_r_r__RA__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_r_r__RA__RC.f
     UINT f_op__b;
     UINT f_F;
@@ -15960,7 +11571,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_add_cc__RA__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_j_cc___RC_noilink_.f
     UINT f_op__b;
     UINT f_F;
@@ -15998,7 +11609,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_add_s_abc:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_ld_s_abc.f
     UINT f_op__b;
     UINT f_op__c;
@@ -16021,7 +11632,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_add_s_cbu3:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_s_cbu3.f
     UINT f_op__b;
     UINT f_op__c;
@@ -16044,7 +11655,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_add_s_mcah:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_s_mcah.f
     UINT f_op__b;
     UINT f_h_2_0;
@@ -16076,7 +11687,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_add_s_absp:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_ld_s_abu.f
     UINT f_op__b;
     SI f_u5x4;
@@ -16096,7 +11707,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_add_s_asspsp:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_ld_s_abu.f
     SI f_u5x4;
 
@@ -16113,7 +11724,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_add_s_gp:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_ld_s_gprel.f
     SI f_s9x4;
 
@@ -16130,7 +11741,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_add_s_r_u7:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_s_r_u7.f
     UINT f_op__b;
     UINT f_u7;
@@ -16150,7 +11761,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_adc_L_s12__RA_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_s12__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -16191,7 +11802,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_adc_ccu6__RA_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_ccu6__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -16229,7 +11840,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_adc_L_u6__RA_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_u6__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -16267,7 +11878,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_adc_L_r_r__RA__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_r_r__RA__RC.f
     UINT f_op__b;
     UINT f_F;
@@ -16305,7 +11916,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_adc_cc__RA__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_j_cc___RC_noilink_.f
     UINT f_op__b;
     UINT f_F;
@@ -16343,7 +11954,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_I16_GO_SUB_s_go:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_s_cbu3.f
     UINT f_op__b;
     UINT f_op__c;
@@ -16363,7 +11974,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_sub_s_go_sub_ne:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_mov_s_r_u7.f
     UINT f_op__b;
 
@@ -16380,7 +11991,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_sub_s_ssb:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_ldb_s_abu.f
     UINT f_op__b;
     UINT f_u5;
@@ -16400,7 +12011,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_and_L_s12__RA_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_s12__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -16441,7 +12052,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_and_ccu6__RA_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_ccu6__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -16479,7 +12090,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_and_L_u6__RA_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_u6__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -16517,7 +12128,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_and_L_r_r__RA__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_r_r__RA__RC.f
     UINT f_op__b;
     UINT f_F;
@@ -16555,7 +12166,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_and_cc__RA__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_j_cc___RC_noilink_.f
     UINT f_op__b;
     UINT f_F;
@@ -16593,7 +12204,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_mov_L_s12_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_s12__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -16628,7 +12239,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_mov_ccu6_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_ccu6__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -16660,7 +12271,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_mov_L_u6_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_u6__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -16689,7 +12300,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_mov_L_r_r__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_r_r__RA__RC.f
     UINT f_op__b;
     UINT f_F;
@@ -16724,7 +12335,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_mov_cc__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_j_cc___RC_noilink_.f
     UINT f_op__b;
     UINT f_F;
@@ -16762,7 +12373,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_mov_s_mcah:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_s_mcah.f
     UINT f_op__b;
     UINT f_h_2_0;
@@ -16794,7 +12405,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_mov_s_mcahb:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_s_mcah.f
     UINT f_op__b;
     UINT f_h_2_0;
@@ -16820,7 +12431,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_mov_s_r_u7:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_mov_s_r_u7.f
     UINT f_op__b;
     UINT f_u8;
@@ -16840,7 +12451,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_tst_L_s12_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_s12__RA_.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -16878,7 +12489,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_tst_ccu6_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_ccu6__RA_.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -16913,7 +12524,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_tst_L_u6_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_u6__RA_.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -16945,7 +12556,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_tst_L_r_r__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_st_abs.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -16977,7 +12588,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_tst_cc__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_j_cc___RC_noilink_.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -17012,7 +12623,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_tst_s_go:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_s_cbu3.f
     UINT f_op__b;
     UINT f_op__c;
@@ -17032,7 +12643,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_cmp_L_s12_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_s12__RA_.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -17070,7 +12681,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_cmp_ccu6_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_ccu6__RA_.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -17105,7 +12716,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_cmp_L_u6_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_u6__RA_.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -17137,7 +12748,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_cmp_L_r_r__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_st_abs.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -17169,7 +12780,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_cmp_cc__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_j_cc___RC_noilink_.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -17204,7 +12815,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_cmp_s_mcah:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_s_mcah.f
     UINT f_op__b;
     UINT f_h_2_0;
@@ -17236,7 +12847,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_cmp_s_r_u7:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_s_r_u7.f
     UINT f_op__b;
     UINT f_u7;
@@ -17256,7 +12867,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_btst_s_ssb:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_ldb_s_abu.f
     UINT f_op__b;
     UINT f_u5;
@@ -17276,7 +12887,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_mpy_L_s12__RA_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_s12__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -17317,7 +12928,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_mpy_ccu6__RA_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_ccu6__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -17355,7 +12966,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_mpy_L_u6__RA_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_u6__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -17393,7 +13004,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_mpy_L_r_r__RA__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_r_r__RA__RC.f
     UINT f_op__b;
     UINT f_F;
@@ -17431,7 +13042,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_mpy_cc__RA__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_j_cc___RC_noilink_.f
     UINT f_op__b;
     UINT f_F;
@@ -17469,7 +13080,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_j_L_r_r___RC_noilink_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_j_cc___RC_noilink_.f
     UINT f_op__b;
     UINT f_F;
@@ -17507,7 +13118,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_j_cc___RC_noilink_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_j_cc___RC_noilink_.f
     UINT f_op__b;
     UINT f_F;
@@ -17548,7 +13159,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_j_L_r_r___RC_ilink_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_j_cc___RC_noilink_.f
     UINT f_op__b;
     UINT f_F;
@@ -17586,7 +13197,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_j_cc___RC_ilink_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_j_cc___RC_noilink_.f
     UINT f_op__b;
     UINT f_F;
@@ -17627,7 +13238,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_j_L_s12_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_s12__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -17668,7 +13279,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_j_ccu6_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_ccu6__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -17706,7 +13317,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_j_L_u6_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_u6__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -17741,7 +13352,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_j_s:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_mov_s_r_u7.f
     UINT f_op__b;
 
@@ -17764,7 +13375,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_j_s__S:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-#define FLD(f) abuf->fields.fmt_empty.f
+#define FLD(f) abuf->fields.sfmt_empty.f
 
 
   /* Record the fields for the semantic handler.  */
@@ -17783,7 +13394,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_j_seq__S:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-#define FLD(f) abuf->fields.fmt_empty.f
+#define FLD(f) abuf->fields.sfmt_empty.f
 
 
   /* Record the fields for the semantic handler.  */
@@ -17802,7 +13413,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_j_L_s12_d_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_s12__RA_.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -17840,7 +13451,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_j_ccu6_d_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_ccu6__RA_.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -17875,7 +13486,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_j_L_u6_d_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_u6__RA_.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -17907,7 +13518,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_j_L_r_r_d___RC_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_st_abs.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -17939,7 +13550,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_j_cc_d___RC_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_j_cc___RC_noilink_.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -17974,7 +13585,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_jl_L_s12_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_s12__RA_.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -18012,7 +13623,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_jl_ccu6_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_ccu6__RA_.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -18047,7 +13658,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_jl_L_u6_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_u6__RA_.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -18079,7 +13690,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_jl_s:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_mov_s_r_u7.f
     UINT f_op__b;
 
@@ -18102,7 +13713,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_jl_L_r_r___RC_noilink_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_j_cc___RC_noilink_.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -18137,7 +13748,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_jl_cc___RC_noilink_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_j_cc___RC_noilink_.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -18175,7 +13786,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_jl_L_r_r_d___RC_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_st_abs.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -18207,7 +13818,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_jl_cc_d___RC_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_j_cc___RC_noilink_.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -18242,7 +13853,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_jl_s_d:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_mov_s_r_u7.f
     UINT f_op__b;
 
@@ -18265,7 +13876,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_lp_L_s12_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_lp_L_s12_.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -18303,7 +13914,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_lpcc_ccu6:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_lpcc_ccu6.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -18338,7 +13949,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_flag_L_s12_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_s12__RA_.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -18376,7 +13987,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_flag_ccu6_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_ccu6__RA_.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -18411,7 +14022,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_flag_L_u6_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_u6__RA_.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -18443,7 +14054,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_flag_L_r_r__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_st_abs.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -18475,7 +14086,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_flag_cc__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_j_cc___RC_noilink_.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -18510,7 +14121,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_lr_L_r_r___RC_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_st_abs.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -18542,7 +14153,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_lr_L_s12_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_s12__RA_.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -18580,7 +14191,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_lr_L_u6_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_u6__RA_.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -18612,7 +14223,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_sr_L_r_r___RC_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_st_abs.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -18644,7 +14255,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_sr_L_s12_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_s12__RA_.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -18682,7 +14293,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_sr_L_u6_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_u6__RA_.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -18714,7 +14325,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_asl_L_r_r__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_r_r__RA__RC.f
     UINT f_op__b;
     UINT f_F;
@@ -18749,7 +14360,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_asl_L_u6_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_u6__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -18784,7 +14395,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_asr_L_r_r__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_r_r__RA__RC.f
     UINT f_op__b;
     UINT f_F;
@@ -18819,7 +14430,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_asr_L_u6_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_u6__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -18854,7 +14465,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_rrc_L_r_r__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_r_r__RA__RC.f
     UINT f_op__b;
     UINT f_F;
@@ -18889,7 +14500,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_rrc_L_u6_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_u6__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -18924,7 +14535,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_sexb_L_r_r__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_r_r__RA__RC.f
     UINT f_op__b;
     UINT f_F;
@@ -18959,7 +14570,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_sexb_L_u6_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_u6__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -18991,80 +14602,10 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
     return idesc;
   }
 
- extract_sfmt_sexw_L_r_r__RC:
-  {
-    const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
-#define FLD(f) abuf->fields.sfmt_add_L_r_r__RA__RC.f
-    UINT f_op__b;
-    UINT f_F;
-    UINT f_B_5_3;
-    UINT f_op_C;
-    UINT f_op_B;
-
-    f_op__b = EXTRACT_MSB0_UINT (insn, 32, 5, 3);
-    f_F = EXTRACT_MSB0_UINT (insn, 32, 16, 1);
-    f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
-    f_op_C = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
-{
-  f_op_B = ((f_op__b) | (((f_B_5_3) << (3))));
-}
-
-  /* Record the fields for the semantic handler.  */
-  FLD (f_F) = f_F;
-  FLD (f_op_C) = f_op_C;
-  FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_sexw_L_r_r__RC", "f_F 0x%x", 'x', f_F, "f_op_C 0x%x", 'x', f_op_C, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
-
-#if WITH_PROFILE_MODEL_P
-  /* Record the fields for profiling.  */
-  if (PROFILE_MODEL_P (current_cpu))
-    {
-    }
-#endif
-#undef FLD
-    return idesc;
-  }
-
- extract_sfmt_sexw_L_u6_:
-  {
-    const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
-#define FLD(f) abuf->fields.sfmt_add_L_u6__RA_.f
-    UINT f_op__b;
-    UINT f_F;
-    UINT f_B_5_3;
-    UINT f_u6;
-    UINT f_op_B;
-
-    f_op__b = EXTRACT_MSB0_UINT (insn, 32, 5, 3);
-    f_F = EXTRACT_MSB0_UINT (insn, 32, 16, 1);
-    f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
-    f_u6 = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
-{
-  f_op_B = ((f_op__b) | (((f_B_5_3) << (3))));
-}
-
-  /* Record the fields for the semantic handler.  */
-  FLD (f_F) = f_F;
-  FLD (f_u6) = f_u6;
-  FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_sexw_L_u6_", "f_F 0x%x", 'x', f_F, "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
-
-#if WITH_PROFILE_MODEL_P
-  /* Record the fields for profiling.  */
-  if (PROFILE_MODEL_P (current_cpu))
-    {
-    }
-#endif
-#undef FLD
-    return idesc;
-  }
-
  extract_sfmt_abs_L_r_r__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_r_r__RA__RC.f
     UINT f_op__b;
     UINT f_F;
@@ -19099,7 +14640,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_abs_L_u6_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_u6__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -19131,80 +14672,10 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
     return idesc;
   }
 
- extract_sfmt_not_L_r_r__RC:
-  {
-    const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
-#define FLD(f) abuf->fields.sfmt_add_L_r_r__RA__RC.f
-    UINT f_op__b;
-    UINT f_F;
-    UINT f_B_5_3;
-    UINT f_op_C;
-    UINT f_op_B;
-
-    f_op__b = EXTRACT_MSB0_UINT (insn, 32, 5, 3);
-    f_F = EXTRACT_MSB0_UINT (insn, 32, 16, 1);
-    f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
-    f_op_C = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
-{
-  f_op_B = ((f_op__b) | (((f_B_5_3) << (3))));
-}
-
-  /* Record the fields for the semantic handler.  */
-  FLD (f_F) = f_F;
-  FLD (f_op_C) = f_op_C;
-  FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_not_L_r_r__RC", "f_F 0x%x", 'x', f_F, "f_op_C 0x%x", 'x', f_op_C, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
-
-#if WITH_PROFILE_MODEL_P
-  /* Record the fields for profiling.  */
-  if (PROFILE_MODEL_P (current_cpu))
-    {
-    }
-#endif
-#undef FLD
-    return idesc;
-  }
-
- extract_sfmt_not_L_u6_:
-  {
-    const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
-#define FLD(f) abuf->fields.sfmt_add_L_u6__RA_.f
-    UINT f_op__b;
-    UINT f_F;
-    UINT f_B_5_3;
-    UINT f_u6;
-    UINT f_op_B;
-
-    f_op__b = EXTRACT_MSB0_UINT (insn, 32, 5, 3);
-    f_F = EXTRACT_MSB0_UINT (insn, 32, 16, 1);
-    f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
-    f_u6 = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
-{
-  f_op_B = ((f_op__b) | (((f_B_5_3) << (3))));
-}
-
-  /* Record the fields for the semantic handler.  */
-  FLD (f_F) = f_F;
-  FLD (f_u6) = f_u6;
-  FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_not_L_u6_", "f_F 0x%x", 'x', f_F, "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
-
-#if WITH_PROFILE_MODEL_P
-  /* Record the fields for profiling.  */
-  if (PROFILE_MODEL_P (current_cpu))
-    {
-    }
-#endif
-#undef FLD
-    return idesc;
-  }
-
  extract_sfmt_swi:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-#define FLD(f) abuf->fields.fmt_empty.f
+#define FLD(f) abuf->fields.sfmt_empty.f
 
 
   /* Record the fields for the semantic handler.  */
@@ -19223,7 +14694,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_trap_s:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_trap_s.f
     UINT f_trapnum;
 
@@ -19246,7 +14717,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_brk:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-#define FLD(f) abuf->fields.fmt_empty.f
+#define FLD(f) abuf->fields.sfmt_empty.f
 
 
   /* Record the fields for the semantic handler.  */
@@ -19265,7 +14736,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_asl_L_s12__RA_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_s12__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -19306,7 +14777,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_asl_ccu6__RA_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_ccu6__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -19344,7 +14815,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_asl_L_u6__RA_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_u6__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -19382,7 +14853,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_asl_L_r_r__RA__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_r_r__RA__RC.f
     UINT f_op__b;
     UINT f_F;
@@ -19420,7 +14891,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_asl_cc__RA__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_j_cc___RC_noilink_.f
     UINT f_op__b;
     UINT f_F;
@@ -19458,7 +14929,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_mul64_L_s12_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_s12__RA_.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -19496,7 +14967,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_mul64_ccu6_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_ccu6__RA_.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -19531,7 +15002,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_mul64_L_u6_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_u6__RA_.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -19563,7 +15034,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_mul64_L_r_r__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_st_abs.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -19595,7 +15066,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_mul64_cc__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_j_cc___RC_noilink_.f
     UINT f_op__b;
     UINT f_B_5_3;
@@ -19630,7 +15101,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_mul64_s_go:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_s_cbu3.f
     UINT f_op__b;
     UINT f_op__c;
@@ -19650,7 +15121,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_adds_L_s12__RA_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_s12__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -19691,7 +15162,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_adds_ccu6__RA_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_ccu6__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -19729,7 +15200,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_adds_L_u6__RA_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_u6__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -19767,7 +15238,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_adds_L_r_r__RA__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_r_r__RA__RC.f
     UINT f_op__b;
     UINT f_F;
@@ -19805,7 +15276,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_adds_cc__RA__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_j_cc___RC_noilink_.f
     UINT f_op__b;
     UINT f_F;
@@ -19843,7 +15314,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_divaw_L_s12__RA_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_s12__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -19884,7 +15355,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_divaw_ccu6__RA_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_ccu6__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -19922,7 +15393,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_divaw_L_u6__RA_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_u6__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -19960,7 +15431,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_divaw_L_r_r__RA__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_r_r__RA__RC.f
     UINT f_op__b;
     UINT f_F;
@@ -19998,7 +15469,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_divaw_cc__RA__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_j_cc___RC_noilink_.f
     UINT f_op__b;
     UINT f_F;
@@ -20036,7 +15507,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_asls_L_s12__RA_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_s12__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -20077,7 +15548,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_asls_ccu6__RA_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_ccu6__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -20115,7 +15586,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_asls_L_u6__RA_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_u6__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -20153,7 +15624,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_asls_L_r_r__RA__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_r_r__RA__RC.f
     UINT f_op__b;
     UINT f_F;
@@ -20191,7 +15662,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_asls_cc__RA__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_j_cc___RC_noilink_.f
     UINT f_op__b;
     UINT f_F;
@@ -20229,7 +15700,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_swap_L_r_r__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_r_r__RA__RC.f
     UINT f_op__b;
     UINT f_F;
@@ -20264,7 +15735,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_swap_L_u6_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_u6__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -20296,45 +15767,10 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
     return idesc;
   }
 
- extract_sfmt_norm_L_u6_:
-  {
-    const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
-#define FLD(f) abuf->fields.sfmt_add_L_u6__RA_.f
-    UINT f_op__b;
-    UINT f_F;
-    UINT f_B_5_3;
-    UINT f_u6;
-    UINT f_op_B;
-
-    f_op__b = EXTRACT_MSB0_UINT (insn, 32, 5, 3);
-    f_F = EXTRACT_MSB0_UINT (insn, 32, 16, 1);
-    f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
-    f_u6 = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
-{
-  f_op_B = ((f_op__b) | (((f_B_5_3) << (3))));
-}
-
-  /* Record the fields for the semantic handler.  */
-  FLD (f_F) = f_F;
-  FLD (f_u6) = f_u6;
-  FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_norm_L_u6_", "f_F 0x%x", 'x', f_F, "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
-
-#if WITH_PROFILE_MODEL_P
-  /* Record the fields for profiling.  */
-  if (PROFILE_MODEL_P (current_cpu))
-    {
-    }
-#endif
-#undef FLD
-    return idesc;
-  }
-
  extract_sfmt_rnd16_L_r_r__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_r_r__RA__RC.f
     UINT f_op__b;
     UINT f_F;
@@ -20369,7 +15805,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_rnd16_L_u6_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_u6__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -20401,115 +15837,10 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
     return idesc;
   }
 
- extract_sfmt_abssw_L_r_r__RC:
-  {
-    const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
-#define FLD(f) abuf->fields.sfmt_add_L_r_r__RA__RC.f
-    UINT f_op__b;
-    UINT f_F;
-    UINT f_B_5_3;
-    UINT f_op_C;
-    UINT f_op_B;
-
-    f_op__b = EXTRACT_MSB0_UINT (insn, 32, 5, 3);
-    f_F = EXTRACT_MSB0_UINT (insn, 32, 16, 1);
-    f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
-    f_op_C = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
-{
-  f_op_B = ((f_op__b) | (((f_B_5_3) << (3))));
-}
-
-  /* Record the fields for the semantic handler.  */
-  FLD (f_F) = f_F;
-  FLD (f_op_C) = f_op_C;
-  FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_abssw_L_r_r__RC", "f_F 0x%x", 'x', f_F, "f_op_C 0x%x", 'x', f_op_C, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
-
-#if WITH_PROFILE_MODEL_P
-  /* Record the fields for profiling.  */
-  if (PROFILE_MODEL_P (current_cpu))
-    {
-    }
-#endif
-#undef FLD
-    return idesc;
-  }
-
- extract_sfmt_abssw_L_u6_:
-  {
-    const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
-#define FLD(f) abuf->fields.sfmt_add_L_u6__RA_.f
-    UINT f_op__b;
-    UINT f_F;
-    UINT f_B_5_3;
-    UINT f_u6;
-    UINT f_op_B;
-
-    f_op__b = EXTRACT_MSB0_UINT (insn, 32, 5, 3);
-    f_F = EXTRACT_MSB0_UINT (insn, 32, 16, 1);
-    f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
-    f_u6 = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
-{
-  f_op_B = ((f_op__b) | (((f_B_5_3) << (3))));
-}
-
-  /* Record the fields for the semantic handler.  */
-  FLD (f_F) = f_F;
-  FLD (f_u6) = f_u6;
-  FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_abssw_L_u6_", "f_F 0x%x", 'x', f_F, "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
-
-#if WITH_PROFILE_MODEL_P
-  /* Record the fields for profiling.  */
-  if (PROFILE_MODEL_P (current_cpu))
-    {
-    }
-#endif
-#undef FLD
-    return idesc;
-  }
-
- extract_sfmt_abss_L_u6_:
-  {
-    const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
-#define FLD(f) abuf->fields.sfmt_add_L_u6__RA_.f
-    UINT f_op__b;
-    UINT f_F;
-    UINT f_B_5_3;
-    UINT f_u6;
-    UINT f_op_B;
-
-    f_op__b = EXTRACT_MSB0_UINT (insn, 32, 5, 3);
-    f_F = EXTRACT_MSB0_UINT (insn, 32, 16, 1);
-    f_B_5_3 = EXTRACT_MSB0_UINT (insn, 32, 17, 3);
-    f_u6 = EXTRACT_MSB0_UINT (insn, 32, 20, 6);
-{
-  f_op_B = ((f_op__b) | (((f_B_5_3) << (3))));
-}
-
-  /* Record the fields for the semantic handler.  */
-  FLD (f_F) = f_F;
-  FLD (f_u6) = f_u6;
-  FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_abss_L_u6_", "f_F 0x%x", 'x', f_F, "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
-
-#if WITH_PROFILE_MODEL_P
-  /* Record the fields for profiling.  */
-  if (PROFILE_MODEL_P (current_cpu))
-    {
-    }
-#endif
-#undef FLD
-    return idesc;
-  }
-
  extract_sfmt_nop_s:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-#define FLD(f) abuf->fields.fmt_empty.f
+#define FLD(f) abuf->fields.sfmt_empty.f
 
 
   /* Record the fields for the semantic handler.  */
@@ -20522,7 +15853,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_pop_s_b:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_mov_s_r_u7.f
     UINT f_op__b;
 
@@ -20539,7 +15870,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_pop_s_blink:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-#define FLD(f) abuf->fields.fmt_empty.f
+#define FLD(f) abuf->fields.sfmt_empty.f
 
 
   /* Record the fields for the semantic handler.  */
@@ -20552,7 +15883,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_push_s_b:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_mov_s_r_u7.f
     UINT f_op__b;
 
@@ -20569,7 +15900,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_push_s_blink:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-#define FLD(f) abuf->fields.fmt_empty.f
+#define FLD(f) abuf->fields.sfmt_empty.f
 
 
   /* Record the fields for the semantic handler.  */
@@ -20582,7 +15913,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_mullw_L_s12__RA_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_s12__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -20623,7 +15954,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_mullw_ccu6__RA_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_ccu6__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -20661,7 +15992,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_mullw_L_u6__RA_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_u6__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -20699,7 +16030,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_mullw_L_r_r__RA__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_r_r__RA__RC.f
     UINT f_op__b;
     UINT f_F;
@@ -20737,7 +16068,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_mullw_cc__RA__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_j_cc___RC_noilink_.f
     UINT f_op__b;
     UINT f_F;
@@ -20775,7 +16106,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_maclw_L_s12__RA_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_s12__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -20816,7 +16147,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_maclw_ccu6__RA_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_ccu6__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -20854,7 +16185,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_maclw_L_u6__RA_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_u6__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -20892,7 +16223,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_maclw_L_r_r__RA__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_r_r__RA__RC.f
     UINT f_op__b;
     UINT f_F;
@@ -20930,7 +16261,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_maclw_cc__RA__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_j_cc___RC_noilink_.f
     UINT f_op__b;
     UINT f_F;
@@ -20968,7 +16299,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_machulw_L_s12__RA_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_s12__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -21009,7 +16340,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_machulw_ccu6__RA_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_ccu6__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -21047,7 +16378,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_machulw_L_u6__RA_:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_u6__RA_.f
     UINT f_op__b;
     UINT f_F;
@@ -21085,7 +16416,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_machulw_L_r_r__RA__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_add_L_r_r__RA__RC.f
     UINT f_op__b;
     UINT f_F;
@@ -21123,7 +16454,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_machulw_cc__RA__RC:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-    CGEN_INSN_INT insn = entire_insn;
+    CGEN_INSN_WORD insn = entire_insn;
 #define FLD(f) abuf->fields.sfmt_j_cc___RC_noilink_.f
     UINT f_op__b;
     UINT f_F;
@@ -21161,7 +16492,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_current_loop_end:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-#define FLD(f) abuf->fields.fmt_empty.f
+#define FLD(f) abuf->fields.sfmt_empty.f
 
 
   /* Record the fields for the semantic handler.  */
@@ -21180,7 +16511,7 @@ arc600f_decode (SIM_CPU *current_cpu, IADDR pc,
  extract_sfmt_current_loop_end_after_branch:
   {
     const IDESC *idesc = &arc600f_insn_data[itype];
-#define FLD(f) abuf->fields.fmt_empty.f
+#define FLD(f) abuf->fields.sfmt_empty.f
 
 
   /* Record the fields for the semantic handler.  */
