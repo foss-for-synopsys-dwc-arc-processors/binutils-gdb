@@ -2,25 +2,23 @@
 
 THIS FILE IS MACHINE GENERATED WITH CGEN.
 
-Copyright 1996-2005 Free Software Foundation, Inc.
-
-Copyright 2008-2012 Synopsys Inc.
+Copyright 1996-2010 Free Software Foundation, Inc.
 
 This file is part of the GNU Binutils and/or GDB, the GNU debugger.
 
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2, or (at your option)
-any later version.
+   This file is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 3, or (at your option)
+   any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+   It is distributed in the hope that it will be useful, but WITHOUT
+   ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+   or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+   License for more details.
 
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
+   You should have received a copy of the GNU General Public License along
+   with this program; if not, write to the Free Software Foundation, Inc.,
+   51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
 
 */
 
@@ -50,7 +48,6 @@ static const CGEN_ATTR_ENTRY MACH_attr[] ATTRIBUTE_UNUSED =
   { "base", MACH_BASE },
   { "a5", MACH_A5 },
   { "arc600", MACH_ARC600 },
-  { "arc601", MACH_ARC601 },
   { "arc700", MACH_ARC700 },
   { "max", MACH_MAX },
   { 0, 0 }
@@ -73,7 +70,6 @@ static const CGEN_ATTR_ENTRY LIMM_attr[] ATTRIBUTE_UNUSED =
   { 0, 0 }
 };
 
-#ifdef UNUSED
 const CGEN_ATTR_TABLE arc_cgen_ifield_attr_table[] =
 {
   { "MACH", & MACH_attr[0], & MACH_attr[0] },
@@ -127,7 +123,6 @@ const CGEN_ATTR_TABLE arc_cgen_insn_attr_table[] =
   { "SHORT_P", &bool_attr[0], &bool_attr[0] },
   { 0, 0, 0 }
 };
-#endif
 
 /* Instruction set variants.  */
 
@@ -141,7 +136,6 @@ static const CGEN_ISA arc_cgen_isa_table[] = {
 static const CGEN_MACH arc_cgen_mach_table[] = {
   { "a5", "A5", MACH_A5, 16 },
   { "arc600", "ARC600", MACH_ARC600, 16 },
-  { "arc601", "ARC601", MACH_ARC601, 16 },
   { "arc700", "ARC700", MACH_ARC700, 16 },
   { 0, 0, 0, 0 }
 };
@@ -258,13 +252,29 @@ static CGEN_KEYWORD_ENTRY arc_cgen_opval_h_Qcondb_entries[] =
   { "le", 12, {0, {{{0, 0}}}}, 0, 0 },
   { "hi", 13, {0, {{{0, 0}}}}, 0, 0 },
   { "ls", 14, {0, {{{0, 0}}}}, 0, 0 },
-  { "pnz", 15, {0, {{{0, 0}}}}, 0, 0 }
+  { "pnz", 15, {0, {{{0, 0}}}}, 0, 0 },
+  { "extcond0", 16, {0, {{{0, 0}}}}, 0, 0 },
+  { "extcond1", 17, {0, {{{0, 0}}}}, 0, 0 },
+  { "extcond2", 18, {0, {{{0, 0}}}}, 0, 0 },
+  { "extcond3", 19, {0, {{{0, 0}}}}, 0, 0 },
+  { "extcond4", 20, {0, {{{0, 0}}}}, 0, 0 },
+  { "extcond5", 21, {0, {{{0, 0}}}}, 0, 0 },
+  { "extcond6", 22, {0, {{{0, 0}}}}, 0, 0 },
+  { "extcond7", 23, {0, {{{0, 0}}}}, 0, 0 },
+  { "extcond8", 24, {0, {{{0, 0}}}}, 0, 0 },
+  { "extcond9", 25, {0, {{{0, 0}}}}, 0, 0 },
+  { "extcond10", 26, {0, {{{0, 0}}}}, 0, 0 },
+  { "extcond11", 27, {0, {{{0, 0}}}}, 0, 0 },
+  { "extcond12", 28, {0, {{{0, 0}}}}, 0, 0 },
+  { "extcond13", 29, {0, {{{0, 0}}}}, 0, 0 },
+  { "extcond14", 30, {0, {{{0, 0}}}}, 0, 0 },
+  { "extcond15", 31, {0, {{{0, 0}}}}, 0, 0 }
 };
 
 CGEN_KEYWORD arc_cgen_opval_h_Qcondb =
 {
   & arc_cgen_opval_h_Qcondb_entries[0],
-  28,
+  44,
   0, 0, 0, 0, ""
 };
 
@@ -296,13 +306,29 @@ static CGEN_KEYWORD_ENTRY arc_cgen_opval_h_Qcondj_entries[] =
   { "le", 12, {0, {{{0, 0}}}}, 0, 0 },
   { "hi", 13, {0, {{{0, 0}}}}, 0, 0 },
   { "ls", 14, {0, {{{0, 0}}}}, 0, 0 },
-  { "pnz", 15, {0, {{{0, 0}}}}, 0, 0 }
+  { "pnz", 15, {0, {{{0, 0}}}}, 0, 0 },
+  { "extcond0", 16, {0, {{{0, 0}}}}, 0, 0 },
+  { "extcond1", 17, {0, {{{0, 0}}}}, 0, 0 },
+  { "extcond2", 18, {0, {{{0, 0}}}}, 0, 0 },
+  { "extcond3", 19, {0, {{{0, 0}}}}, 0, 0 },
+  { "extcond4", 20, {0, {{{0, 0}}}}, 0, 0 },
+  { "extcond5", 21, {0, {{{0, 0}}}}, 0, 0 },
+  { "extcond6", 22, {0, {{{0, 0}}}}, 0, 0 },
+  { "extcond7", 23, {0, {{{0, 0}}}}, 0, 0 },
+  { "extcond8", 24, {0, {{{0, 0}}}}, 0, 0 },
+  { "extcond9", 25, {0, {{{0, 0}}}}, 0, 0 },
+  { "extcond10", 26, {0, {{{0, 0}}}}, 0, 0 },
+  { "extcond11", 27, {0, {{{0, 0}}}}, 0, 0 },
+  { "extcond12", 28, {0, {{{0, 0}}}}, 0, 0 },
+  { "extcond13", 29, {0, {{{0, 0}}}}, 0, 0 },
+  { "extcond14", 30, {0, {{{0, 0}}}}, 0, 0 },
+  { "extcond15", 31, {0, {{{0, 0}}}}, 0, 0 }
 };
 
 CGEN_KEYWORD arc_cgen_opval_h_Qcondj =
 {
   & arc_cgen_opval_h_Qcondj_entries[0],
-  27,
+  43,
   0, 0, 0, 0, ""
 };
 
@@ -334,13 +360,29 @@ static CGEN_KEYWORD_ENTRY arc_cgen_opval_h_Qcondi_entries[] =
   { ".le", 12, {0, {{{0, 0}}}}, 0, 0 },
   { ".hi", 13, {0, {{{0, 0}}}}, 0, 0 },
   { ".ls", 14, {0, {{{0, 0}}}}, 0, 0 },
-  { ".pnz", 15, {0, {{{0, 0}}}}, 0, 0 }
+  { ".pnz", 15, {0, {{{0, 0}}}}, 0, 0 },
+  { ".extcond0", 16, {0, {{{0, 0}}}}, 0, 0 },
+  { ".extcond1", 17, {0, {{{0, 0}}}}, 0, 0 },
+  { ".extcond2", 18, {0, {{{0, 0}}}}, 0, 0 },
+  { ".extcond3", 19, {0, {{{0, 0}}}}, 0, 0 },
+  { ".extcond4", 20, {0, {{{0, 0}}}}, 0, 0 },
+  { ".extcond5", 21, {0, {{{0, 0}}}}, 0, 0 },
+  { ".extcond6", 22, {0, {{{0, 0}}}}, 0, 0 },
+  { ".extcond7", 23, {0, {{{0, 0}}}}, 0, 0 },
+  { ".extcond8", 24, {0, {{{0, 0}}}}, 0, 0 },
+  { ".extcond9", 25, {0, {{{0, 0}}}}, 0, 0 },
+  { ".extcond10", 26, {0, {{{0, 0}}}}, 0, 0 },
+  { ".extcond11", 27, {0, {{{0, 0}}}}, 0, 0 },
+  { ".extcond12", 28, {0, {{{0, 0}}}}, 0, 0 },
+  { ".extcond13", 29, {0, {{{0, 0}}}}, 0, 0 },
+  { ".extcond14", 30, {0, {{{0, 0}}}}, 0, 0 },
+  { ".extcond15", 31, {0, {{{0, 0}}}}, 0, 0 }
 };
 
 CGEN_KEYWORD arc_cgen_opval_h_Qcondi =
 {
   & arc_cgen_opval_h_Qcondi_entries[0],
-  27,
+  43,
   0, 0, 0, 0, ""
 };
 
@@ -776,13 +818,9 @@ CGEN_KEYWORD arc_cgen_opval_h_Rcc =
 
 /* The hardware table.  */
 
-#if defined (__STDC__) || defined (ALMOST_STDC) || defined (HAVE_STRINGIZE)
 #define A(a) (1 << CGEN_HW_##a)
-#else
-#define A(a) (1 << CGEN_HW_/**/a)
-#endif
 
-static const CGEN_HW_ENTRY arc_cgen_hw_table[] =
+const CGEN_HW_ENTRY arc_cgen_hw_table[] =
 {
   { "h-memory", HW_H_MEMORY, CGEN_ASM_NONE, 0, { 0, { { { (1<<MACH_BASE), 0 } } } } },
   { "h-sint", HW_H_SINT, CGEN_ASM_NONE, 0, { 0, { { { (1<<MACH_BASE), 0 } } } } },
@@ -841,11 +879,7 @@ static const CGEN_HW_ENTRY arc_cgen_hw_table[] =
 
 /* The instruction field table.  */
 
-#if defined (__STDC__) || defined (ALMOST_STDC) || defined (HAVE_STRINGIZE)
 #define A(a) (1 << CGEN_IFLD_##a)
-#else
-#define A(a) (1 << CGEN_IFLD_/**/a)
-#endif
 
 const CGEN_IFLD arc_cgen_ifld_table[] =
 {
@@ -934,77 +968,77 @@ const CGEN_IFLD arc_cgen_ifld_table[] =
 
 /* multi ifield declarations */
 
-static const CGEN_MAYBE_MULTI_IFLD ARC_F_OP_B_MULTI_IFIELD [];
-static const CGEN_MAYBE_MULTI_IFLD ARC_F_OP_H_MULTI_IFIELD [];
-static const CGEN_MAYBE_MULTI_IFLD ARC_F_S12_MULTI_IFIELD [];
-static const CGEN_MAYBE_MULTI_IFLD ARC_F_S12X2_MULTI_IFIELD [];
-static const CGEN_MAYBE_MULTI_IFLD ARC_F_REL21_MULTI_IFIELD [];
-static const CGEN_MAYBE_MULTI_IFLD ARC_F_REL21BL_MULTI_IFIELD [];
-static const CGEN_MAYBE_MULTI_IFLD ARC_F_REL25_MULTI_IFIELD [];
-static const CGEN_MAYBE_MULTI_IFLD ARC_F_REL25BL_MULTI_IFIELD [];
-static const CGEN_MAYBE_MULTI_IFLD ARC_F_REL9_MULTI_IFIELD [];
-static const CGEN_MAYBE_MULTI_IFLD ARC_F_S9_MULTI_IFIELD [];
+const CGEN_MAYBE_MULTI_IFLD ARC_F_OP_B_MULTI_IFIELD [];
+const CGEN_MAYBE_MULTI_IFLD ARC_F_OP_H_MULTI_IFIELD [];
+const CGEN_MAYBE_MULTI_IFLD ARC_F_S12_MULTI_IFIELD [];
+const CGEN_MAYBE_MULTI_IFLD ARC_F_S12X2_MULTI_IFIELD [];
+const CGEN_MAYBE_MULTI_IFLD ARC_F_REL21_MULTI_IFIELD [];
+const CGEN_MAYBE_MULTI_IFLD ARC_F_REL21BL_MULTI_IFIELD [];
+const CGEN_MAYBE_MULTI_IFLD ARC_F_REL25_MULTI_IFIELD [];
+const CGEN_MAYBE_MULTI_IFLD ARC_F_REL25BL_MULTI_IFIELD [];
+const CGEN_MAYBE_MULTI_IFLD ARC_F_REL9_MULTI_IFIELD [];
+const CGEN_MAYBE_MULTI_IFLD ARC_F_S9_MULTI_IFIELD [];
 
 
 /* multi ifield definitions */
 
-static const CGEN_MAYBE_MULTI_IFLD ARC_F_OP_B_MULTI_IFIELD [] =
+const CGEN_MAYBE_MULTI_IFLD ARC_F_OP_B_MULTI_IFIELD [] =
 {
     { 0, { (const PTR) &arc_cgen_ifld_table[ARC_F_OP__B] } },
     { 0, { (const PTR) &arc_cgen_ifld_table[ARC_F_B_5_3] } },
     { 0, { (const PTR) 0 } }
 };
-static const CGEN_MAYBE_MULTI_IFLD ARC_F_OP_H_MULTI_IFIELD [] =
+const CGEN_MAYBE_MULTI_IFLD ARC_F_OP_H_MULTI_IFIELD [] =
 {
     { 0, { (const PTR) &arc_cgen_ifld_table[ARC_F_H_2_0] } },
     { 0, { (const PTR) &arc_cgen_ifld_table[ARC_F_H_5_3] } },
     { 0, { (const PTR) 0 } }
 };
-static const CGEN_MAYBE_MULTI_IFLD ARC_F_S12_MULTI_IFIELD [] =
+const CGEN_MAYBE_MULTI_IFLD ARC_F_S12_MULTI_IFIELD [] =
 {
     { 0, { (const PTR) &arc_cgen_ifld_table[ARC_F_U6] } },
     { 0, { (const PTR) &arc_cgen_ifld_table[ARC_F_S12H] } },
     { 0, { (const PTR) 0 } }
 };
-static const CGEN_MAYBE_MULTI_IFLD ARC_F_S12X2_MULTI_IFIELD [] =
+const CGEN_MAYBE_MULTI_IFLD ARC_F_S12X2_MULTI_IFIELD [] =
 {
     { 0, { (const PTR) &arc_cgen_ifld_table[ARC_F_U6] } },
     { 0, { (const PTR) &arc_cgen_ifld_table[ARC_F_S12H] } },
     { 0, { (const PTR) 0 } }
 };
-static const CGEN_MAYBE_MULTI_IFLD ARC_F_REL21_MULTI_IFIELD [] =
+const CGEN_MAYBE_MULTI_IFLD ARC_F_REL21_MULTI_IFIELD [] =
 {
     { 0, { (const PTR) &arc_cgen_ifld_table[ARC_F_D21L] } },
     { 0, { (const PTR) &arc_cgen_ifld_table[ARC_F_D21H] } },
     { 0, { (const PTR) 0 } }
 };
-static const CGEN_MAYBE_MULTI_IFLD ARC_F_REL21BL_MULTI_IFIELD [] =
+const CGEN_MAYBE_MULTI_IFLD ARC_F_REL21BL_MULTI_IFIELD [] =
 {
     { 0, { (const PTR) &arc_cgen_ifld_table[ARC_F_D21BL] } },
     { 0, { (const PTR) &arc_cgen_ifld_table[ARC_F_D21H] } },
     { 0, { (const PTR) 0 } }
 };
-static const CGEN_MAYBE_MULTI_IFLD ARC_F_REL25_MULTI_IFIELD [] =
+const CGEN_MAYBE_MULTI_IFLD ARC_F_REL25_MULTI_IFIELD [] =
 {
     { 0, { (const PTR) &arc_cgen_ifld_table[ARC_F_D21L] } },
     { 0, { (const PTR) &arc_cgen_ifld_table[ARC_F_D25M] } },
     { 0, { (const PTR) &arc_cgen_ifld_table[ARC_F_D25H] } },
     { 0, { (const PTR) 0 } }
 };
-static const CGEN_MAYBE_MULTI_IFLD ARC_F_REL25BL_MULTI_IFIELD [] =
+const CGEN_MAYBE_MULTI_IFLD ARC_F_REL25BL_MULTI_IFIELD [] =
 {
     { 0, { (const PTR) &arc_cgen_ifld_table[ARC_F_D21BL] } },
     { 0, { (const PTR) &arc_cgen_ifld_table[ARC_F_D25M] } },
     { 0, { (const PTR) &arc_cgen_ifld_table[ARC_F_D25H] } },
     { 0, { (const PTR) 0 } }
 };
-static const CGEN_MAYBE_MULTI_IFLD ARC_F_REL9_MULTI_IFIELD [] =
+const CGEN_MAYBE_MULTI_IFLD ARC_F_REL9_MULTI_IFIELD [] =
 {
     { 0, { (const PTR) &arc_cgen_ifld_table[ARC_F_D9L] } },
     { 0, { (const PTR) &arc_cgen_ifld_table[ARC_F_D9H] } },
     { 0, { (const PTR) 0 } }
 };
-static const CGEN_MAYBE_MULTI_IFLD ARC_F_S9_MULTI_IFIELD [] =
+const CGEN_MAYBE_MULTI_IFLD ARC_F_S9_MULTI_IFIELD [] =
 {
     { 0, { (const PTR) &arc_cgen_ifld_table[ARC_F_U8] } },
     { 0, { (const PTR) &arc_cgen_ifld_table[ARC_F_D9H] } },
@@ -1013,18 +1047,10 @@ static const CGEN_MAYBE_MULTI_IFLD ARC_F_S9_MULTI_IFIELD [] =
 
 /* The operand table.  */
 
-#if defined (__STDC__) || defined (ALMOST_STDC) || defined (HAVE_STRINGIZE)
 #define A(a) (1 << CGEN_OPERAND_##a)
-#else
-#define A(a) (1 << CGEN_OPERAND_/**/a)
-#endif
-#if defined (__STDC__) || defined (ALMOST_STDC) || defined (HAVE_STRINGIZE)
 #define OPERAND(op) ARC_OPERAND_##op
-#else
-#define OPERAND(op) ARC_OPERAND_/**/op
-#endif
 
-static const CGEN_OPERAND arc_cgen_operand_table[] =
+const CGEN_OPERAND arc_cgen_operand_table[] =
 {
 /* pc: program counter */
   { "pc", ARC_OPERAND_PC, HW_H_PC, 0, 0,
@@ -1342,11 +1368,7 @@ static const CGEN_OPERAND arc_cgen_operand_table[] =
 /* The instruction table.  */
 
 #define OP(field) CGEN_SYNTAX_MAKE_FIELD (OPERAND (field))
-#if defined (__STDC__) || defined (ALMOST_STDC) || defined (HAVE_STRINGIZE)
 #define A(a) (1 << CGEN_INSN_##a)
-#else
-#define A(a) (1 << CGEN_INSN_/**/a)
-#endif
 
 static const CGEN_IBASE arc_cgen_insn_table[MAX_INSNS] =
 {
@@ -3921,11 +3943,7 @@ arc_cgen_rebuild_tables (CGEN_CPU_TABLE *cd)
    CGEN_CPU_OPEN_END:     terminates arguments
 
    ??? Simultaneous multiple isas might not make sense, but it's not (yet)
-   precluded.
-
-   ??? We only support ISO C stdargs here, not K&R.
-   Laziness, plus experiment to see if anything requires K&R - eventually
-   K&R will no longer be supported - e.g. GDB is currently trying this.  */
+   precluded.  */
 
 CGEN_CPU_DESC
 arc_cgen_cpu_open (enum cgen_cpu_open_arg arg_type, ...)

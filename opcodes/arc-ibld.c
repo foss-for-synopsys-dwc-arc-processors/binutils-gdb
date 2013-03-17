@@ -3,22 +3,20 @@
    THIS FILE IS MACHINE GENERATED WITH CGEN: Cpu tools GENerator.
    - the resultant file is machine generated, cgen-ibld.in isn't
 
-   Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2005, 2006
-   Free Software Foundation, Inc.
+   Copyright 1996, 1997, 1998, 1999, 2000, 2001, 2005, 2006, 2007,
+   2008, 2010  Free Software Foundation, Inc.
 
-   Copyright 2008-2012 Synopsys Inc.
+   This file is part of libopcodes.
 
-   This file is part of the GNU Binutils and GDB, the GNU debugger.
-
-   This program is free software; you can redistribute it and/or modify
+   This library is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2, or (at your option)
+   the Free Software Foundation; either version 3, or (at your option)
    any later version.
 
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
+   It is distributed in the hope that it will be useful, but WITHOUT
+   ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+   or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+   License for more details.
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation, Inc.,
@@ -35,6 +33,7 @@
 #include "symcat.h"
 #include "arc-desc.h"
 #include "arc-opc.h"
+#include "cgen/basic-modes.h"
 #include "opintl.h"
 #include "safe-ctype.h"
 
@@ -139,7 +138,7 @@ insert_normal (CGEN_CPU_DESC cd,
   if (length == 0)
     return NULL;
 
-  if (word_length > 32)
+  if (word_length > 8 * sizeof (CGEN_INSN_INT))
     abort ();
 
   /* For architectures with insns smaller than the base-insn-bitsize,
@@ -443,7 +442,7 @@ extract_normal (CGEN_CPU_DESC cd,
       return 1;
     }
 
-  if (word_length > 32)
+  if (word_length > 8 * sizeof (CGEN_INSN_INT))
     abort ();
 
   /* For architectures with insns smaller than the insn-base-bitsize,
@@ -470,7 +469,7 @@ extract_normal (CGEN_CPU_DESC cd,
     {
       unsigned char *bufp = ex_info->insn_bytes + word_offset / 8;
 
-      if (word_length > 32)
+      if (word_length > 8 * sizeof (CGEN_INSN_INT))
 	abort ();
 
       if (fill_cache (cd, ex_info, word_offset / 8, word_length / 8, pc) == 0)
@@ -538,7 +537,7 @@ extract_insn_normal (CGEN_CPU_DESC cd,
 
 /* Machine generated code added here.  */
 
-static const char * arc_cgen_insert_operand
+const char * arc_cgen_insert_operand
   (CGEN_CPU_DESC, int, CGEN_FIELDS *, CGEN_INSN_BYTES_PTR, bfd_vma);
 
 /* Main entry point for operand insertion.
@@ -555,12 +554,12 @@ static const char * arc_cgen_insert_operand
    the handlers.  It's also needed by GAS to insert operands that couldn't be
    resolved during parsing.  */
 
-static const char *
-arc_cgen_insert_operand (CGEN_CPU_DESC       cd,
-			 int                 opindex,
-			 CGEN_FIELDS *       fields,
-			 CGEN_INSN_BYTES_PTR buffer,
-			 bfd_vma pc          ATTRIBUTE_UNUSED)
+const char *
+arc_cgen_insert_operand (CGEN_CPU_DESC cd,
+			     int opindex,
+			     CGEN_FIELDS * fields,
+			     CGEN_INSN_BYTES_PTR buffer,
+			     bfd_vma pc ATTRIBUTE_UNUSED)
 {
   const char * errmsg = NULL;
   unsigned int total_length = CGEN_FIELDS_BITSIZE (fields);
@@ -617,7 +616,7 @@ arc_cgen_insert_operand (CGEN_CPU_DESC       cd,
       {
 {
   FLD (f_op__b) = ((FLD (f_op_B)) & (7));
-  FLD (f_B_5_3) = ((unsigned int) (FLD (f_op_B)) >> (3));
+  FLD (f_B_5_3) = ((UINT) (FLD (f_op_B)) >> (3));
 }
         errmsg = insert_normal (cd, fields->f_op__b, 0, 0, 5, 3, 32, total_length, buffer);
         if (errmsg)
@@ -631,7 +630,7 @@ arc_cgen_insert_operand (CGEN_CPU_DESC       cd,
       {
 {
   FLD (f_op__b) = ((FLD (f_op_B)) & (7));
-  FLD (f_B_5_3) = ((unsigned int) (FLD (f_op_B)) >> (3));
+  FLD (f_B_5_3) = ((UINT) (FLD (f_op_B)) >> (3));
 }
         errmsg = insert_normal (cd, fields->f_op__b, 0, 0, 5, 3, 32, total_length, buffer);
         if (errmsg)
@@ -669,7 +668,7 @@ arc_cgen_insert_operand (CGEN_CPU_DESC       cd,
       {
 {
   FLD (f_h_2_0) = ((FLD (f_op_h)) & (7));
-  FLD (f_h_5_3) = ((unsigned int) (FLD (f_op_h)) >> (3));
+  FLD (f_h_5_3) = ((UINT) (FLD (f_op_h)) >> (3));
 }
         errmsg = insert_normal (cd, fields->f_h_2_0, 0, 0, 8, 3, 32, total_length, buffer);
         if (errmsg)
@@ -690,7 +689,7 @@ arc_cgen_insert_operand (CGEN_CPU_DESC       cd,
     case ARC_OPERAND_U6X2 :
       {
         long value = fields->f_u6x2;
-        value = ((unsigned int) (value) >> (1));
+        value = ((USI) (value) >> (1));
         errmsg = insert_normal (cd, value, 0, 0, 20, 6, 32, total_length, buffer);
       }
       break;
@@ -717,22 +716,22 @@ arc_cgen_insert_operand (CGEN_CPU_DESC       cd,
     case ARC_OPERAND_LABEL10 :
       {
         long value = fields->f_rel10;
-        value = ((int) (((value) - (((pc) & (-4))))) >> (1));
+        value = ((SI) (((value) - (((pc) & (-4))))) >> (1));
         errmsg = insert_normal (cd, value, 0|(1<<CGEN_IFLD_SIGNED)|(1<<CGEN_IFLD_PCREL_ADDR), 0, 7, 9, 32, total_length, buffer);
       }
       break;
     case ARC_OPERAND_LABEL13A :
       {
         long value = fields->f_rel13bl;
-        value = ((int) (((value) - (((pc) & (-4))))) >> (2));
+        value = ((SI) (((value) - (((pc) & (-4))))) >> (2));
         errmsg = insert_normal (cd, value, 0|(1<<CGEN_IFLD_SIGNED)|(1<<CGEN_IFLD_PCREL_ADDR), 0, 5, 11, 32, total_length, buffer);
       }
       break;
     case ARC_OPERAND_LABEL21 :
       {
 {
-  FLD (f_d21l) = ((((unsigned int) (((FLD (f_rel21)) - (((pc) & (-4))))) >> (1))) & (1023));
-  FLD (f_d21h) = ((unsigned int) (((FLD (f_rel21)) - (((pc) & (-4))))) >> (11));
+  FLD (f_d21l) = ((((UINT) (((FLD (f_rel21)) - (((pc) & (-4))))) >> (1))) & (1023));
+  FLD (f_d21h) = ((INT) (((FLD (f_rel21)) - (((pc) & (-4))))) >> (11));
 }
         errmsg = insert_normal (cd, fields->f_d21l, 0, 0, 5, 10, 32, total_length, buffer);
         if (errmsg)
@@ -745,8 +744,8 @@ arc_cgen_insert_operand (CGEN_CPU_DESC       cd,
     case ARC_OPERAND_LABEL21A :
       {
 {
-  FLD (f_d21bl) = ((((unsigned int) (((FLD (f_rel21bl)) - (((pc) & (-4))))) >> (2))) & (511));
-  FLD (f_d21h) = ((unsigned int) (((FLD (f_rel21bl)) - (((pc) & (-4))))) >> (11));
+  FLD (f_d21bl) = ((((UINT) (((FLD (f_rel21bl)) - (((pc) & (-4))))) >> (2))) & (511));
+  FLD (f_d21h) = ((INT) (((FLD (f_rel21bl)) - (((pc) & (-4))))) >> (11));
 }
         errmsg = insert_normal (cd, fields->f_d21bl, 0, 0, 5, 9, 32, total_length, buffer);
         if (errmsg)
@@ -759,9 +758,9 @@ arc_cgen_insert_operand (CGEN_CPU_DESC       cd,
     case ARC_OPERAND_LABEL25 :
       {
 {
-  FLD (f_d21l) = ((((unsigned int) (((FLD (f_rel25)) - (((pc) & (-4))))) >> (1))) & (1023));
-  FLD (f_d25m) = ((unsigned int) (((FLD (f_rel25)) - (((pc) & (-4))))) >> (11));
-  FLD (f_d25h) = ((unsigned int) (((FLD (f_rel25)) - (((pc) & (-4))))) >> (21));
+  FLD (f_d21l) = ((((UINT) (((FLD (f_rel25)) - (((pc) & (-4))))) >> (1))) & (1023));
+  FLD (f_d25m) = ((UINT) (((FLD (f_rel25)) - (((pc) & (-4))))) >> (11));
+  FLD (f_d25h) = ((INT) (((FLD (f_rel25)) - (((pc) & (-4))))) >> (21));
 }
         errmsg = insert_normal (cd, fields->f_d21l, 0, 0, 5, 10, 32, total_length, buffer);
         if (errmsg)
@@ -777,9 +776,9 @@ arc_cgen_insert_operand (CGEN_CPU_DESC       cd,
     case ARC_OPERAND_LABEL25A :
       {
 {
-  FLD (f_d21bl) = ((((unsigned int) (((FLD (f_rel25bl)) - (((pc) & (-4))))) >> (2))) & (511));
-  FLD (f_d25m) = ((unsigned int) (((FLD (f_rel25bl)) - (((pc) & (-4))))) >> (11));
-  FLD (f_d25h) = ((unsigned int) (((FLD (f_rel25bl)) - (((pc) & (-4))))) >> (21));
+  FLD (f_d21bl) = ((((UINT) (((FLD (f_rel25bl)) - (((pc) & (-4))))) >> (2))) & (511));
+  FLD (f_d25m) = ((UINT) (((FLD (f_rel25bl)) - (((pc) & (-4))))) >> (11));
+  FLD (f_d25h) = ((INT) (((FLD (f_rel25bl)) - (((pc) & (-4))))) >> (21));
 }
         errmsg = insert_normal (cd, fields->f_d21bl, 0, 0, 5, 9, 32, total_length, buffer);
         if (errmsg)
@@ -795,22 +794,22 @@ arc_cgen_insert_operand (CGEN_CPU_DESC       cd,
     case ARC_OPERAND_LABEL7 :
       {
         long value = fields->f_rel7;
-        value = ((int) (((value) - (((pc) & (-4))))) >> (1));
+        value = ((SI) (((value) - (((pc) & (-4))))) >> (1));
         errmsg = insert_normal (cd, value, 0|(1<<CGEN_IFLD_SIGNED)|(1<<CGEN_IFLD_PCREL_ADDR), 0, 10, 6, 32, total_length, buffer);
       }
       break;
     case ARC_OPERAND_LABEL8 :
       {
         long value = fields->f_rel8;
-        value = ((int) (((value) - (((pc) & (-4))))) >> (1));
+        value = ((SI) (((value) - (((pc) & (-4))))) >> (1));
         errmsg = insert_normal (cd, value, 0|(1<<CGEN_IFLD_SIGNED)|(1<<CGEN_IFLD_PCREL_ADDR), 0, 9, 7, 32, total_length, buffer);
       }
       break;
     case ARC_OPERAND_LABEL9 :
       {
 {
-  FLD (f_d9l) = ((((unsigned int) (((FLD (f_rel9)) - (((pc) & (-4))))) >> (1))) & (127));
-  FLD (f_d9h) = ((unsigned int) (((FLD (f_rel9)) - (((pc) & (-4))))) >> (8));
+  FLD (f_d9l) = ((((UINT) (((FLD (f_rel9)) - (((pc) & (-4))))) >> (1))) & (127));
+  FLD (f_d9h) = ((INT) (((FLD (f_rel9)) - (((pc) & (-4))))) >> (8));
 }
         errmsg = insert_normal (cd, fields->f_d9l, 0, 0, 8, 7, 32, total_length, buffer);
         if (errmsg)
@@ -828,7 +827,7 @@ arc_cgen_insert_operand (CGEN_CPU_DESC       cd,
       {
 {
   FLD (f_u6) = ((FLD (f_s12)) & (63));
-  FLD (f_s12h) = ((unsigned int) (FLD (f_s12)) >> (6));
+  FLD (f_s12h) = ((INT) (FLD (f_s12)) >> (6));
 }
         errmsg = insert_normal (cd, fields->f_u6, 0, 0, 20, 6, 32, total_length, buffer);
         if (errmsg)
@@ -841,8 +840,8 @@ arc_cgen_insert_operand (CGEN_CPU_DESC       cd,
     case ARC_OPERAND_S12X2 :
       {
 {
-  FLD (f_u6) = ((((unsigned int) (FLD (f_s12x2)) >> (1))) & (63));
-  FLD (f_s12h) = ((unsigned int) (FLD (f_s12x2)) >> (7));
+  FLD (f_u6) = ((((INT) (FLD (f_s12x2)) >> (1))) & (63));
+  FLD (f_s12h) = ((INT) (FLD (f_s12x2)) >> (7));
 }
         errmsg = insert_normal (cd, fields->f_u6, 0, 0, 20, 6, 32, total_length, buffer);
         if (errmsg)
@@ -860,7 +859,7 @@ arc_cgen_insert_operand (CGEN_CPU_DESC       cd,
       {
 {
   FLD (f_u8) = ((FLD (f_s9)) & (255));
-  FLD (f_d9h) = ((unsigned int) (FLD (f_s9)) >> (8));
+  FLD (f_d9h) = ((INT) (FLD (f_s9)) >> (8));
 }
         errmsg = insert_normal (cd, fields->f_u8, 0, 0, 8, 8, 32, total_length, buffer);
         if (errmsg)
@@ -873,14 +872,14 @@ arc_cgen_insert_operand (CGEN_CPU_DESC       cd,
     case ARC_OPERAND_S9X4 :
       {
         long value = fields->f_s9x4;
-        value = ((unsigned int) (value) >> (2));
+        value = ((USI) (value) >> (2));
         errmsg = insert_normal (cd, value, 0|(1<<CGEN_IFLD_SIGNED), 0, 7, 9, 32, total_length, buffer);
       }
       break;
     case ARC_OPERAND_SC_S9_ :
       {
         long value = fields->f_s9x4;
-        value = ((unsigned int) (value) >> (2));
+        value = ((USI) (value) >> (2));
         errmsg = insert_normal (cd, value, 0|(1<<CGEN_IFLD_SIGNED), 0, 7, 9, 32, total_length, buffer);
       }
       break;
@@ -890,14 +889,14 @@ arc_cgen_insert_operand (CGEN_CPU_DESC       cd,
     case ARC_OPERAND_SC_S9W :
       {
         long value = fields->f_s9x2;
-        value = ((unsigned int) (value) >> (1));
+        value = ((USI) (value) >> (1));
         errmsg = insert_normal (cd, value, 0|(1<<CGEN_IFLD_SIGNED), 0, 7, 9, 32, total_length, buffer);
       }
       break;
     case ARC_OPERAND_SC_U5_ :
       {
         long value = fields->f_u5x4;
-        value = ((unsigned int) (value) >> (2));
+        value = ((USI) (value) >> (2));
         errmsg = insert_normal (cd, value, 0, 0, 11, 5, 32, total_length, buffer);
       }
       break;
@@ -907,7 +906,7 @@ arc_cgen_insert_operand (CGEN_CPU_DESC       cd,
     case ARC_OPERAND_SC_U5W :
       {
         long value = fields->f_u5x2;
-        value = ((unsigned int) (value) >> (1));
+        value = ((USI) (value) >> (1));
         errmsg = insert_normal (cd, value, 0, 0, 11, 5, 32, total_length, buffer);
       }
       break;
@@ -923,7 +922,7 @@ arc_cgen_insert_operand (CGEN_CPU_DESC       cd,
     case ARC_OPERAND_U5X4 :
       {
         long value = fields->f_u5x4;
-        value = ((unsigned int) (value) >> (2));
+        value = ((USI) (value) >> (2));
         errmsg = insert_normal (cd, value, 0, 0, 11, 5, 32, total_length, buffer);
       }
       break;
@@ -936,7 +935,7 @@ arc_cgen_insert_operand (CGEN_CPU_DESC       cd,
     case ARC_OPERAND_U8X4 :
       {
         long value = fields->f_u8x4;
-        value = ((unsigned int) (value) >> (2));
+        value = ((USI) (value) >> (2));
         errmsg = insert_normal (cd, value, 0, 0, 8, 8, 32, total_length, buffer);
       }
       break;
@@ -961,7 +960,7 @@ arc_cgen_insert_operand (CGEN_CPU_DESC       cd,
   return errmsg;
 }
 
-static int arc_cgen_extract_operand
+int arc_cgen_extract_operand
   (CGEN_CPU_DESC, int, CGEN_EXTRACT_INFO *, CGEN_INSN_INT, CGEN_FIELDS *, bfd_vma);
 
 /* Main entry point for operand extraction.
@@ -979,7 +978,7 @@ static int arc_cgen_extract_operand
    separate makes clear the interface between `print_insn_normal' and each of
    the handlers.  */
 
-static int
+int
 arc_cgen_extract_operand (CGEN_CPU_DESC cd,
 			     int opindex,
 			     CGEN_EXTRACT_INFO *ex_info,
@@ -1362,25 +1361,25 @@ arc_cgen_extract_operand (CGEN_CPU_DESC cd,
   return length;
 }
 
-static cgen_insert_fn * const arc_cgen_insert_handlers[] = 
+cgen_insert_fn * const arc_cgen_insert_handlers[] = 
 {
   insert_insn_normal,
 };
 
-static cgen_extract_fn * const arc_cgen_extract_handlers[] = 
+cgen_extract_fn * const arc_cgen_extract_handlers[] = 
 {
   extract_insn_normal,
 };
 
-static int arc_cgen_get_int_operand     (CGEN_CPU_DESC, int, const CGEN_FIELDS *);
-static bfd_vma arc_cgen_get_vma_operand (CGEN_CPU_DESC, int, const CGEN_FIELDS *);
+int arc_cgen_get_int_operand     (CGEN_CPU_DESC, int, const CGEN_FIELDS *);
+bfd_vma arc_cgen_get_vma_operand (CGEN_CPU_DESC, int, const CGEN_FIELDS *);
 
 /* Getting values from cgen_fields is handled by a collection of functions.
    They are distinguished by the type of the VALUE argument they return.
    TODO: floating point, inlining support, remove cases where result type
    not appropriate.  */
 
-static int
+int
 arc_cgen_get_int_operand (CGEN_CPU_DESC cd ATTRIBUTE_UNUSED,
 			     int opindex,
 			     const CGEN_FIELDS * fields)
@@ -1625,7 +1624,7 @@ arc_cgen_get_int_operand (CGEN_CPU_DESC cd ATTRIBUTE_UNUSED,
   return value;
 }
 
-static bfd_vma
+bfd_vma
 arc_cgen_get_vma_operand (CGEN_CPU_DESC cd ATTRIBUTE_UNUSED,
 			     int opindex,
 			     const CGEN_FIELDS * fields)
@@ -1870,15 +1869,15 @@ arc_cgen_get_vma_operand (CGEN_CPU_DESC cd ATTRIBUTE_UNUSED,
   return value;
 }
 
-static void arc_cgen_set_int_operand  (CGEN_CPU_DESC, int, CGEN_FIELDS *, int);
-static void arc_cgen_set_vma_operand  (CGEN_CPU_DESC, int, CGEN_FIELDS *, bfd_vma);
+void arc_cgen_set_int_operand  (CGEN_CPU_DESC, int, CGEN_FIELDS *, int);
+void arc_cgen_set_vma_operand  (CGEN_CPU_DESC, int, CGEN_FIELDS *, bfd_vma);
 
 /* Stuffing values in cgen_fields is handled by a collection of functions.
    They are distinguished by the type of the VALUE argument they accept.
    TODO: floating point, inlining support, remove cases where argument type
    not appropriate.  */
 
-static void
+void
 arc_cgen_set_int_operand (CGEN_CPU_DESC cd ATTRIBUTE_UNUSED,
 			     int opindex,
 			     CGEN_FIELDS * fields,
@@ -2101,7 +2100,7 @@ arc_cgen_set_int_operand (CGEN_CPU_DESC cd ATTRIBUTE_UNUSED,
   }
 }
 
-static void
+void
 arc_cgen_set_vma_operand (CGEN_CPU_DESC cd ATTRIBUTE_UNUSED,
 			     int opindex,
 			     CGEN_FIELDS * fields,
@@ -2329,10 +2328,10 @@ arc_cgen_set_vma_operand (CGEN_CPU_DESC cd ATTRIBUTE_UNUSED,
 void
 arc_cgen_init_ibld_table (CGEN_CPU_DESC cd)
 {
-  cd->insert_handlers  = &arc_cgen_insert_handlers [0];
-  cd->extract_handlers = &arc_cgen_extract_handlers[0];
+  cd->insert_handlers = & arc_cgen_insert_handlers[0];
+  cd->extract_handlers = & arc_cgen_extract_handlers[0];
 
-  cd->insert_operand  = arc_cgen_insert_operand;
+  cd->insert_operand = arc_cgen_insert_operand;
   cd->extract_operand = arc_cgen_extract_operand;
 
   cd->get_int_operand = arc_cgen_get_int_operand;
