@@ -61,6 +61,8 @@ NL_TARGET = -DNL_TARGET_arc
 
 ## COMMON_POST_CONFIG_FRAG
 
+CGEN_CPU_DIR = $(CGENDIR)/../cpu
+
 arch = arc
 
 sim-if.o: sim-if.c $(SIM_MAIN_DEPS) $(srcdir)/../common/sim-core.h

@@ -2,23 +2,23 @@
 
 THIS FILE IS MACHINE GENERATED WITH CGEN.
 
-Copyright 1996-2005 Free Software Foundation, Inc.
+Copyright 1996-2010 Free Software Foundation, Inc.
 
 This file is part of the GNU simulators.
 
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2, or (at your option)
-any later version.
+   This file is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 3, or (at your option)
+   any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+   It is distributed in the hope that it will be useful, but WITHOUT
+   ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+   or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+   License for more details.
 
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
+   You should have received a copy of the GNU General Public License along
+   with this program; if not, write to the Free Software Foundation, Inc.,
+   51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
 
 */
 
@@ -31,6 +31,12 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 /* Maximum number of instructions that can be executed in parallel.  */
 #define MAX_PARALLEL_INSNS 1
+
+/* The size of an "int" needed to hold an instruction word.
+   This is usually 32 bits, but some architectures needs 64 bits.  */
+typedef CGEN_INSN_INT CGEN_INSN_WORD;
+
+#include "cgen-engine.h"
 
 /* CPU state information.  */
 typedef struct {
@@ -99,7 +105,7 @@ CPU (h_cr[(index)]) = (x);\
 ;} while (0)
   /* auxiliary registers */
   SI h_auxr[64];
-#define GET_H_AUXR(index) (index == 0) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (index == 6) ? (ADDSI (CPU (h_pc), 4)) : (index == 10) ? (ORSI (SLLSI (ZEXTBISI (CPU (h_lbit)), 12), ORSI (SLLSI (ZEXTBISI (CPU (h_zbit)), 11), ORSI (SLLSI (ZEXTBISI (CPU (h_nbit)), 10), ORSI (SLLSI (ZEXTBISI (CPU (h_cbit)), 9), ORSI (SLLSI (ZEXTBISI (CPU (h_vbit)), 8), ORSI (SLLSI (ZEXTBISI (CPU (h_e1)), 1), SLLSI (ZEXTBISI (CPU (h_e2)), 2)))))))) : (index == 33) ? (ADDSI (CPU_INSN_COUNT (current_cpu), SUBSI (CPU (h_auxr[((UINT) 35)]), CPU (h_timer_expire[((UINT) 0)])))) : (index == 65) ? (ORSI (SLLSI (ZEXTBISI (CPU (h_s1bit)), 9), SLLSI (ZEXTBISI (CPU (h_s2bit)), 4))) : (CPU (h_auxr[index]))
+#define GET_H_AUXR(index) (index == 0) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (index == 6) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (index == 10) ? (ORSI (SLLSI (ZEXTBISI (CPU (h_lbit)), 12), ORSI (SLLSI (ZEXTBISI (CPU (h_zbit)), 11), ORSI (SLLSI (ZEXTBISI (CPU (h_nbit)), 10), ORSI (SLLSI (ZEXTBISI (CPU (h_cbit)), 9), ORSI (SLLSI (ZEXTBISI (CPU (h_vbit)), 8), ORSI (SLLSI (ZEXTBISI (CPU (h_e1)), 1), SLLSI (ZEXTBISI (CPU (h_e2)), 2)))))))) : (index == 33) ? (ADDSI (CPU_INSN_COUNT (current_cpu), SUBSI (CPU (h_auxr[((UINT) 35)]), CPU (h_timer_expire[((UINT) 0)])))) : (index == 65) ? (ORSI (SLLSI (ZEXTBISI (CPU (h_s1bit)), 9), SLLSI (ZEXTBISI (CPU (h_s2bit)), 4))) : (CPU (h_auxr[index]))
 #define SET_H_AUXR(index, x) \
 do { \
   switch ((index))\
@@ -147,27 +153,32 @@ CPU (h_auxr[(index)]) = (x);\
   SI h_prof_offset[1];
 #define GET_H_PROF_OFFSET(a1) CPU (h_prof_offset)[a1]
 #define SET_H_PROF_OFFSET(a1, x) (CPU (h_prof_offset)[a1] = (x))
-  /* program counter */
+  /* Program counter */
   USI h_pc;
 #define GET_H_PC() CPU (h_pc)
-#define SET_H_PC(x) (CPU (h_pc) = (x))
+#define SET_H_PC(x) \
+do { \
+{\
+CPU (h_pc) = ANDSI ((x), INVSI (1));\
+}\
+;} while (0)
   } hardware;
 #define CPU_CGEN_HW(cpu) (& (cpu)->cpu_data.hardware)
 } ARC700F_CPU_DATA;
 
 /* Virtual regs.  */
 
-#define GET_H_QCONDB(index) (index == COND_AL) ? (1) : (index == COND_EQ) ? (CPU (h_zbit)) : (index == COND_NE) ? (NOTBI (CPU (h_zbit))) : (index == COND_PL) ? (NOTBI (CPU (h_nbit))) : (index == COND_MI) ? (CPU (h_nbit)) : (index == COND_CS) ? (CPU (h_cbit)) : (index == COND_CC) ? (NOTBI (CPU (h_cbit))) : (index == COND_VS) ? (CPU (h_vbit)) : (index == COND_VC) ? (NOTBI (CPU (h_vbit))) : (index == COND_GT) ? (ANDBI (NOTBI (CPU (h_zbit)), EQBI (CPU (h_nbit), CPU (h_vbit)))) : (index == COND_GE) ? (EQBI (CPU (h_nbit), CPU (h_vbit))) : (index == COND_LT) ? (NEBI (CPU (h_nbit), CPU (h_vbit))) : (index == COND_LE) ? (ORBI (CPU (h_zbit), NEBI (CPU (h_nbit), CPU (h_vbit)))) : (index == COND_HI) ? (ANDBI (NOTBI (CPU (h_cbit)), NOTBI (CPU (h_zbit)))) : (index == COND_LS) ? (ORBI (CPU (h_cbit), CPU (h_zbit))) : (index == COND_PNZ) ? (ANDBI (NOTBI (CPU (h_nbit)), NOTBI (CPU (h_zbit)))) : (((cgen_rtx_error (current_cpu, "invalid insn"), 0), 1))
+#define GET_H_QCONDB(index) (index == COND_AL) ? (1) : (index == COND_EQ) ? (CPU (h_zbit)) : (index == COND_NE) ? (NOTBI (CPU (h_zbit))) : (index == COND_PL) ? (NOTBI (CPU (h_nbit))) : (index == COND_MI) ? (CPU (h_nbit)) : (index == COND_CS) ? (CPU (h_cbit)) : (index == COND_CC) ? (NOTBI (CPU (h_cbit))) : (index == COND_VS) ? (CPU (h_vbit)) : (index == COND_VC) ? (NOTBI (CPU (h_vbit))) : (index == COND_GT) ? (ANDBI (NOTBI (CPU (h_zbit)), EQBI (CPU (h_nbit), CPU (h_vbit)))) : (index == COND_GE) ? (EQBI (CPU (h_nbit), CPU (h_vbit))) : (index == COND_LT) ? (NEBI (CPU (h_nbit), CPU (h_vbit))) : (index == COND_LE) ? (ORBI (CPU (h_zbit), NEBI (CPU (h_nbit), CPU (h_vbit)))) : (index == COND_HI) ? (ANDBI (NOTBI (CPU (h_cbit)), NOTBI (CPU (h_zbit)))) : (index == COND_LS) ? (ORBI (CPU (h_cbit), CPU (h_zbit))) : (index == COND_PNZ) ? (ANDBI (NOTBI (CPU (h_nbit)), NOTBI (CPU (h_zbit)))) : ((cgen_rtx_error (current_cpu, "invalid insn"), 1))
 #define SET_H_QCONDB(index, x) \
 do { \
 ((void) 0); /*nop*/\
 ;} while (0)
-#define GET_H_QCONDJ(index) (index == COND_AL) ? (1) : (index == COND_EQ) ? (CPU (h_zbit)) : (index == COND_NE) ? (NOTBI (CPU (h_zbit))) : (index == COND_PL) ? (NOTBI (CPU (h_nbit))) : (index == COND_MI) ? (CPU (h_nbit)) : (index == COND_CS) ? (CPU (h_cbit)) : (index == COND_CC) ? (NOTBI (CPU (h_cbit))) : (index == COND_VS) ? (CPU (h_vbit)) : (index == COND_VC) ? (NOTBI (CPU (h_vbit))) : (index == COND_GT) ? (ANDBI (NOTBI (CPU (h_zbit)), EQBI (CPU (h_nbit), CPU (h_vbit)))) : (index == COND_GE) ? (EQBI (CPU (h_nbit), CPU (h_vbit))) : (index == COND_LT) ? (NEBI (CPU (h_nbit), CPU (h_vbit))) : (index == COND_LE) ? (ORBI (CPU (h_zbit), NEBI (CPU (h_nbit), CPU (h_vbit)))) : (index == COND_HI) ? (ANDBI (NOTBI (CPU (h_cbit)), NOTBI (CPU (h_zbit)))) : (index == COND_LS) ? (ORBI (CPU (h_cbit), CPU (h_zbit))) : (index == COND_PNZ) ? (ANDBI (NOTBI (CPU (h_nbit)), NOTBI (CPU (h_zbit)))) : (((cgen_rtx_error (current_cpu, "invalid insn"), 0), 1))
+#define GET_H_QCONDJ(index) (index == COND_AL) ? (1) : (index == COND_EQ) ? (CPU (h_zbit)) : (index == COND_NE) ? (NOTBI (CPU (h_zbit))) : (index == COND_PL) ? (NOTBI (CPU (h_nbit))) : (index == COND_MI) ? (CPU (h_nbit)) : (index == COND_CS) ? (CPU (h_cbit)) : (index == COND_CC) ? (NOTBI (CPU (h_cbit))) : (index == COND_VS) ? (CPU (h_vbit)) : (index == COND_VC) ? (NOTBI (CPU (h_vbit))) : (index == COND_GT) ? (ANDBI (NOTBI (CPU (h_zbit)), EQBI (CPU (h_nbit), CPU (h_vbit)))) : (index == COND_GE) ? (EQBI (CPU (h_nbit), CPU (h_vbit))) : (index == COND_LT) ? (NEBI (CPU (h_nbit), CPU (h_vbit))) : (index == COND_LE) ? (ORBI (CPU (h_zbit), NEBI (CPU (h_nbit), CPU (h_vbit)))) : (index == COND_HI) ? (ANDBI (NOTBI (CPU (h_cbit)), NOTBI (CPU (h_zbit)))) : (index == COND_LS) ? (ORBI (CPU (h_cbit), CPU (h_zbit))) : (index == COND_PNZ) ? (ANDBI (NOTBI (CPU (h_nbit)), NOTBI (CPU (h_zbit)))) : ((cgen_rtx_error (current_cpu, "invalid insn"), 1))
 #define SET_H_QCONDJ(index, x) \
 do { \
 ((void) 0); /*nop*/\
 ;} while (0)
-#define GET_H_QCONDI(index) (index == COND_AL) ? (1) : (index == COND_EQ) ? (CPU (h_zbit)) : (index == COND_NE) ? (NOTBI (CPU (h_zbit))) : (index == COND_PL) ? (NOTBI (CPU (h_nbit))) : (index == COND_MI) ? (CPU (h_nbit)) : (index == COND_CS) ? (CPU (h_cbit)) : (index == COND_CC) ? (NOTBI (CPU (h_cbit))) : (index == COND_VS) ? (CPU (h_vbit)) : (index == COND_VC) ? (NOTBI (CPU (h_vbit))) : (index == COND_GT) ? (ANDBI (NOTBI (CPU (h_zbit)), EQBI (CPU (h_nbit), CPU (h_vbit)))) : (index == COND_GE) ? (EQBI (CPU (h_nbit), CPU (h_vbit))) : (index == COND_LT) ? (NEBI (CPU (h_nbit), CPU (h_vbit))) : (index == COND_LE) ? (ORBI (CPU (h_zbit), NEBI (CPU (h_nbit), CPU (h_vbit)))) : (index == COND_HI) ? (ANDBI (NOTBI (CPU (h_cbit)), NOTBI (CPU (h_zbit)))) : (index == COND_LS) ? (ORBI (CPU (h_cbit), CPU (h_zbit))) : (index == COND_PNZ) ? (ANDBI (NOTBI (CPU (h_nbit)), NOTBI (CPU (h_zbit)))) : (((cgen_rtx_error (current_cpu, "invalid insn"), 0), 1))
+#define GET_H_QCONDI(index) (index == COND_AL) ? (1) : (index == COND_EQ) ? (CPU (h_zbit)) : (index == COND_NE) ? (NOTBI (CPU (h_zbit))) : (index == COND_PL) ? (NOTBI (CPU (h_nbit))) : (index == COND_MI) ? (CPU (h_nbit)) : (index == COND_CS) ? (CPU (h_cbit)) : (index == COND_CC) ? (NOTBI (CPU (h_cbit))) : (index == COND_VS) ? (CPU (h_vbit)) : (index == COND_VC) ? (NOTBI (CPU (h_vbit))) : (index == COND_GT) ? (ANDBI (NOTBI (CPU (h_zbit)), EQBI (CPU (h_nbit), CPU (h_vbit)))) : (index == COND_GE) ? (EQBI (CPU (h_nbit), CPU (h_vbit))) : (index == COND_LT) ? (NEBI (CPU (h_nbit), CPU (h_vbit))) : (index == COND_LE) ? (ORBI (CPU (h_zbit), NEBI (CPU (h_nbit), CPU (h_vbit)))) : (index == COND_HI) ? (ANDBI (NOTBI (CPU (h_cbit)), NOTBI (CPU (h_zbit)))) : (index == COND_LS) ? (ORBI (CPU (h_cbit), CPU (h_zbit))) : (index == COND_PNZ) ? (ANDBI (NOTBI (CPU (h_nbit)), NOTBI (CPU (h_zbit)))) : ((cgen_rtx_error (current_cpu, "invalid insn"), 1))
 #define SET_H_QCONDI(index, x) \
 do { \
 ((void) 0); /*nop*/\
@@ -215,7 +226,8 @@ CPU (h_cr[((UINT) 28)]) = (x);\
 #define GET_H_PCL(index) CPU (h_cr[((UINT) 63)])
 #define SET_H_PCL(index, x) \
 do { \
-(cgen_rtx_error (current_cpu, "invalid insn"), 0);} while (0)
+cgen_rtx_error (current_cpu, "invalid insn");\
+;} while (0)
 #define GET_H_NOILINK(index) CPU (h_cr[index])
 #define SET_H_NOILINK(index, x) \
 do { \
@@ -318,7 +330,7 @@ typedef struct {
 union sem_fields {
   struct { /* no operands */
     int empty;
-  } fmt_empty;
+  } sfmt_empty;
   struct { /*  */
     UINT f_trapnum;
   } sfmt_trap_s;
@@ -533,7 +545,7 @@ struct scache {
   length = 4; \
   f_opm = EXTRACT_MSB0_UINT (insn, 32, 0, 5); \
   f_cond_i2 = EXTRACT_MSB0_UINT (insn, 32, 5, 2); \
-  f_rel10 = ((((EXTRACT_MSB0_INT (insn, 32, 7, 9)) << (1))) + (((pc) & (-4)))); \
+  f_rel10 = ((((EXTRACT_MSB0_SINT (insn, 32, 7, 9)) << (1))) + (((pc) & (-4)))); \
   f_dummy = EXTRACT_MSB0_UINT (insn, 32, 16, 16); \
 
 #define EXTRACT_IFMT_BCC_S_VARS \
@@ -548,7 +560,7 @@ struct scache {
   f_opm = EXTRACT_MSB0_UINT (insn, 32, 0, 5); \
   f_cond_i2 = EXTRACT_MSB0_UINT (insn, 32, 5, 2); \
   f_cond_i3 = EXTRACT_MSB0_UINT (insn, 32, 7, 3); \
-  f_rel7 = ((((EXTRACT_MSB0_INT (insn, 32, 10, 6)) << (1))) + (((pc) & (-4)))); \
+  f_rel7 = ((((EXTRACT_MSB0_SINT (insn, 32, 10, 6)) << (1))) + (((pc) & (-4)))); \
   f_dummy = EXTRACT_MSB0_UINT (insn, 32, 16, 16); \
 
 #define EXTRACT_IFMT_BRCC_S_VARS \
@@ -563,7 +575,7 @@ struct scache {
   f_opm = EXTRACT_MSB0_UINT (insn, 32, 0, 5); \
   f_op__b = EXTRACT_MSB0_UINT (insn, 32, 5, 3); \
   f_brscond = EXTRACT_MSB0_UINT (insn, 32, 8, 1); \
-  f_rel8 = ((((EXTRACT_MSB0_INT (insn, 32, 9, 7)) << (1))) + (((pc) & (-4)))); \
+  f_rel8 = ((((EXTRACT_MSB0_SINT (insn, 32, 9, 7)) << (1))) + (((pc) & (-4)))); \
   f_dummy = EXTRACT_MSB0_UINT (insn, 32, 16, 16); \
 
 #define EXTRACT_IFMT_BCC_L_VARS \
@@ -579,7 +591,7 @@ struct scache {
   length = 4; \
   f_opm = EXTRACT_MSB0_UINT (insn, 32, 0, 5); \
   f_d21l = EXTRACT_MSB0_UINT (insn, 32, 5, 10); \
-  f_d21h = EXTRACT_MSB0_INT (insn, 32, 16, 10); \
+  f_d21h = EXTRACT_MSB0_SINT (insn, 32, 16, 10); \
 {\
   f_rel21 = ((((((f_d21l) << (1))) | (((f_d21h) << (11))))) + (((pc) & (-4))));\
 }\
@@ -602,7 +614,7 @@ struct scache {
   f_opm = EXTRACT_MSB0_UINT (insn, 32, 0, 5); \
   f_d21l = EXTRACT_MSB0_UINT (insn, 32, 5, 10); \
   f_d25m = EXTRACT_MSB0_UINT (insn, 32, 16, 10); \
-  f_d25h = EXTRACT_MSB0_INT (insn, 32, 28, 4); \
+  f_d25h = EXTRACT_MSB0_SINT (insn, 32, 28, 4); \
 {\
   f_rel25 = ((((((((f_d21l) << (1))) | (((f_d25m) << (11))))) | (((f_d25h) << (21))))) + (((pc) & (-4))));\
 }\
@@ -633,7 +645,7 @@ struct scache {
   f_op_B = ((f_op__b) | (((f_B_5_3) << (3))));\
 }\
   f_d9l = EXTRACT_MSB0_UINT (insn, 32, 8, 7); \
-  f_d9h = EXTRACT_MSB0_INT (insn, 32, 16, 1); \
+  f_d9h = EXTRACT_MSB0_SINT (insn, 32, 16, 1); \
 {\
   f_rel9 = ((((((f_d9l) << (1))) | (((f_d9h) << (8))))) + (((pc) & (-4))));\
 }\
@@ -666,7 +678,7 @@ struct scache {
   f_op_B = ((f_op__b) | (((f_B_5_3) << (3))));\
 }\
   f_d9l = EXTRACT_MSB0_UINT (insn, 32, 8, 7); \
-  f_d9h = EXTRACT_MSB0_INT (insn, 32, 16, 1); \
+  f_d9h = EXTRACT_MSB0_SINT (insn, 32, 16, 1); \
 {\
   f_rel9 = ((((((f_d9l) << (1))) | (((f_d9h) << (8))))) + (((pc) & (-4))));\
 }\
@@ -684,7 +696,7 @@ struct scache {
 #define EXTRACT_IFMT_BL_S_CODE \
   length = 4; \
   f_opm = EXTRACT_MSB0_UINT (insn, 32, 0, 5); \
-  f_rel13bl = ((((EXTRACT_MSB0_INT (insn, 32, 5, 11)) << (2))) + (((pc) & (-4)))); \
+  f_rel13bl = ((((EXTRACT_MSB0_SINT (insn, 32, 5, 11)) << (2))) + (((pc) & (-4)))); \
   f_dummy = EXTRACT_MSB0_UINT (insn, 32, 16, 16); \
 
 #define EXTRACT_IFMT_BLCC_VARS \
@@ -701,7 +713,7 @@ struct scache {
   length = 4; \
   f_opm = EXTRACT_MSB0_UINT (insn, 32, 0, 5); \
   f_d21bl = EXTRACT_MSB0_UINT (insn, 32, 5, 9); \
-  f_d21h = EXTRACT_MSB0_INT (insn, 32, 16, 10); \
+  f_d21h = EXTRACT_MSB0_SINT (insn, 32, 16, 10); \
 {\
   f_rel21bl = ((((((f_d21bl) << (2))) | (((f_d21h) << (11))))) + (((pc) & (-4))));\
 }\
@@ -726,7 +738,7 @@ struct scache {
   f_opm = EXTRACT_MSB0_UINT (insn, 32, 0, 5); \
   f_d21bl = EXTRACT_MSB0_UINT (insn, 32, 5, 9); \
   f_d25m = EXTRACT_MSB0_UINT (insn, 32, 16, 10); \
-  f_d25h = EXTRACT_MSB0_INT (insn, 32, 28, 4); \
+  f_d25h = EXTRACT_MSB0_SINT (insn, 32, 28, 4); \
 {\
   f_rel25bl = ((((((((f_d21bl) << (2))) | (((f_d25m) << (11))))) | (((f_d25h) << (21))))) + (((pc) & (-4))));\
 }\
@@ -757,7 +769,7 @@ struct scache {
   f_op_B = ((f_op__b) | (((f_B_5_3) << (3))));\
 }\
   f_u8 = EXTRACT_MSB0_UINT (insn, 32, 8, 8); \
-  f_d9h = EXTRACT_MSB0_INT (insn, 32, 16, 1); \
+  f_d9h = EXTRACT_MSB0_SINT (insn, 32, 16, 1); \
 {\
   f_s9 = ((f_u8) | (((f_d9h) << (8))));\
 }\
@@ -848,7 +860,7 @@ struct scache {
   length = 4; \
   f_opm = EXTRACT_MSB0_UINT (insn, 32, 0, 5); \
   f_i16_gp_type = EXTRACT_MSB0_UINT (insn, 32, 5, 2); \
-  f_s9x4 = ((EXTRACT_MSB0_INT (insn, 32, 7, 9)) << (2)); \
+  f_s9x4 = ((EXTRACT_MSB0_SINT (insn, 32, 7, 9)) << (2)); \
   f_dummy = EXTRACT_MSB0_UINT (insn, 32, 16, 16); \
 
 #define EXTRACT_IFMT_LD_S_PCREL_VARS \
@@ -889,7 +901,7 @@ struct scache {
   length = 4; \
   f_opm = EXTRACT_MSB0_UINT (insn, 32, 0, 5); \
   f_i16_gp_type = EXTRACT_MSB0_UINT (insn, 32, 5, 2); \
-  f_s9x1 = EXTRACT_MSB0_INT (insn, 32, 7, 9); \
+  f_s9x1 = EXTRACT_MSB0_SINT (insn, 32, 7, 9); \
   f_dummy = EXTRACT_MSB0_UINT (insn, 32, 16, 16); \
 
 #define EXTRACT_IFMT_LDW_S_ABU_VARS \
@@ -917,7 +929,7 @@ struct scache {
   length = 4; \
   f_opm = EXTRACT_MSB0_UINT (insn, 32, 0, 5); \
   f_i16_gp_type = EXTRACT_MSB0_UINT (insn, 32, 5, 2); \
-  f_s9x2 = ((EXTRACT_MSB0_INT (insn, 32, 7, 9)) << (1)); \
+  f_s9x2 = ((EXTRACT_MSB0_SINT (insn, 32, 7, 9)) << (1)); \
   f_dummy = EXTRACT_MSB0_UINT (insn, 32, 16, 16); \
 
 #define EXTRACT_IFMT_ST_ABS_VARS \
@@ -942,7 +954,7 @@ struct scache {
   f_op_B = ((f_op__b) | (((f_B_5_3) << (3))));\
 }\
   f_u8 = EXTRACT_MSB0_UINT (insn, 32, 8, 8); \
-  f_d9h = EXTRACT_MSB0_INT (insn, 32, 16, 1); \
+  f_d9h = EXTRACT_MSB0_SINT (insn, 32, 16, 1); \
 {\
   f_s9 = ((f_u8) | (((f_d9h) << (8))));\
 }\
@@ -975,7 +987,7 @@ struct scache {
   f_go_op = EXTRACT_MSB0_UINT (insn, 32, 10, 6); \
   f_F = EXTRACT_MSB0_UINT (insn, 32, 16, 1); \
   f_u6 = EXTRACT_MSB0_UINT (insn, 32, 20, 6); \
-  f_s12h = EXTRACT_MSB0_INT (insn, 32, 26, 6); \
+  f_s12h = EXTRACT_MSB0_SINT (insn, 32, 26, 6); \
 {\
   f_s12 = ((f_u6) | (((f_s12h) << (6))));\
 }\
@@ -1147,7 +1159,7 @@ struct scache {
   length = 4; \
   f_opm = EXTRACT_MSB0_UINT (insn, 32, 0, 5); \
   f_i16_gp_type = EXTRACT_MSB0_UINT (insn, 32, 5, 2); \
-  f_s9x4 = ((EXTRACT_MSB0_INT (insn, 32, 7, 9)) << (2)); \
+  f_s9x4 = ((EXTRACT_MSB0_SINT (insn, 32, 7, 9)) << (2)); \
   f_dummy = EXTRACT_MSB0_UINT (insn, 32, 16, 16); \
 
 #define EXTRACT_IFMT_ADD_S_R_U7_VARS \
@@ -1297,7 +1309,7 @@ struct scache {
   f_go_op = EXTRACT_MSB0_UINT (insn, 32, 10, 6); \
   f_F = EXTRACT_MSB0_UINT (insn, 32, 16, 1); \
   f_u6 = EXTRACT_MSB0_UINT (insn, 32, 20, 6); \
-  f_s12h = EXTRACT_MSB0_INT (insn, 32, 26, 6); \
+  f_s12h = EXTRACT_MSB0_SINT (insn, 32, 26, 6); \
 {\
   f_s12 = ((f_u6) | (((f_s12h) << (6))));\
 }\
@@ -1534,7 +1546,7 @@ struct scache {
   f_go_op = EXTRACT_MSB0_UINT (insn, 32, 10, 6); \
   f_F = EXTRACT_MSB0_UINT (insn, 32, 16, 1); \
   f_u6 = EXTRACT_MSB0_UINT (insn, 32, 20, 6); \
-  f_s12h = EXTRACT_MSB0_INT (insn, 32, 26, 6); \
+  f_s12h = EXTRACT_MSB0_SINT (insn, 32, 26, 6); \
 {\
   f_s12 = ((f_u6) | (((f_s12h) << (6))));\
 }\
@@ -1682,7 +1694,7 @@ struct scache {
   f_go_op = EXTRACT_MSB0_UINT (insn, 32, 10, 6); \
   f_F = EXTRACT_MSB0_UINT (insn, 32, 16, 1); \
   f_u6 = EXTRACT_MSB0_UINT (insn, 32, 20, 6); \
-  f_s12h = EXTRACT_MSB0_INT (insn, 32, 26, 6); \
+  f_s12h = EXTRACT_MSB0_SINT (insn, 32, 26, 6); \
 {\
   f_s12x2 = ((((f_u6) << (1))) | (((f_s12h) << (7))));\
 }\
@@ -1763,7 +1775,7 @@ struct scache {
   f_go_op = EXTRACT_MSB0_UINT (insn, 32, 10, 6); \
   f_F = EXTRACT_MSB0_UINT (insn, 32, 16, 1); \
   f_u6 = EXTRACT_MSB0_UINT (insn, 32, 20, 6); \
-  f_s12h = EXTRACT_MSB0_INT (insn, 32, 26, 6); \
+  f_s12h = EXTRACT_MSB0_SINT (insn, 32, 26, 6); \
 {\
   f_s12 = ((f_u6) | (((f_s12h) << (6))));\
 }\
