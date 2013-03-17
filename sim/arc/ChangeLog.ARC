@@ -1,3 +1,12 @@
+2013-03-17  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* Makefile.in: Merge from;
+	Customer-Projects/synopsys/arc_gnu/branches/arc_gnu_4.8/srcw-20120503.
+	* arc5.c, arc6.c, arc7.c, configure.ac, sim-if.c, sim-main.h: Likewise.
+	* traps.c: Likewise.
+	* arch.h, cpu5.h, cpu6.h, cpu7.h, configure: Regenerate.
+	* arch.c, cpu5.c, cpu6.c, cpu7.c: Likewise.
+
 2013-01-08  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* decode5.c, decode6.c, decode7.c: Replace EXTRACT_MSB0_INT with

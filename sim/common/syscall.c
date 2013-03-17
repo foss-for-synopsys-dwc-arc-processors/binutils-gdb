@@ -110,7 +110,8 @@ cb_get_string (cb, sc, buf, buflen, addr)
    simulator_sysroot if the string starts with '/'.
    If an error occurs, no buffer is left malloc'd.  */
 
-static int
+extern int get_path (host_callback *cb, CB_SYSCALL *sc, TADDR, char **bufp);
+int
 get_path (cb, sc, addr, bufp)
      host_callback *cb;
      CB_SYSCALL *sc;
