@@ -1,3 +1,23 @@
+2013-03-17  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* arc-opc.c, arc-dis.c, arc-dis.h: Rename to:
+	* arc-opc-old.c, arc-dis-old.c, arc-dis-old.h.
+	* arc-dis-old.c, arcompact-dis.c: Reflect header file name change.
+	* arc-opc-cgen.c, arc-dis-cgen.c, arc-dis-cgen.h: Delete.
+	* arc-opc.c, arc-dis.c, arc-dis.h: Autogenerate with CGEN.
+	* Makefile.am (HFILES): Add arc-desch and arc-opc.h.
+	(TARGET_LIBOPCODES_CFILES): Add arc-asm.c, arc-desc.c, arc-dis-old.c,
+	arc-ibld.c, arc-opinst.c.
+	(CLEANFILES): Add stamp-arc.
+	(CGEN_CPUS): Add arc.
+	(ARC_DEPS): New rule.
+	($(srcdir)/arc-desc.h $(srcdir)/arc-desc.c $(srcdir)/arc-opc.h
+	 $(srcdir)/arc-opc.c $(srcdir)/arc-ibld.c $(srcdir)/arc-opinst.c
+	 $(srcdir)/arc-asm.c $(srcdir)/arc-dis.c): Likewise.
+	 (stamp-arc): Likewise.
+	 * configure.in (bfd_arc_arch): Update file list.
+	 * Makefile.in, configure: Regenerate.
+
 2013-01-30  Simon Cook  <simon.cook@embecosm.com>
 
 	* arc-opc.c (arc_opcodes): Applied Claudiu Zissulescu's fixes to
