@@ -2,23 +2,23 @@
 
 THIS FILE IS MACHINE GENERATED WITH CGEN.
 
-Copyright 1996-2005 Free Software Foundation, Inc.
+Copyright 1996-2010 Free Software Foundation, Inc.
 
 This file is part of the GNU simulators.
 
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2, or (at your option)
-any later version.
+   This file is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 3, or (at your option)
+   any later version.
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+   It is distributed in the hope that it will be useful, but WITHOUT
+   ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+   or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+   License for more details.
 
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
+   You should have received a copy of the GNU General Public License along
+   with this program; if not, write to the Free Software Foundation, Inc.,
+   51 Franklin Street - Fifth Floor, Boston, MA 02110-1301, USA.
 
 */
 
@@ -30,11 +30,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 #include "cgen-ops.h"
 
 #undef GET_ATTR
-#if defined (__STDC__) || defined (ALMOST_STDC) || defined (HAVE_STRINGIZE)
 #define GET_ATTR(cpu, num, attr) CGEN_ATTR_VALUE (NULL, abuf->idesc->attrs, CGEN_INSN_##attr)
-#else
-#define GET_ATTR(cpu, num, attr) CGEN_ATTR_VALUE (NULL, abuf->idesc->attrs, CGEN_INSN_/**/attr)
-#endif
 
 /* This is used so that we can compile two copies of the semantic code,
    one with full feature support and one without that runs fast(er).
@@ -52,7 +48,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 static SEM_PC
 SEM_FN_NAME (a5f,x_invalid) (SIM_CPU *current_cpu, SEM_ARG sem_arg)
 {
-#define FLD(f) abuf->fields.fmt_empty.f
+#define FLD(f) abuf->fields.sfmt_empty.f
   ARGBUF *abuf = SEM_ARGBUF (sem_arg);
   int UNUSED written = 0;
   IADDR UNUSED pc = abuf->addr;
@@ -79,7 +75,7 @@ SEM_FN_NAME (a5f,x_invalid) (SIM_CPU *current_cpu, SEM_ARG sem_arg)
 static SEM_PC
 SEM_FN_NAME (a5f,x_after) (SIM_CPU *current_cpu, SEM_ARG sem_arg)
 {
-#define FLD(f) abuf->fields.fmt_empty.f
+#define FLD(f) abuf->fields.sfmt_empty.f
   ARGBUF *abuf = SEM_ARGBUF (sem_arg);
   int UNUSED written = 0;
   IADDR UNUSED pc = abuf->addr;
@@ -100,7 +96,7 @@ SEM_FN_NAME (a5f,x_after) (SIM_CPU *current_cpu, SEM_ARG sem_arg)
 static SEM_PC
 SEM_FN_NAME (a5f,x_before) (SIM_CPU *current_cpu, SEM_ARG sem_arg)
 {
-#define FLD(f) abuf->fields.fmt_empty.f
+#define FLD(f) abuf->fields.sfmt_empty.f
   ARGBUF *abuf = SEM_ARGBUF (sem_arg);
   int UNUSED written = 0;
   IADDR UNUSED pc = abuf->addr;
@@ -121,7 +117,7 @@ SEM_FN_NAME (a5f,x_before) (SIM_CPU *current_cpu, SEM_ARG sem_arg)
 static SEM_PC
 SEM_FN_NAME (a5f,x_cti_chain) (SIM_CPU *current_cpu, SEM_ARG sem_arg)
 {
-#define FLD(f) abuf->fields.fmt_empty.f
+#define FLD(f) abuf->fields.sfmt_empty.f
   ARGBUF *abuf = SEM_ARGBUF (sem_arg);
   int UNUSED written = 0;
   IADDR UNUSED pc = abuf->addr;
@@ -151,7 +147,7 @@ SEM_FN_NAME (a5f,x_cti_chain) (SIM_CPU *current_cpu, SEM_ARG sem_arg)
 static SEM_PC
 SEM_FN_NAME (a5f,x_chain) (SIM_CPU *current_cpu, SEM_ARG sem_arg)
 {
-#define FLD(f) abuf->fields.fmt_empty.f
+#define FLD(f) abuf->fields.sfmt_empty.f
   ARGBUF *abuf = SEM_ARGBUF (sem_arg);
   int UNUSED written = 0;
   IADDR UNUSED pc = abuf->addr;
@@ -175,7 +171,7 @@ SEM_FN_NAME (a5f,x_chain) (SIM_CPU *current_cpu, SEM_ARG sem_arg)
 static SEM_PC
 SEM_FN_NAME (a5f,x_begin) (SIM_CPU *current_cpu, SEM_ARG sem_arg)
 {
-#define FLD(f) abuf->fields.fmt_empty.f
+#define FLD(f) abuf->fields.sfmt_empty.f
   ARGBUF *abuf = SEM_ARGBUF (sem_arg);
   int UNUSED written = 0;
   IADDR UNUSED pc = abuf->addr;
@@ -1746,7 +1742,7 @@ if (ANDIF (GESI (SUBSI (CPU_INSN_COUNT (current_cpu), CPU (h_timer_expire[((UINT
   {
     SI opval = SUBSI (CPU_INSN_COUNT (current_cpu), CPU (h_timer_expire[((UINT) 0)]));
     SET_H_AUXR (((UINT) 33), opval);
-    written |= (1 << 12);
+    written |= (1 << 13);
     TRACE_RESULT (current_cpu, abuf, "auxr", 'x', opval);
   }
 if (CPU (h_ubit)) {
@@ -1759,22 +1755,33 @@ if (tmp_count) {
   {
     UHI opval = tmp_count;
     SETMEMUHI (current_cpu, pc, tmp_countp, opval);
-    written |= (1 << 16);
+    written |= (1 << 17);
     TRACE_RESULT (current_cpu, abuf, "memory", 'x', opval);
   }
 }
 {
+  HI tmp_nword;
+  tmp_nword = GETMEMHI (current_cpu, pc, ADDSI (pc, 4));
+if (ANDHI (ANDHI (tmp_nword, SRAHI (tmp_nword, 1)), 40960)) {
+  {
+    SI opval = ADDSI (pc, 6);
+    SET_H_CR (((UINT) 31), opval);
+    written |= (1 << 15);
+    TRACE_RESULT (current_cpu, abuf, "cr", 'x', opval);
+  }
+} else {
   {
     SI opval = ADDSI (pc, 8);
     SET_H_CR (((UINT) 31), opval);
-    written |= (1 << 14);
+    written |= (1 << 15);
     TRACE_RESULT (current_cpu, abuf, "cr", 'x', opval);
   }
+}
 {
   {
     USI opval = FLD (i_label21a);
     SEM_BRANCH_VIA_CACHE (current_cpu, sem_arg, opval, vpc);
-    written |= (1 << 17);
+    written |= (1 << 18);
     TRACE_RESULT (current_cpu, abuf, "pc", 'x', opval);
   }
 }
@@ -1783,17 +1790,28 @@ if (tmp_count) {
 }
  else if (1) {
 {
+  HI tmp_nword;
+  tmp_nword = GETMEMHI (current_cpu, pc, ADDSI (pc, 4));
+if (ANDHI (ANDHI (tmp_nword, SRAHI (tmp_nword, 1)), 40960)) {
+  {
+    SI opval = ADDSI (pc, 6);
+    SET_H_CR (((UINT) 31), opval);
+    written |= (1 << 15);
+    TRACE_RESULT (current_cpu, abuf, "cr", 'x', opval);
+  }
+} else {
   {
     SI opval = ADDSI (pc, 8);
     SET_H_CR (((UINT) 31), opval);
-    written |= (1 << 14);
+    written |= (1 << 15);
     TRACE_RESULT (current_cpu, abuf, "cr", 'x', opval);
   }
+}
 {
   {
     USI opval = FLD (i_label21a);
     SEM_BRANCH_VIA_CACHE (current_cpu, sem_arg, opval, vpc);
-    written |= (1 << 17);
+    written |= (1 << 18);
     TRACE_RESULT (current_cpu, abuf, "pc", 'x', opval);
   }
 }
@@ -1804,25 +1822,25 @@ if (tmp_count) {
   {
     SI opval = pc;
     SET_H_CR (((UINT) 29), opval);
-    written |= (1 << 13);
+    written |= (1 << 14);
     TRACE_RESULT (current_cpu, abuf, "cr", 'x', opval);
   }
   {
     SI opval = GET_H_STATUS32 (((UINT) 0));
     SET_H_AUXR (((UINT) 11), opval);
-    written |= (1 << 11);
+    written |= (1 << 12);
     TRACE_RESULT (current_cpu, abuf, "auxr", 'x', opval);
   }
   {
     BI opval = 0;
     CPU (h_e1) = opval;
-    written |= (1 << 15);
+    written |= (1 << 16);
     TRACE_RESULT (current_cpu, abuf, "e1", 'x', opval);
   }
   {
     USI opval = ADDSI (GET_H_AUXR (((UINT) 37)), 24);
     SEM_BRANCH_VIA_ADDR (current_cpu, sem_arg, opval, vpc);
-    written |= (1 << 17);
+    written |= (1 << 18);
     TRACE_RESULT (current_cpu, abuf, "pc", 'x', opval);
   }
 }
@@ -1830,17 +1848,28 @@ if (tmp_count) {
 }
 } else {
 {
+  HI tmp_nword;
+  tmp_nword = GETMEMHI (current_cpu, pc, ADDSI (pc, 4));
+if (ANDHI (ANDHI (tmp_nword, SRAHI (tmp_nword, 1)), 40960)) {
+  {
+    SI opval = ADDSI (pc, 6);
+    SET_H_CR (((UINT) 31), opval);
+    written |= (1 << 15);
+    TRACE_RESULT (current_cpu, abuf, "cr", 'x', opval);
+  }
+} else {
   {
     SI opval = ADDSI (pc, 8);
     SET_H_CR (((UINT) 31), opval);
-    written |= (1 << 14);
+    written |= (1 << 15);
     TRACE_RESULT (current_cpu, abuf, "cr", 'x', opval);
   }
+}
 {
   {
     USI opval = FLD (i_label21a);
     SEM_BRANCH_VIA_CACHE (current_cpu, sem_arg, opval, vpc);
-    written |= (1 << 17);
+    written |= (1 << 18);
     TRACE_RESULT (current_cpu, abuf, "pc", 'x', opval);
   }
 }
@@ -17564,7 +17593,7 @@ if (tmp_count) {
 static SEM_PC
 SEM_FN_NAME (a5f,j_s__S) (SIM_CPU *current_cpu, SEM_ARG sem_arg)
 {
-#define FLD(f) abuf->fields.fmt_empty.f
+#define FLD(f) abuf->fields.sfmt_empty.f
   ARGBUF *abuf = SEM_ARGBUF (sem_arg);
   int UNUSED written = 0;
   IADDR UNUSED pc = abuf->addr;
@@ -17679,7 +17708,7 @@ if (tmp_count) {
 static SEM_PC
 SEM_FN_NAME (a5f,j_seq__S) (SIM_CPU *current_cpu, SEM_ARG sem_arg)
 {
-#define FLD(f) abuf->fields.fmt_empty.f
+#define FLD(f) abuf->fields.sfmt_empty.f
   ARGBUF *abuf = SEM_ARGBUF (sem_arg);
   int UNUSED written = 0;
   IADDR UNUSED pc = abuf->addr;
@@ -17800,7 +17829,7 @@ if (NEBI (CPU (h_zbit), 0)) {
 static SEM_PC
 SEM_FN_NAME (a5f,j_sne__S) (SIM_CPU *current_cpu, SEM_ARG sem_arg)
 {
-#define FLD(f) abuf->fields.fmt_empty.f
+#define FLD(f) abuf->fields.sfmt_empty.f
   ARGBUF *abuf = SEM_ARGBUF (sem_arg);
   int UNUSED written = 0;
   IADDR UNUSED pc = abuf->addr;
@@ -18746,7 +18775,7 @@ if (tmp_count) {
 static SEM_PC
 SEM_FN_NAME (a5f,j_s__S_d) (SIM_CPU *current_cpu, SEM_ARG sem_arg)
 {
-#define FLD(f) abuf->fields.fmt_empty.f
+#define FLD(f) abuf->fields.sfmt_empty.f
   ARGBUF *abuf = SEM_ARGBUF (sem_arg);
   int UNUSED written = 0;
   IADDR UNUSED pc = abuf->addr;
@@ -21598,7 +21627,7 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
 }
 }
   {
-    SI opval = GET_H_AUXR (GET_H_CR (FLD (f_op_C)));
+    SI opval = (EQSI (GET_H_CR (FLD (f_op_C)), 6)) ? (ADDSI (pc, 4)) : (GET_H_AUXR (GET_H_CR (FLD (f_op_C))));
     SET_H_CR (FLD (f_op_B), opval);
     TRACE_RESULT (current_cpu, abuf, "cr", 'x', opval);
   }
@@ -21636,7 +21665,7 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
 }
 }
   {
-    SI opval = GET_H_AUXR (FLD (f_s12));
+    SI opval = (EQSI (FLD (f_s12), 6)) ? (ADDSI (pc, 4)) : (GET_H_AUXR (FLD (f_s12)));
     SET_H_CR (FLD (f_op_B), opval);
     TRACE_RESULT (current_cpu, abuf, "cr", 'x', opval);
   }
@@ -21674,7 +21703,7 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
 }
 }
   {
-    SI opval = GET_H_AUXR (FLD (f_u6));
+    SI opval = (EQSI (FLD (f_u6), 6)) ? (ADDSI (pc, 4)) : (GET_H_AUXR (FLD (f_u6)));
     SET_H_CR (FLD (f_op_B), opval);
     TRACE_RESULT (current_cpu, abuf, "cr", 'x', opval);
   }
@@ -23629,7 +23658,7 @@ SEM_FN_NAME (a5f,I16_GO_NEG_s_go) (SIM_CPU *current_cpu, SEM_ARG sem_arg)
 static SEM_PC
 SEM_FN_NAME (a5f,swi) (SIM_CPU *current_cpu, SEM_ARG sem_arg)
 {
-#define FLD(f) abuf->fields.fmt_empty.f
+#define FLD(f) abuf->fields.sfmt_empty.f
   ARGBUF *abuf = SEM_ARGBUF (sem_arg);
   int UNUSED written = 0;
   IADDR UNUSED pc = abuf->addr;
@@ -23835,7 +23864,7 @@ if (tmp_count) {
 static SEM_PC
 SEM_FN_NAME (a5f,brk) (SIM_CPU *current_cpu, SEM_ARG sem_arg)
 {
-#define FLD(f) abuf->fields.fmt_empty.f
+#define FLD(f) abuf->fields.sfmt_empty.f
   ARGBUF *abuf = SEM_ARGBUF (sem_arg);
   int UNUSED written = 0;
   IADDR UNUSED pc = abuf->addr;
@@ -23852,7 +23881,7 @@ arc_breakpoint (current_cpu, pc, 4);
 static SEM_PC
 SEM_FN_NAME (a5f,brk_s) (SIM_CPU *current_cpu, SEM_ARG sem_arg)
 {
-#define FLD(f) abuf->fields.fmt_empty.f
+#define FLD(f) abuf->fields.sfmt_empty.f
   ARGBUF *abuf = SEM_ARGBUF (sem_arg);
   int UNUSED written = 0;
   IADDR UNUSED pc = abuf->addr;
@@ -26140,7 +26169,10 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
 }
   tmp_result = (0) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (({   DI tmp_tmp;
   tmp_tmp = ADDDI (EXTSIDI (GET_H_CR (FLD (f_op_B))), EXTSIDI (FLD (f_s12)));
-; ((GTDI (tmp_tmp, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_tmp)); }));
+; ((GTDI (tmp_tmp, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_tmp; })); }));
 if (FLD (f_F)) {
 {
 {
@@ -26233,7 +26265,10 @@ if (GET_H_QCONDB (FLD (f_cond_Q))) {
 ((void) 0); /*nop*/
   tmp_result = (0) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (({   DI tmp_tmp;
   tmp_tmp = ADDDI (EXTSIDI (GET_H_CR (FLD (f_op_B))), EXTSIDI (FLD (f_u6)));
-; ((GTDI (tmp_tmp, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_tmp)); }));
+; ((GTDI (tmp_tmp, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_tmp; })); }));
 if (FLD (f_F)) {
 {
 {
@@ -26326,7 +26361,10 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
 }
   tmp_result = (0) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (({   DI tmp_tmp;
   tmp_tmp = ADDDI (EXTSIDI (GET_H_CR (FLD (f_op_B))), EXTSIDI (FLD (f_u6)));
-; ((GTDI (tmp_tmp, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_tmp)); }));
+; ((GTDI (tmp_tmp, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_tmp; })); }));
 if (FLD (f_F)) {
 {
 {
@@ -26416,7 +26454,10 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
 }
   tmp_result = (0) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (({   DI tmp_tmp;
   tmp_tmp = ADDDI (EXTSIDI (GET_H_CR (FLD (f_op_B))), EXTSIDI (GET_H_CR (FLD (f_op_C))));
-; ((GTDI (tmp_tmp, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_tmp)); }));
+; ((GTDI (tmp_tmp, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_tmp; })); }));
 if (FLD (f_F)) {
 {
 {
@@ -26509,7 +26550,10 @@ if (GET_H_QCONDB (FLD (f_cond_Q))) {
 ((void) 0); /*nop*/
   tmp_result = (0) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (({   DI tmp_tmp;
   tmp_tmp = ADDDI (EXTSIDI (GET_H_CR (FLD (f_op_B))), EXTSIDI (GET_H_CR (FLD (f_op_C))));
-; ((GTDI (tmp_tmp, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_tmp)); }));
+; ((GTDI (tmp_tmp, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_tmp; })); }));
 if (FLD (f_F)) {
 {
 {
@@ -26602,7 +26646,10 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
 }
   tmp_result = (0) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (({   DI tmp_tmp;
   tmp_tmp = SUBDI (EXTSIDI (GET_H_CR (FLD (f_op_B))), EXTSIDI (FLD (f_s12)));
-; ((GTDI (tmp_tmp, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_tmp)); }));
+; ((GTDI (tmp_tmp, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_tmp; })); }));
 if (FLD (f_F)) {
 {
 {
@@ -26695,7 +26742,10 @@ if (GET_H_QCONDB (FLD (f_cond_Q))) {
 ((void) 0); /*nop*/
   tmp_result = (0) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (({   DI tmp_tmp;
   tmp_tmp = SUBDI (EXTSIDI (GET_H_CR (FLD (f_op_B))), EXTSIDI (FLD (f_u6)));
-; ((GTDI (tmp_tmp, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_tmp)); }));
+; ((GTDI (tmp_tmp, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_tmp; })); }));
 if (FLD (f_F)) {
 {
 {
@@ -26788,7 +26838,10 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
 }
   tmp_result = (0) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (({   DI tmp_tmp;
   tmp_tmp = SUBDI (EXTSIDI (GET_H_CR (FLD (f_op_B))), EXTSIDI (FLD (f_u6)));
-; ((GTDI (tmp_tmp, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_tmp)); }));
+; ((GTDI (tmp_tmp, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_tmp; })); }));
 if (FLD (f_F)) {
 {
 {
@@ -26878,7 +26931,10 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
 }
   tmp_result = (0) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (({   DI tmp_tmp;
   tmp_tmp = SUBDI (EXTSIDI (GET_H_CR (FLD (f_op_B))), EXTSIDI (GET_H_CR (FLD (f_op_C))));
-; ((GTDI (tmp_tmp, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_tmp)); }));
+; ((GTDI (tmp_tmp, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_tmp; })); }));
 if (FLD (f_F)) {
 {
 {
@@ -26971,7 +27027,10 @@ if (GET_H_QCONDB (FLD (f_cond_Q))) {
 ((void) 0); /*nop*/
   tmp_result = (0) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (({   DI tmp_tmp;
   tmp_tmp = SUBDI (EXTSIDI (GET_H_CR (FLD (f_op_B))), EXTSIDI (GET_H_CR (FLD (f_op_C))));
-; ((GTDI (tmp_tmp, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_tmp)); }));
+; ((GTDI (tmp_tmp, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_tmp; })); }));
 if (FLD (f_F)) {
 {
 {
@@ -27309,7 +27368,10 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
   tmp_result = (0) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (({   DI tmp_b;
   tmp_b = EXTSIDI (GET_H_CR (FLD (f_op_B)));
 ;   tmp_b = (EQDI (tmp_b, 0)) ? (0) : (GTSI ((FLD (f_s12)), 31)) ? (SLLDI (tmp_b, 31)) : (LTSI ((FLD (f_s12)), -31)) ? (SRADI (tmp_b, 31)) : (GESI ((FLD (f_s12)), 0)) ? (SLLDI (tmp_b, (FLD (f_s12)))) : (SRASI (GET_H_CR (FLD (f_op_B)), NEGSI ((FLD (f_s12)))));
-; ((GTDI (tmp_b, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_b, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_b)); }));
+; ((GTDI (tmp_b, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_b, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_b; })); }));
 if (FLD (f_F)) {
 {
 {
@@ -27395,7 +27457,10 @@ if (GET_H_QCONDB (FLD (f_cond_Q))) {
   tmp_result = (0) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (({   DI tmp_b;
   tmp_b = EXTSIDI (GET_H_CR (FLD (f_op_B)));
 ;   tmp_b = (EQDI (tmp_b, 0)) ? (0) : (GTSI ((FLD (f_u6)), 31)) ? (SLLDI (tmp_b, 31)) : (LTSI ((FLD (f_u6)), -31)) ? (SRADI (tmp_b, 31)) : (GESI ((FLD (f_u6)), 0)) ? (SLLDI (tmp_b, (FLD (f_u6)))) : (SRASI (GET_H_CR (FLD (f_op_B)), NEGSI ((FLD (f_u6)))));
-; ((GTDI (tmp_b, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_b, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_b)); }));
+; ((GTDI (tmp_b, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_b, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_b; })); }));
 if (FLD (f_F)) {
 {
 {
@@ -27481,7 +27546,10 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
   tmp_result = (0) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (({   DI tmp_b;
   tmp_b = EXTSIDI (GET_H_CR (FLD (f_op_B)));
 ;   tmp_b = (EQDI (tmp_b, 0)) ? (0) : (GTSI ((FLD (f_u6)), 31)) ? (SLLDI (tmp_b, 31)) : (LTSI ((FLD (f_u6)), -31)) ? (SRADI (tmp_b, 31)) : (GESI ((FLD (f_u6)), 0)) ? (SLLDI (tmp_b, (FLD (f_u6)))) : (SRASI (GET_H_CR (FLD (f_op_B)), NEGSI ((FLD (f_u6)))));
-; ((GTDI (tmp_b, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_b, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_b)); }));
+; ((GTDI (tmp_b, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_b, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_b; })); }));
 if (FLD (f_F)) {
 {
 {
@@ -27564,7 +27632,10 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
   tmp_result = (0) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (({   DI tmp_b;
   tmp_b = EXTSIDI (GET_H_CR (FLD (f_op_B)));
 ;   tmp_b = (EQDI (tmp_b, 0)) ? (0) : (GTSI ((GET_H_CR (FLD (f_op_C))), 31)) ? (SLLDI (tmp_b, 31)) : (LTSI ((GET_H_CR (FLD (f_op_C))), -31)) ? (SRADI (tmp_b, 31)) : (GESI ((GET_H_CR (FLD (f_op_C))), 0)) ? (SLLDI (tmp_b, (GET_H_CR (FLD (f_op_C))))) : (SRASI (GET_H_CR (FLD (f_op_B)), NEGSI ((GET_H_CR (FLD (f_op_C))))));
-; ((GTDI (tmp_b, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_b, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_b)); }));
+; ((GTDI (tmp_b, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_b, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_b; })); }));
 if (FLD (f_F)) {
 {
 {
@@ -27650,7 +27721,10 @@ if (GET_H_QCONDB (FLD (f_cond_Q))) {
   tmp_result = (0) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (({   DI tmp_b;
   tmp_b = EXTSIDI (GET_H_CR (FLD (f_op_B)));
 ;   tmp_b = (EQDI (tmp_b, 0)) ? (0) : (GTSI ((GET_H_CR (FLD (f_op_C))), 31)) ? (SLLDI (tmp_b, 31)) : (LTSI ((GET_H_CR (FLD (f_op_C))), -31)) ? (SRADI (tmp_b, 31)) : (GESI ((GET_H_CR (FLD (f_op_C))), 0)) ? (SLLDI (tmp_b, (GET_H_CR (FLD (f_op_C))))) : (SRASI (GET_H_CR (FLD (f_op_B)), NEGSI ((GET_H_CR (FLD (f_op_C))))));
-; ((GTDI (tmp_b, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_b, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_b)); }));
+; ((GTDI (tmp_b, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_b, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_b; })); }));
 if (FLD (f_F)) {
 {
 {
@@ -27736,7 +27810,10 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
   tmp_result = (0) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (({   DI tmp_b;
   tmp_b = EXTSIDI (GET_H_CR (FLD (f_op_B)));
 ;   tmp_b = (EQDI (tmp_b, 0)) ? (0) : (GTSI ((FLD (f_s12)), 31)) ? (SRADI (tmp_b, 31)) : (LTSI ((FLD (f_s12)), -31)) ? (SLLDI (tmp_b, 31)) : (GESI ((FLD (f_s12)), 0)) ? (SRADI (tmp_b, (FLD (f_s12)))) : (SLLSI (GET_H_CR (FLD (f_op_B)), NEGSI ((FLD (f_s12)))));
-; ((GTDI (tmp_b, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_b, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_b)); }));
+; ((GTDI (tmp_b, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_b, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_b; })); }));
 if (FLD (f_F)) {
 {
 {
@@ -27822,7 +27899,10 @@ if (GET_H_QCONDB (FLD (f_cond_Q))) {
   tmp_result = (0) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (({   DI tmp_b;
   tmp_b = EXTSIDI (GET_H_CR (FLD (f_op_B)));
 ;   tmp_b = (EQDI (tmp_b, 0)) ? (0) : (GTSI ((FLD (f_u6)), 31)) ? (SRADI (tmp_b, 31)) : (LTSI ((FLD (f_u6)), -31)) ? (SLLDI (tmp_b, 31)) : (GESI ((FLD (f_u6)), 0)) ? (SRADI (tmp_b, (FLD (f_u6)))) : (SLLSI (GET_H_CR (FLD (f_op_B)), NEGSI ((FLD (f_u6)))));
-; ((GTDI (tmp_b, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_b, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_b)); }));
+; ((GTDI (tmp_b, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_b, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_b; })); }));
 if (FLD (f_F)) {
 {
 {
@@ -27908,7 +27988,10 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
   tmp_result = (0) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (({   DI tmp_b;
   tmp_b = EXTSIDI (GET_H_CR (FLD (f_op_B)));
 ;   tmp_b = (EQDI (tmp_b, 0)) ? (0) : (GTSI ((FLD (f_u6)), 31)) ? (SRADI (tmp_b, 31)) : (LTSI ((FLD (f_u6)), -31)) ? (SLLDI (tmp_b, 31)) : (GESI ((FLD (f_u6)), 0)) ? (SRADI (tmp_b, (FLD (f_u6)))) : (SLLSI (GET_H_CR (FLD (f_op_B)), NEGSI ((FLD (f_u6)))));
-; ((GTDI (tmp_b, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_b, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_b)); }));
+; ((GTDI (tmp_b, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_b, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_b; })); }));
 if (FLD (f_F)) {
 {
 {
@@ -27991,7 +28074,10 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
   tmp_result = (0) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (({   DI tmp_b;
   tmp_b = EXTSIDI (GET_H_CR (FLD (f_op_B)));
 ;   tmp_b = (EQDI (tmp_b, 0)) ? (0) : (GTSI ((GET_H_CR (FLD (f_op_C))), 31)) ? (SRADI (tmp_b, 31)) : (LTSI ((GET_H_CR (FLD (f_op_C))), -31)) ? (SLLDI (tmp_b, 31)) : (GESI ((GET_H_CR (FLD (f_op_C))), 0)) ? (SRADI (tmp_b, (GET_H_CR (FLD (f_op_C))))) : (SLLSI (GET_H_CR (FLD (f_op_B)), NEGSI ((GET_H_CR (FLD (f_op_C))))));
-; ((GTDI (tmp_b, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_b, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_b)); }));
+; ((GTDI (tmp_b, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_b, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_b; })); }));
 if (FLD (f_F)) {
 {
 {
@@ -28077,7 +28163,10 @@ if (GET_H_QCONDB (FLD (f_cond_Q))) {
   tmp_result = (0) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (({   DI tmp_b;
   tmp_b = EXTSIDI (GET_H_CR (FLD (f_op_B)));
 ;   tmp_b = (EQDI (tmp_b, 0)) ? (0) : (GTSI ((GET_H_CR (FLD (f_op_C))), 31)) ? (SRADI (tmp_b, 31)) : (LTSI ((GET_H_CR (FLD (f_op_C))), -31)) ? (SLLDI (tmp_b, 31)) : (GESI ((GET_H_CR (FLD (f_op_C))), 0)) ? (SRADI (tmp_b, (GET_H_CR (FLD (f_op_C))))) : (SLLSI (GET_H_CR (FLD (f_op_B)), NEGSI ((GET_H_CR (FLD (f_op_C))))));
-; ((GTDI (tmp_b, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_b, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_b)); }));
+; ((GTDI (tmp_b, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_b, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_b; })); }));
 if (FLD (f_F)) {
 {
 {
@@ -28165,11 +28254,15 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
   HI tmp_res2;
   tmp_res2 = ({   SI tmp_tmp;
   tmp_tmp = ADDHI (SUBWORDSIHI (GET_H_CR (FLD (f_op_B)), 1), SUBWORDSIHI ((FLD (f_s12)), 1));
-; (GTSI (tmp_tmp, 32767)) ? (  tmp_cur_s1bit = 1, 32767) : (LTSI (tmp_tmp, -32768)) ? (  tmp_cur_s1bit = 1, -32768) : (tmp_tmp); });
+; (GTSI (tmp_tmp, 32767)) ? ({   tmp_cur_s1bit = 1;
+; 32767; }) : (LTSI (tmp_tmp, -32768)) ? ({   tmp_cur_s1bit = 1;
+; -32768; }) : (tmp_tmp); });
 ;   tmp_cur_s2bit = tmp_cur_s1bit;
 ;   tmp_res1 = ({   SI tmp_tmp;
   tmp_tmp = ADDHI (SUBWORDSIHI (GET_H_CR (FLD (f_op_B)), 0), SUBWORDSIHI ((FLD (f_s12)), 0));
-; (GTSI (tmp_tmp, 32767)) ? (  tmp_cur_s1bit = 1, 32767) : (LTSI (tmp_tmp, -32768)) ? (  tmp_cur_s1bit = 1, -32768) : (tmp_tmp); });
+; (GTSI (tmp_tmp, 32767)) ? ({   tmp_cur_s1bit = 1;
+; 32767; }) : (LTSI (tmp_tmp, -32768)) ? ({   tmp_cur_s1bit = 1;
+; -32768; }) : (tmp_tmp); });
 ; ORHI (SLLHI (tmp_res1, 16), tmp_res2); }));
 if (FLD (f_F)) {
 {
@@ -28260,11 +28353,15 @@ if (GET_H_QCONDB (FLD (f_cond_Q))) {
   HI tmp_res2;
   tmp_res2 = ({   SI tmp_tmp;
   tmp_tmp = ADDHI (SUBWORDSIHI (GET_H_CR (FLD (f_op_B)), 1), SUBWORDSIHI ((FLD (f_u6)), 1));
-; (GTSI (tmp_tmp, 32767)) ? (  tmp_cur_s1bit = 1, 32767) : (LTSI (tmp_tmp, -32768)) ? (  tmp_cur_s1bit = 1, -32768) : (tmp_tmp); });
+; (GTSI (tmp_tmp, 32767)) ? ({   tmp_cur_s1bit = 1;
+; 32767; }) : (LTSI (tmp_tmp, -32768)) ? ({   tmp_cur_s1bit = 1;
+; -32768; }) : (tmp_tmp); });
 ;   tmp_cur_s2bit = tmp_cur_s1bit;
 ;   tmp_res1 = ({   SI tmp_tmp;
   tmp_tmp = ADDHI (SUBWORDSIHI (GET_H_CR (FLD (f_op_B)), 0), SUBWORDSIHI ((FLD (f_u6)), 0));
-; (GTSI (tmp_tmp, 32767)) ? (  tmp_cur_s1bit = 1, 32767) : (LTSI (tmp_tmp, -32768)) ? (  tmp_cur_s1bit = 1, -32768) : (tmp_tmp); });
+; (GTSI (tmp_tmp, 32767)) ? ({   tmp_cur_s1bit = 1;
+; 32767; }) : (LTSI (tmp_tmp, -32768)) ? ({   tmp_cur_s1bit = 1;
+; -32768; }) : (tmp_tmp); });
 ; ORHI (SLLHI (tmp_res1, 16), tmp_res2); }));
 if (FLD (f_F)) {
 {
@@ -28355,11 +28452,15 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
   HI tmp_res2;
   tmp_res2 = ({   SI tmp_tmp;
   tmp_tmp = ADDHI (SUBWORDSIHI (GET_H_CR (FLD (f_op_B)), 1), SUBWORDSIHI ((FLD (f_u6)), 1));
-; (GTSI (tmp_tmp, 32767)) ? (  tmp_cur_s1bit = 1, 32767) : (LTSI (tmp_tmp, -32768)) ? (  tmp_cur_s1bit = 1, -32768) : (tmp_tmp); });
+; (GTSI (tmp_tmp, 32767)) ? ({   tmp_cur_s1bit = 1;
+; 32767; }) : (LTSI (tmp_tmp, -32768)) ? ({   tmp_cur_s1bit = 1;
+; -32768; }) : (tmp_tmp); });
 ;   tmp_cur_s2bit = tmp_cur_s1bit;
 ;   tmp_res1 = ({   SI tmp_tmp;
   tmp_tmp = ADDHI (SUBWORDSIHI (GET_H_CR (FLD (f_op_B)), 0), SUBWORDSIHI ((FLD (f_u6)), 0));
-; (GTSI (tmp_tmp, 32767)) ? (  tmp_cur_s1bit = 1, 32767) : (LTSI (tmp_tmp, -32768)) ? (  tmp_cur_s1bit = 1, -32768) : (tmp_tmp); });
+; (GTSI (tmp_tmp, 32767)) ? ({   tmp_cur_s1bit = 1;
+; 32767; }) : (LTSI (tmp_tmp, -32768)) ? ({   tmp_cur_s1bit = 1;
+; -32768; }) : (tmp_tmp); });
 ; ORHI (SLLHI (tmp_res1, 16), tmp_res2); }));
 if (FLD (f_F)) {
 {
@@ -28447,11 +28548,15 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
   HI tmp_res2;
   tmp_res2 = ({   SI tmp_tmp;
   tmp_tmp = ADDHI (SUBWORDSIHI (GET_H_CR (FLD (f_op_B)), 1), SUBWORDSIHI ((GET_H_CR (FLD (f_op_C))), 1));
-; (GTSI (tmp_tmp, 32767)) ? (  tmp_cur_s1bit = 1, 32767) : (LTSI (tmp_tmp, -32768)) ? (  tmp_cur_s1bit = 1, -32768) : (tmp_tmp); });
+; (GTSI (tmp_tmp, 32767)) ? ({   tmp_cur_s1bit = 1;
+; 32767; }) : (LTSI (tmp_tmp, -32768)) ? ({   tmp_cur_s1bit = 1;
+; -32768; }) : (tmp_tmp); });
 ;   tmp_cur_s2bit = tmp_cur_s1bit;
 ;   tmp_res1 = ({   SI tmp_tmp;
   tmp_tmp = ADDHI (SUBWORDSIHI (GET_H_CR (FLD (f_op_B)), 0), SUBWORDSIHI ((GET_H_CR (FLD (f_op_C))), 0));
-; (GTSI (tmp_tmp, 32767)) ? (  tmp_cur_s1bit = 1, 32767) : (LTSI (tmp_tmp, -32768)) ? (  tmp_cur_s1bit = 1, -32768) : (tmp_tmp); });
+; (GTSI (tmp_tmp, 32767)) ? ({   tmp_cur_s1bit = 1;
+; 32767; }) : (LTSI (tmp_tmp, -32768)) ? ({   tmp_cur_s1bit = 1;
+; -32768; }) : (tmp_tmp); });
 ; ORHI (SLLHI (tmp_res1, 16), tmp_res2); }));
 if (FLD (f_F)) {
 {
@@ -28542,11 +28647,15 @@ if (GET_H_QCONDB (FLD (f_cond_Q))) {
   HI tmp_res2;
   tmp_res2 = ({   SI tmp_tmp;
   tmp_tmp = ADDHI (SUBWORDSIHI (GET_H_CR (FLD (f_op_B)), 1), SUBWORDSIHI ((GET_H_CR (FLD (f_op_C))), 1));
-; (GTSI (tmp_tmp, 32767)) ? (  tmp_cur_s1bit = 1, 32767) : (LTSI (tmp_tmp, -32768)) ? (  tmp_cur_s1bit = 1, -32768) : (tmp_tmp); });
+; (GTSI (tmp_tmp, 32767)) ? ({   tmp_cur_s1bit = 1;
+; 32767; }) : (LTSI (tmp_tmp, -32768)) ? ({   tmp_cur_s1bit = 1;
+; -32768; }) : (tmp_tmp); });
 ;   tmp_cur_s2bit = tmp_cur_s1bit;
 ;   tmp_res1 = ({   SI tmp_tmp;
   tmp_tmp = ADDHI (SUBWORDSIHI (GET_H_CR (FLD (f_op_B)), 0), SUBWORDSIHI ((GET_H_CR (FLD (f_op_C))), 0));
-; (GTSI (tmp_tmp, 32767)) ? (  tmp_cur_s1bit = 1, 32767) : (LTSI (tmp_tmp, -32768)) ? (  tmp_cur_s1bit = 1, -32768) : (tmp_tmp); });
+; (GTSI (tmp_tmp, 32767)) ? ({   tmp_cur_s1bit = 1;
+; 32767; }) : (LTSI (tmp_tmp, -32768)) ? ({   tmp_cur_s1bit = 1;
+; -32768; }) : (tmp_tmp); });
 ; ORHI (SLLHI (tmp_res1, 16), tmp_res2); }));
 if (FLD (f_F)) {
 {
@@ -28637,11 +28746,15 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
   HI tmp_res2;
   tmp_res2 = ({   SI tmp_tmp;
   tmp_tmp = SUBHI (SUBWORDSIHI (GET_H_CR (FLD (f_op_B)), 1), SUBWORDSIHI ((FLD (f_s12)), 1));
-; (GTSI (tmp_tmp, 32767)) ? (  tmp_cur_s1bit = 1, 32767) : (LTSI (tmp_tmp, -32768)) ? (  tmp_cur_s1bit = 1, -32768) : (tmp_tmp); });
+; (GTSI (tmp_tmp, 32767)) ? ({   tmp_cur_s1bit = 1;
+; 32767; }) : (LTSI (tmp_tmp, -32768)) ? ({   tmp_cur_s1bit = 1;
+; -32768; }) : (tmp_tmp); });
 ;   tmp_cur_s2bit = tmp_cur_s1bit;
 ;   tmp_res1 = ({   SI tmp_tmp;
   tmp_tmp = SUBHI (SUBWORDSIHI (GET_H_CR (FLD (f_op_B)), 0), SUBWORDSIHI ((FLD (f_s12)), 0));
-; (GTSI (tmp_tmp, 32767)) ? (  tmp_cur_s1bit = 1, 32767) : (LTSI (tmp_tmp, -32768)) ? (  tmp_cur_s1bit = 1, -32768) : (tmp_tmp); });
+; (GTSI (tmp_tmp, 32767)) ? ({   tmp_cur_s1bit = 1;
+; 32767; }) : (LTSI (tmp_tmp, -32768)) ? ({   tmp_cur_s1bit = 1;
+; -32768; }) : (tmp_tmp); });
 ; ORHI (SLLHI (tmp_res1, 16), tmp_res2); }));
 if (FLD (f_F)) {
 {
@@ -28732,11 +28845,15 @@ if (GET_H_QCONDB (FLD (f_cond_Q))) {
   HI tmp_res2;
   tmp_res2 = ({   SI tmp_tmp;
   tmp_tmp = SUBHI (SUBWORDSIHI (GET_H_CR (FLD (f_op_B)), 1), SUBWORDSIHI ((FLD (f_u6)), 1));
-; (GTSI (tmp_tmp, 32767)) ? (  tmp_cur_s1bit = 1, 32767) : (LTSI (tmp_tmp, -32768)) ? (  tmp_cur_s1bit = 1, -32768) : (tmp_tmp); });
+; (GTSI (tmp_tmp, 32767)) ? ({   tmp_cur_s1bit = 1;
+; 32767; }) : (LTSI (tmp_tmp, -32768)) ? ({   tmp_cur_s1bit = 1;
+; -32768; }) : (tmp_tmp); });
 ;   tmp_cur_s2bit = tmp_cur_s1bit;
 ;   tmp_res1 = ({   SI tmp_tmp;
   tmp_tmp = SUBHI (SUBWORDSIHI (GET_H_CR (FLD (f_op_B)), 0), SUBWORDSIHI ((FLD (f_u6)), 0));
-; (GTSI (tmp_tmp, 32767)) ? (  tmp_cur_s1bit = 1, 32767) : (LTSI (tmp_tmp, -32768)) ? (  tmp_cur_s1bit = 1, -32768) : (tmp_tmp); });
+; (GTSI (tmp_tmp, 32767)) ? ({   tmp_cur_s1bit = 1;
+; 32767; }) : (LTSI (tmp_tmp, -32768)) ? ({   tmp_cur_s1bit = 1;
+; -32768; }) : (tmp_tmp); });
 ; ORHI (SLLHI (tmp_res1, 16), tmp_res2); }));
 if (FLD (f_F)) {
 {
@@ -28827,11 +28944,15 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
   HI tmp_res2;
   tmp_res2 = ({   SI tmp_tmp;
   tmp_tmp = SUBHI (SUBWORDSIHI (GET_H_CR (FLD (f_op_B)), 1), SUBWORDSIHI ((FLD (f_u6)), 1));
-; (GTSI (tmp_tmp, 32767)) ? (  tmp_cur_s1bit = 1, 32767) : (LTSI (tmp_tmp, -32768)) ? (  tmp_cur_s1bit = 1, -32768) : (tmp_tmp); });
+; (GTSI (tmp_tmp, 32767)) ? ({   tmp_cur_s1bit = 1;
+; 32767; }) : (LTSI (tmp_tmp, -32768)) ? ({   tmp_cur_s1bit = 1;
+; -32768; }) : (tmp_tmp); });
 ;   tmp_cur_s2bit = tmp_cur_s1bit;
 ;   tmp_res1 = ({   SI tmp_tmp;
   tmp_tmp = SUBHI (SUBWORDSIHI (GET_H_CR (FLD (f_op_B)), 0), SUBWORDSIHI ((FLD (f_u6)), 0));
-; (GTSI (tmp_tmp, 32767)) ? (  tmp_cur_s1bit = 1, 32767) : (LTSI (tmp_tmp, -32768)) ? (  tmp_cur_s1bit = 1, -32768) : (tmp_tmp); });
+; (GTSI (tmp_tmp, 32767)) ? ({   tmp_cur_s1bit = 1;
+; 32767; }) : (LTSI (tmp_tmp, -32768)) ? ({   tmp_cur_s1bit = 1;
+; -32768; }) : (tmp_tmp); });
 ; ORHI (SLLHI (tmp_res1, 16), tmp_res2); }));
 if (FLD (f_F)) {
 {
@@ -28919,11 +29040,15 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
   HI tmp_res2;
   tmp_res2 = ({   SI tmp_tmp;
   tmp_tmp = SUBHI (SUBWORDSIHI (GET_H_CR (FLD (f_op_B)), 1), SUBWORDSIHI ((GET_H_CR (FLD (f_op_C))), 1));
-; (GTSI (tmp_tmp, 32767)) ? (  tmp_cur_s1bit = 1, 32767) : (LTSI (tmp_tmp, -32768)) ? (  tmp_cur_s1bit = 1, -32768) : (tmp_tmp); });
+; (GTSI (tmp_tmp, 32767)) ? ({   tmp_cur_s1bit = 1;
+; 32767; }) : (LTSI (tmp_tmp, -32768)) ? ({   tmp_cur_s1bit = 1;
+; -32768; }) : (tmp_tmp); });
 ;   tmp_cur_s2bit = tmp_cur_s1bit;
 ;   tmp_res1 = ({   SI tmp_tmp;
   tmp_tmp = SUBHI (SUBWORDSIHI (GET_H_CR (FLD (f_op_B)), 0), SUBWORDSIHI ((GET_H_CR (FLD (f_op_C))), 0));
-; (GTSI (tmp_tmp, 32767)) ? (  tmp_cur_s1bit = 1, 32767) : (LTSI (tmp_tmp, -32768)) ? (  tmp_cur_s1bit = 1, -32768) : (tmp_tmp); });
+; (GTSI (tmp_tmp, 32767)) ? ({   tmp_cur_s1bit = 1;
+; 32767; }) : (LTSI (tmp_tmp, -32768)) ? ({   tmp_cur_s1bit = 1;
+; -32768; }) : (tmp_tmp); });
 ; ORHI (SLLHI (tmp_res1, 16), tmp_res2); }));
 if (FLD (f_F)) {
 {
@@ -29014,11 +29139,15 @@ if (GET_H_QCONDB (FLD (f_cond_Q))) {
   HI tmp_res2;
   tmp_res2 = ({   SI tmp_tmp;
   tmp_tmp = SUBHI (SUBWORDSIHI (GET_H_CR (FLD (f_op_B)), 1), SUBWORDSIHI ((GET_H_CR (FLD (f_op_C))), 1));
-; (GTSI (tmp_tmp, 32767)) ? (  tmp_cur_s1bit = 1, 32767) : (LTSI (tmp_tmp, -32768)) ? (  tmp_cur_s1bit = 1, -32768) : (tmp_tmp); });
+; (GTSI (tmp_tmp, 32767)) ? ({   tmp_cur_s1bit = 1;
+; 32767; }) : (LTSI (tmp_tmp, -32768)) ? ({   tmp_cur_s1bit = 1;
+; -32768; }) : (tmp_tmp); });
 ;   tmp_cur_s2bit = tmp_cur_s1bit;
 ;   tmp_res1 = ({   SI tmp_tmp;
   tmp_tmp = SUBHI (SUBWORDSIHI (GET_H_CR (FLD (f_op_B)), 0), SUBWORDSIHI ((GET_H_CR (FLD (f_op_C))), 0));
-; (GTSI (tmp_tmp, 32767)) ? (  tmp_cur_s1bit = 1, 32767) : (LTSI (tmp_tmp, -32768)) ? (  tmp_cur_s1bit = 1, -32768) : (tmp_tmp); });
+; (GTSI (tmp_tmp, 32767)) ? ({   tmp_cur_s1bit = 1;
+; 32767; }) : (LTSI (tmp_tmp, -32768)) ? ({   tmp_cur_s1bit = 1;
+; -32768; }) : (tmp_tmp); });
 ; ORHI (SLLHI (tmp_res1, 16), tmp_res2); }));
 if (FLD (f_F)) {
 {
@@ -29248,13 +29377,13 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
 if (FLD (f_F)) {
 {
   {
-    BI opval = LTSI (GET_H_CR (FLD (f_op_C)), 0);
+    BI opval = LTSI ((GET_H_CR (FLD (f_op_C))), 0);
     CPU (h_nbit) = opval;
     written |= (1 << 7);
     TRACE_RESULT (current_cpu, abuf, "nbit", 'x', opval);
   }
   {
-    BI opval = EQSI (GET_H_CR (FLD (f_op_C)), 0);
+    BI opval = EQSI ((GET_H_CR (FLD (f_op_C))), 0);
     CPU (h_zbit) = opval;
     written |= (1 << 8);
     TRACE_RESULT (current_cpu, abuf, "zbit", 'x', opval);
@@ -29330,13 +29459,13 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
 if (FLD (f_F)) {
 {
   {
-    BI opval = LTSI (FLD (f_u6), 0);
+    BI opval = LTSI ((FLD (f_u6)), 0);
     CPU (h_nbit) = opval;
     written |= (1 << 7);
     TRACE_RESULT (current_cpu, abuf, "nbit", 'x', opval);
   }
   {
-    BI opval = EQSI (FLD (f_u6), 0);
+    BI opval = EQSI ((FLD (f_u6)), 0);
     CPU (h_zbit) = opval;
     written |= (1 << 8);
     TRACE_RESULT (current_cpu, abuf, "zbit", 'x', opval);
@@ -29386,7 +29515,10 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
 }
   tmp_result = (0) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (SRLSI (({   DI tmp_tmp;
   tmp_tmp = ADDDI (EXTSIDI (32768), EXTSIDI (GET_H_CR (FLD (f_op_C))));
-; ((GTDI (tmp_tmp, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_tmp)); }), 16));
+; ((GTDI (tmp_tmp, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_tmp; })); }), 16));
 if (FLD (f_F)) {
 {
 {
@@ -29468,7 +29600,10 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
 }
   tmp_result = (0) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (SRLSI (({   DI tmp_tmp;
   tmp_tmp = ADDDI (EXTSIDI (32768), EXTSIDI (FLD (f_u6)));
-; ((GTDI (tmp_tmp, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_tmp)); }), 16));
+; ((GTDI (tmp_tmp, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_tmp; })); }), 16));
 if (FLD (f_F)) {
 {
 {
@@ -29550,7 +29685,9 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
 }
   tmp_result = (0) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (({   SI tmp_tmp;
   tmp_tmp = ABSSI (EXTHISI ((GET_H_CR (FLD (f_op_C)))));
-; (GTSI (tmp_tmp, 32767)) ? (  tmp_cur_s1bit = 1, 32767) : (LTSI (tmp_tmp, -32768)) ? (  tmp_cur_s1bit = 1, -32768) : (tmp_tmp); }));
+; (GTSI (tmp_tmp, 32767)) ? ({   tmp_cur_s1bit = 1;
+; 32767; }) : (LTSI (tmp_tmp, -32768)) ? ({   tmp_cur_s1bit = 1;
+; -32768; }) : (tmp_tmp); }));
 if (FLD (f_F)) {
 {
 {
@@ -29632,7 +29769,9 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
 }
   tmp_result = (0) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (({   SI tmp_tmp;
   tmp_tmp = ABSSI (EXTHISI ((FLD (f_u6))));
-; (GTSI (tmp_tmp, 32767)) ? (  tmp_cur_s1bit = 1, 32767) : (LTSI (tmp_tmp, -32768)) ? (  tmp_cur_s1bit = 1, -32768) : (tmp_tmp); }));
+; (GTSI (tmp_tmp, 32767)) ? ({   tmp_cur_s1bit = 1;
+; 32767; }) : (LTSI (tmp_tmp, -32768)) ? ({   tmp_cur_s1bit = 1;
+; -32768; }) : (tmp_tmp); }));
 if (FLD (f_F)) {
 {
 {
@@ -29714,7 +29853,10 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
 }
   tmp_result = (0) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (((GESI ((GET_H_CR (FLD (f_op_C))), 0)) ? (GET_H_CR (FLD (f_op_C))) : (({   DI tmp_tmp;
   tmp_tmp = SUBDI (EXTSIDI (0), EXTSIDI (GET_H_CR (FLD (f_op_C))));
-; ((GTDI (tmp_tmp, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_tmp)); }))));
+; ((GTDI (tmp_tmp, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_tmp; })); }))));
 if (FLD (f_F)) {
 {
 {
@@ -29796,7 +29938,10 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
 }
   tmp_result = (0) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (((GESI ((FLD (f_u6)), 0)) ? (FLD (f_u6)) : (({   DI tmp_tmp;
   tmp_tmp = SUBDI (EXTSIDI (0), EXTSIDI (FLD (f_u6)));
-; ((GTDI (tmp_tmp, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_tmp)); }))));
+; ((GTDI (tmp_tmp, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_tmp; })); }))));
 if (FLD (f_F)) {
 {
 {
@@ -29878,7 +30023,9 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
 }
   tmp_result = (0) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (({   SI tmp_tmp;
   tmp_tmp = EXTHISI ((GET_H_CR (FLD (f_op_C))));
-; (GTSI (tmp_tmp, 32767)) ? (  tmp_cur_s1bit = 1, 32767) : (LTSI (tmp_tmp, -32768)) ? (  tmp_cur_s1bit = 1, -32768) : (tmp_tmp); }));
+; (GTSI (tmp_tmp, 32767)) ? ({   tmp_cur_s1bit = 1;
+; 32767; }) : (LTSI (tmp_tmp, -32768)) ? ({   tmp_cur_s1bit = 1;
+; -32768; }) : (tmp_tmp); }));
 if (FLD (f_F)) {
 {
 {
@@ -29960,7 +30107,9 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
 }
   tmp_result = (0) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (({   SI tmp_tmp;
   tmp_tmp = EXTHISI ((FLD (f_u6)));
-; (GTSI (tmp_tmp, 32767)) ? (  tmp_cur_s1bit = 1, 32767) : (LTSI (tmp_tmp, -32768)) ? (  tmp_cur_s1bit = 1, -32768) : (tmp_tmp); }));
+; (GTSI (tmp_tmp, 32767)) ? ({   tmp_cur_s1bit = 1;
+; 32767; }) : (LTSI (tmp_tmp, -32768)) ? ({   tmp_cur_s1bit = 1;
+; -32768; }) : (tmp_tmp); }));
 if (FLD (f_F)) {
 {
 {
@@ -30042,7 +30191,10 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
 }
   tmp_result = (0) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (({   DI tmp_tmp;
   tmp_tmp = SUBDI (EXTSIDI (0), EXTSIDI (GET_H_CR (FLD (f_op_C))));
-; ((GTDI (tmp_tmp, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_tmp)); }));
+; ((GTDI (tmp_tmp, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_tmp; })); }));
 if (FLD (f_F)) {
 {
 {
@@ -30124,7 +30276,10 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
 }
   tmp_result = (0) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (({   DI tmp_tmp;
   tmp_tmp = SUBDI (EXTSIDI (0), EXTSIDI (FLD (f_u6)));
-; ((GTDI (tmp_tmp, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_tmp)); }));
+; ((GTDI (tmp_tmp, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_tmp; })); }));
 if (FLD (f_F)) {
 {
 {
@@ -30232,13 +30387,13 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
 if (FLD (f_F)) {
 {
   {
-    BI opval = LTSI (tmp_result, 0);
+    BI opval = LTHI ((GET_H_CR (FLD (f_op_C))), 0);
     CPU (h_nbit) = opval;
     written |= (1 << 7);
     TRACE_RESULT (current_cpu, abuf, "nbit", 'x', opval);
   }
   {
-    BI opval = EQSI (tmp_result, 0);
+    BI opval = EQHI ((GET_H_CR (FLD (f_op_C))), 0);
     CPU (h_zbit) = opval;
     written |= (1 << 8);
     TRACE_RESULT (current_cpu, abuf, "zbit", 'x', opval);
@@ -30314,13 +30469,13 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
 if (FLD (f_F)) {
 {
   {
-    BI opval = LTSI (tmp_result, 0);
+    BI opval = LTHI ((FLD (f_u6)), 0);
     CPU (h_nbit) = opval;
     written |= (1 << 7);
     TRACE_RESULT (current_cpu, abuf, "nbit", 'x', opval);
   }
   {
-    BI opval = EQSI (tmp_result, 0);
+    BI opval = EQHI ((FLD (f_u6)), 0);
     CPU (h_zbit) = opval;
     written |= (1 << 8);
     TRACE_RESULT (current_cpu, abuf, "zbit", 'x', opval);
@@ -30344,7 +30499,7 @@ if (FLD (f_F)) {
 static SEM_PC
 SEM_FN_NAME (a5f,nop_s) (SIM_CPU *current_cpu, SEM_ARG sem_arg)
 {
-#define FLD(f) abuf->fields.fmt_empty.f
+#define FLD(f) abuf->fields.sfmt_empty.f
   ARGBUF *abuf = SEM_ARGBUF (sem_arg);
   int UNUSED written = 0;
   IADDR UNUSED pc = abuf->addr;
@@ -30361,7 +30516,7 @@ SEM_FN_NAME (a5f,nop_s) (SIM_CPU *current_cpu, SEM_ARG sem_arg)
 static SEM_PC
 SEM_FN_NAME (a5f,unimp_s) (SIM_CPU *current_cpu, SEM_ARG sem_arg)
 {
-#define FLD(f) abuf->fields.fmt_empty.f
+#define FLD(f) abuf->fields.sfmt_empty.f
   ARGBUF *abuf = SEM_ARGBUF (sem_arg);
   int UNUSED written = 0;
   IADDR UNUSED pc = abuf->addr;
@@ -30406,7 +30561,7 @@ SEM_FN_NAME (a5f,pop_s_b) (SIM_CPU *current_cpu, SEM_ARG sem_arg)
 static SEM_PC
 SEM_FN_NAME (a5f,pop_s_blink) (SIM_CPU *current_cpu, SEM_ARG sem_arg)
 {
-#define FLD(f) abuf->fields.fmt_empty.f
+#define FLD(f) abuf->fields.sfmt_empty.f
   ARGBUF *abuf = SEM_ARGBUF (sem_arg);
   int UNUSED written = 0;
   IADDR UNUSED pc = abuf->addr;
@@ -30462,7 +30617,7 @@ SEM_FN_NAME (a5f,push_s_b) (SIM_CPU *current_cpu, SEM_ARG sem_arg)
 static SEM_PC
 SEM_FN_NAME (a5f,push_s_blink) (SIM_CPU *current_cpu, SEM_ARG sem_arg)
 {
-#define FLD(f) abuf->fields.fmt_empty.f
+#define FLD(f) abuf->fields.sfmt_empty.f
   ARGBUF *abuf = SEM_ARGBUF (sem_arg);
   int UNUSED written = 0;
   IADDR UNUSED pc = abuf->addr;
@@ -30526,7 +30681,10 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
     SET_H_CR (((UINT) 56), opval);
     TRACE_RESULT (current_cpu, abuf, "cr", 'x', opval);
   }
-; ((GTDI (tmp_tmp, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_tmp)); });
+; ((GTDI (tmp_tmp, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_tmp; })); });
 if (FLD (f_F)) {
 {
 {
@@ -30623,7 +30781,10 @@ if (GET_H_QCONDB (FLD (f_cond_Q))) {
     written |= (1 << 9);
     TRACE_RESULT (current_cpu, abuf, "cr", 'x', opval);
   }
-; ((GTDI (tmp_tmp, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_tmp)); });
+; ((GTDI (tmp_tmp, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_tmp; })); });
 if (FLD (f_F)) {
 {
 {
@@ -30718,7 +30879,10 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
     SET_H_CR (((UINT) 56), opval);
     TRACE_RESULT (current_cpu, abuf, "cr", 'x', opval);
   }
-; ((GTDI (tmp_tmp, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_tmp)); });
+; ((GTDI (tmp_tmp, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_tmp; })); });
 if (FLD (f_F)) {
 {
 {
@@ -30810,7 +30974,10 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
     SET_H_CR (((UINT) 56), opval);
     TRACE_RESULT (current_cpu, abuf, "cr", 'x', opval);
   }
-; ((GTDI (tmp_tmp, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_tmp)); });
+; ((GTDI (tmp_tmp, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_tmp; })); });
 if (FLD (f_F)) {
 {
 {
@@ -30907,7 +31074,10 @@ if (GET_H_QCONDB (FLD (f_cond_Q))) {
     written |= (1 << 10);
     TRACE_RESULT (current_cpu, abuf, "cr", 'x', opval);
   }
-; ((GTDI (tmp_tmp, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_tmp)); });
+; ((GTDI (tmp_tmp, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_tmp; })); });
 if (FLD (f_F)) {
 {
 {
@@ -31019,7 +31189,10 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
     SET_H_CR (((UINT) 56), opval);
     TRACE_RESULT (current_cpu, abuf, "cr", 'x', opval);
   }
-;   tmp_SItmp = ((GTDI (tmp_tmp, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_tmp));
+;   tmp_SItmp = ((GTDI (tmp_tmp, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_tmp; }));
 ;   tmp_cur_s1bit = ORBI (tmp_cur_s1bit, CPU (h_vbit));
 ; tmp_SItmp; });
 if (FLD (f_F)) {
@@ -31136,7 +31309,10 @@ if (GET_H_QCONDB (FLD (f_cond_Q))) {
     written |= (1 << 12);
     TRACE_RESULT (current_cpu, abuf, "cr", 'x', opval);
   }
-;   tmp_SItmp = ((GTDI (tmp_tmp, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_tmp));
+;   tmp_SItmp = ((GTDI (tmp_tmp, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_tmp; }));
 ;   tmp_cur_s1bit = ORBI (tmp_cur_s1bit, CPU (h_vbit));
 ; tmp_SItmp; });
 if (FLD (f_F)) {
@@ -31250,7 +31426,10 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
     SET_H_CR (((UINT) 56), opval);
     TRACE_RESULT (current_cpu, abuf, "cr", 'x', opval);
   }
-;   tmp_SItmp = ((GTDI (tmp_tmp, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_tmp));
+;   tmp_SItmp = ((GTDI (tmp_tmp, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_tmp; }));
 ;   tmp_cur_s1bit = ORBI (tmp_cur_s1bit, CPU (h_vbit));
 ; tmp_SItmp; });
 if (FLD (f_F)) {
@@ -31360,7 +31539,10 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
     SET_H_CR (((UINT) 56), opval);
     TRACE_RESULT (current_cpu, abuf, "cr", 'x', opval);
   }
-;   tmp_SItmp = ((GTDI (tmp_tmp, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_tmp));
+;   tmp_SItmp = ((GTDI (tmp_tmp, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_tmp; }));
 ;   tmp_cur_s1bit = ORBI (tmp_cur_s1bit, CPU (h_vbit));
 ; tmp_SItmp; });
 if (FLD (f_F)) {
@@ -31477,7 +31659,10 @@ if (GET_H_QCONDB (FLD (f_cond_Q))) {
     written |= (1 << 13);
     TRACE_RESULT (current_cpu, abuf, "cr", 'x', opval);
   }
-;   tmp_SItmp = ((GTDI (tmp_tmp, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_tmp));
+;   tmp_SItmp = ((GTDI (tmp_tmp, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_tmp; }));
 ;   tmp_cur_s1bit = ORBI (tmp_cur_s1bit, CPU (h_vbit));
 ; tmp_SItmp; });
 if (FLD (f_F)) {
@@ -32109,7 +32294,10 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
     SET_H_CR (((UINT) 56), opval);
     TRACE_RESULT (current_cpu, abuf, "cr", 'x', opval);
   }
-; ((GTDI (tmp_tmp, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_tmp)); });
+; ((GTDI (tmp_tmp, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_tmp; })); });
 if (FLD (f_F)) {
 {
 {
@@ -32206,7 +32394,10 @@ if (GET_H_QCONDB (FLD (f_cond_Q))) {
     written |= (1 << 9);
     TRACE_RESULT (current_cpu, abuf, "cr", 'x', opval);
   }
-; ((GTDI (tmp_tmp, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_tmp)); });
+; ((GTDI (tmp_tmp, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_tmp; })); });
 if (FLD (f_F)) {
 {
 {
@@ -32301,7 +32492,10 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
     SET_H_CR (((UINT) 56), opval);
     TRACE_RESULT (current_cpu, abuf, "cr", 'x', opval);
   }
-; ((GTDI (tmp_tmp, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_tmp)); });
+; ((GTDI (tmp_tmp, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_tmp; })); });
 if (FLD (f_F)) {
 {
 {
@@ -32393,7 +32587,10 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
     SET_H_CR (((UINT) 56), opval);
     TRACE_RESULT (current_cpu, abuf, "cr", 'x', opval);
   }
-; ((GTDI (tmp_tmp, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_tmp)); });
+; ((GTDI (tmp_tmp, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_tmp; })); });
 if (FLD (f_F)) {
 {
 {
@@ -32490,7 +32687,10 @@ if (GET_H_QCONDB (FLD (f_cond_Q))) {
     written |= (1 << 10);
     TRACE_RESULT (current_cpu, abuf, "cr", 'x', opval);
   }
-; ((GTDI (tmp_tmp, 2147483647)) ? (  tmp_cur_s1bit = 1, 2147483647) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? (  tmp_cur_s1bit = 1, ADDSI (-2147483647, -1)) : (  tmp_cur_s1bit = 0, tmp_tmp)); });
+; ((GTDI (tmp_tmp, 2147483647)) ? ({   tmp_cur_s1bit = 1;
+; 2147483647; }) : (LTDI (tmp_tmp, ADDSI (-2147483647, -1))) ? ({   tmp_cur_s1bit = 1;
+; ADDSI (-2147483647, -1); }) : ({   tmp_cur_s1bit = 0;
+; tmp_tmp; })); });
 if (FLD (f_F)) {
 {
 {
@@ -32578,7 +32778,8 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
   tmp_old = ADDDI (SLLDI (ZEXTSIDI (GET_H_CR (((UINT) 56))), 32), ZEXTSIDI (GET_H_CR (((UINT) 57))));
 ;   tmp_tmp = (0) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (MULDI (ZEXTSIDI (GET_H_CR (FLD (f_op_B))), ZEXTSIDI (ANDSI (FLD (f_s12), -65536))));
 ;   tmp_tmp = ADDDI (tmp_old, tmp_tmp);
-;   tmp_cur_s1bit = (GTUDI (tmp_old, tmp_tmp)) ? ((  tmp_tmp = -1, 1)) : (0);
+;   tmp_cur_s1bit = (GTUDI (tmp_old, tmp_tmp)) ? (({   tmp_tmp = -1;
+; 1; })) : (0);
 ;   {
     SI opval = SUBWORDDISI (tmp_tmp, 1);
     SET_H_CR (((UINT) 57), opval);
@@ -32677,7 +32878,8 @@ if (GET_H_QCONDB (FLD (f_cond_Q))) {
   tmp_old = ADDDI (SLLDI (ZEXTSIDI (GET_H_CR (((UINT) 56))), 32), ZEXTSIDI (GET_H_CR (((UINT) 57))));
 ;   tmp_tmp = (0) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (MULDI (ZEXTSIDI (GET_H_CR (FLD (f_op_B))), ZEXTSIDI (ANDSI (FLD (f_u6), -65536))));
 ;   tmp_tmp = ADDDI (tmp_old, tmp_tmp);
-;   tmp_cur_s1bit = (GTUDI (tmp_old, tmp_tmp)) ? ((  tmp_tmp = -1, 1)) : (0);
+;   tmp_cur_s1bit = (GTUDI (tmp_old, tmp_tmp)) ? (({   tmp_tmp = -1;
+; 1; })) : (0);
 ;   {
     SI opval = SUBWORDDISI (tmp_tmp, 1);
     SET_H_CR (((UINT) 57), opval);
@@ -32778,7 +32980,8 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
   tmp_old = ADDDI (SLLDI (ZEXTSIDI (GET_H_CR (((UINT) 56))), 32), ZEXTSIDI (GET_H_CR (((UINT) 57))));
 ;   tmp_tmp = (0) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (MULDI (ZEXTSIDI (GET_H_CR (FLD (f_op_B))), ZEXTSIDI (ANDSI (FLD (f_u6), -65536))));
 ;   tmp_tmp = ADDDI (tmp_old, tmp_tmp);
-;   tmp_cur_s1bit = (GTUDI (tmp_old, tmp_tmp)) ? ((  tmp_tmp = -1, 1)) : (0);
+;   tmp_cur_s1bit = (GTUDI (tmp_old, tmp_tmp)) ? (({   tmp_tmp = -1;
+; 1; })) : (0);
 ;   {
     SI opval = SUBWORDDISI (tmp_tmp, 1);
     SET_H_CR (((UINT) 57), opval);
@@ -32874,7 +33077,8 @@ CPU (h_cr[((UINT) 63)]) = ANDSI (pc, -4);
   tmp_old = ADDDI (SLLDI (ZEXTSIDI (GET_H_CR (((UINT) 56))), 32), ZEXTSIDI (GET_H_CR (((UINT) 57))));
 ;   tmp_tmp = (0) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (MULDI (ZEXTSIDI (GET_H_CR (FLD (f_op_B))), ZEXTSIDI (ANDSI (GET_H_CR (FLD (f_op_C)), -65536))));
 ;   tmp_tmp = ADDDI (tmp_old, tmp_tmp);
-;   tmp_cur_s1bit = (GTUDI (tmp_old, tmp_tmp)) ? ((  tmp_tmp = -1, 1)) : (0);
+;   tmp_cur_s1bit = (GTUDI (tmp_old, tmp_tmp)) ? (({   tmp_tmp = -1;
+; 1; })) : (0);
 ;   {
     SI opval = SUBWORDDISI (tmp_tmp, 1);
     SET_H_CR (((UINT) 57), opval);
@@ -32973,7 +33177,8 @@ if (GET_H_QCONDB (FLD (f_cond_Q))) {
   tmp_old = ADDDI (SLLDI (ZEXTSIDI (GET_H_CR (((UINT) 56))), 32), ZEXTSIDI (GET_H_CR (((UINT) 57))));
 ;   tmp_tmp = (0) ? ((cgen_rtx_error (current_cpu, "invalid insn"), 0)) : (MULDI (ZEXTSIDI (GET_H_CR (FLD (f_op_B))), ZEXTSIDI (ANDSI (GET_H_CR (FLD (f_op_C)), -65536))));
 ;   tmp_tmp = ADDDI (tmp_old, tmp_tmp);
-;   tmp_cur_s1bit = (GTUDI (tmp_old, tmp_tmp)) ? ((  tmp_tmp = -1, 1)) : (0);
+;   tmp_cur_s1bit = (GTUDI (tmp_old, tmp_tmp)) ? (({   tmp_tmp = -1;
+; 1; })) : (0);
 ;   {
     SI opval = SUBWORDDISI (tmp_tmp, 1);
     SET_H_CR (((UINT) 57), opval);
@@ -33045,7 +33250,7 @@ if (tmp_cur_s1bit) {
 static SEM_PC
 SEM_FN_NAME (a5f,current_loop_end) (SIM_CPU *current_cpu, SEM_ARG sem_arg)
 {
-#define FLD(f) abuf->fields.fmt_empty.f
+#define FLD(f) abuf->fields.sfmt_empty.f
   ARGBUF *abuf = SEM_ARGBUF (sem_arg);
   int UNUSED written = 0;
   IADDR UNUSED pc = abuf->addr;
@@ -33151,7 +33356,7 @@ if (tmp_count) {
 static SEM_PC
 SEM_FN_NAME (a5f,current_loop_end_after_branch) (SIM_CPU *current_cpu, SEM_ARG sem_arg)
 {
-#define FLD(f) abuf->fields.fmt_empty.f
+#define FLD(f) abuf->fields.sfmt_empty.f
   ARGBUF *abuf = SEM_ARGBUF (sem_arg);
   int UNUSED written = 0;
   IADDR UNUSED pc = abuf->addr;
@@ -33271,7 +33476,7 @@ if (tmp_count) {
 static SEM_PC
 SEM_FN_NAME (a5f,arc600_current_loop_end_after_branch) (SIM_CPU *current_cpu, SEM_ARG sem_arg)
 {
-#define FLD(f) abuf->fields.fmt_empty.f
+#define FLD(f) abuf->fields.sfmt_empty.f
   ARGBUF *abuf = SEM_ARGBUF (sem_arg);
   int UNUSED written = 0;
   IADDR UNUSED pc = abuf->addr;
