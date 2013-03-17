@@ -7,6 +7,8 @@
 	* arch.h, cpu5.h, cpu6.h, cpu7.h, configure: Regenerate.
 	* arch.c, cpu5.c, cpu6.c, cpu7.c: Likewise.
 
+	* sim-main.h (CGEN_INSN_WORD): Reinstate typedef.
+
 2013-01-08  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* decode5.c, decode6.c, decode7.c: Replace EXTRACT_MSB0_INT with
