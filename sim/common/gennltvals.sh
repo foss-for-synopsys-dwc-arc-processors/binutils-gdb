@@ -19,6 +19,9 @@ $shell ${srccom}/gentvals.sh "" errno ${srcroot}/newlib/libc/include \
 $shell ${srccom}/gentvals.sh "" signal ${srcroot}/newlib/libc/include \
 	"signal.h sys/signal.h" 'SIG[[:upper:][:digit:]]*' "${cpp}"
 
+$shell ${srccom}/gentvals.sh "arc" open ${srcroot}/newlib/libc/include \
+	"../sys/arc/sys/fcntl.h" 'O_[[:upper:][:digit:]]*' "${cpp}"
+
 $shell ${srccom}/gentvals.sh "" open ${srcroot}/newlib/libc/include \
 	"fcntl.h sys/fcntl.h sys/_default_fcntl.h" 'O_[[:upper:][:digit:]]*' "${cpp}"
 
