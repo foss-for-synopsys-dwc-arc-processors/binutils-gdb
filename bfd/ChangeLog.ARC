@@ -1,3 +1,7 @@
+2013-03-18  Simon Cook  <simon.cook@embecosm.com>
+
+	* elf32-arc.c (bfd_arc_arch): Make ARC600 the default architecture.
+
 2013-01-16  Simon Cook  <simon.cook@embecosm.com>
 
 	* cpu-arc.c (bfd_arc_arch): Make A5 default architecture to solve
