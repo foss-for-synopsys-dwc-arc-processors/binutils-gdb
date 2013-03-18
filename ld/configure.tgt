@@ -68,21 +68,13 @@ alpha*-*-netbsd*)	targ_emul=elf64alpha_nbsd ;;
 alpha*-*-openbsd*)	targ_emul=elf64alpha ;;
 alpha*-*-*vms*)		targ_emul=alphavms
 			;;
-arc-*-elf*)
+arc*-*-elf*)
 			targ_emul=arcelf
             targ_extra_emuls="arcelf_prof arclinux arclinux_prof"
             ;;
-arc-*-linux-uclibc*)
+arc*-*-linux-uclibc*)
             targ_emul=arclinux
             targ_extra_emuls="arclinux_prof arcelf arcelf_prof"
-			;;
-arceb-*-elf*)
-			targ_emul=arcebelf
-            targ_extra_emuls="arcebelf_prof arceblinux arceblinux_prof"
-            ;;
-arceb-*-linux-uclibc*)
-            targ_emul=arceblinux
-            targ_extra_emuls="arceblinux_prof arcebelf arcebelf_prof"
 			;;
 arm-epoc-pe)		targ_emul=arm_epoc_pe ;	targ_extra_ofiles="deffilep.o pe-dll.o" ;;
 arm*-*-cegcc*)		targ_emul=arm_wince_pe ; targ_extra_ofiles="deffilep.o pe-dll.o"

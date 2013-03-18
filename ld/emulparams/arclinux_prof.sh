@@ -1,5 +1,9 @@
 SCRIPT_NAME=arclinux
-OUTPUT_FORMAT="elf32-littlearc"
+if [ "x${ARC_ENDIAN}" = "xbig" ]; then
+  OUTPUT_FORMAT="elf32-bigarc"
+else
+  OUTPUT_FORMAT="elf32-littlearc"
+fi
 LITTLE_OUTPUT_FORMAT="elf32-littlearc"
 BIG_OUTPUT_FORMAT="elf32-bigarc"
 TEXT_START_ADDR=0x10000
