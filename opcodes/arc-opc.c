@@ -1525,15 +1525,29 @@ insert_reg (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
             }
           else if (!arc_mach_a4 && operand->fmt == 128)
 	    {
-	      /* H5 class*/
-	      insn |= (reg->value & 0x7) << operand->shift;
-	      insn |= reg->value >> 3;
+	      if (reg->value > 31)
+		{
+		  sprintf (buf, _("invalid register number `%d'"), reg->value);
+		  *errmsg = buf;
+		} else
+		{
+		  /* H5 class*/
+		  insn |= (reg->value & 0x7) << operand->shift;
+		  insn |= reg->value >> 3;
+		}
 	    }
 	  else if (!arc_mach_a4 && operand->fmt == 140)
 	    {
-	      /* G5 class*/
-	      insn |= (reg->value & 0x07) << operand->shift;
-	      insn |= (reg->value & 0x18);
+	      if (reg->value > 31)
+		{
+		  sprintf (buf, _("invalid register number `%d'"), reg->value);
+		  *errmsg = buf;
+		} else
+		{
+		  /* G5 class*/
+		  insn |= (reg->value & 0x07) << operand->shift;
+		  insn |= (reg->value & 0x18);
+		}
 	    }
 	  else
 	    insn |= reg->value << operand->shift;
