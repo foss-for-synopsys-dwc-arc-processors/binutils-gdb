@@ -1,3 +1,7 @@
+2013-03-18  Simon Cook  <simon.cook@embecosm.com>
+
+	* elf32-arc.c (bfd_arc_arch): Make ARC600 the default architecture.
+
 2013-02-25  Simon Cook  <simon.cook@embecosm.com>
 
 	* bfd/config.bfd: Make arc*-*-elf* valid for big endian ARC.
