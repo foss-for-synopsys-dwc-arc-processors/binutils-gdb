@@ -1,3 +1,11 @@
+2013-03-18  Simon Cook  <simon.cook@embecosm.com>
+
+	* emulparams/arcelf.sh, emulparams/arcelf_prof.sh, emulparams/arclinux.sh,
+	emulparams/arclinux.sh: Set OUTPUT_FORMAT based on toolchain endianness.
+	* configure.tgt: Combined little and big endian target emulations.
+	* Makefile.am (ALL_EMULATION_SOURCES): Removed big endian specific sources.
+	* Makefile.in: Regenerated.
+
 2013-03-12  Simon Cook  <simon.cook@embecosm.com>
 
 	* emulparams/arcelf_prof.sh, emulparams/arcebelf_prof.sh: Change
