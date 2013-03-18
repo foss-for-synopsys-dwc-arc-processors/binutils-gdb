@@ -1,6 +1,10 @@
 SCRIPT_NAME=elfarc
 TEMPLATE_NAME=elf32
-OUTPUT_FORMAT="elf32-littlearc"
+if [ "x${ARC_ENDIAN}" = "xbig" ]; then
+  OUTPUT_FORMAT="elf32-bigarc"
+else
+  OUTPUT_FORMAT="elf32-littlearc"
+fi
 LITTLE_OUTPUT_FORMAT="elf32-littlearc"
 BIG_OUTPUT_FORMAT="elf32-bigarc"
 # leave room for vector table, 32 vectors * 8 bytes

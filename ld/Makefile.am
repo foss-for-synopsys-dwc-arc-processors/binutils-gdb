@@ -133,10 +133,6 @@ ALL_EMULATION_SOURCES = \
 	eaixrs6.c \
 	ealpha.c \
 	ealphavms.c \
-	earcebelf.c \
-	earcebelf_prof.c \
-	earceblinux.c \
-	earceblinux_prof.c \
 	earcelf.c \
 	earcelf_prof.c \
 	earclinux.c \
@@ -690,19 +686,6 @@ ealphavms.c: $(srcdir)/emulparams/alphavms.sh \
   $(srcdir)/emultempl/vms.em $(srcdir)/scripttempl/alphavms.sc \
   ${GEN_DEPENDS}
 	${GENSCRIPTS} alphavms "$(tdir_alphavms)"
-earcebelf.c: $(srcdir)/emulparams/arcebelf.sh \
-  $(ELF_GEN_DEPS) $(srcdir)/scripttempl/elfarc.sc ${GEN_DEPENDS}
-	${GENSCRIPTS} arcebelf "$(tdir_arcelf)"
-earcebelf_prof.c: $(srcdir)/emulparams/arcebelf_prof.sh \
-  $(ELF_GEN_DEPS) $(srcdir)/scripttempl/elfarc.sc ${GEN_DEPENDS}
-	${GENSCRIPTS} arcebelf_prof "$(tdir_arcelf_prof)"
-#for linux on arc
-earceblinux.c: $(srcdir)/emulparams/arceblinux.sh \
-  $(ELF_DEPS) $(srcdir)/emultempl/arclinux.em $(srcdir)/scripttempl/arclinux.sc ${GEN_DEPENDS}
-	${GENSCRIPTS} arceblinux "$(tdir_arclinux)"
-earceblinux_prof.c: $(srcdir)/emulparams/arceblinux_prof.sh \
-  $(ELF_DEPS) $(srcdir)/emultempl/arclinux.em $(srcdir)/scripttempl/arclinux.sc ${GEN_DEPENDS}
-	${GENSCRIPTS} arceblinux_prof "$(tdir_arclinux_prof)"
 earcelf.c: $(srcdir)/emulparams/arcelf.sh \
   $(ELF_GEN_DEPS) $(srcdir)/scripttempl/elfarc.sc ${GEN_DEPENDS}
 	${GENSCRIPTS} arcelf "$(tdir_arcelf)"
