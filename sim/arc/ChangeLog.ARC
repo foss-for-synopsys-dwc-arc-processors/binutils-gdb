@@ -1,3 +1,7 @@
+2013-03-19  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* sim-main.h (CGEN_INSN_WORD): Remove typedef.
+
 2013-03-17  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* decode5.c, decode5.h, decode6.c, decode6.h: Regenerate.
