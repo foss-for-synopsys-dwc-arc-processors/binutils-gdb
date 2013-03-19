@@ -1,3 +1,6 @@
+2013-03-19	Anton Kolesov	<anton.kolesov@synopsys.com>
+	* arc-linux-tdep.c (arc_linux_init_abi): Set decr_pc to 2.
+
 2013-03-08  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* arc-tdep.c (arc_gdbarch_init): Set decr_pc to 2.

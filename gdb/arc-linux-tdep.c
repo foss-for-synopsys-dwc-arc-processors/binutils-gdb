@@ -828,7 +828,7 @@ arc_linux_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
     set_gdbarch_cannot_store_register    (gdbarch, arc_linux_cannot_store_register);
     set_gdbarch_dwarf2_reg_to_regnum     (gdbarch, arc_linux_binutils_reg_to_regnum);
 
-    set_gdbarch_decr_pc_after_break      (gdbarch, 0);
+    set_gdbarch_decr_pc_after_break      (gdbarch, 2);
     set_gdbarch_software_single_step     (gdbarch, arc_linux_software_single_step);
     set_gdbarch_write_pc                 (gdbarch, arc_linux_write_pc);
     set_gdbarch_pseudo_register_read     (gdbarch, arc_linux_pseudo_register_read);
