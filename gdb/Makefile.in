@@ -905,8 +905,8 @@ LINTFILES = $(SFILES) $(YYFILES) $(CONFIG_SRCS) init.c
 HFILES_NO_SRCDIR = \
 common/gdb_signals.h nat/gdb_thread_db.h common/gdb_vecs.h \
 common/x86-xstate.h nat/linux-ptrace.h nat/mips-linux-watch.h \
-proc-utils.h aarch64-tdep.h arc-tdep.h arc-aux-registers.h arc-board.h \
-arc-elf-tdep.h arm-tdep.h ax-gdb.h ppcfbsd-tdep.h \
+proc-utils.h aarch64-tdep.h arc-tdep.h arc-elf-tdep.h \
+arm-tdep.h ax-gdb.h ppcfbsd-tdep.h \
 ppcnbsd-tdep.h cli-out.h gdb_expat.h breakpoint.h infcall.h obsd-tdep.h \
 exec.h m32r-tdep.h osabi.h gdbcore.h amd64bsd-nat.h \
 i386bsd-nat.h xml-support.h xml-tdesc.h alphabsd-tdep.h gdb_obstack.h \

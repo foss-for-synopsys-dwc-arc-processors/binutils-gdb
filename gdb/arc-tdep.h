@@ -285,6 +285,7 @@ extern int  arc_debug;
 /*			  Globally visible functions                          */
 /* -------------------------------------------------------------------------- */
 
+
 /* From opcodes/arcompact-dis.h. */
 extern struct arcDisState arcAnalyzeInstr (bfd_vma address,
 					   struct disassemble_info *info);
@@ -294,6 +295,7 @@ extern int arc_debug;
 
 /* From arc-linux.c or arc-elf32.c */
 extern enum gdb_osabi arc_get_osabi (void);
+extern void arc_gdbarch_osabi_init (struct gdbarch *gdbarch);
 
 #endif /* ARC_TDEP_H */
 /******************************************************************************/

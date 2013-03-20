@@ -89,8 +89,7 @@ arc*-*-linux*)
 
 arc*-*-*)
 	# Target: ARC elf32 based target
-	gdb_target_obs="arc-tdep.o arc-elf-tdep.o arc-aux-registers.o \
-	                arc-board.o"
+	gdb_target_obs="arc-tdep.o arc-elf-tdep.o"
 	gdb_sim=../sim/arc/libsim.a
 	;;
 
