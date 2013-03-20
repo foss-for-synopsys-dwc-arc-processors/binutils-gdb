@@ -4681,10 +4681,18 @@ tc_gen_reloc (asection *section ATTRIBUTE_UNUSED,
 
   /* irfan 1 */
   if (fixP->fx_pcrel && fixP->fx_r_type == BFD_RELOC_ARC_32_ME)
-  {
-	  code = BFD_RELOC_ARC_PC32;
-  	  // fixp->fx_offset = ???
-  }
+    {
+      code = BFD_RELOC_ARC_PC32;
+      /* When we have a pc-relative value in a LIMM, it's relative to
+	 the address of the instruction, not to the address of the LIMM.
+	 The linker will just know where to put the relocated value, so
+	 make it relative to that address.  */
+      /* ??? There might have been more of an addend that has been munged
+	 into value, and then cleared in md_apply_fix.  How do we recover
+	 that?  Or is it already in fx_offset?  */
+      fixP->fx_offset
+	+= fixP->fx_frag->fr_address + fixP->fx_where - fixP->fx_dot_value;
+    }
 
   reloc = xmalloc (sizeof (arelent));
   reloc->sym_ptr_ptr = xmalloc (sizeof (asymbol *));
