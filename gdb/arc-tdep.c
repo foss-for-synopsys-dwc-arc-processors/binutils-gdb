@@ -2465,10 +2465,11 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   
   /* Put OS specific stuff into gdbarch. This can override any of the generic
      ones specified above. */
-  gdbarch_init_osabi (info, gdbarch);
+  arc_gdbarch_osabi_init (gdbarch);
 
   return gdbarch;			/* Newly created architecture. */
-}
+
+}	/* arc_gdbarch_init () */
 
 
 /*! Dump out the target specific information.

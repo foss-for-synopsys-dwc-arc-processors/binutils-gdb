@@ -617,11 +617,34 @@ arc_linux_regset_from_core_section (struct gdbarch *core_arch,
 }	/* arc_linux_regset_from_core_section () */
 
 
-/*! Initialize for the Linux ABI */
-static void
-arc_linux_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
+/* -------------------------------------------------------------------------- */
+/*                               externally visible functions                 */
+/* -------------------------------------------------------------------------- */
+
+
+/*! Function to determine the OSABI variant.
+
+    Every target variant must define this appropriately.
+
+    @return  The OSABI variant. */
+enum gdb_osabi
+arc_get_osabi (void)
+{
+  return GDB_OSABI_LINUX;
+
+}	/* arc_get_osabi () */
+
+
+/*! Function to initialize for this target variant.
+
+    Every target variant must define this appropriately.
+
+    @param[in,out] gdbarch  The gdbarch we are initializing. */
+void
+arc_gdbarch_osabi_init (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
   struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_info info 
 
   /* Fill in target-dependent info in ARC-private structure. */
   tdep->is_sigtramp = arc_linux_is_sigtramp;
@@ -644,34 +667,5 @@ arc_linux_init_abi (struct gdbarch_info info, struct gdbarch *gdbarch)
      pointers (ILP32). */
   set_solib_svr4_fetch_link_map_offsets (gdbarch,
 					 svr4_ilp32_fetch_link_map_offsets);
-}
 
-
-/* -------------------------------------------------------------------------- */
-/*                               externally visible functions                 */
-/* -------------------------------------------------------------------------- */
-
-/*! Function to identify the OSABI to be used.
-
-    Every target variant must define this appropriately. */
-enum gdb_osabi
-arc_get_osabi (void)
-{
-  return  GDB_OSABI_LINUX;
-
-}	/* arc_get_osabi () */
-
-
-/*! Linux specific initialization function. */
-void
-_initialize_arc_linux_tdep (void)
-{
-  /* register a handler with gdb for the Linux O/S ABI variant for the ARC
-   * processor architecture, providing an initialization function;
-   *
-   * 'bfd_arch_arc' is an enumeration value specifically denoting the ARC
-   *                architecture
-   */
-  gdbarch_register_osabi (bfd_arch_arc, 0,	/* machine (irrelevant) */
-			  GDB_OSABI_LINUX, arc_linux_init_abi);
-}
+}	/* arc_gdbarch_osabi_init () */
