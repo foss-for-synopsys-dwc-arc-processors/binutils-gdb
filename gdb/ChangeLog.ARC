@@ -1,3 +1,22 @@
+2013-03-20  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	* configure.tgt (arc*-*-*): Remove unneeded source files.
+	* Makefile.in (HFILES_NO_SRCDIR): Remove unneeded ARC headers.
+	* arc-aux-registers.c: Deleted.
+	* arc-aux-registers.h: Deleted.
+	* arc-board.c: Deleted.
+	* arc-board.h: Deleted.
+	* arc-elf-tdep.c: Update commenting.
+	(_initialize_arc_elf_tdep): Deleted.
+	(arc_gdbarch_osabi_init): Renamed from arc_elf_init_abi and params
+	changed.
+	* arc-linux-tdep.c (arc_gdbarch_osabi_init): Renamed from
+	arc_linux_init_abi and params changed.
+	(_initialize_arc_linux_tdep): Deleted.
+	* arc-tdep.c (arc_gdbarch_init): Replace call to
+	gdbarch_init_osabi by call to arc_gdbarch_osabi_init.
+	* arc-tdep.h (arc_gdbarch_osabi_init): Replaces arc_get_osabi.
+
 2013-03-17  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* arc-tdep.c, arc-linux-tdep.c: Reflect header file name change from
