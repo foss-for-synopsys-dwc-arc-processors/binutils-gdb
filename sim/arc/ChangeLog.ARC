@@ -1,5 +1,10 @@
 2013-03-19  Joern Rennecke  <joern.rennecke@embecosm.com>
 
+	* Makefile.in (SIM_OBJS): Replace SIM_NEW_COMMAND_OBJS by
+	definition mimus sim-command.o to avoid duplicate definitions.
+
+2013-03-19  Joern Rennecke  <joern.rennecke@embecosm.com>
+
 	* sim-main.h (CGEN_INSN_WORD): Remove typedef.
 
 2013-03-17  Joern Rennecke  <joern.rennecke@embecosm.com>
