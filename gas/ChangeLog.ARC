@@ -1,3 +1,8 @@
+2013-03-20  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* config/tc-arc.c (tc_gen_reloc): Adjust offset to reflect
+	difference between relocation location and instruction start.
+
 2012-03-04  Simon Cook  <simon.cook@embecosm.com>
 
 	* testsuite/gas/all/redef3.d: Replace arc-*-* with arc*-*-*.
