@@ -1,3 +1,10 @@
+2013-03-21  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	* arc-elf-tdep.c: Include simulator register header.
+	(arc_elf_sim_map): New function.
+	(arc_gdbarch_osabi_init): Set simulator register mapping.
+	* arc-tdep.h: Add simulator register numbers for aux regs.
+
 2013-03-20  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* configure.tgt (arc*-*-*): Remove unneeded source files.

@@ -93,6 +93,18 @@
    @todo For now we hardcode only the key registers. Eventually these should
          be sorted out through XML.
 
+   ### Simulator register numbers
+
+   The built-in CGEN simulator uses a register number/register type pair to
+   identify registers. For the core register type, the numbering is the same
+   as for GDB.
+
+   For the auxilliary registers, the numbering follows the ARC architecture
+   numbering, so we must provide a mapping (the simulator has an API call to
+   which we hook in).
+
+   @todo This mapping should be provide via the XML file.
+
    ## ABI related processor details
 
    - r0  .. r7 are the registers used to pass arguments in function calls
@@ -100,11 +112,48 @@
    - when a return value is stored in registers it is in either R0 or in the
      pair (R0,R1).
 
+   
    ### Other comments
 
-   We'll also use Franck Jullien's OpenRISC GDB trick, of only accessing the
-   core registers using G/g packets, requiring aux registers to be accessed
-   using P/p packets. That way a G packet need not be too large. */
+   We'll eventually use Franck Jullien's OpenRISC GDB trick, of only accessing
+   the core registers using G/g packets, requiring aux registers to be
+   accessed using P/p packets. That way a G packet need not be too large.
+
+
+   However, in the short term, we are only supporting a modest number of
+   fixed aux regs, so we just use the G packet.                               */
+/* -------------------------------------------------------------------------- */
+
+/* -------------------------------------------------------------------------- */
+/* Simulator aux reg numbers                                                  */
+/* -------------------------------------------------------------------------- */
+
+#define ARC_AUX_LP_START_SIM_REGNUM              0x002
+#define ARC_AUX_LP_END_SIM_REGNUM                0x003
+#define ARC_AUX_STATUS32_SIM_REGNUM              0x00a
+#define ARC_AUX_STATUS32_L1_SIM_REGNUM           0x00b
+#define ARC_AUX_STATUS32_L2_SIM_REGNUM           0x00c
+#define ARC_AUX_AUX_IRQ_LV12_SIM_REGNUM          0x043
+#define ARC_AUX_AUX_IRQ_LEV_SIM_REGNUM           0x200
+#define ARC_AUX_AUX_IRQ_HINT_SIM_REGNUM          0x201
+#define ARC_AUX_ERET_SIM_REGNUM                  0x400
+#define ARC_AUX_ERBTA_SIM_REGNUM                 0x401
+#define ARC_AUX_ERSTATUS_SIM_REGNUM              0x402
+#define ARC_AUX_ECR_SIM_REGNUM                   0x403
+#define ARC_AUX_EFA_SIM_REGNUM                   0x404
+#define ARC_AUX_ICAUSE1_SIM_REGNUM               0x40a
+#define ARC_AUX_ICAUSE2_SIM_REGNUM               0x40b
+#define ARC_AUX_AUX_IENABLE_SIM_REGNUM           0x40c
+#define ARC_AUX_AUX_ITRIGGER_SIM_REGNUM          0x40d
+#define ARC_AUX_BTA_SIM_REGNUM                   0x412
+#define ARC_AUX_BTA_L1_SIM_REGNUM                0x413
+#define ARC_AUX_BTA_L2_SIM_REGNUM                0x414
+#define ARC_AUX_AUX_IRQ_PULSE_CANCEL_SIM_REGNUM  0x415
+#define ARC_AUX_AUX_IRQ_PENDING_SIM_REGNUM       0x416
+
+
+/* -------------------------------------------------------------------------- */
+/* GDB register numbering                                                     */
 /* -------------------------------------------------------------------------- */
 
 /* Core register definitions. */
