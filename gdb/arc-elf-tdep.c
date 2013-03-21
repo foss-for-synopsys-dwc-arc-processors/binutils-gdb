@@ -54,6 +54,9 @@
 /* ARC header files */
 #include "arc-tdep.h"
 
+/* ARC simulator header files */
+#include "sim/arc/arc-sim-registers.h"
+
 
 /* -------------------------------------------------------------------------- */
 /*                               local types                                  */
@@ -133,6 +136,164 @@ arc_elf_cannot_store_register (struct gdbarch *gdbarch, int regnum)
 }	/* arc_elf_cannot_store_register () */
 
 
+/*! Map GDB registers to ARC simulator registers
+
+    The ARC CGEN based simulator has its own register numbering. This function
+    provides the necessary mapping
+
+    The simulator does not have a simple numbering. Rather registers are known
+    by a class and a number.
+
+    @param[in]  gdb_regnum  The GDB register number to map
+    @param[out] sim_regnum  The corresponding simulator register
+    @param[out] reg_class   The corresponding ARC register class */
+static void
+arc_elf_sim_map (int                gdb_regnum,
+		 int*               sim_regnum,
+		 ARC_RegisterClass *reg_class)
+{
+  if ((0 <= gdb_regnum) && (gdb_regnum <= ARC_LP_COUNT_REGNUM))
+    {
+      /* All core registers apart from reserved, LIMM and PCL have an
+	 identity mapping. */
+      *sim_regnum = gdb_regnum;
+      *reg_class  = ARC_CORE_REGISTER;
+    }
+  else
+    {
+      switch (gdb_regnum)
+	{
+	case ARC_RESERVED_REGNUM:
+	case ARC_LIMM_REGNUM:
+	case ARC_PCL_REGNUM:
+	  /* Unsupported core registers */
+	  *sim_regnum  = -1;
+	  *reg_class = ARC_UNKNOWN_REGISTER;
+	  break;
+
+	case ARC_PC_REGNUM:
+	  /* sim_regnum irrelevant. */
+	  *reg_class = ARC_PROGRAM_COUNTER;
+	  break;
+
+	case ARC_AUX_LP_START_REGNUM:
+	  *sim_regnum = ARC_AUX_LP_START_SIM_REGNUM;
+	  *reg_class  = ARC_AUX_REGISTER;
+	  break;
+
+	case ARC_AUX_LP_END_REGNUM:
+	  *sim_regnum = ARC_AUX_LP_END_SIM_REGNUM;
+	  *reg_class  = ARC_AUX_REGISTER;
+	  break;
+
+	case ARC_AUX_STATUS32_REGNUM:
+	  *sim_regnum = ARC_AUX_STATUS32_SIM_REGNUM;
+	  *reg_class  = ARC_AUX_REGISTER;
+	  break;
+
+	case ARC_AUX_STATUS32_L1_REGNUM:
+	  *sim_regnum = ARC_AUX_STATUS32_L1_SIM_REGNUM;
+	  *reg_class  = ARC_AUX_REGISTER;
+	  break;
+
+	case ARC_AUX_STATUS32_L2_REGNUM:
+	  *sim_regnum = ARC_AUX_STATUS32_L2_SIM_REGNUM;
+	  *reg_class  = ARC_AUX_REGISTER;
+	  break;
+
+	case ARC_AUX_AUX_IRQ_LV12_REGNUM:
+	  *sim_regnum = ARC_AUX_AUX_IRQ_LV12_SIM_REGNUM;
+	  *reg_class  = ARC_AUX_REGISTER;
+	  break;
+
+	case ARC_AUX_AUX_IRQ_LEV_REGNUM:
+	  *sim_regnum = ARC_AUX_AUX_IRQ_LEV_SIM_REGNUM;
+	  *reg_class  = ARC_AUX_REGISTER;
+	  break;
+
+	case ARC_AUX_AUX_IRQ_HINT_REGNUM:
+	  *sim_regnum = ARC_AUX_AUX_IRQ_HINT_SIM_REGNUM;
+	  *reg_class  = ARC_AUX_REGISTER;
+	  break;
+
+	case ARC_AUX_ERET_REGNUM:
+	  *sim_regnum = ARC_AUX_ERET_SIM_REGNUM;
+	  *reg_class  = ARC_AUX_REGISTER;
+	  break;
+
+	case ARC_AUX_ERBTA_REGNUM:
+	  *sim_regnum = ARC_AUX_ERBTA_SIM_REGNUM;
+	  *reg_class  = ARC_AUX_REGISTER;
+	  break;
+
+	case ARC_AUX_ERSTATUS_REGNUM:
+	  *sim_regnum = ARC_AUX_ERSTATUS_SIM_REGNUM;
+	  *reg_class  = ARC_AUX_REGISTER;
+	  break;
+
+	case ARC_AUX_ECR_REGNUM:
+	  *sim_regnum = ARC_AUX_ECR_SIM_REGNUM;
+	  *reg_class  = ARC_AUX_REGISTER;
+	  break;
+
+	case ARC_AUX_EFA_REGNUM:
+	  *sim_regnum = ARC_AUX_EFA_SIM_REGNUM;
+	  *reg_class  = ARC_AUX_REGISTER;
+	  break;
+
+	case ARC_AUX_ICAUSE1_REGNUM:
+	  *sim_regnum = ARC_AUX_ICAUSE1_SIM_REGNUM;
+	  *reg_class  = ARC_AUX_REGISTER;
+	  break;
+
+	case ARC_AUX_ICAUSE2_REGNUM:
+	  *sim_regnum = ARC_AUX_ICAUSE2_SIM_REGNUM;
+	  *reg_class  = ARC_AUX_REGISTER;
+	  break;
+
+	case ARC_AUX_AUX_IENABLE_REGNUM:
+	  *sim_regnum = ARC_AUX_AUX_IENABLE_SIM_REGNUM;
+	  *reg_class  = ARC_AUX_REGISTER;
+	  break;
+
+	case ARC_AUX_AUX_ITRIGGER_REGNUM:
+	  *sim_regnum = ARC_AUX_AUX_ITRIGGER_SIM_REGNUM;
+	  *reg_class  = ARC_AUX_REGISTER;
+	  break;
+
+	case ARC_AUX_BTA_REGNUM:
+	  *sim_regnum = ARC_AUX_BTA_SIM_REGNUM;
+	  *reg_class  = ARC_AUX_REGISTER;
+	  break;
+
+	case ARC_AUX_BTA_L1_REGNUM:
+	  *sim_regnum = ARC_AUX_BTA_L1_SIM_REGNUM;
+	  *reg_class  = ARC_AUX_REGISTER;
+	  break;
+
+	case ARC_AUX_BTA_L2_REGNUM:
+	  *sim_regnum = ARC_AUX_BTA_L2_SIM_REGNUM;
+	  *reg_class  = ARC_AUX_REGISTER;
+	  break;
+
+	case ARC_AUX_AUX_IRQ_PULSE_CANCEL_REGNUM:
+	  *sim_regnum = ARC_AUX_AUX_IRQ_PULSE_CANCEL_SIM_REGNUM;
+	  *reg_class  = ARC_AUX_REGISTER;
+	  break;
+
+	case ARC_AUX_AUX_IRQ_PENDING_REGNUM:
+	  *sim_regnum = ARC_AUX_AUX_IRQ_PENDING_SIM_REGNUM;
+	  *reg_class  = ARC_AUX_REGISTER;
+	  break;
+
+	default:
+	  *sim_regnum  = -1;
+	  *reg_class = ARC_UNKNOWN_REGISTER;
+	}
+    }
+}	/* arc_elf_sim_map () */
+
+
 /* -------------------------------------------------------------------------- */
 /*                               externally visible functions                 */
 /* -------------------------------------------------------------------------- */
@@ -169,5 +330,9 @@ arc_gdbarch_osabi_init (struct gdbarch *gdbarch)
   /* Set up target dependent GDB architecture entries. */
   set_gdbarch_cannot_fetch_register (gdbarch, arc_elf_cannot_fetch_register);
   set_gdbarch_cannot_store_register (gdbarch, arc_elf_cannot_store_register);
+
+  /* Provide the built-in simulator with a function that it can use to map
+     from gdb register numbers to h/w register numbers */
+  arc_set_register_mapping (&arc_elf_sim_map);
 
 }	/* arc_gdbarch_osabi_init () */
