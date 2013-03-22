@@ -1,3 +1,7 @@
+2013-03-17  Jeremy Bennett  <jeremy.bennett@embecoms.com>
+
+	* arc-dis.c: Include arc-opc.h, not arc-opc-cgen.h.
+
 2013-03-17  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* arc-opinst.c: Regenerate.
@@ -46,6 +50,12 @@
 
 	* arc-ext.c (arcExtMap_instName): set but unused variables
 	removed.
+
+2012-12-10  Mischa Jonker  <mischa.jonker@synopsys.com>
+
+	* arcompact-dis.c (dsmOneArcInst): Fix decoding of register when doing
+	indirect jumps with short instructions (j_s, jl_s, j_s.d, jl_s.d).
+	It only worked for r0 and blink. Now it works also for r1..3, r12..15.
 
 2012-12-10  Mischa Jonker  <mischa.jonker@synopsys.com>
 
