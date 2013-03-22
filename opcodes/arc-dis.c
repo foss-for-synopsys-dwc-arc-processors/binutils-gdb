@@ -34,7 +34,7 @@
 #include "symcat.h"
 #include "libiberty.h"
 #include "arc-desc.h"
-#include "arc-opc-cgen.h"
+#include "arc-opc.h"
 #include "opintl.h"
 
 /* Default text to print if an instruction isn't recognized.  */
