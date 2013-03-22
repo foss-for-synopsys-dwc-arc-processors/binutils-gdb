@@ -1,3 +1,7 @@
+2013-03-22  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	* arc-linux-tdep.c (arc_gdbarch_osabi_init): Correct prototype.
+
 2013-03-21  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* arc-elf-tdep.c: Include simulator register header.

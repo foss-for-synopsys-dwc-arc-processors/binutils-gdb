@@ -641,10 +641,9 @@ arc_get_osabi (void)
 
     @param[in,out] gdbarch  The gdbarch we are initializing. */
 void
-arc_gdbarch_osabi_init (struct gdbarch_info info, struct gdbarch *gdbarch)
+arc_gdbarch_osabi_init (struct gdbarch *gdbarch)
 {
   struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
-  struct gdbarch_info info 
 
   /* Fill in target-dependent info in ARC-private structure. */
   tdep->is_sigtramp = arc_linux_is_sigtramp;
