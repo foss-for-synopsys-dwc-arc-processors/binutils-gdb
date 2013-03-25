@@ -1,3 +1,14 @@
+2013-03-25  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	* arc-elf-tdep.c (arc_elf_breakpoint_from_pc): New function based
+	on old arc_breakpoint_from_pc, but using BRK_S.
+	(arc_gdbarch_osabi_init): Add call to arc_elf_breakpoint_from_pc.
+	* arc-linux-tdep.c (arc_linux_breakpoint_from_pc): New function based
+	on old arc_breakpoint_from_pc.
+	(arc_gdbarch_osabi_init): Add call to arc_linux_breakpoint_from_pc.
+	* arc-tdep.c (arc_breakpoint_from_pc): Deleted.
+	(arc_gdbarch_init): Delete call to arc_breakpoint_from_pc.
+
 2013-03-22  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* arc-linux-tdep.c (arc_gdbarch_osabi_init): Correct prototype.

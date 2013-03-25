@@ -136,6 +136,34 @@ arc_elf_cannot_store_register (struct gdbarch *gdbarch, int regnum)
 }	/* arc_elf_cannot_store_register () */
 
 
+/*! Get breakpoint which is approriate for address at which it is to be set.
+
+    For ARC ELF, breakpoint uses the 16-bit BRK_S instruction, which is 0x7fff
+    (little endian) or 0xff7f (big endian).
+
+    @todo Surely we should be able to use the same breakpoint instruction for
+          both Linux and ELF?
+
+    @param[in]     gdbarch  Current GDB architecture
+    @param[in,out] pcptr    Pointer to the PC where we want to place a
+                            breakpoint
+    @param[out]    lenptr   Number of bytes used by the breakpoint.
+    @return                 The byte sequence of a breakpoint instruction. */
+static const unsigned char *
+arc_elf_breakpoint_from_pc (struct gdbarch *gdbarch, CORE_ADDR * pcptr,
+			    int *lenptr)
+{
+  static const unsigned char breakpoint_instr_be[] = { 0x7f, 0xff };
+  static const unsigned char breakpoint_instr_le[] = { 0xff, 0x7f };
+
+  *lenptr = sizeof (breakpoint_instr_be);
+  return (gdbarch_byte_order (gdbarch) == BFD_ENDIAN_BIG)
+    ? breakpoint_instr_be
+    : breakpoint_instr_le;
+
+}	/* arc_elf_breakpoint_from_pc () */
+
+
 /*! Map GDB registers to ARC simulator registers
 
     The ARC CGEN based simulator has its own register numbering. This function
@@ -330,6 +358,7 @@ arc_gdbarch_osabi_init (struct gdbarch *gdbarch)
   /* Set up target dependent GDB architecture entries. */
   set_gdbarch_cannot_fetch_register (gdbarch, arc_elf_cannot_fetch_register);
   set_gdbarch_cannot_store_register (gdbarch, arc_elf_cannot_store_register);
+  set_gdbarch_breakpoint_from_pc (gdbarch, arc_elf_breakpoint_from_pc);
 
   /* Provide the built-in simulator with a function that it can use to map
      from gdb register numbers to h/w register numbers */
