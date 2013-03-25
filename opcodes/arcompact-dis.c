@@ -75,6 +75,7 @@ static bfd_vma bfd_getm32_ac (unsigned int) ATTRIBUTE_UNUSED;
 #define FIELDB(word)      (BITS ((word), 12, 14))
 #define FIELDC(word)      (BITS ((word), 6, 11))
 #define OPCODE_AC(word)   (BITS ((word), 11, 15))
+
 #define FIELDA_AC(word)   (BITS ((word), 0, 2))
 #define FIELDB_AC(word)   (BITS ((word), 8, 10))
 #define FIELDC_AC(word)   (BITS ((word), 5, 7))
@@ -221,6 +222,18 @@ static bfd_vma bfd_getm32_ac (unsigned int) ATTRIBUTE_UNUSED;
 	fieldC |= FIELDC_AC(state->words[0]);	\
 	CHECK_FIELD(fieldC);			\
 	}
+
+#define CHECK_FIELD_H_EM() {			\
+	fieldC = ((FIELDA_AC(state->words[0]) & 0x03) << 3);	\
+	fieldC |= FIELDC_AC(state->words[0]);	\
+	if (fieldC == 0x1E)			\
+	  {					\
+	    is_limm++;				\
+	    fieldCisReg = 0;			\
+	    PUT_NEXT_WORD_IN(fieldC);		\
+	    limm_value = fieldC;		\
+	  }					\
+       }
 
 #define FIELD_H_AC() {				\
 	fieldC = ((FIELDA_AC(state->words[0])) << 3);	\
@@ -635,7 +648,8 @@ enum
 {
   op_BC = 0, op_BLC = 1, op_LD  = 2, op_ST = 3, op_MAJOR_4  = 4,
   /* START ARC LOCAL */
-  op_MAJOR_5 = 5, op_MAJOR_6 = 6, op_SIMD=9,      op_LD_ADD = 12, op_ADD_SUB_SHIFT  = 13,
+  op_MAJOR_5 = 5, op_MAJOR_6 = 6, op_MAJOR_8 = 8, op_SIMD=9, op_LD_ST = 10,
+  op_JLI_EI = 11, op_LD_ADD = 12, op_ADD_SUB_SHIFT  = 13,
   /* END ARC LOCAL */
   op_ADD_MOV_CMP = 14, op_S = 15, op_LD_S = 16, op_LDB_S = 17,
   op_LDW_S = 18, op_LDWX_S  = 19, op_ST_S = 20, op_STB_S = 21,
@@ -823,7 +837,13 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
       {
 	case 0: instrName  = "ld";  state->_load_len = 4; break;
 	case 1: instrName  = "ldb"; state->_load_len = 1; break;
-	case 2: instrName  = "ldw"; state->_load_len = 2; break;
+	case 2:
+	  if(info->mach == E_ARC_MACH_ARCV2)
+	    instrName = "ldh";
+	  else
+	    instrName  = "ldw";
+	  state->_load_len = 2;
+	  break;
 	default:
 	  instrName = "??? (0[3])";
 	  state->flow = invalid_instr;
@@ -838,7 +858,12 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
       {
 	case 0: instrName = "st";  break;
 	case 1: instrName = "stb"; break;
-	case 2: instrName = "stw"; break;
+	case 2:
+	  if(info->mach == E_ARC_MACH_ARCV2)
+	    instrName = "sth";
+	  else
+	    instrName = "stw";
+	  break;
 	default:
 	  instrName = "??? (2[3])";
 	  state->flow = invalid_instr;
@@ -892,8 +917,18 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 	case 24: instrName = "sub2"; break;
 	case 25: instrName = "sub3"; break;
 	case 26: instrName = "mpy"; break;
-	case 27: instrName = "mpyh"; break;
-	case 28: instrName = "mpyhu"; break;
+	case 27:
+	  if(info->mach == E_ARC_MACH_ARCV2)
+	    instrName = "mpym";
+	  else
+	    instrName = "mpyh";
+	  break;
+	case 28:
+	  if(info->mach == E_ARC_MACH_ARCV2)
+	    instrName = "mpymu";
+	  else
+	    instrName = "mpyhu";
+	  break;
 	case 29: instrName = "mpyu"; break;
 	case 30: instrName = "mpyw"; break;
 	case 31: instrName = "mpyuw"; break;
@@ -907,13 +942,35 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 	  condCodeIsPartOfName = 1;
 	  state->isBranch = 1;
 	  break;
+	case 36:
+	  instrName = "bi";
+	  decodingClass = 46;
+	  break;
+	case 37:
+	  instrName = "bih";
+	  decodingClass = 46;
+	  break;
+	case 38:
+	  instrName = "ldi";
+	  decodingClass = 47;
+	  break;
+	case 39:
+	  decodingClass = 45;
+	  instrName = "aex";
+	  break;
 	case 40:
 	  instrName = "lp";
 	  decodingClass = 11;
 	  condCodeIsPartOfName = 1;
 	  state->isBranch = 1;
 	  break;
-	case 41: instrName = "flag"; decodingClass = 3; break;
+	case 41:
+	  if (BITS(state->words[0],15,15))
+	    instrName = "kflag";
+	  else
+	    instrName = "flag";
+	  decodingClass = 3;
+	  break;
 	case 42: instrName = "lr"; decodingClass = 10;  break;
 	case 43: instrName = "sr"; decodingClass =  8;  break;
 	case 44: instrName = "bmskn"; break;
@@ -927,18 +984,27 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 	    case 3: instrName = "ror";  break;
 	    case 4: instrName = "rrc";  break;
 	    case 5: instrName = "sexb"; break;
-	    case 6: instrName = "sexw"; break;
+	    case 6:
+	      if(info->mach == E_ARC_MACH_ARCV2)
+		instrName = "sexh";
+	      else
+		instrName = "sexw";
+	      break;
 	    case 7: instrName = "extb"; break;
-	    case 8: instrName = "extw"; break;
+	    case 8:
+	       if(info->mach == E_ARC_MACH_ARCV2)
+		 instrName = "exth";
+	       else
+		 instrName = "extw";
+	       break;
 	    case 9: instrName = "abs";  break;
 	    case 10: instrName = "not"; break;
 	    case 11: instrName = "rlc"; break;
 	    case 12:  instrName = "ex";
-
-
 	      decodingClass = 34;
 	      break; // ramana adds
 
+	    case 13: instrName = "rol"; break;
 	      /* START ARC LOCAL */
 	    case 16: instrName = "llock"; decodingClass = 34; break;
 	    case 17: instrName = "scond"; decodingClass = 34; break;
@@ -963,6 +1029,8 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 		  break;
 		case 4 : instrName = "rtie" ; break;
 		case 5 : instrName = "brk"; break;
+		case 6 : instrName = "seti"; decodingClass = 32; break;
+		case 7 : instrName = "clri"; decodingClass = 32; break;
 		default:
 
 		  instrName = "???";
@@ -972,7 +1040,15 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 	      break;
 	    }
 	  break;
-      }
+	case 0x38: instrName = "seteq"; break;
+	case 0x39: instrName = "setne"; break;
+	case 0x3A: instrName = "setlt"; break;
+	case 0x3B: instrName = "setge"; break;
+	case 0x3C: instrName = "setlo"; break;
+	case 0x3D: instrName = "seths"; break;
+	case 0x3E: instrName = "setle"; break;
+	case 0x3F: instrName = "setgt"; break;
+   }
 
       if (!instrName)
       {
@@ -996,56 +1072,104 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
       decodingClass = 0;  /* Default for Major opcode 5 ... */
       subopcode = BITS(state->words[0],16,21);
       switch (subopcode)
-      {
+	{
 	case 0: instrName = "asl"; break;
 	case 1: instrName = "lsr"; break;
 	case 2: instrName = "asr"; break;
 	case 3: instrName = "ror"; break;
-	case 4: instrName = "mul64"; mul =1; decodingClass = 2; break;
-	case 5: instrName = "mulu64"; mul =1; decodingClass = 2; break;
+	case 4:
+	  if(info->mach == E_ARC_MACH_ARCV2)
+	    {
+	      instrName = "div";
+	    }
+	  else
+	    {
+	      instrName = "mul64";
+	      mul =1;
+	      decodingClass = 2;
+	    }
+	  break;
+	case 5:
+	  if((info->mach) == E_ARC_MACH_ARCV2)
+	    {
+	      instrName = "divu";
+	    }
+	  else
+	    {
+	      instrName = "mulu64";
+	      mul =1;
+	      decodingClass = 2;
+	    }
+	  break;
 
 	  /* ARC A700 */
-      case 6: instrName = "adds" ;break;
+	case 6: instrName = "adds" ;break; /*Illegal for EM */
+	case 7: instrName = "subs"; break; /*Illegal for EM */
 
-      case 7: instrName = "subs"; break;
-      case 8: instrName = "divaw"; break;
-      case 0xA: instrName = "asls"; break;
-      case 0xB: instrName = "asrs"; break;
-      case 0x28: instrName = "addsdw";break;
-      case 0x29: instrName = "subsdw"; break;
+	case 8:
+	  if((info->mach) == E_ARC_MACH_ARCV2)
+	    {
+	      instrName = "rem";
+	    }
+	  else
+	    {
+	      instrName = "divaw";
+	    }
+	  break;
+	case 9: instrName = "remu"; break;
+	case 0xA: instrName = "asls"; break; /*Illegal for EM */
+	case 0xB: instrName = "asrs"; break; /*Illegal for EM */
+	case 0x28: instrName = "addsdw";break;
+	case 0x29: instrName = "subsdw"; break;
 
-      case 47:
-	switch(BITS(state->words[0],0,5))
-	  {
-	  case 0: instrName = "swap"; decodingClass = 1; break;
-	  case 1: instrName = "norm"; decodingClass = 1; break;
-	    /* ARC A700 DSP Extensions */
-	  case 2: instrName = "sat16"; decodingClass = 1; break;
-	  case 3: instrName = "rnd16"; decodingClass = 1; break;
-	  case 4: instrName = "abssw"; decodingClass = 1; break;
-	  case 5: instrName = "abss"; decodingClass = 1; break;
-	  case 6: instrName = "negsw"; decodingClass = 1; break;
-	  case 7: instrName = "negs"; decodingClass = 1; break;
+	case 47:
+	  decodingClass = 1;
+	  switch(BITS(state->words[0],0,5))
+	    {
+	    case 0: instrName = "swap"; decodingClass = 1; break;
+	    case 1: instrName = "norm"; decodingClass = 1; break;
+	      /* ARC A700 DSP Extensions */
+	    case 2:instrName = "sat16"; decodingClass = 1; break;
+	    case 3: instrName = "rnd16"; decodingClass = 1; break;
+	    case 4: instrName = "abssw"; decodingClass = 1; break;
+	    case 5: instrName = "abss"; decodingClass = 1; break;
+	    case 6: instrName = "negsw"; decodingClass = 1; break;
+	    case 7: instrName = "negs"; decodingClass = 1; break;
 
-	  case 8: instrName = "normw"; decodingClass = 1; break;
+	    case 8:
+	      if(info->mach == E_ARC_MACH_ARCV2)
+		instrName = "normh";
+	      else
+		instrName = "normw";
+	      decodingClass = 1;
+	      break;
 
-	  /* START ARC LOCAL */
-	  case 9: instrName = "swape"; decodingClass = 1; break;
-	  /* END ARC LOCAL */
+	      /* START ARC LOCAL */
+	    case 9: instrName = "swape"; decodingClass = 1; break;
+	      /* END ARC LOCAL */
+	    case 0x0A: instrName = "lsl16"; break;
+	    case 0x0B: instrName = "lsr16"; break;
+	    case 0x0C: instrName = "asr16"; break;
+	    case 0x0D: instrName = "asr8"; break;
+	    case 0x0E: instrName = "lsr8"; break;
+	    case 0x0F: instrName = "lsl8"; break;
+	    case 0x10: instrName = "rol8"; break;
+	    case 0x11: instrName = "ror8"; break;
+	    case 0x12: instrName = "ffs"; break;
+	    case 0x13: instrName = "fls"; break;
 
-	  default:
-	    instrName = "???";
-	    state->flow =invalid_instr;
-	    break;
-
-	  }
-	break;
-      default:
-	instrName = "??? (2[3])";
-	state->flow = invalid_instr;
-	break;
-      }
-    break;
+	    default:
+	      instrName = "???";
+	      state->flow =invalid_instr;
+	      break;
+	    }
+	  break;
+	default:
+	  instrName = "??? (2[3])";
+	  state->flow = invalid_instr;
+	  break;
+	}
+      break;
 
   /* START ARC LOCAL */
   case op_MAJOR_6:
@@ -1079,6 +1203,19 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 	  }
 	  break;
 	}
+    break;
+
+  case op_MAJOR_8:
+    if (BIT(state->words[0],2))
+      {
+	instrName = "ld_s";
+	decodingClass = 54;
+      }
+    else
+      {
+	instrName = "mov_s";
+	decodingClass = 53;
+      }
     break;
   /* END ARC LOCAL */
 
@@ -2050,10 +2187,26 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
       }
     else
       {
-	instrName = "???_SIMD";
-	state->flow = invalid_instr;
+	if (BIT(state->words[0],3))
+	  {
+	    decodingClass = 50;
+	    instrName = "add_s";
+	  }
+	else
+	  {
+	    if (BIT(state->words[0],4))
+	      {
+		decodingClass = 48;
+		instrName = "sub_s";
+	      }
+	    else
+	      {
+		decodingClass = 49;
+		instrName = "ld_s.as";
+	      }
+	  }
       }
-	break;
+    break;
 
 
     case op_LD_ADD:
@@ -2063,7 +2216,12 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 	{
 	case 0: instrName = "ld_s"; break;
 	case 1: instrName = "ldb_s"; break;
-	case 2: instrName = "ldw_s"; break;
+	case 2:
+	  if(info->mach == E_ARC_MACH_ARCV2)
+	    instrName = "ldh_s";
+	  else
+	    instrName = "ldw_s";
+	  break;
 	case 3: instrName = "add_s"; break;
 	default:
 	  instrName = "??? (2[3])";
@@ -2088,20 +2246,66 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
       }
     break;
 
-    case op_ADD_MOV_CMP:
+  case op_LD_ST:
+    if (BIT(state->words[0],3))
+      {
+	instrName = "ldi_s";
+	decodingClass = 58;
+      }
+    else
+      {
+	decodingClass = 55;
+	if (BIT(state->words[0],4))
+	  instrName = "st_s r0,[gp";
+	else
+	  instrName = "ld_s r1,[gp";
+      }
+    break;
+
+  case op_JLI_EI:
+    decodingClass = 56;
+    if (BIT(state->words[0],10))
+      {
+	instrName = "ei_s";
+      }
+    else
+      {
+	instrName = "jli_s";
+      }
+    break;
+
+  case op_ADD_MOV_CMP:
     /* One Dest/Source can be any of r0 - r63 */
       decodingClass = 17;  /* default for Major opcode 14 ... */
-      switch(BITS(state->words[0],3,4))
-      {
-	case 0: instrName = "add_s"; break;
-	case 1:
-	case 3: instrName = "mov_s"; decodingClass = 18; break;
-	case 2: instrName = "cmp_s"; decodingClass = 18; break;
-	default:
-	  instrName = "??? (2[3])";
-	  state->flow = invalid_instr;
-	  break;
-      }
+      if(info->mach == E_ARC_MACH_ARCV2)
+	switch(BITS(state->words[0],2,4))
+	  {
+	  case 0: instrName = "add_s"; break;
+	  case 1: instrName = "add_s"; decodingClass = 51; break;
+
+	  case 3: instrName = "mov_s"; decodingClass = 52; break;
+	  case 4:
+	  case 5: instrName = "cmp_s"; decodingClass = 52; break;
+
+	  case 7: instrName = "mov_s.ne"; decodingClass = 52; break;
+	  default:
+	    instrName = "??? (2[3])";
+	    state->flow = invalid_instr;
+	    break;
+	  }
+      else
+	switch(BITS(state->words[0],3,4))
+	  {
+	  case 0: instrName = "add_s"; break;
+	  case 1:
+	  case 3: instrName = "mov_s"; decodingClass = 18; break;
+	  case 2: instrName = "cmp_s"; decodingClass = 18; break;
+	  default:
+	    instrName = "??? (2[3])";
+	    state->flow = invalid_instr;
+	    break;
+	  }
+
       break;
 
     case op_S:
@@ -2139,7 +2343,7 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 
 		  /* Unimplemented instruction reserved in ARC700 */
 		case 1: instrName = "unimp_s";break;
-
+		case 2: instrName = "swi_s";break;
 
 		case 4: instrName = "jeq_s [blink]";
 		case 5: if (!instrName) instrName = "jne_s [blink]";
@@ -2180,12 +2384,45 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 	case 5 : instrName = "or_s"; break;
 	case 6 : instrName = "bic_s"; break;
 	case 7 : instrName = "xor_s"; break;
+
+	case 9 : instrName = "mpyw_s"; break;
+	case 10 : instrName = "mpyuw_s"; break;
 	case 11: instrName = "tst_s"; decodingClass = 14; break;
-	case 12: instrName = "mul64_s"; mul =1; decodingClass = 14; break;
+	case 12:
+	  if(info->mach == E_ARC_MACH_ARCV2)
+	    {
+	      instrName = "mpy_s";
+	      mul =1;
+	    }
+	  else
+	    {
+	      instrName = "mul64_s";
+	      mul =1;
+	      decodingClass = 14;
+	    }
+	  break;
 	case 13: instrName = "sexb_s"; decodingClass = 14; break;
-	case 14: instrName = "sexw_s"; decodingClass = 14; break;
-	case 15: instrName = "extb_s"; decodingClass = 14; break;
-	case 16: instrName = "extw_s"; decodingClass = 14; break;
+	case 14:
+	  if(info->mach == E_ARC_MACH_ARCV2)
+	    instrName = "sexh_s";
+	  else
+	    instrName = "sexw_s";
+	  decodingClass = 14;
+	  break;
+	case 15:
+	  if(info->mach == E_ARC_MACH_ARCV2)
+	    instrName = "exth_s";
+	  else
+	    instrName = "extb_s";
+	  decodingClass = 14;
+	  break;
+	case 16:
+	  if(info->mach == E_ARC_MACH_ARCV2)
+	    instrName = "exth_s";
+	  else
+	    instrName = "extw_s";
+	  decodingClass = 14;
+	  break;
 	case 17: instrName = "abs_s"; decodingClass = 14; break;
 	case 18: instrName = "not_s"; decodingClass = 14; break;
 	case 19: instrName = "neg_s"; decodingClass = 14; break;
@@ -2222,13 +2459,19 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 
     case op_LDW_S:
     /* ARCompact 16-bit Load with offset, Major Opcode 0x12 */
-      instrName = "ldw_s";
+      if(info->mach == E_ARC_MACH_ARCV2)
+	instrName = "ldh_s";
+      else
+	instrName = "ldw_s";
       decodingClass = 28;
       break;
 
     case op_LDWX_S:
     /* ARCompact 16-bit Load with offset, Major Opcode 0x13 */
-      instrName = "ldw_s.x";
+      if(info->mach == E_ARC_MACH_ARCV2)
+	instrName = "ldh_s.x";
+      else
+	instrName = "ldw_s.x";
       decodingClass = 28;
       break;
 
@@ -2246,7 +2489,10 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 
     case op_STW_S:
     /* ARCompact 16-bit Store with offset, Major Opcode 0x16 */
-      instrName = "stw_s";
+      if(info->mach == E_ARC_MACH_ARCV2)
+	instrName = "sth_s";
+      else
+	instrName = "stw_s";
       decodingClass = 28;
       break;
 
@@ -2282,8 +2528,32 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 	  else
 	    instrName = "sub_s";
 	  break;
-	case 6: instrName = "pop_s"; decodingClass = 31; break;
-	case 7: instrName = "push_s"; decodingClass = 31; break;
+	case 6:
+	  if (info->mach == E_ARC_MACH_ARCV2
+	      && (!BIT(state->words[0],0)))
+	    {
+	      decodingClass = 57;
+	      instrName = "leave_s";
+	    }
+	  else
+	    {
+	      instrName = "pop_s";
+	      decodingClass = 31;
+	    }
+	  break;
+	case 7:
+	  if (info->mach == E_ARC_MACH_ARCV2
+	      && (!BIT(state->words[0],0)))
+	    {
+	      decodingClass = 57;
+	      instrName = "enter_s";
+	    }
+	  else
+	    {
+	      decodingClass = 31;
+	      instrName = "push_s";
+	    }
+	  break;
 	default:
 	  instrName = "??? (2[3])";
 	  state->flow = invalid_instr;
@@ -2298,7 +2568,12 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
       {
 	case 0: instrName = "ld_s"; break;
 	case 1: instrName = "ldb_s"; break;
-	case 2: instrName = "ldw_s"; break;
+	case 2:
+	  if(info->mach == E_ARC_MACH_ARCV2)
+	    instrName = "ldh_s";
+	  else
+	    instrName = "ldw_s";
+	  break;
 	case 3: instrName = "add_s"; break;
       }
       break;
@@ -2855,6 +3130,16 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
       /* ST instruction. */
       CHECK_FIELD_B();
       CHECK_FIELD_C();
+
+      /*ARCv2*/
+      if(info->mach == E_ARC_MACH_ARCV2
+	 && BIT(state->words[0],0))
+	{
+	  fieldCisReg = 0;
+	  is_shimm++;
+	  fieldC = (BITS ((signed int) state->words[0], 6, 11));
+	}
+
       state->source_operand.registerNum = fieldC;
       state->sourceType = fieldCisReg ? ARC_REGISTER : ARC_LIMM ;
       fieldA  = FIELDD9(state->words[0]); /* shimm */
@@ -2922,7 +3207,7 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 
       write_instr_name();
       WRITE_FORMAT_x_COMMA_LB(B);
-      /* Try to print B as an aux reg if it is not a core reg. */
+      /* Try to print C as an aux reg if it is not a core reg. */
       usesAuxReg = 1;
       WRITE_FORMAT_x(C);
       WRITE_FORMAT_RB();
@@ -3185,7 +3470,15 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 
       /* add_s instruction, one Dest/Source can be any of r0 - r63 */
 
-      CHECK_FIELD_H_AC();
+      if(info->mach == E_ARC_MACH_ARCV2)
+	{
+	  CHECK_FIELD_H_EM();
+	}
+      else
+	{
+	  CHECK_FIELD_H_AC();
+	}
+
       FIELD_B_AC();
 
       write_instr_name();
@@ -3739,6 +4032,349 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
     break;
 
     /***************SIMD decoding ends*********************/
+
+  case 45:
+    CHECK_FIELD_B();
+    if(BITS(state->words[0],22,23) == 3)
+      {
+	CHECK_COND();
+	if (BITS(state->words[0],5,5))
+	  {
+	    /*shimm*/
+	    FIELD_C();
+	    fieldCisReg = 0;
+	  }
+	else
+	  {
+	    if (is_limm)
+	      {
+		FIELD_C();
+		if (!fieldCisReg)
+		  fieldC = fieldB;
+	      }
+	    else
+	      {
+		CHECK_FIELD_C();
+	      }
+	  }
+      }
+    else if (BITS(state->words[0],22,23) == 0)
+      {
+	if (is_limm)
+	  {
+	    FIELD_C();
+	    if (!fieldCisReg)
+	      fieldC = fieldB;
+	  }
+	else
+	  {
+	    CHECK_FIELD_C();
+	  }
+      }
+    else if (BITS(state->words[0],22,23) == 1)
+      {
+	FIELD_C();
+	fieldCisReg = 0;
+      }
+    else
+      {
+	fieldC = FIELDS(state->words[0]);
+	fieldCisReg = 0;
+      }
+
+    write_instr_name();
+    WRITE_FORMAT_x_COMMA_LB(B);
+    /* Try to print B as an aux reg if it is not a core reg. */
+    usesAuxReg = 1;
+    WRITE_FORMAT_x(C);
+    WRITE_FORMAT_RB();
+    my_sprintf(state, state->operandBuffer, formatString, fieldB, fieldC);
+    write_comments();
+    break;
+  case 46:
+    /*For ARCtangent 32-bit instructions with 1 operand*/
+    CHECK_FIELD_C();
+    write_instr_name();
+    WRITE_FORMAT_LB_Rx_RB(C);
+    my_sprintf(state, state->operandBuffer, formatString, fieldC);
+    write_comments();
+    break;
+  case 47:
+    /* For LDIs*/
+    FIELD_B();
+    switch(BITS(state->words[0],22,23))
+      {
+      case 0:
+	if (is_limm)
+	  {
+	    FIELD_C();
+	    if (!fieldCisReg)
+	      fieldC = fieldB;
+	  }
+	else
+	  {
+	    CHECK_FIELD_C();
+	  }
+	break;
+      case 3:
+	CHECK_COND();
+      case 1:
+	FIELD_C();
+	fieldCisReg = 0;
+	break;
+      case 2:
+	fieldC = FIELDS(state->words[0]);
+	fieldCisReg = 0;
+	break;
+      }
+
+    write_instr_name();
+    WRITE_FORMAT_x_COMMA_LB(B);
+    WRITE_FORMAT_x(C);
+    WRITE_FORMAT_RB();
+    my_sprintf(state, state->operandBuffer, formatString, fieldB, fieldC);
+    write_comments();
+    break;
+
+  case 48:
+    /* ARCompact 16-bit sub_s a,b,c */
+
+      FIELD_C_AC();
+      FIELD_B_AC();
+      FIELD_A_AC();
+
+      write_instr_name();
+      WRITE_FORMAT_x(A);
+      WRITE_FORMAT_COMMA_x(B);
+      WRITE_FORMAT_COMMA_x(C);
+      WRITE_NOP_COMMENT();
+      my_sprintf(state, state->operandBuffer, formatString, fieldA, fieldB, fieldC);
+      break;
+
+  case 49:
+    /* ARCompact 16-bit ld_s.as a,[b,c] */
+
+      FIELD_C_AC();
+      FIELD_B_AC();
+      FIELD_A_AC();
+
+      write_instr_name();
+      WRITE_FORMAT_x_COMMA_LB(A);
+      WRITE_FORMAT_x(B);
+      WRITE_FORMAT_COMMA_x_RB(C);
+      WRITE_NOP_COMMENT();
+      my_sprintf(state, state->operandBuffer, formatString, fieldA, fieldB, fieldC);
+      break;
+
+  case 50:
+    /* ARCompact 16-bit add_s r,b,u6 */
+
+      FIELD_B_AC();
+
+      fieldAisReg = 0;
+      fieldA = (BITS(state->words[0], 4,6) << 3) | BITS(state->words[0], 0,2);
+      fieldC = (BITS(state->words[0], 7, 7)) & 0x01;
+
+      write_instr_name();
+      WRITE_FORMAT_x(C);
+      WRITE_FORMAT_COMMA_x(B);
+      WRITE_FORMAT_COMMA_x(A);
+      WRITE_NOP_COMMENT();
+      my_sprintf(state, state->operandBuffer, formatString, fieldC, fieldB, fieldA);
+      break;
+
+    case 51:
+
+      /* Only EM!*/
+
+      /* Check H field*/
+      fieldB = ((FIELDA_AC(state->words[0]) & 0x03) << 3);
+      fieldB |= FIELDC_AC(state->words[0]);
+      if (fieldB == 0x1E)
+	{
+	  is_limm++;
+	  fieldBisReg = 0;
+	  PUT_NEXT_WORD_IN(fieldB);
+	  limm_value = fieldB;
+
+	  /*first argument is 0*/
+	  fieldA = 0;
+	  fieldAisReg = 0;
+	}
+      else
+	{
+	  fieldA = fieldB;
+	}
+
+      /*short s3*/
+      fieldC = FIELDB_AC(state->words[0]);
+      fieldC = (fieldC == 7) ? -1 : fieldC;
+      fieldCisReg = 0;
+
+      write_instr_name();
+      WRITE_FORMAT_x(A);
+      WRITE_FORMAT_COMMA_x(B);
+      WRITE_FORMAT_COMMA_x(C);
+      WRITE_NOP_COMMENT();
+      my_sprintf(state, state->operandBuffer, formatString, fieldA, fieldB, fieldC);
+      break;
+
+    case 52:
+
+      /* mov_s/cmp_s instruction */
+
+      if (BITS(state->words[0],2,4) == 3)
+	{
+	  /* mov 0/h, s3*/
+	  fieldC = ((FIELDA_AC(state->words[0]) & 0x03) << 3);
+	  fieldC |= FIELDC_AC(state->words[0]);
+	  if (fieldC == 0x1E)
+	    {
+	      fieldCisReg = 0;
+	      fieldC = 0;
+	    }
+	}
+      else
+	{
+	  CHECK_FIELD_H_EM();
+	}
+
+      if (BIT(state->words[0], 2) && (BITS(state->words[0],2,4) != 7))
+	{
+	  /*short s3*/
+	  fieldB = FIELDB_AC(state->words[0]);
+	  fieldB = (fieldB == 7) ? -1 : fieldB;
+	  fieldBisReg = 0;
+	}
+      else
+	{
+	  FIELD_B_AC();
+	}
+
+      write_instr_name();
+      if (BIT(state->words[0],2) && (BITS(state->words[0],2,4) != 7))
+      {
+	/*<op> h(limm,0), s3*/
+	WRITE_FORMAT_x(C);
+	WRITE_FORMAT_COMMA_x(B);
+	WRITE_NOP_COMMENT();
+	my_sprintf(state, state->operandBuffer, formatString, fieldC, fieldB);
+      }
+      else
+      {
+	/*<op> b, h(limm) */
+	WRITE_FORMAT_x(B);
+	WRITE_FORMAT_COMMA_x(C);
+	WRITE_NOP_COMMENT();
+	my_sprintf(state, state->operandBuffer, formatString, fieldB, fieldC);
+      }
+      break;
+
+  case 53:
+    /*mov_s g,h*/
+    CHECK_FIELD_H_EM();
+
+    /*Check field g*/
+    fieldB = BITS(state->words[0],3,4) << 3;
+    fieldB |= FIELDB_AC(state->words[0]);
+    if (fieldB == 30)
+      {
+	fieldBisReg = 0;
+	fieldB = 0;
+      }
+
+    write_instr_name();
+    WRITE_FORMAT_x(B);
+    WRITE_FORMAT_COMMA_x(C);
+    WRITE_NOP_COMMENT();
+    my_sprintf(state, state->operandBuffer, formatString, fieldB, fieldC);
+    break;
+
+  case 54:
+    /* ld_s r0/1/2/3, [h,u5]*/
+    CHECK_FIELD_H_EM();
+
+    /*Check r-field*/
+    fieldA = BITS(state->words[0],8,9);
+
+    /*Check u-field*/
+    fieldB = BITS(state->words[0],10,10) << 2;
+    fieldB |= BITS(state->words[0],3,4);
+    fieldB <<= 2;
+    fieldBisReg = 0;
+
+    write_instr_name();
+    WRITE_FORMAT_x_COMMA_LB(A);
+    WRITE_FORMAT_x(C);
+    WRITE_FORMAT_COMMA_x_RB(B);
+    WRITE_NOP_COMMENT();
+    my_sprintf(state, state->operandBuffer, formatString, fieldA, fieldC, fieldB);
+    break;
+
+  case 55:
+    /*s11 field*/
+    fieldC = BITS(((signed int)state->words[0]),5,10) << 3;
+    fieldC |= BITS(state->words[0],0,2);
+    fieldC <<= 2;
+    fieldCisReg = 0;
+
+    write_instr_name();
+    WRITE_FORMAT_COMMA_x_RB(C);
+    WRITE_NOP_COMMENT();
+    my_sprintf(state, state->operandBuffer, formatString, fieldC);
+    break;
+
+  case 56:
+    /*jli_s/ei_s*/
+    fieldC = BITS(state->words[0],0,9);
+    fieldCisReg = 0;
+
+    write_instr_name();
+    WRITE_FORMAT_x(C);
+    my_sprintf(state, state->operandBuffer, formatString, fieldC);
+    break;
+
+  case 57:
+    /*enter_s/leave_s*/
+    fieldC = BITS(state->words[0],8,9) << 4;
+    fieldC |= BITS(state->words[0],1,4);
+    fieldCisReg = 0;
+
+    write_instr_name();
+
+    /*print*/
+    char *bp;
+    bp = state->operandBuffer;
+    sprintf(bp, "{r13-r%d", (13 + (fieldC & 0x0F)));
+    bp = bp+strlen(bp);
+    if (fieldC & 0x10)
+      {
+	sprintf(bp, ",fp");
+	bp = bp+strlen(bp);
+      }
+    if (fieldC & 0x20)
+      {
+	sprintf(bp, ",blink");
+	bp = bp+strlen(bp);
+      }
+
+    sprintf(bp, "}");
+    break;
+
+  case 58:
+    /*ldi_s*/
+    fieldC = BITS(state->words[0], 4,7) << 3;
+    fieldC |= BITS(state->words[0], 0,2);
+    fieldCisReg = 0;
+
+    FIELD_B_AC();
+
+    write_instr_name();
+    WRITE_FORMAT_x_COMMA_LB(B);
+    WRITE_FORMAT_x_RB(C);
+    my_sprintf(state, state->operandBuffer, formatString, fieldB, fieldC);
+    break;
+
   default:
     mwerror(state, "Bad decoding class in ARC disassembler");
     break;
@@ -3846,6 +4482,9 @@ ARCompact_decodeInstr (bfd_vma           address,    /* Address of this instruct
   int lowbyte, highbyte;
   char buf[256];
 
+  /* Tell objdump to use two bytes per chunk*/
+  info->bytes_per_chunk = 2;
+
   if (info->disassembler_options)
     {
       parse_disassembler_options (info->disassembler_options);
@@ -3868,7 +4507,8 @@ ARCompact_decodeInstr (bfd_vma           address,    /* Address of this instruct
       return -1;
     }
 
-  if (((buffer[lowbyte] & 0xf8) > 0x38) && ((buffer[lowbyte] & 0xf8) != 0x48))
+  if (((buffer[lowbyte] & 0xf8) > 0x38) && ((buffer[lowbyte] & 0xf8) != 0x48)
+      || ((info->mach == E_ARC_MACH_ARCV2) && ((buffer[lowbyte] & 0xF8) == 0x48)))
   {
     s.instructionLen = 2;
     s.words[0] = (buffer[lowbyte] << 8) | buffer[highbyte];
