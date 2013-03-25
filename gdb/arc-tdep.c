@@ -1853,31 +1853,6 @@ arc_skip_prologue (struct gdbarch *gdbarch, CORE_ADDR pc)
 }	/* arc_skip_prologue () */
 
 
-/*! Get breakpoint which is approriate for address at which it is to be set.
-
-    For ARC, breakpoint uses the 16-bit TRAP_S 1 instruction, which is 0x3e78
-    (little endian) or 0x783e (big endian).
-
-    @param[in]     gdbarch  Current GDB architecture
-    @param[in,out] pcptr    Pointer to the PC where we want to place a
-                            breakpoint
-    @param[out]    lenptr   Number of bytes used by the breakpoint.
-    @return                 The byte sequence of a breakpoint instruction. */
-static const unsigned char *
-arc_breakpoint_from_pc (struct gdbarch *gdbarch, CORE_ADDR * pcptr,
-			int *lenptr)
-{
-  static const unsigned char breakpoint_instr_be[] = { 0x78, 0x3e };
-  static const unsigned char breakpoint_instr_le[] = { 0x3e, 0x78 };
-
-  *lenptr = sizeof (breakpoint_instr_be);
-  return (gdbarch_byte_order (gdbarch) == BFD_ENDIAN_BIG)
-    ? breakpoint_instr_be
-    : breakpoint_instr_le;
-
-}	/* arc_breakpoint_from_pc () */
-
-
 /*! Unwind the program counter.
 
     @param[in] next_frame  NEXT frame from which the PC in THIS frame should be
@@ -2397,7 +2372,7 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   set_gdbarch_skip_prologue (gdbarch, arc_skip_prologue);
   /* Nothing special for skipping main prologue */
   set_gdbarch_inner_than (gdbarch, core_addr_lessthan);
-  set_gdbarch_breakpoint_from_pc (gdbarch, arc_breakpoint_from_pc);
+  /* gdbarch_breakpoint_from_pc is target specific. */
   /* No need for gdbarch_remote_breakpoint_from_pc, since all breakpoints are
      client side memory breakpoints. */
   /* No need for gdbarch_adjust_breakpoint_address. */

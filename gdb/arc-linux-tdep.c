@@ -474,6 +474,34 @@ arc_linux_cannot_store_register (struct gdbarch *gdbarch, int regnum)
 }	/* arc_linux_cannot_store_register () */
 
 
+/*! Get breakpoint which is approriate for address at which it is to be set.
+
+    For ARC under Linux, breakpoint uses the 16-bit TRAP_S 1 instruction,
+    which is 0x3e78 (little endian) or 0x783e (big endian).
+
+    @todo Surely we should be able to use the same breakpoint instruction for
+          both Linux and ELF?
+
+    @param[in]     gdbarch  Current GDB architecture
+    @param[in,out] pcptr    Pointer to the PC where we want to place a
+                            breakpoint
+    @param[out]    lenptr   Number of bytes used by the breakpoint.
+    @return                 The byte sequence of a breakpoint instruction. */
+static const unsigned char *
+arc_linux_breakpoint_from_pc (struct gdbarch *gdbarch, CORE_ADDR * pcptr,
+			      int *lenptr)
+{
+  static const unsigned char breakpoint_instr_be[] = { 0x78, 0x3e };
+  static const unsigned char breakpoint_instr_le[] = { 0x3e, 0x78 };
+
+  *lenptr = sizeof (breakpoint_instr_be);
+  return (gdbarch_byte_order (gdbarch) == BFD_ENDIAN_BIG)
+    ? breakpoint_instr_be
+    : breakpoint_instr_le;
+
+}	/* arc_linux_breakpoint_from_pc () */
+
+
 /*! Single step in software.
 
     Insert breakpoints at all the locations where the program could end up
@@ -654,6 +682,7 @@ arc_gdbarch_osabi_init (struct gdbarch *gdbarch)
   /* Set up target dependent GDB architecture entries. */
   set_gdbarch_cannot_fetch_register (gdbarch, arc_linux_cannot_fetch_register);
   set_gdbarch_cannot_store_register (gdbarch, arc_linux_cannot_store_register);
+  set_gdbarch_breakpoint_from_pc (gdbarch, arc_linux_breakpoint_from_pc);
   set_gdbarch_fetch_tls_load_module_address (gdbarch,
                                              svr4_fetch_objfile_link_map);
   set_gdbarch_software_single_step (gdbarch, arc_linux_software_single_step);
