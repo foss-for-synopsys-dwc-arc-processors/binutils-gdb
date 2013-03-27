@@ -8,3 +8,5 @@ check:
 clean:
 info:
 install-info:
+pdf:
+install-pdf:
