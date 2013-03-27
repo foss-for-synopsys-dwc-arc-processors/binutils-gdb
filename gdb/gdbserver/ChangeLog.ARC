@@ -1,3 +1,12 @@
+2013-03-27  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* linux-arc-low.c: Use linux/elf.h rather than elf.h
+	(arc_cannot_fetch_regiser): Not conditional on
+	ARC_LEGACY_PTRACE_ABI.
+	(arc_fetch_register): Conditional on ARC_LEGACY_PTRACE_ABI.
+	* linux-low.c: Define Elf32_auxv_t and Elf64_auxv_t and associated
+	constants to work round problem with ARC Linux 3.8 headers.
+
 2013-03-06  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	PR gdb/15236
