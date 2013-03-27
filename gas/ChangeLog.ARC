@@ -1,3 +1,7 @@
+2013-03-27  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* config/extlib/Makefile.in: Add pdf and install-pdf targets.
+
 2013-03-20  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* config/tc-arc.c (tc_gen_reloc): Adjust offset to reflect
