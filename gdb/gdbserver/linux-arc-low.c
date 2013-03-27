@@ -68,12 +68,10 @@
 #include "regdef.h"
 #include "linux-low.h"
 
-#include <elf.h>
+#include <linux/elf.h>
 #include <arpa/inet.h>
 #include <asm/ptrace.h>
-#ifdef ARC_LEGACY_PTRACE_ABI
 #include <sys/ptrace.h>
-#endif
 
 
 /* -------------------------------------------------------------------------- */
@@ -252,7 +250,6 @@ arc_arch_setup (void)
 }	/* arc_arch_setup () */
 
 
-#ifdef ARC_LEGACY_PTRACE_ABI
 /*! Can a register be read?
 
     We can only write the core registers excluding ilink1, ilink2, the
@@ -299,7 +296,6 @@ arc_cannot_fetch_register (int regno)
     || (regno >= the_low_target.num_regs);
 
 }	/* arc_cannot_fetch_register () */
-#endif
 
 
 /*! Can a register be written?
@@ -350,11 +346,12 @@ arc_cannot_store_register (int regno)
 }	/* arc_cannot_store_register () */
 
 
+#ifdef ARC_LEGACY_PTRACE_ABI
 /*! Fetch a register
 
-    Deal with special cases for fetching a register. In our case, this is used
-    for the PC, which in the regmap (used for writing) is written to "ret",
-    but on reading should be read from "stop_pc"
+    For legacy, deal with special cases for fetching a register. In our case,
+    this is used for the PC, which in the regmap (used for writing) is written
+    to "ret", but on reading should be read from "stop_pc"
 
     @param[out] regcache  Register cache to be populated.
     @param[in]  regno     Register number of interest.
@@ -381,6 +378,7 @@ arc_fetch_register (struct regcache *regcache,
       return  1;
     }
 }	/* arc_fetch_register () */
+#endif
       
 
 /*! Get the PC from the register cache.
