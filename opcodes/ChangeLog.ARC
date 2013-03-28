@@ -49,6 +49,12 @@
 
 2012-12-10  Mischa Jonker  <mischa.jonker@synopsys.com>
 
+	* arcompact-dis.c (dsmOneArcInst): Fix decoding of register when doing
+	indirect jumps with short instructions (j_s, jl_s, j_s.d, jl_s.d).
+	It only worked for r0 and blink. Now it works also for r1..3, r12..15.
+
+2012-12-10  Mischa Jonker  <mischa.jonker@synopsys.com>
+
 	* arcompact-dis.c (dsmOneArcInst): Fix single stepping over J_S.D [r]
 	state->nullifyMode was set incorrectly
 
