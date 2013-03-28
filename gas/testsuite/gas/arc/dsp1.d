@@ -1,5 +1,5 @@
 #as: -mARC700 -mEA
-#objdump: -dr  --prefix-addresses
+#objdump: -dr
 #name: @OC@
 
 # Test the @OC@ insn.
@@ -7,16 +7,18 @@
 .*: +file format elf32-.*arc
 
 Disassembly of section .text:
-0x00000000 282f00@DSP1IC+1@     @OC@      @sp+5@r0,r1
-0x00000004 286f00@DSP1IC+2@     @OC@      @sp+5@r0,2
-0x00000008 282f0f@DSP1IC+2@     @OC@      @sp+5@r0,0xdeadbeef
-0x00000010 2e2f70@DSP1IC+1@     @OC@      @sp+5@0,r1
-0x00000014 2e6f70@DSP1IC+2@     @OC@      @sp+5@0,2
-0x00000018 2e2f7f@DSP1IC+2@     @OC@      @sp+5@0,0xdeadbeef
-0x00000020 282f80@DSP1IC+1@     @OC@.f    @sp+5@r0,r1
-0x00000024 286f80@DSP1IC+2@     @OC@.f    @sp+5@r0,2
-0x00000028 282f8f@DSP1IC+2@     @OC@.f    @sp+5@r0,0xdeadbeef
-0x00000030 2e2ff0@DSP1IC+1@     @OC@.f    @sp+5@0,r1
-0x00000034 2e6ff0@DSP1IC+2@     @OC@.f    @sp+5@0,2
-0x00000038 2e2fff@DSP1IC+2@     @OC@.f    @sp+5@0,0xdeadbeef
+
+00000000 <.text>:
+   0:	2f 28 @DSP1IC+1@ 00             	@OC@      @sp+5@r0,r1
+   4:	6f 28 @DSP1IC+2@ 00             	@OC@      @sp+5@r0,2
+   8:	2f 28 @DSP1IC+2@ 0f ad de ef be 	@OC@      @sp+5@r0,0xdeadbeef
+  10:	2f 2e @DSP1IC+1@ 70             	@OC@      @sp+5@0,r1
+  14:	6f 2e @DSP1IC+2@ 70             	@OC@      @sp+5@0,2
+  18:	2f 2e @DSP1IC+2@ 7f ad de ef be 	@OC@      @sp+5@0,0xdeadbeef
+  20:	2f 28 @DSP1IC+1@ 80             	@OC@.f    @sp+5@r0,r1
+  24:	6f 28 @DSP1IC+2@ 80             	@OC@.f    @sp+5@r0,2
+  28:	2f 28 @DSP1IC+2@ 8f ad de ef be 	@OC@.f    @sp+5@r0,0xdeadbeef
+  30:	2f 2e @DSP1IC+1@ f0             	@OC@.f    @sp+5@0,r1
+  34:	6f 2e @DSP1IC+2@ f0             	@OC@.f    @sp+5@0,2
+  38:	2f 2e @DSP1IC+2@ ff ad de ef be 	@OC@.f    @sp+5@0,0xdeadbeef
 
