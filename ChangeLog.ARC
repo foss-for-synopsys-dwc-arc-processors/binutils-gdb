@@ -1,3 +1,8 @@
+2013-03-28  Vineet Gupta <vgupta@synopsys.com>
+
+	* include/elf/arc.h: E_ARC_OSABI_CURRENT bumped to v3 due to newer
+	kernel syscall ABI (3.9 kernel + uClibc 0.9.34)
+
 2013-02-25  Simon Cook  <simon.cook@embecosm.com>
 
 	* Makefile.def: Brought in from updated gcc.
