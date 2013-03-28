@@ -225,6 +225,9 @@ static void s_m68hc11_relax (int);
 /* Pseudo op to control the ELF flags.  */
 static void s_m68hc11_mode (int);
 
+/* Process directives specified via pseudo ops.  */
+static void s_m68hc11_parse_pseudo_instruction (int);
+
 /* Mark the symbols with STO_M68HC12_FAR to indicate the functions
    are using 'rtc' for returning.  It is necessary to use 'call'
    to invoke them.  This is also used by the debugger to correctly
@@ -313,6 +316,9 @@ const pseudo_typeS md_pseudo_table[] =
 
   /* .interrupt instruction.  */
   {"interrupt", s_m68hc11_mark_symbol, STO_M68HC12_INTERRUPT},
+
+  /* .nobankwarning instruction.  */
+  {"nobankwarning", s_m68hc11_parse_pseudo_instruction, E_M68HC11_NO_BANK_WARNING},
 
   {0, 0, 0}
 };
@@ -2221,11 +2227,11 @@ build_indexed_byte (operand *op, int format ATTRIBUTE_UNUSED, int move_insn)
 		  /* Must treat as a 16bit relocate as size of final result is unknown.  */
 
 		  byte <<= 3;
-		  byte |= 0b11100010;
+		  byte |= 0xe2;
 		  number_to_chars_bigendian (f, byte, 1);
+		  f = frag_more (2);
 		  fix_new (frag_now, f - frag_now->fr_literal, 2,
 			   sym, off, 0, BFD_RELOC_M68HC12_16B);
-		  f = frag_more (2);
 		  return 1;
 		}
 	      else
@@ -4465,8 +4471,8 @@ md_apply_fix (fixS *fixP, valueT *valP, segT seg ATTRIBUTE_UNUSED)
       if (value < 0)
         value += 65536;
 
-      where[1] = (value >> 8);
-      where[2] = (value & 0xff);
+      where[0] = (value >> 8);
+      where[1] = (value & 0xff);
       break;
 
     case BFD_RELOC_M68HC11_RL_JUMP:
@@ -4490,4 +4496,18 @@ m68hc11_elf_final_processing (void)
     elf_flags |= EF_M68HCS12_MACH;
   elf_elfheader (stdoutput)->e_flags &= ~EF_M68HC11_ABI;
   elf_elfheader (stdoutput)->e_flags |= elf_flags;
+}
+
+/* Process directives specified via pseudo ops */
+static void
+s_m68hc11_parse_pseudo_instruction (int pseudo_insn)
+{
+  switch (pseudo_insn)
+    {
+    case E_M68HC11_NO_BANK_WARNING:
+      elf_flags |= E_M68HC11_NO_BANK_WARNING;
+      break;
+    default:
+      as_bad (_("Invalid directive"));
+    }
 }

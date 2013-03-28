@@ -8,7 +8,7 @@ AC_CONFIG_SRCDIR([libbfd.c])
 AC_CANONICAL_TARGET
 AC_ISC_POSIX
 
-AM_INIT_AUTOMAKE(bfd, 2.22.52)
+AM_INIT_AUTOMAKE(bfd, 2.23.2)
 
 dnl These must be called before LT_INIT, because it may want
 dnl to call AC_CHECK_PROG.
@@ -121,7 +121,7 @@ AC_CONFIG_HEADERS(config.h:config.in)
 AH_VERBATIM([00_CONFIG_H_CHECK],
 [/* Check that config.h is #included before system headers
     (this works only for glibc, but that should be enough).  */
-#if defined(__GLIBC__) && !defined(__CONFIG_H__)
+#if defined(__GLIBC__) && !defined(__FreeBSD_kernel__) && !defined(__CONFIG_H__)
 #  error config.h must be #included before system headers
 #endif
 #define __CONFIG_H__ 1])
@@ -832,6 +832,7 @@ do
     bfd_elf32_xtensa_be_vec)	tb="$tb xtensa-isa.lo xtensa-modules.lo elf32-xtensa.lo elf32.lo $elf" ;;
     bfd_elf64_alpha_freebsd_vec) tb="$tb elf64-alpha.lo elf64.lo $elf"; target_size=64 ;;
     bfd_elf64_alpha_vec)	tb="$tb elf64-alpha.lo elf64.lo $elf"; target_size=64 ;;
+    bfd_elf64_bigaarch64_vec)	tb="$tb elf64-aarch64.lo elf64.lo $elf"; target_size=64 ;;
     bfd_elf64_big_generic_vec) 	tb="$tb elf64-gen.lo elf64.lo $elf"; target_size=64 ;;
     bfd_elf64_bigmips_vec) 	tb="$tb elf64-mips.lo elf64.lo elfxx-mips.lo elf-vxworks.lo elf32.lo $elf ecofflink.lo"; target_size=64 ;;
     bfd_elf64_hppa_linux_vec)	tb="$tb elf64-hppa.lo elf64.lo $elf"; target_size=64 ;;
@@ -840,6 +841,7 @@ do
     bfd_elf64_ia64_hpux_big_vec) tb="$tb elf64-ia64.lo elfxx-ia64.lo elf64.lo $elf"; target_size=64 ;;
     bfd_elf64_ia64_little_vec)	tb="$tb elf64-ia64.lo elfxx-ia64.lo elf64.lo $elf"; target_size=64 ;;
     bfd_elf64_ia64_vms_vec)	tb="$tb elf64-ia64-vms.lo elf64-ia64.lo elfxx-ia64.lo elf64.lo vms-lib.lo vms-misc.lo $elf"; target_size=64 ;;    
+    bfd_elf64_littleaarch64_vec)tb="$tb elf64-aarch64.lo elf64.lo $elf"; target_size=64 ;;
     bfd_elf64_little_generic_vec) tb="$tb elf64-gen.lo elf64.lo $elf"; target_size=64 ;;
     bfd_elf64_littlemips_vec) 	tb="$tb elf64-mips.lo elf64.lo elfxx-mips.lo elf-vxworks.lo elf32.lo $elf ecofflink.lo"; target_size=64 ;;
     bfd_elf64_mmix_vec) 	tb="$tb elf64-mmix.lo elf64.lo $elf" target_size=64 ;;

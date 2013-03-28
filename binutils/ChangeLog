@@ -1,3 +1,84 @@
+2013-01-22  Alan Modra  <amodra@gmail.com>
+
+	Apply mainline patches
+	2012-09-04  H.J. Lu  <hongjiu.lu@intel.com>
+	PR binutils/14493
+	* readelf.c (get_symbol_index_type): Check bad section index.
+
+2013-01-07  Roland McGrath  <mcgrathr@google.com>
+
+	* objcopy.c (deterministic): Make int rather than bfd_boolean,
+	initialize to -1.
+	(strip_options, copy_options): Add -U/--disable-deterministic-archives.
+	(default_deterministic): New function.
+	(strip_main, copy_main): Handle -U.  Call default_deterministic.
+	(copy_usage, strip_usage): Describe -U.  Cite whether -D or -U is
+	the default based on DEFAULT_AR_DETERMINISTIC.
+	* doc/binutils.texi (objcopy, strip): Describe -U and effect of
+	configure options on -D.
+
+	* ar.c (default_deterministic): Comment fix.
+
+2012-11-05  Alan Modra  <amodra@gmail.com>
+
+	* configure.in: Apply 2012-09-10 change to config.in here.  Add
+	__CONFIG_H__ check.
+	* config.in: Regenerate.
+
+2012-10-30  Nick Clifton  <nickc@redhat.com>
+
+	PR binutils/14779
+	* configure.in: Add checks for wchar.h and mbstate_t.
+	* config.in: Regenerate.
+	* configure: Regenerate.
+	* readelf.c: Conditionally include wchar.h.
+	(print_symbol): Conditionally use mbstate_t.
+
+2012-10-21  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* objdump.c (dump_dwarf): Handle bfd_mach_x64_32 and
+	bfd_mach_x64_32_intel_syntax.
+
+2012-09-10  Matthias Klose  <doko@ubuntu.com>
+
+	* config.in: Disable sanity check for kfreebsd.
+
+2012-08-16  Ian Bolton  <ian.bolton@arm.com>
+            Laurent Desnogues  <laurent.desnogues@arm.com>
+            Jim MacArthur  <jim.macarthur@arm.com>
+            Marcus Shawcroft  <marcus.shawcroft@arm.com>
+            Nigel Stephens  <nigel.stephens@arm.com>
+            Ramana Radhakrishnan  <ramana.radhakrishnan@arm.com>
+            Richard Earnshaw  <rearnsha@arm.com>
+            Sofiane Naci  <sofiane.naci@arm.com>
+            Tejas Belagod  <tejas.belagod@arm.com>
+            Yufeng Zhang  <yufeng.zhang@arm.com>
+
+	* readelf.c (guess_is_rela): Handle EM_AARCH64.
+	(get_machine_name): Likewise.
+	(get_aarch64_segment_type): New function.
+	(get_segment_type): Handle EM_AARCH64 by calling the new function.
+	(get_aarch64_section_type_name): New function.
+	(get_section_type_name): Handle EM_AARCH64 by calling the new function.
+	(is_32bit_abs_reloc): Handle EM_AARCH64.
+	(is_32bit_pcrel_reloc): Likewise.
+	(is_64bit_abs_reloc): Likewise.
+	(is_64bit_pcrel_reloc): Likewise.
+	(is_none_reloc): Likewise.
+
+2012-08-09  Nick Clifton  <nickc@redhat.com>
+
+	* po/vi.po: Updated Vietnamese translation.
+
+2012-07-30  Nick Clifton  <nickc@redhat.com>
+
+	* po/binutils.pot: Updated template.
+	* po/bg.po: Updated Bulgarian translation.
+	* po/es.po: Updated Spanish translation.
+	* po/fi.po: Updated Finnish translation.
+	* po/fr.po: Updated French translation.
+	* po/uk.po: Updated Ukranian translation.
+
 2012-07-27  Tristan Gingold  <gingold@adacore.com>
 
 	* NEWS: Add marker for 2.23.

@@ -15,7 +15,7 @@ AM_CONFIG_HEADER(config.h:config.in)
 AH_VERBATIM([00_CONFIG_H_CHECK],
 [/* Check that config.h is #included before system headers
    (this works only for glibc, but that should be enough).  */
-#if defined(__GLIBC__) && !defined(__CONFIG_H__)
+#if defined(__GLIBC__) && !defined(__FreeBSD_kernel__) && !defined(__CONFIG_H__)
 #  error config.h must be #included before system headers
 #endif
 #define __CONFIG_H__ 1])
@@ -485,8 +485,8 @@ else
 fi
 
 # Link in zlib if we can.  This allows us to write compressed sections.
-AC_SEARCH_LIBS(zlibVersion, z, [AC_CHECK_HEADERS(zlib.h)])
-AM_CONDITIONAL(HAVE_ZLIB, test "$ac_cv_search_zlibVersion" != "no")
+AM_ZLIB
+AM_CONDITIONAL(HAVE_ZLIB, test "$ac_cv_header_zlib_h" = "yes")
 
 dnl We have to check these in C, not C++, because autoconf generates
 dnl tests which have no type information, and current glibc provides

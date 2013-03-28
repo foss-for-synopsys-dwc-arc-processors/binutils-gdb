@@ -880,45 +880,25 @@ _bfd_elf_make_section_from_shdr (bfd *abfd,
     {
       /* The debugging sections appear to be recognized only by name,
 	 not any sort of flag.  Their SEC_ALLOC bits are cleared.  */
-      static const struct
-	{
-	  const char *name;
-	  int len;
-	} debug_sections [] =
-	{
-	  { STRING_COMMA_LEN ("debug") },	/* 'd' */
-	  { NULL,		 0  },	/* 'e' */
-	  { NULL,		 0  },	/* 'f' */
-	  { STRING_COMMA_LEN ("gnu.linkonce.wi.") },	/* 'g' */
-	  { NULL,		 0  },	/* 'h' */
-	  { NULL,		 0  },	/* 'i' */
-	  { NULL,		 0  },	/* 'j' */
-	  { NULL,		 0  },	/* 'k' */
-	  { STRING_COMMA_LEN ("line") },	/* 'l' */
-	  { NULL,		 0  },	/* 'm' */
-	  { NULL,		 0  },	/* 'n' */
-	  { NULL,		 0  },	/* 'o' */
-	  { NULL,		 0  },	/* 'p' */
-	  { NULL,		 0  },	/* 'q' */
-	  { NULL,		 0  },	/* 'r' */
-	  { STRING_COMMA_LEN ("stab") },	/* 's' */
-	  { NULL,		 0  },	/* 't' */
-	  { NULL,		 0  },	/* 'u' */
-	  { NULL,		 0  },	/* 'v' */
-	  { NULL,		 0  },	/* 'w' */
-	  { NULL,		 0  },	/* 'x' */
-	  { NULL,		 0  },	/* 'y' */
-	  { STRING_COMMA_LEN ("zdebug") }	/* 'z' */
-	};
-
       if (name [0] == '.')
 	{
-	  int i = name [1] - 'd';
-	  if (i >= 0
-	      && i < (int) ARRAY_SIZE (debug_sections)
-	      && debug_sections [i].name != NULL
-	      && strncmp (&name [1], debug_sections [i].name,
-			  debug_sections [i].len) == 0)
+	  const char *p;
+	  int n;
+	  if (name[1] == 'd')
+	    p = ".debug", n = 6;
+	  else if (name[1] == 'g' && name[2] == 'n')
+	    p = ".gnu.linkonce.wi.", n = 17;
+	  else if (name[1] == 'g' && name[2] == 'd')
+	    p = ".gdb_index", n = 11; /* yes we really do mean 11.  */
+	  else if (name[1] == 'l')
+	    p = ".line", n = 5;
+	  else if (name[1] == 's')
+	    p = ".stab", n = 5;
+	  else if (name[1] == 'z')
+	    p = ".zdebug", n = 7;
+	  else
+	    p = NULL, n = 0;
+	  if (p != NULL && strncmp (name, p, n) == 0)
 	    flags |= SEC_DEBUGGING;
 	}
     }
@@ -3264,13 +3244,21 @@ sym_is_global (bfd *abfd, asymbol *sym)
 }
 
 /* Don't output section symbols for sections that are not going to be
-   output, or that are duplicates.  */
+   output, that are duplicates or there is no BFD section.  */
 
 static bfd_boolean
 ignore_section_sym (bfd *abfd, asymbol *sym)
 {
-  return ((sym->flags & BSF_SECTION_SYM) != 0
-	  && !(sym->section->owner == abfd
+  elf_symbol_type *type_ptr;
+
+  if ((sym->flags & BSF_SECTION_SYM) == 0)
+    return FALSE;
+
+  type_ptr = elf_symbol_from (abfd, sym);
+  return ((type_ptr != NULL
+	   && type_ptr->internal_elf_sym.st_shndx != 0
+	   && bfd_is_abs_section (sym->section))
+	  || !(sym->section->owner == abfd
 	       || (sym->section->output_section->owner == abfd
 		   && sym->section->output_offset == 0)
 	       || bfd_is_abs_section (sym->section)));
@@ -3883,6 +3871,7 @@ _bfd_elf_map_sections_to_segments (bfd *abfd, struct bfd_link_info *info)
 
 	  if (phdr_size == (bfd_size_type) -1)
 	    phdr_size = get_program_header_size (abfd, info);
+	  phdr_size += bed->s->sizeof_ehdr;
 	  if ((abfd->flags & D_PAGED) == 0
 	      || (sections[0]->lma & addr_mask) < phdr_size
 	      || ((sections[0]->lma & addr_mask) % maxpagesize
@@ -6040,7 +6029,7 @@ rewrite_elf_program_header (bfd *ibfd, bfd *obfd)
 		 and carry on looping.  */
 	      amt = sizeof (struct elf_segment_map);
 	      amt += ((bfd_size_type) section_count - 1) * sizeof (asection *);
-	      map = (struct elf_segment_map *) bfd_alloc (obfd, amt);
+	      map = (struct elf_segment_map *) bfd_zalloc (obfd, amt);
 	      if (map == NULL)
 		{
 		  free (sections);
@@ -6350,6 +6339,26 @@ copy_private_bfd_data (bfd *ibfd, bfd *obfd)
     }
 
 rewrite:
+  if (ibfd->xvec == obfd->xvec)
+    {
+      /* When rewriting program header, set the output maxpagesize to
+	 the maximum alignment of input PT_LOAD segments.  */
+      Elf_Internal_Phdr *segment;
+      unsigned int i;
+      unsigned int num_segments = elf_elfheader (ibfd)->e_phnum;
+      bfd_vma maxpagesize = 0;
+
+      for (i = 0, segment = elf_tdata (ibfd)->phdr;
+	   i < num_segments;
+	   i++, segment++)
+	if (segment->p_type == PT_LOAD
+	    && maxpagesize < segment->p_align)
+	  maxpagesize = segment->p_align;
+
+      if (maxpagesize != get_elf_backend_data (obfd)->maxpagesize)
+	bfd_emul_set_maxpagesize (bfd_get_target (obfd), maxpagesize);
+    }
+
   return rewrite_elf_program_header (ibfd, obfd);
 }
 
@@ -6764,6 +6773,7 @@ swap_out_syms (bfd *abfd,
 		  shndx = elf_tdata (abfd)->symtab_shndx_section;
 		  break;
 		default:
+		  shndx = SHN_ABS;
 		  break;
 		}
 	    }
@@ -7474,18 +7484,29 @@ elf_find_function (bfd *abfd,
 		   const char **filename_ptr,
 		   const char **functionname_ptr)
 {
-  static asection *last_section;
-  static asymbol *func;
-  static const char *filename;
-  static bfd_size_type func_size;
+  struct elf_find_function_cache
+  {
+    asection *last_section;
+    asymbol *func;
+    const char *filename;
+    bfd_size_type func_size;
+  } *cache;
 
   if (symbols == NULL)
     return FALSE;
 
-  if (last_section != section
-      || func == NULL
-      || offset < func->value
-      || offset >= func->value + func_size)
+  cache = elf_tdata (abfd)->elf_find_function_cache;
+  if (cache == NULL)
+    {
+      cache = bfd_zalloc (abfd, sizeof (*cache));
+      elf_tdata (abfd)->elf_find_function_cache = cache;
+      if (cache == NULL)
+	return FALSE;
+    }
+  if (cache->last_section != section
+      || cache->func == NULL
+      || offset < cache->func->value
+      || offset >= cache->func->value + cache->func_size)
     {
       asymbol *file;
       bfd_vma low_func;
@@ -7501,13 +7522,13 @@ elf_find_function (bfd *abfd,
       enum { nothing_seen, symbol_seen, file_after_symbol_seen } state;
       const struct elf_backend_data *bed = get_elf_backend_data (abfd);
 
-      filename = NULL;
-      func = NULL;
       file = NULL;
       low_func = 0;
       state = nothing_seen;
-      func_size = 0;
-      last_section = section;
+      cache->filename = NULL;
+      cache->func = NULL;
+      cache->func_size = 0;
+      cache->last_section = section;
 
       for (p = symbols; *p != NULL; p++)
 	{
@@ -7528,29 +7549,29 @@ elf_find_function (bfd *abfd,
 	      && code_off <= offset
 	      && (code_off > low_func
 		  || (code_off == low_func
-		      && size > func_size)))
+		      && size > cache->func_size)))
 	    {
-	      func = sym;
-	      func_size = size;
+	      cache->func = sym;
+	      cache->func_size = size;
+	      cache->filename = NULL;
 	      low_func = code_off;
-	      filename = NULL;
 	      if (file != NULL
 		  && ((sym->flags & BSF_LOCAL) != 0
 		      || state != file_after_symbol_seen))
-		filename = bfd_asymbol_name (file);
+		cache->filename = bfd_asymbol_name (file);
 	    }
 	  if (state == nothing_seen)
 	    state = symbol_seen;
 	}
     }
 
-  if (func == NULL)
+  if (cache->func == NULL)
     return FALSE;
 
   if (filename_ptr)
-    *filename_ptr = filename;
+    *filename_ptr = cache->filename;
   if (functionname_ptr)
-    *functionname_ptr = bfd_asymbol_name (func);
+    *functionname_ptr = bfd_asymbol_name (cache->func);
 
   return TRUE;
 }

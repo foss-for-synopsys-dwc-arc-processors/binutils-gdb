@@ -63,6 +63,9 @@
 #define ARM_ELF_ABI_VERSION		0
 #define ARM_ELF_OS_ABI_VERSION		ELFOSABI_ARM
 
+/* The Adjusted Place, as defined by AAELF.  */
+#define Pa(X) ((X) & 0xfffffffc)
+
 static bfd_boolean elf32_arm_write_section (bfd *output_bfd,
 					    struct bfd_link_info *link_info,
 					    asection *sec,
@@ -2209,21 +2212,21 @@ static const bfd_vma elf32_arm_nacl_plt0_entry [] =
   0xe08cc00f,		/* add	ip, ip, pc			*/
   0xe52dc008,		/* str	ip, [sp, #-8]!			*/
   /* Second bundle: */
-  0xe7dfcf1f, 	/* bfc	ip, #30, #2			*/
-  0xe59cc000, 	/* ldr	ip, [ip]			*/
+  0xe3ccc103,		/* bic	ip, ip, #0xc0000000		*/
+  0xe59cc000,		/* ldr	ip, [ip]			*/
   0xe3ccc13f,		/* bic	ip, ip, #0xc000000f		*/
-  0xe12fff1c, 	/* bx	ip				*/
+  0xe12fff1c,		/* bx	ip				*/
   /* Third bundle: */
-  0xe320f000, 	/* nop					*/
-  0xe320f000, 	/* nop					*/
-  0xe320f000, 	/* nop					*/
+  0xe320f000,		/* nop					*/
+  0xe320f000,		/* nop					*/
+  0xe320f000,		/* nop					*/
   /* .Lplt_tail: */
   0xe50dc004,		/* str	ip, [sp, #-4]			*/
   /* Fourth bundle: */
-  0xe7dfcf1f,		/* bfc	ip, #30, #2			*/
-  0xe59cc000, 	/* ldr	ip, [ip]			*/
+  0xe3ccc103,		/* bic	ip, ip, #0xc0000000		*/
+  0xe59cc000,		/* ldr	ip, [ip]			*/
   0xe3ccc13f,		/* bic	ip, ip, #0xc000000f		*/
-  0xe12fff1c, 	/* bx	ip				*/
+  0xe12fff1c,		/* bx	ip				*/
 };
 #define ARM_NACL_PLT_TAIL_OFFSET	(11 * 4)
 
@@ -4983,6 +4986,9 @@ elf32_arm_size_stubs (bfd *output_bfd,
 	  Elf_Internal_Shdr *symtab_hdr;
 	  asection *section;
 	  Elf_Internal_Sym *local_syms = NULL;
+
+          if (!is_arm_elf (input_bfd))
+            continue;
 
 	  num_a8_relocs = 0;
 
@@ -8619,9 +8625,9 @@ elf32_arm_final_link_relocate (reloc_howto_type *           howto,
           }
 
 	relocation = value + signed_addend;
-	relocation -= (input_section->output_section->vma
-		       + input_section->output_offset
-		       + rel->r_offset);
+	relocation -= Pa (input_section->output_section->vma
+		          + input_section->output_offset
+		          + rel->r_offset);
 
         value = abs (relocation);
 
@@ -8651,12 +8657,12 @@ elf32_arm_final_link_relocate (reloc_howto_type *           howto,
 	insn = bfd_get_16 (input_bfd, hit_data);
 
         if (globals->use_rel)
-	  addend = (insn & 0x00ff) << 2;
+	  addend = ((((insn & 0x00ff) << 2) + 4) & 0x3ff) -4;
 
 	relocation = value + addend;
-	relocation -= (input_section->output_section->vma
-		       + input_section->output_offset
-		       + rel->r_offset);
+	relocation -= Pa (input_section->output_section->vma
+		          + input_section->output_offset
+		          + rel->r_offset);
 
         value = abs (relocation);
 
@@ -8691,9 +8697,9 @@ elf32_arm_final_link_relocate (reloc_howto_type *           howto,
           }
 
 	relocation = value + signed_addend;
-	relocation -= (input_section->output_section->vma
-		       + input_section->output_offset
-		       + rel->r_offset);
+	relocation -= Pa (input_section->output_section->vma
+		          + input_section->output_offset
+		          + rel->r_offset);
 
         value = abs (relocation);
 
@@ -11327,6 +11333,24 @@ tag_cpu_arch_combine (bfd *ibfd, int oldtag, int *secondary_compat_out,
       T(V7E_M),  /* V6S_M.  */
       T(V7E_M)   /* V7E_M.  */
     };
+  const int v8[] =
+    {
+      T(V8),		/* PRE_V4.  */
+      T(V8),		/* V4.  */
+      T(V8),		/* V4T.  */
+      T(V8),		/* V5T.  */
+      T(V8),		/* V5TE.  */
+      T(V8),		/* V5TEJ.  */
+      T(V8),		/* V6.  */
+      T(V8),		/* V6KZ.  */
+      T(V8),		/* V6T2.  */
+      T(V8),		/* V6K.  */
+      T(V8),		/* V7.  */
+      T(V8),		/* V6_M.  */
+      T(V8),		/* V6S_M.  */
+      T(V8),		/* V7E_M.  */
+      T(V8)		/* V8.  */
+    };
   const int v4t_plus_v6_m[] =
     {
       -1,		/* PRE_V4.  */
@@ -11343,6 +11367,7 @@ tag_cpu_arch_combine (bfd *ibfd, int oldtag, int *secondary_compat_out,
       T(V6_M),		/* V6_M.  */
       T(V6S_M),		/* V6S_M.  */
       T(V7E_M),		/* V7E_M.  */
+      T(V8),		/* V8.  */
       T(V4T_PLUS_V6_M)	/* V4T plus V6_M.  */
     };
   const int *comb[] =
@@ -11353,6 +11378,7 @@ tag_cpu_arch_combine (bfd *ibfd, int oldtag, int *secondary_compat_out,
       v6_m,
       v6s_m,
       v7e_m,
+      v8,
       /* Pseudo-architecture.  */
       v4t_plus_v6_m
     };
@@ -11554,7 +11580,8 @@ elf32_arm_merge_eabi_attributes (bfd *ibfd, bfd *obfd)
 		"ARM v6K",
 		"ARM v7",
 		"ARM v6-M",
-		"ARM v6S-M"
+		"ARM v6S-M",
+		"ARM v8"
 	    };
 
 	    /* Merge Tag_CPU_arch and Tag_also_compatible_with.  */
@@ -11699,11 +11726,12 @@ elf32_arm_merge_eabi_attributes (bfd *ibfd, bfd *obfd)
 		 when it's 0.  It might mean absence of FP hardware if
 		 Tag_FP_arch is zero, otherwise it is effectively SP + DP.  */
 
+#define VFP_VERSION_COUNT 8
 	      static const struct
 	      {
 		  int ver;
 		  int regs;
-	      } vfp_versions[7] =
+	      } vfp_versions[VFP_VERSION_COUNT] =
 		{
 		  {0, 0},
 		  {1, 16},
@@ -11711,7 +11739,8 @@ elf32_arm_merge_eabi_attributes (bfd *ibfd, bfd *obfd)
 		  {3, 32},
 		  {3, 16},
 		  {4, 32},
-		  {4, 16}
+		  {4, 16},
+		  {8, 32}
 		};
 	      int ver;
 	      int regs;
@@ -11751,9 +11780,10 @@ elf32_arm_merge_eabi_attributes (bfd *ibfd, bfd *obfd)
 
 	      /* Now we can handle Tag_FP_arch.  */
 
-	      /* Values greater than 6 aren't defined, so just pick the
-	         biggest */
-	      if (in_attr[i].i > 6 && in_attr[i].i > out_attr[i].i)
+	      /* Values of VFP_VERSION_COUNT or more aren't defined, so just
+		 pick the biggest.  */
+	      if (in_attr[i].i >= VFP_VERSION_COUNT
+		  && in_attr[i].i > out_attr[i].i)
 		{
 		  out_attr[i] = in_attr[i];
 		  break;
@@ -11768,7 +11798,7 @@ elf32_arm_merge_eabi_attributes (bfd *ibfd, bfd *obfd)
 		regs = vfp_versions[out_attr[i].i].regs;
 	      /* This assumes all possible supersets are also a valid
 	         options.  */
-	      for (newval = 6; newval > 0; newval--)
+	      for (newval = VFP_VERSION_COUNT - 1; newval > 0; newval--)
 		{
 		  if (regs == vfp_versions[newval].regs
 		      && ver == vfp_versions[newval].ver)

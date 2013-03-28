@@ -569,7 +569,7 @@ bfd_elf_record_link_assignment (bfd *output_bfd,
 
   h->def_regular = 1;
 
-  if (provide && hidden)
+  if (hidden)
     {
       bed = get_elf_backend_data (output_bfd);
       h->other = (h->other & ~ELF_ST_VISIBILITY (-1)) | STV_HIDDEN;
@@ -892,33 +892,6 @@ elf_merge_st_other (bfd *abfd, struct elf_link_hash_entry *h,
     }
 }
 
-/* Mark if a symbol has a definition in a dynamic object or is
-   weak in all dynamic objects.  */
-
-static void
-_bfd_elf_mark_dynamic_def_weak (struct elf_link_hash_entry *h,
-				asection *sec, int bind)
-{
-  if (!h->dynamic_def)
-    {
-      if (!bfd_is_und_section (sec))
-	h->dynamic_def = 1;
-      else
-	{
-	  /* Check if this symbol is weak in all dynamic objects. If it
-	     is the first time we see it in a dynamic object, we mark
-	     if it is weak. Otherwise, we clear it.  */
-	  if (!h->ref_dynamic)
-	    {
-	      if (bind == STB_WEAK)
-		h->dynamic_weak = 1;
-	    }
-	  else if (bind != STB_WEAK)
-	    h->dynamic_weak = 0;
-	}
-    }
-}
-
 /* This function is called when we want to define a new symbol.  It
    handles the various cases which arise when we find a definition in
    a dynamic object, or when there is already a definition in a
@@ -938,6 +911,7 @@ _bfd_elf_merge_symbol (bfd *abfd,
 		       Elf_Internal_Sym *sym,
 		       asection **psec,
 		       bfd_vma *pvalue,
+		       bfd_boolean *pold_weak,
 		       unsigned int *pold_alignment,
 		       struct elf_link_hash_entry **sym_hash,
 		       bfd_boolean *skip,
@@ -994,9 +968,38 @@ _bfd_elf_merge_symbol (bfd *abfd,
     h = (struct elf_link_hash_entry *) h->root.u.i.link;
 
   /* We have to check it for every instance since the first few may be
-     refereences and not all compilers emit symbol type for undefined
+     references and not all compilers emit symbol type for undefined
      symbols.  */
   bfd_elf_link_mark_dynamic_symbol (info, h, sym);
+
+  /* NEWDYN and OLDDYN indicate whether the new or old symbol,
+     respectively, is from a dynamic object.  */
+
+  newdyn = (abfd->flags & DYNAMIC) != 0;
+
+  /* ref_dynamic_nonweak and dynamic_def flags track actual undefined
+     syms and defined syms in dynamic libraries respectively.
+     ref_dynamic on the other hand can be set for a symbol defined in
+     a dynamic library, and def_dynamic may not be set;  When the
+     definition in a dynamic lib is overridden by a definition in the
+     executable use of the symbol in the dynamic lib becomes a
+     reference to the executable symbol.  */
+  if (newdyn)
+    {
+      if (bfd_is_und_section (sec))
+	{
+	  if (bind != STB_WEAK)
+	    {
+	      h->ref_dynamic_nonweak = 1;
+	      hi->ref_dynamic_nonweak = 1;
+	    }
+	}
+      else
+	{
+	  h->dynamic_def = 1;
+	  hi->dynamic_def = 1;
+	}
+    }
 
   /* If we just created the symbol, mark it as being an ELF symbol.
      Other than that, there is nothing to do--there is no merge issue
@@ -1040,6 +1043,8 @@ _bfd_elf_merge_symbol (bfd *abfd,
   newweak = bind == STB_WEAK;
   oldweak = (h->root.type == bfd_link_hash_defweak
 	     || h->root.type == bfd_link_hash_undefweak);
+  if (pold_weak)
+    *pold_weak = oldweak;
 
   /* In cases involving weak versioned symbols, we may wind up trying
      to merge a symbol with itself.  Catch that here, to avoid the
@@ -1052,11 +1057,6 @@ _bfd_elf_merge_symbol (bfd *abfd,
       && ((abfd->flags & DYNAMIC) == 0
 	  || !h->def_regular))
     return TRUE;
-
-  /* NEWDYN and OLDDYN indicate whether the new or old symbol,
-     respectively, is from a dynamic object.  */
-
-  newdyn = (abfd->flags & DYNAMIC) != 0;
 
   olddyn = FALSE;
   if (oldbfd != NULL)
@@ -1161,16 +1161,6 @@ _bfd_elf_merge_symbol (bfd *abfd,
       return FALSE;
     }
 
-  /* We need to remember if a symbol has a definition in a dynamic
-     object or is weak in all dynamic objects. Internal and hidden
-     visibility will make it unavailable to dynamic objects.  */
-  if (newdyn)
-    {
-      _bfd_elf_mark_dynamic_def_weak (h, sec, bind);
-      if (h != hi)
-	_bfd_elf_mark_dynamic_def_weak (hi, sec, bind);
-    }
-
   /* If the old symbol has non-default visibility, we ignore the new
      definition from a dynamic object.  */
   if (newdyn
@@ -1210,23 +1200,24 @@ _bfd_elf_merge_symbol (bfd *abfd,
 	      vh->root.type = h->root.type;
 	      h->root.type = bfd_link_hash_indirect;
 	      (*bed->elf_backend_copy_indirect_symbol) (info, vh, h);
-	      /* Protected symbols will override the dynamic definition
-		 with default version.  */
-	      if (ELF_ST_VISIBILITY (sym->st_other) == STV_PROTECTED)
+
+	      h->root.u.i.link = (struct bfd_link_hash_entry *) vh;
+	      if (ELF_ST_VISIBILITY (sym->st_other) != STV_PROTECTED)
 		{
-		  h->root.u.i.link = (struct bfd_link_hash_entry *) vh;
-		  vh->dynamic_def = 1;
-		  vh->ref_dynamic = 1;
+		  /* If the new symbol is hidden or internal, completely undo
+		     any dynamic link state.  */
+		  (*bed->elf_backend_hide_symbol) (info, h, TRUE);
+		  h->forced_local = 0;
+		  h->ref_dynamic = 0;
 		}
 	      else
-		{
-		  h->root.type = vh->root.type;
-		  vh->ref_dynamic = 0;
-		  /* We have to hide it here since it was made dynamic
-		     global with extra bits when the symbol info was
-		     copied from the old dynamic definition.  */
-		  (*bed->elf_backend_hide_symbol) (info, vh, TRUE);
-		}
+		h->ref_dynamic = 1;
+
+	      h->def_dynamic = 0;
+	      /* FIXME: Should we check type and size for protected symbol?  */
+	      h->size = 0;
+	      h->type = 0;
+
 	      h = vh;
 	    }
 	  else
@@ -1262,7 +1253,6 @@ _bfd_elf_merge_symbol (bfd *abfd,
       else
 	h->ref_dynamic = 1;
       h->def_dynamic = 0;
-      h->dynamic_def = 0;
       /* FIXME: Should we check type and size for protected symbol?  */
       h->size = 0;
       h->type = 0;
@@ -1660,7 +1650,7 @@ _bfd_elf_add_default_symbol (bfd *abfd,
   size_change_ok = FALSE;
   sec = *psec;
   if (!_bfd_elf_merge_symbol (abfd, info, shortname, sym, &sec, value,
-			      NULL, &hi, &skip, &override,
+			      NULL, NULL, &hi, &skip, &override,
 			      &type_change_ok, &size_change_ok))
     return FALSE;
 
@@ -1769,7 +1759,7 @@ nondefault:
   size_change_ok = FALSE;
   sec = *psec;
   if (!_bfd_elf_merge_symbol (abfd, info, shortname, sym, &sec, value,
-			      NULL, &hi, &skip, &override,
+			      NULL, NULL, &hi, &skip, &override,
 			      &type_change_ok, &size_change_ok))
     return FALSE;
 
@@ -3083,19 +3073,17 @@ elf_add_dt_needed_tag (bfd *abfd,
 		       bfd_boolean do_it)
 {
   struct elf_link_hash_table *hash_table;
-  bfd_size_type oldsize;
   bfd_size_type strindex;
 
   if (!_bfd_elf_link_create_dynstrtab (abfd, info))
     return -1;
 
   hash_table = elf_hash_table (info);
-  oldsize = _bfd_elf_strtab_size (hash_table->dynstr);
   strindex = _bfd_elf_strtab_add (hash_table->dynstr, soname, FALSE);
   if (strindex == (bfd_size_type) -1)
     return -1;
 
-  if (oldsize == _bfd_elf_strtab_size (hash_table->dynstr))
+  if (_bfd_elf_strtab_refcount (hash_table->dynstr, strindex) != 1)
     {
       asection *sdyn;
       const struct elf_backend_data *bed;
@@ -3377,6 +3365,7 @@ elf_link_add_object_symbols (bfd *abfd, struct bfd_link_info *info)
   struct bfd_link_hash_entry *old_undefs = NULL;
   struct bfd_link_hash_entry *old_undefs_tail = NULL;
   long old_dynsymcount = 0;
+  bfd_size_type old_dynstr_size = 0;
   size_t tabsize = 0;
   size_t hashsize = 0;
 
@@ -3826,6 +3815,7 @@ error_free_dyn:
       old_size = htab->root.table.size;
       old_count = htab->root.table.count;
       old_dynsymcount = htab->dynsymcount;
+      old_dynstr_size = _bfd_elf_strtab_size (htab->dynstr);
 
       for (i = 0; i < htab->root.table.size; i++)
 	{
@@ -3863,6 +3853,8 @@ error_free_dyn:
       bfd_boolean size_change_ok;
       bfd_boolean type_change_ok;
       bfd_boolean new_weakdef;
+      bfd_boolean new_weak;
+      bfd_boolean old_weak;
       bfd_boolean override;
       bfd_boolean common;
       unsigned int old_alignment;
@@ -3995,6 +3987,7 @@ error_free_dyn:
 
       size_change_ok = FALSE;
       type_change_ok = bed->type_change_ok;
+      old_weak = FALSE;
       old_alignment = 0;
       old_bfd = NULL;
       new_sec = sec;
@@ -4140,7 +4133,7 @@ error_free_dyn:
 	    }
 
 	  if (!_bfd_elf_merge_symbol (abfd, info, name, isym, &sec,
-				      &value, &old_alignment,
+				      &value, &old_weak, &old_alignment,
 				      sym_hash, &skip, &override,
 				      &type_change_ok, &size_change_ok))
 	    goto error_free_vers;
@@ -4179,7 +4172,6 @@ error_free_dyn:
 	    }
 
 	  if (elf_tdata (abfd)->verdef != NULL
-	      && ! override
 	      && vernum > 1
 	      && definition)
 	    h->verinfo.verdef = &elf_tdata (abfd)->verdef[vernum - 1];
@@ -4202,10 +4194,11 @@ error_free_dyn:
       if (is_elf_hash_table (htab))
 	h->unique_global = (flags & BSF_GNU_UNIQUE) != 0;
 
+      new_weak = (flags & BSF_WEAK) != 0;
       new_weakdef = FALSE;
       if (dynamic
 	  && definition
-	  && (flags & BSF_WEAK) != 0
+	  && new_weak
 	  && !bed->is_function_type (ELF_ST_TYPE (isym->st_info))
 	  && is_elf_hash_table (htab)
 	  && h->u.weakdef == NULL)
@@ -4334,7 +4327,9 @@ error_free_dyn:
 	    h->size = h->root.u.c.size;
 
 	  if (ELF_ST_TYPE (isym->st_info) != STT_NOTYPE
-	      && (definition || h->type == STT_NOTYPE))
+	      && ((definition && !new_weak)
+		  || (old_weak && h->root.type == bfd_link_hash_common)
+		  || h->type == STT_NOTYPE))
 	    {
 	      unsigned int type = ELF_ST_TYPE (isym->st_info);
 
@@ -4401,9 +4396,7 @@ error_free_dyn:
 	      else
 		{
 		  h->def_dynamic = 1;
-		  h->dynamic_def = 1;
 		  hi->def_dynamic = 1;
-		  hi->dynamic_def = 1;
 		}
 
 	      /* If the indirect symbol has been forced local, don't
@@ -4552,6 +4545,7 @@ error_free_dyn:
       memcpy (sym_hash, old_hash, hashsize);
       htab->root.undefs = old_undefs;
       htab->root.undefs_tail = old_undefs_tail;
+      _bfd_elf_strtab_restore_size (htab->dynstr, old_dynstr_size);
       for (i = 0; i < htab->root.table.size; i++)
 	{
 	  struct bfd_hash_entry *p;
@@ -4564,12 +4558,13 @@ error_free_dyn:
 	      h = (struct elf_link_hash_entry *) p;
 	      if (h->root.type == bfd_link_hash_warning)
 		h = (struct elf_link_hash_entry *) h->root.u.i.link;
-	      if (h->dynindx >= old_dynsymcount)
+	      if (h->dynindx >= old_dynsymcount
+		  && h->dynstr_index < old_dynstr_size)
 		_bfd_elf_strtab_delref (htab->dynstr, h->dynstr_index);
 
 	      /* Preserve the maximum alignment and size for common
 		 symbols even if this dynamic lib isn't on DT_NEEDED
-		 since it can still be loaded at the run-time by another
+		 since it can still be loaded at run time by another
 		 dynamic lib.  */
 	      if (h->root.type == bfd_link_hash_common)
 		{
@@ -4588,8 +4583,9 @@ error_free_dyn:
 		{
 		  memcpy (h->root.u.i.link, old_ent, htab->root.table.entsize);
 		  old_ent = (char *) old_ent + htab->root.table.entsize;
+		  h = (struct elf_link_hash_entry *) h->root.u.i.link;
 		}
-	      else if (h->root.type == bfd_link_hash_common)
+	      if (h->root.type == bfd_link_hash_common)
 		{
 		  if (size > h->root.u.c.size)
 		    h->root.u.c.size = size;
@@ -8716,7 +8712,7 @@ elf_link_output_extsym (struct bfd_hash_entry *bh, void *data)
       && h->ref_dynamic
       && h->def_regular
       && !h->dynamic_def
-      && !h->dynamic_weak
+      && h->ref_dynamic_nonweak
       && !elf_link_check_versioned_symbol (flinfo->info, bed, h))
     {
       bfd *def_bfd;
@@ -13003,5 +12999,5 @@ elf_append_rel (bfd *abfd, asection *s, Elf_Internal_Rela *rel)
   const struct elf_backend_data *bed = get_elf_backend_data (abfd);
   bfd_byte *loc = s->contents + (s->reloc_count++ * bed->s->sizeof_rel);
   BFD_ASSERT (loc + bed->s->sizeof_rel <= s->contents + s->size);
-  bed->s->swap_reloca_out (abfd, rel, loc);
+  bed->s->swap_reloc_out (abfd, rel, loc);
 }

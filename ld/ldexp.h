@@ -67,6 +67,7 @@ typedef union etree_union {
     node_type type;
     const char *dst;
     union etree_union *src;
+    bfd_boolean defsym;
     bfd_boolean hidden;
   } assign;
   struct {
@@ -138,6 +139,11 @@ struct ldexp_control {
 
   /* Principally used for diagnostics.  */
   bfd_boolean assigning_to_dot;
+  /* If evaluating an assignment, the destination.  Cleared if an
+     etree_name NAME matches this, to signal a self-assignment.
+     Note that an etree_name DEFINED does not clear this field, nor
+     does the false branch of a trinary expression.  */
+  const char *assign_name;
 
   /* Working results.  */
   etree_value_type result;
@@ -199,7 +205,7 @@ etree_type *exp_unop
 etree_type *exp_nameop
   (int, const char *);
 etree_type *exp_assign
-  (const char *, etree_type *);
+  (const char *, etree_type *, bfd_boolean);
 etree_type *exp_defsym
   (const char *, etree_type *);
 etree_type *exp_provide
