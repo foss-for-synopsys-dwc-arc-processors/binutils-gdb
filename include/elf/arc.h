@@ -121,6 +121,7 @@ END_RELOC_NUMBERS (R_ARC_max)
 /* ARC Linux specific ABIs */
 #define E_ARC_OSABI_ORIG	0x00000000   /* MUST be zero for back-compat */
 #define E_ARC_OSABI_V2		0x00000200
-#define E_ARC_OSABI_CURRENT	E_ARC_OSABI_V2
+#define E_ARC_OSABI_V3		0x00000300
+#define E_ARC_OSABI_CURRENT	E_ARC_OSABI_V3
 
 #endif /* _ELF_ARC_H */
