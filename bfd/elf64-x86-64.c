@@ -2134,10 +2134,44 @@ elf_x86_64_adjust_dynamic_symbol (struct bfd_link_info *info,
 {
   struct elf_x86_64_link_hash_table *htab;
   asection *s;
+  struct elf_x86_64_link_hash_entry *eh;
+  struct elf_dyn_relocs *p;
 
   /* STT_GNU_IFUNC symbol must go through PLT. */
   if (h->type == STT_GNU_IFUNC)
     {
+      /* All local STT_GNU_IFUNC references must be treate as local
+	 calls via local PLT.  */
+      if (h->ref_regular
+	  && SYMBOL_CALLS_LOCAL (info, h))
+	{
+	  bfd_size_type pc_count = 0, count = 0;
+	  struct elf_dyn_relocs **pp;
+
+	  eh = (struct elf_x86_64_link_hash_entry *) h;
+	  for (pp = &eh->dyn_relocs; (p = *pp) != NULL; )
+	    {
+	      pc_count += p->pc_count;
+	      p->count -= p->pc_count;
+	      p->pc_count = 0;
+	      count += p->count;
+	      if (p->count == 0)
+		*pp = p->next;
+	      else
+		pp = &p->next;
+	    }
+
+	  if (pc_count || count)
+	    {
+	      h->needs_plt = 1;
+	      h->non_got_ref = 1;
+	      if (h->plt.refcount <= 0)
+		h->plt.refcount = 1;
+	      else
+		h->plt.refcount += 1;
+	    }
+	}
+
       if (h->plt.refcount <= 0)
 	{
 	  h->plt.offset = (bfd_vma) -1;
@@ -2214,9 +2248,6 @@ elf_x86_64_adjust_dynamic_symbol (struct bfd_link_info *info,
 
   if (ELIMINATE_COPY_RELOCS)
     {
-      struct elf_x86_64_link_hash_entry * eh;
-      struct elf_dyn_relocs *p;
-
       eh = (struct elf_x86_64_link_hash_entry *) h;
       for (p = eh->dyn_relocs; p != NULL; p = p->next)
 	{
@@ -3104,8 +3135,11 @@ elf_x86_64_relocate_section (bfd *output_bfd,
 	  || r_type == (int) R_X86_64_GNU_VTENTRY)
 	continue;
 
-      if (r_type >= R_X86_64_max)
+      if (r_type >= (int) R_X86_64_standard)
 	{
+	  (*_bfd_error_handler)
+	    (_("%B: unrecognized relocation (0x%x) in section `%A'"),
+	     input_bfd, input_section, r_type);
 	  bfd_set_error (bfd_error_bad_value);
 	  return FALSE;
 	}
