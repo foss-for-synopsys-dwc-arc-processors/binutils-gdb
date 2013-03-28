@@ -1,3 +1,119 @@
+2013-03-05  Yufeng Zhang  <yufeng.zhang@arm.com>
+
+	* config/tc-aarch64.c (aarch64_imm_float_p): Rename 'e' to 'pattern';
+	add comment.
+	(aarch64_double_precision_fmovable): New function.
+	(parse_aarch64_imm_float): Add parameter 'dp_p'; call the new
+	function; handle hexadecimal representation of IEEE754 encoding.
+	(parse_operands): Update the call to parse_aarch64_imm_float.
+
+2013-02-25  Terry Guo  <terry.guo@arm.com>
+
+	Apply mainline patche
+	2013-02-25  Terry Guo  <terry.guo@arm.com>
+	* config/tc-arm.c (arm_cpus): Add cortex-r7 entry.
+	* doc/c-arm.texi: Add cortex-r7 and missing cortex-r5 to
+	list of accepted CPUs.
+
+2013-02-15  Yufeng Zhang  <yufeng.zhang@arm.com>
+
+	* config/tc-aarch64.c (md_begin): Change to check if 'name' is
+	NULL.
+
+2013-02-12  Yufeng Zhang  <yufeng.zhang@arm.com>
+
+	* config/tc-aarch64.c (parse_operands): Change to compare the result
+	of function call 'parse_sys_reg' with 'PARSE_FAIL' instead of 'FALSE'.
+
+2013-01-29  Roland McGrath  <mcgrathr@google.com>
+
+	* config/tc-arm.c (md_apply_fix): Use as_bad_where for "bad
+	immediate value for 8-bit offset" error so it shows line info.
+
+2013-01-22  Alan Modra  <amodra@gmail.com>
+
+	Apply mainline patches
+	2012-11-23  Alan Modra  <amodra@gmail.com>
+	* config/tc-ppc.c (sticky): New var.
+	(md_parse_option, ppc_machine): Update ppc_parse_cpu calls.
+
+	2012-11-14  Ulrich Weigand  <uweigand@de.ibm.com>
+	* config/tc-ppc.c (md_apply_fix): Leave field zero when emitting
+	an ELF reloc on data as well.
+
+	2012-11-06  Alan Modra  <amodra@gmail.com>
+	* config/tc-ppc.c (md_apply_fix): Fix xcoff build breakage.
+
+	2012-11-05  Alan Modra  <amodra@gmail.com>
+	* config/tc-ppc.c (md_chars_to_number): Delete.
+	(ppc_setup_opcodes): Assert num_powerpc_operands fit.
+	(ppc_is_toc_sym): Move earlier in file.
+	(md_assemble): Move code setting reloc from md_apply_fix.  Combine
+	non-ELF code setting fixup with ELF code.  Stash opindex in
+	fx_pcrel_adjust.  Adjust fixup offset for VLE.  Don't set
+	fx_no_overflow here.
+	(md_apply_fix): Rewrite to use ppc_insert_operand for all
+	resolved instruction fields.  Leave insn field zero when
+	emitting an ELF reloc in most cases.
+
+	2012-10-29  Alan Modra  <amodra@gmail.com>
+	* sb.c (sb_check): Use __builtin_clzll when size_t is not the
+	same size as long.
+
+	2012-10-26  Alan Modra  <amodra@gmail.com>
+	PR gas/14758
+	* config/tc-ppc.c (ppc_setup_opcodes): Fix comment.
+	(md_assemble): Translate to _DS relocs for ppc32 as well as ppc64.
+	(tc_gen_reloc): Handle _DS relocs in ppc32 mode.
+
+	2012-10-01  Alan Modra  <amodra@gmail.com>
+	* write.c (chain_frchains_together_1): Reorder assertion to avoid
+	uninit warning.
+
+	2012-08-01  James Lemke  <jwlemke@codesourcery.com>
+	* dwarf2dbg.c (out_set_addr): Allow for non-constant value of
+	DWARF2_LINE_MIN_INSN_LENGTH
+	* config/tc-ppc.c (ppc_dwarf2_line_min_insn_length): Declare
+	and initialize.
+	(md_apply_fix): Branch addr can be a multiple of 2 or 4.
+	* config/tc-ppc.h (DWARF2_LINE_MIN_INSN_LENGTH): Now a
+	variable reference.
+
+2013-01-10  Roland McGrath  <mcgrathr@google.com>
+
+	* hash.c (hash_new_sized): Make it global.
+	* hash.h: Declare it.
+	* macro.c (define_macro): Use hash_new_sized instead of hash_new,
+	pass a small size.
+
+2012-12-20  Greta Yorsh  <Greta.Yorsh@arm.com>
+
+	* config/tc-arm.c (rfefa,rfeea,rfeed): Fix encoding.
+	(rfe,srs,srsea,srsfa,srsed,srsfd): Add missing mnemonics.
+
+2012-12-06  Yufeng Zhang  <yufeng.zhang@arm.com>
+
+	* config/tc-aarch64.c (exp_has_bignum_p): Remove.
+	(my_get_expression): Not get rid of bignums.
+	(s_ltorg): Increase the range of 'align'.
+	(programmer_friendly_fixup): Allow bignum expression.
+
+2012-11-20  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR gas/14859
+	* gas/i386/x86-64-opcode.s: Add jecxz.
+	* gas/i386/x86-64-opcode.d: Updated.
+
+2012-11-20  Yufeng Zhang  <yufeng.zhang@arm.com>
+
+	* config/tc-aarch64.c (first_error_fmt): Add ATTRIBUTE_UNUSED to the
+	local variable "ret".
+
+2012-11-20  Roland McGrath  <mcgrathr@google.com>
+
+	* config/tc-arm.c (arm_symbol_chars): New variable.
+	* config/tc-arm.h (tc_symbol_chars): New macro, defined to that.
+
 2012-11-07  James Murray <jsm@jsm-net.demon.co.uk>
 
 	* config/tc-m68hc11.c: Fix R_M68HC12_16B relocation for movb/w

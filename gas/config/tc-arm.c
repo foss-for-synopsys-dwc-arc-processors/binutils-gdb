@@ -1,6 +1,6 @@
 /* tc-arm.c -- Assemble for the ARM
    Copyright 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003,
-   2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012
+   2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013
    Free Software Foundation, Inc.
    Contributed by Richard Earnshaw (rwe@pegasus.esprit.ec.org)
 	Modified by David Taylor (dtaylor@armltd.co.uk)
@@ -320,6 +320,11 @@ static int implicit_it_mode = IMPLICIT_IT_MODE_ARM;
        conditional affix except in the scope of an IT instruction.  */
 
 static bfd_boolean unified_syntax = FALSE;
+
+/* An immediate operand can start with #, and ld*, st*, pld operands
+   can contain [ and ].  We need to tell APP not to elide whitespace
+   before a [, which can appear as the first operand for pld.  */
+const char arm_symbol_chars[] = "#[]";
 
 enum neon_el_type
 {
@@ -10225,7 +10230,7 @@ do_t_branch (void)
 }
 
 /* Actually do the work for Thumb state bkpt and hlt.  The only difference
-   between the two is the maximum immediate allowed - which is passed in 
+   between the two is the maximum immediate allowed - which is passed in
    RANGE.  */
 static void
 do_t_bkpt_hlt1 (int range)
@@ -14660,7 +14665,7 @@ do_vfp_nsyn_cvtz (void)
 }
 
 static void
-do_vfp_nsyn_cvt_fpv8 (enum neon_cvt_flavour flavour, 
+do_vfp_nsyn_cvt_fpv8 (enum neon_cvt_flavour flavour,
 		      enum neon_cvt_mode mode)
 {
   int sz, op;
@@ -14720,9 +14725,9 @@ do_neon_cvt_1 (enum neon_cvt_mode mode)
   /* PR11109: Handle round-to-zero for VCVT conversions.  */
   if (mode == neon_cvt_mode_z
       && ARM_CPU_HAS_FEATURE (cpu_variant, fpu_arch_vfp_v2)
-      && (flavour == neon_cvt_flavour_s32_f32 
-	  || flavour == neon_cvt_flavour_u32_f32 
-	  || flavour == neon_cvt_flavour_s32_f64 
+      && (flavour == neon_cvt_flavour_s32_f32
+	  || flavour == neon_cvt_flavour_u32_f32
+	  || flavour == neon_cvt_flavour_s32_f64
 	  || flavour == neon_cvt_flavour_u32_f64)
       && (rs == NS_FD || rs == NS_FF))
     {
@@ -18216,17 +18221,23 @@ static const struct asm_opcode insns[] =
 #undef  THUMB_VARIANT
 #define THUMB_VARIANT  & arm_ext_v6_notm
  TUF("rfeia",	8900a00, e990c000, 1, (RRw),			   rfe, rfe),
+ TUF("rfe",	8900a00, e990c000, 1, (RRw),			   rfe, rfe),
   UF(rfeib,	9900a00,           1, (RRw),			   rfe),
   UF(rfeda,	8100a00,           1, (RRw),			   rfe),
  TUF("rfedb",	9100a00, e810c000, 1, (RRw),			   rfe, rfe),
  TUF("rfefd",	8900a00, e990c000, 1, (RRw),			   rfe, rfe),
-  UF(rfefa,	9900a00,           1, (RRw),			   rfe),
-  UF(rfeea,	8100a00,           1, (RRw),			   rfe),
- TUF("rfeed",	9100a00, e810c000, 1, (RRw),			   rfe, rfe),
+  UF(rfefa,	8100a00,           1, (RRw),			   rfe),
+ TUF("rfeea",	9100a00, e810c000, 1, (RRw),			   rfe, rfe),
+  UF(rfeed,	9900a00,           1, (RRw),			   rfe),
  TUF("srsia",	8c00500, e980c000, 2, (oRRw, I31w),		   srs,  srs),
+ TUF("srs",	8c00500, e980c000, 2, (oRRw, I31w),		   srs,  srs),
+ TUF("srsea",	8c00500, e980c000, 2, (oRRw, I31w),		   srs,  srs),
   UF(srsib,	9c00500,           2, (oRRw, I31w),		   srs),
+  UF(srsfa,	9c00500,           2, (oRRw, I31w),		   srs),
   UF(srsda,	8400500,	   2, (oRRw, I31w),		   srs),
+  UF(srsed,	8400500,	   2, (oRRw, I31w),		   srs),
  TUF("srsdb",	9400500, e800c000, 2, (oRRw, I31w),		   srs,  srs),
+ TUF("srsfd",	9400500, e800c000, 2, (oRRw, I31w),		   srs,  srs),
 
 /*  ARM V6 not included in V7M (eg. integer SIMD).  */
 #undef  THUMB_VARIANT
@@ -21565,8 +21576,9 @@ md_apply_fix (fixS *	fixP,
 	    as_bad_where (fixP->fx_file, fixP->fx_line,
 			  _("invalid literal constant: pool needs to be closer"));
 	  else
-	    as_bad (_("bad immediate value for 8-bit offset (%ld)"),
-		    (long) value);
+	    as_bad_where (fixP->fx_file, fixP->fx_line,
+			  _("bad immediate value for 8-bit offset (%ld)"),
+			  (long) value);
 	  break;
 	}
 
@@ -23905,6 +23917,9 @@ static const struct arm_cpu_option_table arm_cpus[] =
 								  "Cortex-R4F"),
   ARM_CPU_OPT ("cortex-r5",	ARM_ARCH_V7R_IDIV,
 						 FPU_NONE,	  "Cortex-R5"),
+  ARM_CPU_OPT ("cortex-r7",	ARM_ARCH_V7R_IDIV,
+						 FPU_ARCH_VFP_V3D16,
+								  "Cortex-R7"),
   ARM_CPU_OPT ("cortex-m4",	ARM_ARCH_V7EM,	 FPU_NONE,	  "Cortex-M4"),
   ARM_CPU_OPT ("cortex-m3",	ARM_ARCH_V7M,	 FPU_NONE,	  "Cortex-M3"),
   ARM_CPU_OPT ("cortex-m1",	ARM_ARCH_V6SM,	 FPU_NONE,	  "Cortex-M1"),

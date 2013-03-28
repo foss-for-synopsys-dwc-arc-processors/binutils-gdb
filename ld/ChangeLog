@@ -1,3 +1,88 @@
+2013-03-05  Alan Modra  <amodra@gmail.com>
+
+	PR ld/15222
+	* ldlang.c (lang_size_sections_1): When given an lma_region align
+	LMA as per VMA only if lma_region is the same as region.
+
+2013-01-22  Alan Modra  <amodra@gmail.com>
+
+	Apply mainline patches
+	2013-01-08  Alan Modra  <amodra@gmail.com>
+	* emultempl/elf32.em (gld${EMULATION_NAME}_check_ld_so_conf): Replace
+	"name" param with a bfd_link_needed_link pointer.  Update caller.
+	(gld${EMULATION_NAME}_check_ld_elf_hints): Likewise.
+
+	2012-12-17  Alan Modra  <amodra@gmail.com>
+	PR ld/14962
+	* ldexp.h (struct ldexp_control): Add "assign_name".
+	* ldexp.c (fold_name <NAME>): Compare and clear assign_name on match.
+	(exp_fold_tree_1): Remove existing code testing for self assignment.
+	Instead set and test expld.assign_name.
+	* ldlang.c (scan_for_self_assignment): Delete.
+	(print_assignment): Instead set and test expld.assign_name.
+
+	2012-12-05  H.J. Lu  <hongjiu.lu@intel.com>
+	PR ld/14915
+	* emultempl/elf32.em (gld${EMULATION_NAME}_after_open): Also
+	check DT_NEEDED entries when creating shared object with
+	--copy-dt-needed-entries.
+
+	2012-12-03  H.J. Lu  <hongjiu.lu@intel.com>
+	PR ld/14904
+	* ldmain.c (main): Don't check plugin_load_plugins return.
+	* lexsup.c (parse_args): Don't check plugin_opt_plugin return.
+	* plugin.c (dlerror): New.  Defined if HAVE_DLFCN_H isn't
+	defined.
+	(plugin_opt_plugin): Change return type to void.  Stop on
+	dlopen error and report error with dlerror ().
+	(plugin_load_plugins): Change return type to void.  Stop on
+	dlsym error and report error with dlerror ().  Don't use
+	set_plugin_error.
+	(plugin_call_cleanup): Issue an error for each plugin.
+	* plugin.h (plugin_opt_plugin): Change return type to void.
+	(plugin_load_plugins): Likewise.
+
+	2012-11-01  Alan Modra  <amodra@gmail.com>
+	* ldlang.c (insert_pad): Correct output section size calculation.
+	(lang_size_sections_1): Likewise for lang_data_statement and
+	lang_reloc_statement.
+
+	2012-10-22  Alan Modra  <amodra@gmail.com>
+	* plugin.c (plugin_load_plugins): Warning fix.
+
+2012-12-18  Roland McGrath  <mcgrathr@google.com>
+
+	* ld.texinfo (Options): Describe -Trodata-segment.
+	* ldlex.h (enum option_values): Add OPTION_TRODATA_SEGMENT.
+	* lexsup.c (ld_options, parse_args): Handle -Trodata-segment.
+	* scripttempl/elf.sc (RODATA_ADDR, SHLIB_RODATA_ADDR): Wrap
+	SEGMENT_START("rodata-segment", ...) + SIZEOF_HEADERS around the value.
+
+2012-12-11  Roland McGrath  <mcgrathr@google.com>
+
+	* emulparams/elf_nacl.sh (nacl_rodata_addr): New shell function.
+	(RODATA_ADDR, SHLIB_RODATA_ADDR): Use it to base the calculation
+	on SEGMENT_START("text-segment", ...) rather than ... alone.
+	* Makefile.am (earmelf_nacl.c, earmelfb_nacl.c): Add missing
+	dependency on $(srcdir)/emulparams/elf_nacl.sh.
+	* Makefile.in: Regenerate.
+
+2012-11-26  Roland McGrath  <mcgrathr@google.com>
+
+	* emultempl/aarch64elf.em (gld${EMULATION_NAME}_before_parse):
+	Copy last elf32.em here too.
+	* emultempl/armelf.em (gld${EMULATION_NAME}_before_parse): Likewise.
+	* emultempl/mmixelf.em (gld${EMULATION_NAME}_before_parse): Likewise.
+	* emultempl/scoreelf.em (gld${EMULATION_NAME}_before_parse): Likewise.
+
+2012-11-21  Roland McGrath  <mcgrathr@google.com>
+
+	* ld.h (ld_config_type): New flag member separate_code.
+	* emultempl/elf32.em
+	(gld${EMULATION_NAME}_before_parse): Set it based on $SEPARATE_CODE.
+	* ldlang.c (ldlang_override_segment_assignment): If it's set, then
+	always return TRUE when SEC_CODE differs between the sections.
+
 2012-11-05  Alan Modra  <amodra@gmail.com>
 
 	* configure.in: Apply 2012-09-10 change to config.in here.

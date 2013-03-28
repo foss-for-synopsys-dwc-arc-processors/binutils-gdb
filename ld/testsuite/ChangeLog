@@ -1,3 +1,173 @@
+2013-03-05  Alan Modra  <amodra@gmail.com>
+
+	* ld-scripts/rgn-at6.s, * ld-scripts/rgn-at6.t, * ld-scripts/rgn-at6.d,
+	* ld-scripts/rgn-at7.t, * ld-scripts/rgn-at7.d: New tests.
+
+2013-02-12  Yufeng Zhang  <yufeng.zhang@arm.com>
+
+	* ld-aarch64/emit-relocs-264.d: Append the '-Mno-aliases' option to
+	the objdump directive.
+	* ld-aarch64/emit-relocs-266.d: Ditto.
+	* ld-aarch64/emit-relocs-268.d: Ditto.
+	* ld-aarch64/emit-relocs-269.d: Ditto.
+	* ld-aarch64/emit-relocs-270.d: Ditto.
+	* ld-aarch64/emit-relocs-271.d: Ditto.
+	* ld-aarch64/emit-relocs-272.d: Ditto.
+
+2013-01-22  Alan Modra  <amodra@gmail.com>
+
+	Apply mainline patches
+	2013-01-15  Alan Modra  <amodra@gmail.com>
+	* ld-powerpc/tlsso.d: Adjust for plt-thread-safe stubs.
+	* ld-powerpc/tlsso.g: Likewise.
+	* ld-powerpc/tlsso.r: Likewise.
+	* ld-powerpc/tlstocso.d: Likewise.
+	* ld-powerpc/tlstocso.g: Likewise.
+
+	2012-12-03  H.J. Lu  <hongjiu.lu@intel.com>
+	PR ld/14904
+	* ld-plugin/plugin-2.d: Update expected error message.
+	* ld-plugin/plugin-4.d: Likewise.
+
+	2012-11-23  Alan Modra  <amodra@gmail.com>
+	* ld-powerpc/plt1.d: Update for default "at" branch hints.
+	* ld-powerpc/tlsexe.d: Likewise.
+	* ld-powerpc/tlsexetoc.d: Likewise.
+	* ld-powerpc/tlsopt1.d: Likewise.
+	* ld-powerpc/tlsopt1_32.d: Likewise.
+	* ld-powerpc/tlsopt2.d: Likewise.
+	* ld-powerpc/tlsopt2_32.d: Likewise.
+	* ld-powerpc/tlsopt4.d: Likewise.
+	* ld-powerpc/tlsopt4_32.d: Likewise.
+	* ld-powerpc/tlsso.d: Likewise.
+	* ld-powerpc/tlstocso.d: Likewise.
+
+	2012-10-29  Alan Modra  <amodra@gmail.com>
+	* ld-powerpc/powerpc.exp: Modify emulation option passed to ld
+	when little-endian.
+	* ld-powerpc/apuinfo-nul.rd: Update for le output.
+	* ld-powerpc/apuinfo.rd: Likewise.
+	* ld-powerpc/plt1.d: Likewise.
+	* ld-powerpc/relax.d: Likewise.
+	* ld-powerpc/relaxr.d: Likewise.
+	* ld-powerpc/sdadyn.d: Likewise.
+	* ld-powerpc/tls.d: Likewise.
+	* ld-powerpc/tls.g: Likewise.
+	* ld-powerpc/tls.t: Likewise.
+	* ld-powerpc/tls32.d: Likewise.
+	* ld-powerpc/tls32.g: Likewise.
+	* ld-powerpc/tls32.t: Likewise.
+	* ld-powerpc/tlsexe.d: Likewise.
+	* ld-powerpc/tlsexe.g: Likewise.
+	* ld-powerpc/tlsexe.r: Likewise.
+	* ld-powerpc/tlsexe.t: Likewise.
+	* ld-powerpc/tlsexe32.d: Likewise.
+	* ld-powerpc/tlsexe32.g: Likewise.
+	* ld-powerpc/tlsexe32.r: Likewise.
+	* ld-powerpc/tlsexe32.t: Likewise.
+	* ld-powerpc/tlsexetoc.d: Likewise.
+	* ld-powerpc/tlsexetoc.g: Likewise.
+	* ld-powerpc/tlsexetoc.r: Likewise.
+	* ld-powerpc/tlsexetoc.t: Likewise.
+	* ld-powerpc/tlsmark.d: Likewise.
+	* ld-powerpc/tlsmark32.d: Likewise.
+	* ld-powerpc/tlsopt1.d: Likewise.
+	* ld-powerpc/tlsopt1_32.d: Likewise.
+	* ld-powerpc/tlsopt2.d: Likewise.
+	* ld-powerpc/tlsopt2_32.d: Likewise.
+	* ld-powerpc/tlsopt3.d: Likewise.
+	* ld-powerpc/tlsopt3_32.d: Likewise.
+	* ld-powerpc/tlsopt4.d: Likewise.
+	* ld-powerpc/tlsopt4_32.d: Likewise.
+	* ld-powerpc/tlsso.d: Likewise.
+	* ld-powerpc/tlsso.g: Likewise.
+	* ld-powerpc/tlsso.r: Likewise.
+	* ld-powerpc/tlsso.t: Likewise.
+	* ld-powerpc/tlsso32.d: Likewise.
+	* ld-powerpc/tlsso32.g: Likewise.
+	* ld-powerpc/tlsso32.r: Likewise.
+	* ld-powerpc/tlsso32.t: Likewise.
+	* ld-powerpc/tlstoc.d: Likewise.
+	* ld-powerpc/tlstoc.g: Likewise.
+	* ld-powerpc/tlstoc.t: Likewise.
+	* ld-powerpc/tlstocso.d: Likewise.
+	* ld-powerpc/tlstocso.g: Likewise.
+	* ld-powerpc/tlstocso.t: Likewise.
+	* ld-powerpc/tocopt.out: Likewise.
+
+	2012-08-01  James Lemke  <jwlemke@codesourcery.com>
+	* ld-gc/pr13683.d: XFAIL for powerpc*-*-eabivle.
+
+2012-12-21  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/14980
+	* ld-ifunc/ifunc-14c.s: New file.
+	* ld-ifunc/ifunc-14e-i386.d: Likewise.
+	* ld-ifunc/ifunc-14e-x86-64.d: Likewise.
+	* ld-ifunc/ifunc-14f-i386.d: Likewise.
+	* ld-ifunc/ifunc-14f-x86-64.d: Likewise.
+
+2012-12-20  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/14968
+	* ld-ifunc/ifunc-18a-i386.d: New file.
+	* ld-ifunc/ifunc-18a-x86-64.d: Likewise.
+	* ld-ifunc/ifunc-18a.s: Likewise.
+	* ld-ifunc/ifunc-18b-i386.d: Likewise.
+	* ld-ifunc/ifunc-18b-x86-64.d: Likewise.
+	* ld-ifunc/ifunc-18b.s: Likewise.
+	* ld-ifunc/ifunc-19a-i386.d: Likewise.
+	* ld-ifunc/ifunc-19a-x86-64.d: Likewise.
+	* ld-ifunc/ifunc-19a.s: Likewise.
+	* ld-ifunc/ifunc-19b-i386.d: Likewise.
+	* ld-ifunc/ifunc-19b-x86-64.d: Likewise.
+	* ld-ifunc/ifunc-19b.s: Likewise.
+
+2012-12-20  H.J. Lu  <hongjiu.lu@intel.com>
+
+	PR ld/14956
+	* ld-ifunc/ifunc-14-i386.d: Renamed to ...
+	* ld-ifunc/ifunc-14a-i386.d: This.
+
+	* ld-ifunc/ifunc-14-x86-64.d: Renamed to ...
+	* ld-ifunc/ifunc-14a-x86-64.d: This.
+
+	* ld-ifunc/ifunc-14b-i386.d: New file.
+	* ld-ifunc/ifunc-14b-x86-64.d: Likewise.
+	* ld-ifunc/ifunc-14c-i386.d: Likewise.
+	* ld-ifunc/ifunc-14c-x86-64.d: Likewise.
+	* ld-ifunc/ifunc-14d-i386.d: Likewise.
+	* ld-ifunc/ifunc-14d-x86-64.d: Likewise.
+
+2012-11-30  Roland McGrath  <mcgrathr@google.com>
+
+	* ld-elf/ehdr_start.s: Put reference in .rodata section, not .data.
+
+2012-11-27  Roland McGrath  <mcgrathr@google.com>
+
+	* ld-elf/compress.exp: Bail out if zlib is not supported.
+	* lib/ld-lib.exp (run_dump_test): If as options include
+	--compress-debug-sections and zlib is not available, report
+	the test as unsupported.
+
+2012-11-27  Roland McGrath  <mcgrathr@google.com>
+
+	* ld-elf/flags1.d: Add *-*-nacl* to xfail list.
+	* ld-elf/orphan-region.d: Likewise.
+
+2012-11-21  Roland McGrath  <mcgrathr@google.com>
+
+	* ld-elf/comm-data.exp: Add XFAIL for arm*-*-* targets, referring
+	to PR ld/13802.
+
+2012-11-14  H.J. Lu  <hongjiu.lu@intel.com>
+
+	* ld-elf/shared.exp (build_cxx_tests): Move out the commented out
+	test.
+
+	* lib/ld-lib.exp (run_ld_link_exec_tests): Assemble all sources
+	files in each test.
+
 2012-10-16  Sofiane Naci  <sofiane.naci@arm.com>
 
 	* ld-aarch64/tlsle-symbol-offset.s: New file.

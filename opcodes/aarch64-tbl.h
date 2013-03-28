@@ -1,6 +1,6 @@
 /* aarch64-tbl.h -- AArch64 opcode description table and instruction
    operand description table.
-   Copyright 2012 Free Software Foundation, Inc.
+   Copyright 2012, 2013  Free Software Foundation, Inc.
 
    This file is part of the GNU opcodes library.
 
@@ -1534,8 +1534,10 @@ struct aarch64_opcode aarch64_opcode_table[] =
   {"sqshrn2", 0x4f009400, 0xff80fc00, asimdshf, 0, SIMD, OP3 (Vd, Vn, IMM_VLSR), QL_VSHIFTN2, 0},
   {"sqrshrn", 0xf009c00, 0xff80fc00, asimdshf, 0, SIMD, OP3 (Vd, Vn, IMM_VLSR), QL_VSHIFTN, 0},
   {"sqrshrn2", 0x4f009c00, 0xff80fc00, asimdshf, 0, SIMD, OP3 (Vd, Vn, IMM_VLSR), QL_VSHIFTN2, 0},
-  {"sshll", 0xf00a400, 0xff80fc00, asimdshf, 0, SIMD, OP3 (Vd, Vn, IMM_VLSL), QL_VSHIFTL, 0},
-  {"sshll2", 0x4f00a400, 0xff80fc00, asimdshf, 0, SIMD, OP3 (Vd, Vn, IMM_VLSL), QL_VSHIFTL2, 0},
+  {"sshll", 0xf00a400, 0xff80fc00, asimdshf, 0, SIMD, OP3 (Vd, Vn, IMM_VLSL), QL_VSHIFTL, F_HAS_ALIAS},
+  {"sxtl", 0xf00a400, 0xff87fc00, asimdshf, OP_SXTL, SIMD, OP2 (Vd, Vn), QL_V2LONGBHS, F_ALIAS | F_CONV},
+  {"sshll2", 0x4f00a400, 0xff80fc00, asimdshf, 0, SIMD, OP3 (Vd, Vn, IMM_VLSL), QL_VSHIFTL2, F_HAS_ALIAS},
+  {"sxtl2", 0x4f00a400, 0xff87fc00, asimdshf, OP_SXTL2, SIMD, OP2 (Vd, Vn), QL_V2LONGBHS2, F_ALIAS | F_CONV},
   {"scvtf", 0xf00e400, 0xbf80fc00, asimdshf, 0, SIMD, OP3 (Vd, Vn, IMM_VLSR), QL_VSHIFT_SD, 0},
   {"fcvtzs", 0xf00fc00, 0xbf80fc00, asimdshf, 0, SIMD, OP3 (Vd, Vn, IMM_VLSR), QL_VSHIFT_SD, 0},
   {"ushr", 0x2f000400, 0xbf80fc00, asimdshf, 0, SIMD, OP3 (Vd, Vn, IMM_VLSR), QL_VSHIFT, 0},
@@ -1554,8 +1556,10 @@ struct aarch64_opcode aarch64_opcode_table[] =
   {"uqshrn2", 0x6f009400, 0xff80fc00, asimdshf, 0, SIMD, OP3 (Vd, Vn, IMM_VLSR), QL_VSHIFTN2, 0},
   {"uqrshrn", 0x2f009c00, 0xff80fc00, asimdshf, 0, SIMD, OP3 (Vd, Vn, IMM_VLSR), QL_VSHIFTN, 0},
   {"uqrshrn2", 0x6f009c00, 0xff80fc00, asimdshf, 0, SIMD, OP3 (Vd, Vn, IMM_VLSR), QL_VSHIFTN2, 0},
-  {"ushll", 0x2f00a400, 0xff80fc00, asimdshf, 0, SIMD, OP3 (Vd, Vn, IMM_VLSL), QL_VSHIFTL, 0},
-  {"ushll2", 0x6f00a400, 0xff80fc00, asimdshf, 0, SIMD, OP3 (Vd, Vn, IMM_VLSL), QL_VSHIFTL2, 0},
+  {"ushll", 0x2f00a400, 0xff80fc00, asimdshf, 0, SIMD, OP3 (Vd, Vn, IMM_VLSL), QL_VSHIFTL, F_HAS_ALIAS},
+  {"uxtl", 0x2f00a400, 0xff87fc00, asimdshf, OP_UXTL, SIMD, OP2 (Vd, Vn), QL_V2LONGBHS, F_ALIAS | F_CONV},
+  {"ushll2", 0x6f00a400, 0xff80fc00, asimdshf, 0, SIMD, OP3 (Vd, Vn, IMM_VLSL), QL_VSHIFTL2, F_HAS_ALIAS},
+  {"uxtl2", 0x6f00a400, 0xff87fc00, asimdshf, OP_UXTL2, SIMD, OP2 (Vd, Vn), QL_V2LONGBHS2, F_ALIAS | F_CONV},
   {"ucvtf", 0x2f00e400, 0xbf80fc00, asimdshf, 0, SIMD, OP3 (Vd, Vn, IMM_VLSR), QL_VSHIFT_SD, 0},
   {"fcvtzu", 0x2f00fc00, 0xbf80fc00, asimdshf, 0, SIMD, OP3 (Vd, Vn, IMM_VLSR), QL_VSHIFT_SD, 0},
   /* AdvSIMD TBL/TBX.  */
@@ -2017,7 +2021,7 @@ struct aarch64_opcode aarch64_opcode_table[] =
   {"and", 0x12000000, 0x7f800000, log_imm, 0, CORE, OP3 (Rd_SP, Rn, LIMM), QL_R2NIL, F_HAS_ALIAS | F_SF},
   {"bic", 0x12000000, 0x7f800000, log_imm, OP_BIC, CORE, OP3 (Rd_SP, Rn, LIMM), QL_R2NIL, F_ALIAS | F_PSEUDO | F_SF},
   {"orr", 0x32000000, 0x7f800000, log_imm, 0, CORE, OP3 (Rd_SP, Rn, LIMM), QL_R2NIL, F_HAS_ALIAS | F_SF},
-  {"mov", 0x320003e0, 0x7f8003e0, log_imm, OP_MOV_IMM_LOG, CORE, OP2 (Rd_SP, IMM_MOV), QL_R1NIL, F_ALIAS | F_PSEUDO | F_P1 | F_SF | F_CONV},
+  {"mov", 0x320003e0, 0x7f8003e0, log_imm, OP_MOV_IMM_LOG, CORE, OP2 (Rd_SP, IMM_MOV), QL_R1NIL, F_ALIAS | F_P1 | F_SF | F_CONV},
   {"eor", 0x52000000, 0x7f800000, log_imm, 0, CORE, OP3 (Rd_SP, Rn, LIMM), QL_R2NIL, F_SF},
   {"ands", 0x72000000, 0x7f800000, log_imm, 0, CORE, OP3 (Rd, Rn, LIMM), QL_R2NIL, F_HAS_ALIAS | F_SF},
   {"tst", 0x7200001f, 0x7f80001f, log_imm, 0, CORE, OP2 (Rn, LIMM), QL_R1NIL, F_ALIAS | F_SF},
@@ -2036,9 +2040,9 @@ struct aarch64_opcode aarch64_opcode_table[] =
   {"bics", 0x6a200000, 0x7f200000, log_shift, 0, CORE, OP3 (Rd, Rn, Rm_SFT), QL_I3SAMER, F_SF},
   /* Move wide (immediate).  */
   {"movn", 0x12800000, 0x7f800000, movewide, OP_MOVN, CORE, OP2 (Rd, HALF), QL_DST_R, F_SF | F_HAS_ALIAS},
-  {"mov", 0x12800000, 0x7f800000, movewide, OP_MOV_IMM_WIDEN, CORE, OP2 (Rd, IMM_MOV), QL_DST_R, F_SF | F_ALIAS | F_PSEUDO | F_CONV},
+  {"mov", 0x12800000, 0x7f800000, movewide, OP_MOV_IMM_WIDEN, CORE, OP2 (Rd, IMM_MOV), QL_DST_R, F_SF | F_ALIAS | F_CONV},
   {"movz", 0x52800000, 0x7f800000, movewide, OP_MOVZ, CORE, OP2 (Rd, HALF), QL_DST_R, F_SF | F_HAS_ALIAS},
-  {"mov", 0x52800000, 0x7f800000, movewide, OP_MOV_IMM_WIDE, CORE, OP2 (Rd, IMM_MOV), QL_DST_R, F_SF | F_ALIAS | F_PSEUDO | F_CONV},
+  {"mov", 0x52800000, 0x7f800000, movewide, OP_MOV_IMM_WIDE, CORE, OP2 (Rd, IMM_MOV), QL_DST_R, F_SF | F_ALIAS | F_CONV},
   {"movk", 0x72800000, 0x7f800000, movewide, OP_MOVK, CORE, OP2 (Rd, HALF), QL_DST_R, F_SF},
   /* PC-rel. addressing.  */
   {"adr", 0x10000000, 0x9f000000, pcreladdr, 0, CORE, OP2 (Rd, ADDR_PCREL21), QL_ADRP, 0},
