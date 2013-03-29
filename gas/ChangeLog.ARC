@@ -1,8 +1,3 @@
-2013-03-29  Jeremy Bennett  <jeremy.bennett@embecosm.com>
-
-	* config/tc-arc.c (md_assemble): Tidy up debris left over from
-	mishandled merge.
-
 2013-03-27  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* config/extlib/Makefile.in: Add pdf and install-pdf targets.
