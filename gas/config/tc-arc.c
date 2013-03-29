@@ -4948,6 +4948,8 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		    {
 		      fixups[fix_up_at].opindex = arc_operand_map[operand->fmt];
 		    }
+<<<<<<< HEAD
+=======
 		  /*FIXME! This is a hack for STAR9000593624: there
 		    are cases when an st or ld instruction needs a
 		    shimm fixup. When the fixup is created, the
@@ -4960,6 +4962,7 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		    {
 		      limm_reloc_p = 0;
 		    }
+>>>>>>> 9e45fcb... Fix for STAR9000593624
 		}
 	      ++syn;
 	    }
@@ -5659,16 +5662,32 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		 is a symbol but the current operand being matched is not a
 		 symbol operand */
 	      else if (!arc_mach_a4 && (exp.X_op == O_symbol)
+<<<<<<< HEAD
+		       && !ac_symbol_operand (operand)){
+                  break;}
+=======
 		       && !ac_symbol_operand (operand))
 		{
 		  break;
 		}
+>>>>>>> 9e45fcb... Fix for STAR9000593624
 
 	      /* For ARCompact ISA, try next insn syntax if "%st" operand is
 		 not being matched with long-immediate operand */
 	      else if (!arc_mach_a4 && (exp.X_op == O_right_shift)
 		       && (operand->fmt != 'L'))
 		break;
+<<<<<<< HEAD
+			  else if (!arc_mach_a4 && (exp.X_op == O_subtract)
+				   && (operand->fmt != 'L')
+				   && ( (insn_name[0] == 'a' || insn_name[0] == 'A') && 
+						(insn_name[1] == 'd' || insn_name[1] == 'D') && 
+						(insn_name[2] == 'd' || insn_name[2] == 'D') ) )
+					   {
+					
+					break;
+			  }
+=======
 	      else if (!arc_mach_a4 && (exp.X_op == O_subtract)
 		       && (operand->fmt != 'L')
 		       && ( (insn_name[0] == 'a' || insn_name[0] == 'A') &&
@@ -5677,6 +5696,7 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		{
 		  break;
 		}
+>>>>>>> 9e45fcb... Fix for STAR9000593624
 	      else if (exp.X_op == O_register)
 		{
 		  reg = (struct arc_operand_value *) exp.X_add_number;
@@ -5828,7 +5848,14 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		    }
 		  else
 		    {
+<<<<<<< HEAD
+		
+
+     
+ 			int needGOTSymbol = 0;
+=======
 		      int needGOTSymbol = 0;
+>>>>>>> 9e45fcb... Fix for STAR9000593624
 		      if (strchr (str, '@'))
 			{
 			  if (!strncmp (str, "@gotpc", 6))
