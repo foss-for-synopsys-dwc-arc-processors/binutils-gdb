@@ -1,3 +1,10 @@
+2013-02-19  Claudiu Zissulescu <claudiu.zissulescu@synopsys.com>
+
+	ARC STAR 9000593624
+
+	* arc-opc-old.c (OFFSET_AC): Use ARC_OPERAND_SIGNED, not
+	ARC_OPERAND_LIMM.
+
 2013-03-17  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* arc-opinst.c: Regenerate.
