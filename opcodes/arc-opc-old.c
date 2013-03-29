@@ -598,7 +598,7 @@ static const struct arc_operand arc_operands_ac[] =
 
 /* 9-bit signed immediate offset, used in ARCompact 32-bit "ld" insn */
 #define OFFSET_AC (BASE_AC + 1)
-  { 'o', 9, 16, ARC_OPERAND_SIGNED | ARC_OPERAND_LOAD, insert_offset, extract_ld_offset }, 
+  { 'o', 9, 16, ARC_OPERAND_LIMM | ARC_OPERAND_SIGNED | ARC_OPERAND_LOAD, insert_offset, extract_ld_offset },
 
 /* branch address(9-bit, pc-relative, 2-byte aligned), used for
   "bbit0"/"bbit1" insns */
