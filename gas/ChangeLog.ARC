@@ -7,13 +7,6 @@
 	* config/tc-arc.c (tc_gen_reloc): Adjust offset to reflect
 	difference between relocation location and instruction start.
 
-2013-02-19  Claudiu Zissulescu <claudiu.zissulescu@synopsys.com>
-
-	ARC STAR 9000593624
-
-	* config/tc-arc.c (md_assemble): Hack for cases when st or ld
-	needs a shimm fixup.
-
 2012-03-04  Simon Cook  <simon.cook@embecosm.com>
 
 	* testsuite/gas/all/redef3.d: Replace arc-*-* with arc*-*-*.

@@ -4948,21 +4948,6 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		    {
 		      fixups[fix_up_at].opindex = arc_operand_map[operand->fmt];
 		    }
-<<<<<<< HEAD
-=======
-		  /*FIXME! This is a hack for STAR9000593624: there
-		    are cases when an st or ld instruction needs a
-		    shimm fixup. When the fixup is created, the
-		    limm_reloc_p is also setup, we need to turn it
-		    off. Hence we do it so at the end of the ld or st
-		    instruction. This is not the way of handling
-		    fixups.*/
-		  if (limm_reloc_p
-		      && (operand->fmt == '1' || operand->fmt == '0'))
-		    {
-		      limm_reloc_p = 0;
-		    }
->>>>>>> 9e45fcb... Fix for STAR9000593624
 		}
 	      ++syn;
 	    }
@@ -5436,7 +5421,6 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		str = input_line_pointer;
 		input_line_pointer = hold;
 	      }
-
 	      if (exp.X_op == O_illegal)
 		as_bad ("illegal operand");
 	      else if (exp.X_op == O_absent)
@@ -5662,22 +5646,14 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		 is a symbol but the current operand being matched is not a
 		 symbol operand */
 	      else if (!arc_mach_a4 && (exp.X_op == O_symbol)
-<<<<<<< HEAD
 		       && !ac_symbol_operand (operand)){
                   break;}
-=======
-		       && !ac_symbol_operand (operand))
-		{
-		  break;
-		}
->>>>>>> 9e45fcb... Fix for STAR9000593624
 
 	      /* For ARCompact ISA, try next insn syntax if "%st" operand is
 		 not being matched with long-immediate operand */
 	      else if (!arc_mach_a4 && (exp.X_op == O_right_shift)
 		       && (operand->fmt != 'L'))
 		break;
-<<<<<<< HEAD
 			  else if (!arc_mach_a4 && (exp.X_op == O_subtract)
 				   && (operand->fmt != 'L')
 				   && ( (insn_name[0] == 'a' || insn_name[0] == 'A') && 
@@ -5687,16 +5663,6 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 					
 					break;
 			  }
-=======
-	      else if (!arc_mach_a4 && (exp.X_op == O_subtract)
-		       && (operand->fmt != 'L')
-		       && ( (insn_name[0] == 'a' || insn_name[0] == 'A') &&
-			    (insn_name[1] == 'd' || insn_name[1] == 'D') &&
-			    (insn_name[2] == 'd' || insn_name[2] == 'D') ) )
-		{
-		  break;
-		}
->>>>>>> 9e45fcb... Fix for STAR9000593624
 	      else if (exp.X_op == O_register)
 		{
 		  reg = (struct arc_operand_value *) exp.X_add_number;
@@ -5848,14 +5814,10 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		    }
 		  else
 		    {
-<<<<<<< HEAD
 		
 
      
  			int needGOTSymbol = 0;
-=======
-		      int needGOTSymbol = 0;
->>>>>>> 9e45fcb... Fix for STAR9000593624
 		      if (strchr (str, '@'))
 			{
 			  if (!strncmp (str, "@gotpc", 6))
@@ -5971,21 +5933,9 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 			  //			  fprintf (stderr, "Not the sda syntax string. Trying next ********\n");
 			  break;
 			}
+
 		    }
 
-		  /* Check the st/ld mnemonic:It should be able to
-		     accomodate an immediate. Hence, no register
-		     here!*/
-		  if (!arc_mach_a4 && !ac_constant_operand(operand)
-		      && ( ((insn_name[0] == 'l' || insn_name[0] == 'L')
-			    && (insn_name[1] == 'd' || insn_name[1] == 'D')) ||
-			   ((insn_name[0] == 's' || insn_name[0] == 'S')
-			    && (insn_name[1] == 't' || insn_name[1] == 'T'))))
-		    {
-		      /* It is a register of some sort. We cannot
-			 do fixups on registers.*/
-		      break;
-		    }
 
 		  /* We need to generate a fixup for this expression.  */
 		  if (fc >= MAX_FIXUPS)
@@ -5993,6 +5943,13 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		  fixups[fc].exp = exp;
 		  fixups[fc].modifier_flags = mods;
 
+		  /* We don't support shimm relocs. break here to force
+		     the assembler to output a limm.  */
+/*
+		 #define IS_REG_SHIMM_OFFSET(o) ((o) == 'd')
+		 if (IS_REG_SHIMM_OFFSET (*syn))
+		 break;
+*/
 		  /* If this is a register constant (IE: one whose
 		     register value gets stored as 61-63) then this
 		     must be a limm.  */
@@ -6011,7 +5968,7 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		      /* ??? We need a cleaner interface than this.  */
 		      (*arc_operands[arc_operand_map['Q']].insert)
 			(insn, &insn2,operand, mods, reg, 0L, &junk);
-		      fixups[fc].opindex = arc_operand_map[(int) *syn]; //arc_operand_map[0];
+		      fixups[fc].opindex = arc_operand_map[0];
 		    }
 		  else
 		    fixups[fc].opindex = arc_operand_map[(int) *syn];
