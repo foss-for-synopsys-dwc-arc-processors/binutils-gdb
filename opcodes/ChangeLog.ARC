@@ -1,3 +1,8 @@
+2013-04-02  Simon Cook  <simon.cook@embecosm.com>
+
+	* arc-opc-old.c (arc_opcodes): Added RTSC instruction.
+	* arcompact-dis.c (dsmOneArcInst): Fixed decoding of RTSC.
+
 2013-03-17  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* arc-opinst.c: Regenerate.
