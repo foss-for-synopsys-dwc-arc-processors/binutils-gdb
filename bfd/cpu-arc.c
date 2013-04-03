@@ -54,7 +54,7 @@ static const bfd_arch_info_type arch_info_struct[] =
 };
 
 const bfd_arch_info_type bfd_arc_arch =
-  ARC ( bfd_mach_arc_a5, "A5", TRUE,  &arch_info_struct[0] );
+  ARC ( bfd_mach_arc_arc600, "ARC600", TRUE,  &arch_info_struct[0] );
 
 /* Utility routines.  */
 
