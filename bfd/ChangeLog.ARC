@@ -1,3 +1,7 @@
+2013-04-03  Simon Cook  <simon.cook@embecosm.com>
+
+	* cpu-arc.c (bfd_arc_arch): Rename default A6 to ARC600.
+
 2013-03-18  Simon Cook  <simon.cook@embecosm.com>
 
 	* elf32-arc.c (bfd_arc_arch): Make ARC600 the default architecture.
@@ -11,7 +15,7 @@
 	* elf32-arc.c (elf_arc_check_relocs): Change
 	R_ARC_32/R_ARC_32_ME/R_ARC_PC32 to use
 	_bfd_elf_make_dynamic_reloc_section.
-	(elf_arc_relocate_section): Change R_ARC_32/R_ARC_32_ME/R_ARC_PC32 to use 
+	(elf_arc_relocate_section): Change R_ARC_32/R_ARC_32_ME/R_ARC_PC32 to use
 	_bfd_elf_section_offset.
 	(ELF_TARGET_ID): Define.
 
