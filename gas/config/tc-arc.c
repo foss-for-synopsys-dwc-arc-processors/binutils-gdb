@@ -5666,7 +5666,7 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 	      else if (!arc_mach_a4 && (exp.X_op == O_right_shift)
 		       && (operand->fmt != 'L'))
 		break;
-			  else if (!arc_mach_a4 && (exp.X_op == O_subtract)
+			  else if (!arc_mach_a4 && (exp.X_op != O_register)
 				   && (operand->fmt != 'L')
 				   && ( (insn_name[0] == 'a' || insn_name[0] == 'A') && 
 						(insn_name[1] == 'd' || insn_name[1] == 'D') && 
