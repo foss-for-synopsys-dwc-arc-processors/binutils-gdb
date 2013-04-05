@@ -4948,6 +4948,18 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		    {
 		      fixups[fix_up_at].opindex = arc_operand_map[operand->fmt];
 		    }
+                  /*FIXME! This is a hack for STAR9000593624: there
+                    are cases when an st or ld instruction needs a
+                    shimm fixup. When the fixup is created, the
+                    limm_reloc_p is also setup, we need to turn it
+                    off. Hence we do it so at the end of the ld or st
+                    instruction. This is not the way of handling
+                    fixups.*/
+                  if (limm_reloc_p
+                      && (operand->fmt == '1' || operand->fmt == '0'))
+                    {
+                      limm_reloc_p = 0;
+                    }                    
 		}
 	      ++syn;
 	    }
@@ -5936,6 +5948,19 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 
 		    }
 
+                  /* Check the st/ld mnemonic:It should be able to
+                     accomodate an immediate. Hence, no register
+                     here!*/
+                  if (!arc_mach_a4 && !ac_constant_operand(operand)
+                      && ( ((insn_name[0] == 'l' || insn_name[0] == 'L')
+                            && (insn_name[1] == 'd' || insn_name[1] == 'D')) ||
+                           ((insn_name[0] == 's' || insn_name[0] == 'S')
+                            && (insn_name[1] == 't' || insn_name[1] == 'T'))))
+                    {
+                      /* It is a register of some sort. We cannot
+                         do fixups on registers.*/
+                      break;
+                    }
 
 		  /* We need to generate a fixup for this expression.  */
 		  if (fc >= MAX_FIXUPS)
@@ -5943,13 +5968,6 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		  fixups[fc].exp = exp;
 		  fixups[fc].modifier_flags = mods;
 
-		  /* We don't support shimm relocs. break here to force
-		     the assembler to output a limm.  */
-/*
-		 #define IS_REG_SHIMM_OFFSET(o) ((o) == 'd')
-		 if (IS_REG_SHIMM_OFFSET (*syn))
-		 break;
-*/
 		  /* If this is a register constant (IE: one whose
 		     register value gets stored as 61-63) then this
 		     must be a limm.  */
@@ -5968,7 +5986,7 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		      /* ??? We need a cleaner interface than this.  */
 		      (*arc_operands[arc_operand_map['Q']].insert)
 			(insn, &insn2,operand, mods, reg, 0L, &junk);
-		      fixups[fc].opindex = arc_operand_map[0];
+		      fixups[fc].opindex = arc_operand_map[(int) *syn]; //arc_operand_map
 		    }
 		  else
 		    fixups[fc].opindex = arc_operand_map[(int) *syn];

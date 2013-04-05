@@ -1,3 +1,9 @@
+2013-04-05  Simon Cook  <simon.cook@embecosm.com>
+
+	Port from
+	2013-03-19  Claudiu Zissulescu <claziss@synopsys.com>
+	* config/tc-arc.c (md_assemble): Fixup fix for STAR9000593624.
+
 2013-03-27  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* config/extlib/Makefile.in: Add pdf and install-pdf targets.
