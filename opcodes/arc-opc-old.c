@@ -1562,7 +1562,7 @@ insert_offset (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
       else
 	{
 	  if ((value < minval || value > maxval))
-	    *errmsg = _("need too many limms");
+	    *errmsg = _("Immediate value out of bounds");
 	  else if (arc_mach_a4 && shimm_p && value != shimm)
 	    {
 	      /* Check for bad operand combinations

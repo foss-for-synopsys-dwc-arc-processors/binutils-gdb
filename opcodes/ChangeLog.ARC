@@ -1,6 +1,12 @@
 2013-04-05  Simon Cook  <simon.cook@embecosm.com>
 
 	Port from
+	2013-04-02  Claudiu Zissulescu <claziss@synopsys.com>
+	* arc-opc-old.c (insert_offset): Change error message.
+
+2013-04-05  Simon Cook  <simon.cook@embecosm.com>
+
+	Port from
 	2013-03-19  Claudiu Zissulescu <claziss@synopsys.com>
 	* arc-opc-old.c (arc_operands_ac): Remove ARC_OPERAND_LIMM from 'o'
 	operand.
