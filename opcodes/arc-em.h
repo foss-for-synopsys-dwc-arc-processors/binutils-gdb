@@ -796,6 +796,7 @@
 { (unsigned char *) "st%z%.w%.D %C,[%g,%[L]%0",               0xF8000001, 0x18000000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "st%z%.w%.D %C,[%g,%o]%0",               0xF8000001, 0x18000000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "st%z%.D%Q %C,[%L]%0",                   0xFFFFF019, 0x1E007000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "st%z%.w%.D%Q %„,[%L]%0",             0xFF007001, 0x1E007001, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "st%z%.w%.D%Q %„,[%L,%o]%0",             0xFF007001, 0x1E007001, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "st%z%.w%.D%Q %L,[%g]%0",                0xF8000FC1, 0x18000F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "st%z%.w%.D%Q %L,[%g,%o]%0",             0xF8000FC1, 0x18000F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
