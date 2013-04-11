@@ -44,6 +44,11 @@
 	 Customer-Projects/synopsys/arc_gnu/branches/arc_gnu_4.8/srcw-20120503/cgen.
 	 * arc-desc.c, arc-dis.c, arc-opc.c, arc-opinst.c: Likewise.
 
+2013-01-30  Claudiu Zissulescu <claziss@synopsys.com>
+
+	* arc-em.h : Added ARCv2-EM instructions
+	* arc-opc.h: Added support for ARCv2-EM instructions.
+
 2013-01-30  Simon Cook  <simon.cook@embecosm.com>
 
 	* arc-opc.c (arc_opcodes): Applied Claudiu Zissulescu's fixes to
