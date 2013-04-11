@@ -117,6 +117,7 @@ END_RELOC_NUMBERS (R_ARC_max)
 #define E_ARC_MACH_ARC600	0x00000002
 #define E_ARC_MACH_ARC601	0x00000004
 #define E_ARC_MACH_ARC700	0x00000003
+#define E_ARC_MACH_ARCV2	0x00000005
 
 /* ARC Linux specific ABIs */
 #define E_ARC_OSABI_ORIG	0x00000000   /* MUST be zero for back-compat */

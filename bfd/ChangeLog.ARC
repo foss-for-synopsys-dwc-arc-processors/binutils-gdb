@@ -19,6 +19,13 @@
 	_bfd_elf_section_offset.
 	(ELF_TARGET_ID): Define.
 
+2013-01-30 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* archures.c : defined bfd_mach_arc_arcv2
+	* elf32-arc.c: added ARCv2 machine number for an ARC elf file
+	* cpu-arc.c : added the new EM bfd definition.
+
+
 2013-01-16  Simon Cook  <simon.cook@embecosm.com>
 
 	* cpu-arc.c (bfd_arc_arch): Make A5 default architecture to solve
