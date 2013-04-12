@@ -1,3 +1,8 @@
+2013-04-12  Simon Cook  <simon.cook@embecosm.com>
+
+	* arcompact-dis.c (ARCompact_decodeInstr): Change number of bytes per
+	chunk back to 1 to resolve test issues.
+
 2013-04-05  Simon Cook  <simon.cook@embecosm.com>
 
 	Port from
