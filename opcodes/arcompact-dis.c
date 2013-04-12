@@ -4484,9 +4484,6 @@ ARCompact_decodeInstr (bfd_vma           address,    /* Address of this instruct
   int lowbyte, highbyte;
   char buf[256];
 
-  /* Tell objdump to use two bytes per chunk*/
-  info->bytes_per_chunk = 2;
-
   if (info->disassembler_options)
     {
       parse_disassembler_options (info->disassembler_options);
