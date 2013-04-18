@@ -1414,10 +1414,15 @@ arc_dummy_id (struct gdbarch *gdbarch, struct frame_info *this_frame)
 
 /*! Push stack frame for a dummy call.
 
+    @note Any arguments are already in target byte order. We just need to
+          store them!
+
     @param[in] gdbarch        Current gdbarch.
     @param[in] function       Function to call.
     @param[in] regcache       Current register cache
     @param[in] bp_addr        Return address where breakpoint must be placed.
+    @param[in] nargs          Number of arguments to the function
+    @param[in] args           The arguments values (in target byte order)
     @param[in] sp             Current value of SP.
     @param[in] struct_return  Non-zero (TRUE) if structures are returned by
                               the function. 
@@ -1503,6 +1508,11 @@ arc_push_dummy_call (struct gdbarch *gdbarch,
 	  unsigned int space = arc_round_up_to_words (gdbarch, len);
 
 	  (void) memcpy (data, value_contents (args[i]), (size_t) len);
+	  if (arc_debug)
+	    fprintf_unfiltered (gdb_stdlog,
+				"copying arg %d, val 0x%08x, len %d into mem\n",
+				i, * ((int *) value_contents (args[i])), len);
+	    
 	  data += space;
 	}
 
@@ -1513,12 +1523,13 @@ arc_push_dummy_call (struct gdbarch *gdbarch,
 	  if (arc_debug)
 	    {
 	      fprintf_unfiltered (gdb_stdlog,
-				  "passing 0x%08lX in register R%d\n",
-				  *(unsigned long *) data, arg_reg);
+				  "passing 0x%02x%02x%02x%02x in register R%d\n",
+				  data[0], data[1], data[2], data[3], arg_reg);
 	    }
 
-	  regcache_cooked_write_unsigned (regcache,
-					  arg_reg, *(unsigned long *) data);
+	  /* Note we don't use write_unsigned here, since that would convert
+	     the byte order, but we are already in the correct byte order! */
+	  regcache_cooked_write (regcache, arg_reg, data);
 
 	  data += BYTES_IN_REGISTER;
 	  total_space -= BYTES_IN_REGISTER;
