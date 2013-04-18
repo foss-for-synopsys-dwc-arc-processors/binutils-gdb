@@ -1,3 +1,9 @@
+2014-04-18  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	* arc-elf-tdep.c (arc_push_memory_call): Do not change endianness
+	of args when pushing (already done), add more debug for arg
+	handing.
+
 2013-03-25  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* arc-elf-tdep.c (arc_elf_breakpoint_from_pc): New function based
