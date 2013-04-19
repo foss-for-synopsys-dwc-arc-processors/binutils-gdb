@@ -1,3 +1,7 @@
+2013-01-30 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* cpu-arc.c (arc_info_struct): Add EM as valid processor type.
+
 2013-04-03  Simon Cook  <simon.cook@embecosm.com>
 
 	* cpu-arc.c (bfd_arc_arch): Rename default A6 to ARC600.
