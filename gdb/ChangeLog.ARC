@@ -1,3 +1,11 @@
+2014-04-26  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	* arc-elf-tdep.c: Make simulator header inclusion dependent on
+	WITH_SIM.
+	(arc_elf_sim_map): Only define if WITH_SIM is defined.
+	(arc_gdbarch_osabi_init): Only call arc_set_register_mapping if
+	WITH_SIM is defined.
+
 2014-04-18  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* arc-elf-tdep.c (arc_push_memory_call): Do not change endianness
