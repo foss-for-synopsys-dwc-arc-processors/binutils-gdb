@@ -54,8 +54,10 @@
 /* ARC header files */
 #include "arc-tdep.h"
 
+#ifdef WITH_SIM
 /* ARC simulator header files */
 #include "sim/arc/arc-sim-registers.h"
+#endif
 
 
 /* -------------------------------------------------------------------------- */
@@ -164,6 +166,7 @@ arc_elf_breakpoint_from_pc (struct gdbarch *gdbarch, CORE_ADDR * pcptr,
 }	/* arc_elf_breakpoint_from_pc () */
 
 
+#ifdef WITH_SIM
 /*! Map GDB registers to ARC simulator registers
 
     The ARC CGEN based simulator has its own register numbering. This function
@@ -320,6 +323,7 @@ arc_elf_sim_map (int                gdb_regnum,
 	}
     }
 }	/* arc_elf_sim_map () */
+#endif
 
 
 /* -------------------------------------------------------------------------- */
@@ -360,8 +364,10 @@ arc_gdbarch_osabi_init (struct gdbarch *gdbarch)
   set_gdbarch_cannot_store_register (gdbarch, arc_elf_cannot_store_register);
   set_gdbarch_breakpoint_from_pc (gdbarch, arc_elf_breakpoint_from_pc);
 
+#ifdef WITH_SIM
   /* Provide the built-in simulator with a function that it can use to map
      from gdb register numbers to h/w register numbers */
   arc_set_register_mapping (&arc_elf_sim_map);
+#endif
 
 }	/* arc_gdbarch_osabi_init () */
