@@ -1068,6 +1068,12 @@ get_arc_exp_reloc_type (int data_p,
 			expressionS *exp,
 			expressionS *expnew)
 {
+  if (default_type == BFD_RELOC_32
+      && exp->X_op == O_subtract
+      && exp->X_op_symbol != NULL
+      && exp->X_op_symbol->bsym->section == now_seg)
+    default_type = BFD_RELOC_ARC_PC32;
+#if 0 /* Support for Arctangent-A4 or older.  */
   /* If the expression is "symbol >> 2" we must change it to just "symbol",
      as fix_new_exp can't handle it.  Similarly for (symbol - symbol) >> 2.
      That's ok though.  What's really going on here is that we're using
@@ -1109,6 +1115,7 @@ get_arc_exp_reloc_type (int data_p,
 	}
     }
 
+#endif
   *expnew = *exp;
   return default_type;
 }
@@ -4639,6 +4646,7 @@ md_apply_fix (fixS *fixP, valueT *valueP, segT seg)
 	  break;
 
 	case BFD_RELOC_32:
+	case BFD_RELOC_ARC_PC32:
 	  md_number_to_chars (fixP->fx_frag->fr_literal + fixP->fx_where,
 			      value, 4);
 	  break;
