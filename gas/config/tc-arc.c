@@ -8,6 +8,7 @@
    Contributor: Brendon Kehoe <brendan@zen.org>
    Contributor: Michael Eager <eager@eagercon.com>
    Contributor: Joern Rennecke <joern.rennecke@embecosm.com>
+   Contributor: Claudiu Zissulescu <claziss@synopsys.com>
 
    GAS is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -33,16 +34,18 @@
 #include "dwarf2dbg.h"
 
 /* #define DEBUG_INST_PATTERN 0 */
-#define GAS_DEBUG_STMT(x) 
-#define GAS_DEBUG_PIC(x)	
+#define GAS_DEBUG_STMT(x)
+#define GAS_DEBUG_PIC(x)
 /* fprintf(stderr,"At %d in %s current_type is %s\n",
    __LINE__,__PRETTY_FUNCTION__,
-   (current_pic_flag == GOT_TYPE)?"GOT":"NO_TYPE") 
+   (current_pic_flag == GOT_TYPE)?"GOT":"NO_TYPE")
 */
 
 extern int arc_get_mach (char *);
 extern int arc_insn_not_jl (arc_insn);
 extern int arc_test_wb(void);
+extern unsigned char arc_get_branch_prediction(void);
+extern void arc_reset_branch_prediction(void);
 
 extern int arc_get_noshortcut_flag (void);
 static void arc_set_ext_seg (enum ExtOperType, int, int, int);
@@ -198,6 +201,7 @@ enum options
   OPTION_ARC600,
   OPTION_ARC601,
   OPTION_ARC700,
+  OPTION_ARCEM,
   OPTION_USER_MODE,
   OPTION_LD_EXT_MASK,
   OPTION_SWAP,
@@ -220,9 +224,9 @@ enum options
   /* START ARC LOCAL */
   OPTION_LOCK,
   OPTION_SWAPE,
-  OPTION_RTSC  
+  OPTION_RTSC
   /* END ARC LOCAL */
-/* ARC Extension library options.  */  
+/* ARC Extension library options.  */
 };
 
 struct option md_longopts[] =
@@ -236,10 +240,11 @@ struct option md_longopts[] =
   { "mARC601", no_argument, NULL, OPTION_ARC601 },
   { "mARC700", no_argument, NULL, OPTION_ARC700 },
   { "mA7", no_argument, NULL, OPTION_ARC700 },
+  { "mEM", no_argument, NULL, OPTION_ARCEM },
   { "muser-mode-only", no_argument, NULL, OPTION_USER_MODE },
   { "mld-extension-reg-mask", required_argument, NULL, OPTION_LD_EXT_MASK },
 
-/* ARC Extension library options.  */  
+/* ARC Extension library options.  */
   { "mswap", no_argument, NULL, OPTION_SWAP },
   { "mnorm", no_argument, NULL, OPTION_NORM },
   { "mbarrel_shifter", no_argument, NULL, OPTION_BARREL_SHIFT },
@@ -278,7 +283,7 @@ size_t md_longopts_size = sizeof (md_longopts);
   (!arc_mach_a4 && \
    ((o) == 'g' || (o) == 'o' || (o) == 'M' || (o) == 'O' || (o) == 'R')))
 
-typedef enum 
+typedef enum
   {
     GOT_TYPE,
     PLT_TYPE,
@@ -298,14 +303,14 @@ static arc700_special_symtype current_special_sym_flag;
 #define SUB_OPCODE(x)	 ((x & 0x003f0000) >> 16)
 
 #define SUB_OPCODE2(x)	(x & 0x0000003f)
-  
+
 #define SUB_OPCODE3(x)	(((x & 0x07000000) >> 24) |   \
 			 ((x & 0x00007000) >> 9))
-  
+
 #define J_INSN(x)	((MAJOR_OPCODE (x) == 0x4) && \
 			 (SUB_OPCODE (x) >= 0x21) &&  \
 			 (SUB_OPCODE (x) <= 0x22))
-  
+
 #define JL_INSN(x)	((MAJOR_OPCODE (x) == 0x4) && \
 			 (SUB_OPCODE (x) >= 0x23) &&  \
 			 (SUB_OPCODE (x) <= 0x24))
@@ -320,7 +325,7 @@ static arc700_special_symtype current_special_sym_flag;
 			 (SUB_OPCODE (x) == 0x2f)  && \
 			 (SUB_OPCODE2 (x) == 0x3f) && \
 			 (SUB_OPCODE3 (x) == 0x01))
-			 
+
 #define BRK_INSN(x)	((MAJOR_OPCODE (x) == 0x4) && \
 			 (SUB_OPCODE (x) == 0x2f)  && \
 			 (SUB_OPCODE2 (x) == 0x3f) && \
@@ -371,12 +376,12 @@ static void zero_overhead_checks (struct loop_target *lt)
 
       /* This takes care of insn being Jcc.d, Bcc.d, JCcc.d, BRcc.d,
 	 BBITn.d, J_S.d.  */
-      if (lt->prev_two_insns[PREV_INSN_1].delay_slot || 
+      if (lt->prev_two_insns[PREV_INSN_1].delay_slot ||
 	  BLcc_INSN (lt->prev_two_insns[PREV_INSN_1].insn) ||
 	  JL_INSN (lt->prev_two_insns[PREV_INSN_1].insn))
 	as_bad ("An instruction of this type may not be executed in this \
 instruction slot.");
-      
+
       /* We haven't handled JL_S.d in insn-1 of the loop.  */
       if (lt->prev_two_insns[PREV_INSN_2].delay_slot)
 	if (JL_INSN (lt->prev_two_insns[PREV_INSN_2].insn) ||
@@ -401,8 +406,8 @@ instruction slot.");
       if (SLEEP_INSN (lt->prev_two_insns[PREV_INSN_1].insn) ||
 	  BRK_INSN (lt->prev_two_insns[PREV_INSN_1].insn))
 	as_bad ("An instruction of this type may not be executed in this \
-instruction slot.");	
-      
+instruction slot.");
+
       break;
 
     case bfd_mach_arc_arc600:
@@ -411,14 +416,14 @@ instruction slot.");
 	  JL_INSN (lt->prev_two_insns[PREV_INSN_1].insn))
 	as_bad ("An instruction of this type may not be executed in this \
 instruction slot.");
-      
-      /* This takes care of LP other_loop in insn and insn-1. 
+
+      /* This takes care of LP other_loop in insn and insn-1.
        * Also check for single intervening instruction without a long
        * immediate operand.
        */
       if (LP_INSN (lt->prev_two_insns[PREV_INSN_1].insn) ||
 	  (LP_INSN (lt->prev_two_insns[PREV_INSN_2].insn) &&
-           !lt->prev_two_insns[PREV_INSN_1].limm))
+	   !lt->prev_two_insns[PREV_INSN_1].limm))
 	as_bad ("An instruction of this type may not be executed in this \
 instruction slot.");
 
@@ -436,11 +441,11 @@ instruction slot.");
 	if (J_INSN (lt->prev_two_insns[PREV_INSN_1].insn))
 	  as_bad ("An instruction of this type may not be executed in this \
 instruction slot.");
-      
+
       if (lt->prev_two_insns[PREV_INSN_1].delay_slot)
 	as_bad ("An instruction of this type may not be executed in this \
 instruction slot.");
-      
+
       /* We haven't handled JL_S.d in insn-1 of the loop.  */
       if (lt->prev_two_insns[PREV_INSN_2].delay_slot)
 	if (JL_INSN (lt->prev_two_insns[PREV_INSN_2].insn) ||
@@ -450,14 +455,15 @@ instruction slot.");
 
       break;
 
+    case bfd_mach_arc_arcv2:
     case bfd_mach_arc_arc700:
 
       if (lt->prev_two_insns[PREV_INSN_1].delay_slot)
 	as_bad ("An instruction of this type may not be executed in this \
 instruction slot.");
-      
+
       break;
-      
+
     default:
       ;
 
@@ -467,7 +473,7 @@ instruction slot.");
 static void add_loop_target (symbolS *symbol)
 {
   struct loop_target *tmp = &symbol_get_tc (symbol)->loop_target;
-  
+
   if (!tmp->symbol)
     {
       tmp->symbol = symbol_get_bfdsym (symbol);
@@ -482,20 +488,20 @@ void
 arc_check_label (symbolS *labelsym)
 {
   /* At this point, the current line pointer is sitting on the character
-     just after the first colon on the label.  */ 
-  
+     just after the first colon on the label.  */
+
   struct loop_target *tmp = &symbol_get_tc (labelsym)->loop_target;
   asymbol *new;
-  
+
   new = symbol_get_bfdsym (labelsym);
-  
+
   /* Label already defined.  */
   if (tmp->symbol)
     {
       /* Store the last two instructions.  */
       tmp->prev_two_insns[PREV_INSN_1]=last_two_insns[PREV_INSN_1];
       tmp->prev_two_insns[PREV_INSN_2]=last_two_insns[PREV_INSN_2];
-      
+
       /* Now perform whatever checks on these last two instructions.  */
       zero_overhead_checks (tmp);
     }
@@ -503,7 +509,7 @@ arc_check_label (symbolS *labelsym)
   else
     {
       tmp->symbol = new;
-      
+
       /* Store the last two instructions.  */
       tmp->prev_two_insns[PREV_INSN_1]=last_two_insns[PREV_INSN_1];
       tmp->prev_two_insns[PREV_INSN_2]=last_two_insns[PREV_INSN_2];
@@ -549,6 +555,11 @@ md_parse_option (int c, char *arg ATTRIBUTE_UNUSED)
       arc_mach_type = bfd_mach_arc_arc700;
       arc_mach_a4= 0;
       break;
+    case OPTION_ARCEM:
+      mach_type_specified_p = 1;
+      arc_mach_type = bfd_mach_arc_arcv2;
+      arc_mach_a4= 0;
+      break;
     case OPTION_USER_MODE:
       arc_user_mode_only = 1;
       break;
@@ -592,7 +603,7 @@ md_parse_option (int c, char *arg ATTRIBUTE_UNUSED)
       break;
     case OPTION_DPFP:
       extinsnlib |= DP_FLOAT_INSN;
-      break;      
+      break;
     case OPTION_XMAC_D16:
       extinsnlib |= XMAC_D16;
       break;
@@ -639,6 +650,7 @@ md_show_usage (FILE *stream)
 ARC Options:\n\
   -mA[4|5]                select processor variant (default arc%d)\n\
   -mARC[600|700]          select processor variant\n\
+  -mEM                    select ARCv2 EM processor variant\n\
   -EB                     assemble code for a big endian cpu\n\
   -EL                     assemble code for a little endian cpu\n", arc_mach_type + 5);
 }
@@ -719,7 +731,7 @@ arc_process_extinstr_options (void)
   char extension_library_path[160];
   char temp[80];
   symbolS *sym;
-  
+
   /* Let's get to the right extension configuration library based on which
      processor we are assembling the source assembly file for.  */
 
@@ -745,9 +757,21 @@ arc_process_extinstr_options (void)
       strcpy (temp, "__ARC700__");
       break;
 
+    case bfd_mach_arc_arcv2:
+      strcpy (temp, "__ARCv2__");
+      break;
+
     default:
       as_bad ("Oops! Something went wrong here!");
       break;
+    }
+
+  /*For ARCv2EM disable all lib extensions. All ARCv2 instructions are
+    recognized by default by the GAS*/
+  if (arc_mach_type == bfd_mach_arc_arcv2 && (extinsnlib))
+    {
+      as_bad ("This option cannot be used with ARC-EM");
+      exit (1);
     }
 
   if ((extinsnlib & NO_MPY_INSN) && (arc_mach_type != bfd_mach_arc_arc700))
@@ -767,7 +791,7 @@ arc_process_extinstr_options (void)
       as_bad ("-msimd can only be used with ARC 700");
       exit (1);
     }
-  
+
   /* START ARC LOCAL */
   if ((extinsnlib & LOCK_INSNS ) && ( arc_mach_type != bfd_mach_arc_arc700))
     {
@@ -780,32 +804,33 @@ arc_process_extinstr_options (void)
       as_bad ("-mswape can only be used with ARC 700 v4.10");
       exit (1);
     }
-  
+
   if ((extinsnlib & RTSC_INSN ) && ( arc_mach_type != bfd_mach_arc_arc700))
     {
       as_bad ("-mrtsc can only be used with ARC 700 v4.10");
       exit (1);
     }
-  /* END ARC LOCAL */  
+  /* END ARC LOCAL */
 
   sym = (symbolS *) local_symbol_make (temp, absolute_section, 1,
 				       &zero_address_frag);
   symbol_table_insert (sym);
 
-  for (i=0 ; i < n_extension_macros ; ++i){
-    if (extinsnlib & extension_macros[i].option)
-      {
-	sym = (symbolS *) local_symbol_make (extension_macros[i].name,
-					     absolute_section, 1,
-					     &zero_address_frag);
-	symbol_table_insert (sym);
-      }
-      }
+  for (i=0 ; i < n_extension_macros ; ++i)
+    {
+      if (extinsnlib & extension_macros[i].option)
+	{
+	  sym = (symbolS *) local_symbol_make (extension_macros[i].name,
+					       absolute_section, 1,
+					       &zero_address_frag);
+	  symbol_table_insert (sym);
+	}
+    }
 
 
   /* Let's get the path of the base directory of the extension configuration
   libraries.  */
-  
+
   strcpy (extension_library_path,
 	  make_relative_prefix (myname, BINDIR1, LIBDIR1));
   strcat (extension_library_path, "/"EXTLIBFILE);
@@ -836,11 +861,11 @@ arc_process_extinstr_options (void)
       as_bad ("Extension library file(s) do not exist\n");
       exit (1);
     }
-  
+
   /* For A4, A5 and ARC600 read the lib file if extinsnlib is set
-     For ARC700 do not read the lib file if the NO_MPY_INSN flag 
+     For ARC700 do not read the lib file if the NO_MPY_INSN flag
      is the only one set*/
-  if ( (arc_mach_type == bfd_mach_arc_arc700)? 
+  if ( (arc_mach_type == bfd_mach_arc_arc700)?
        (extinsnlib != NO_MPY_INSN)
        : extinsnlib)
     read_a_source_file (extension_library_path);
@@ -850,7 +875,7 @@ arc_process_extinstr_options (void)
       strcpy (extension_library_path,
 	      make_relative_prefix (myname, BINDIR1, LIBDIR1));
       strcat (extension_library_path, "/"SIMDEXTLIBFILE);
-  
+
       if (!file_exists (extension_library_path))
 	{
 	  strcpy (extension_library_path,
@@ -956,7 +981,7 @@ arc_insert_operand (arc_insn insn, long *insn2,
 	bits = operand->bits + 2;
       else if (operand->flags & ARC_OPERAND_2BYTE_ALIGNED)
 	bits = operand->bits + 1;
-      else 
+      else
 	bits = operand->bits;
 
       if ((operand->flags & ARC_OPERAND_SIGNED) != 0)
@@ -1026,7 +1051,7 @@ struct arc_fixup
    Currently supported %-ops:
 
    %st(symbol): represented as "symbol >> 2"
-                "st" is short for STatus as in the status register (pc)
+		"st" is short for STatus as in the status register (pc)
 
    DEFAULT_TYPE is the type to use if no special processing is required.
 
@@ -1043,6 +1068,12 @@ get_arc_exp_reloc_type (int data_p,
 			expressionS *exp,
 			expressionS *expnew)
 {
+  if (default_type == BFD_RELOC_32
+      && exp->X_op == O_subtract
+      && exp->X_op_symbol != NULL
+      && exp->X_op_symbol->bsym->section == now_seg)
+    default_type = BFD_RELOC_ARC_PC32;
+#if 0 /* Support for Arctangent-A4 or older.  */
   /* If the expression is "symbol >> 2" we must change it to just "symbol",
      as fix_new_exp can't handle it.  Similarly for (symbol - symbol) >> 2.
      That's ok though.  What's really going on here is that we're using
@@ -1084,6 +1115,7 @@ get_arc_exp_reloc_type (int data_p,
 	}
     }
 
+#endif
   *expnew = *exp;
   return default_type;
 }
@@ -1095,15 +1127,15 @@ get_arc_exp_reloc_type (int data_p,
    n2 - major opcode if instruction.
    n2 - index to special type if core register.
 
-   n3 - subopcode.  
-        If n1 has AC_SYNTAX_SIMD set then n3 has additional fields packed.
-        bits  usage
-        0-7    sub_opcode
-        8-15   real opcode if EXTEND2
-        16-23  real opcode if EXTEND3
-        24-25  accumulator mode
-        28-29  nops
-        30-31  flag1 and flag2
+   n3 - subopcode.
+	If n1 has AC_SYNTAX_SIMD set then n3 has additional fields packed.
+	bits  usage
+	0-7    sub_opcode
+	8-15   real opcode if EXTEND2
+	16-23  real opcode if EXTEND3
+	24-25  accumulator mode
+	28-29  nops
+	30-31  flag1 and flag2
 */
 
 void
@@ -1147,81 +1179,81 @@ arc_set_ext_seg (enum ExtOperType type, int n1, int n2, int n3)
 	  n1 = 0;
 	  break;
 	default:
-          n1 = (n3 >> 28) & 0x3;
-          switch((n3 >> 24) & 0x3){
-          case 0:
-              aamode = "aa0";
-              break;
-          case 1:
-              aamode = "aa1";
-              extended_instruction_flags[2] |= (FLAG_AS >> 8);
-              break;
-          case 2:
-              aamode = "aa2";
-              extended_instruction_flags[2] |= (FLAG_AP >> 8);
-              break;
-          case 3:
-              aamode = "aa3";
-              extended_instruction_flags[2] |= (FLAG_AM >> 8);
-              break;
-              }
-          switch((n3 >> 30) & 0x3){
-          case 0:
-              efmode = ".ef0";
-              break;
-          case 1:
-              efmode = ".ef1";
-              extended_instruction_flags[1] |= (FLAG_FMT1 >> 16);
-              break;
-          case 2:
-              efmode = ".ef2";
-              extended_instruction_flags[1] |= (FLAG_FMT2 >> 16);
-              break;
-          case 3:
-              efmode = ".ef3";
-              extended_instruction_flags[1] |= (FLAG_FMT3 >> 16);
-              break;
-              }
+	  n1 = (n3 >> 28) & 0x3;
+	  switch((n3 >> 24) & 0x3){
+	  case 0:
+	      aamode = "aa0";
+	      break;
+	  case 1:
+	      aamode = "aa1";
+	      extended_instruction_flags[2] |= (FLAG_AS >> 8);
+	      break;
+	  case 2:
+	      aamode = "aa2";
+	      extended_instruction_flags[2] |= (FLAG_AP >> 8);
+	      break;
+	  case 3:
+	      aamode = "aa3";
+	      extended_instruction_flags[2] |= (FLAG_AM >> 8);
+	      break;
+	      }
+	  switch((n3 >> 30) & 0x3){
+	  case 0:
+	      efmode = ".ef0";
+	      break;
+	  case 1:
+	      efmode = ".ef1";
+	      extended_instruction_flags[1] |= (FLAG_FMT1 >> 16);
+	      break;
+	  case 2:
+	      efmode = ".ef2";
+	      extended_instruction_flags[1] |= (FLAG_FMT2 >> 16);
+	      break;
+	  case 3:
+	      efmode = ".ef3";
+	      extended_instruction_flags[1] |= (FLAG_FMT3 >> 16);
+	      break;
+	      }
 	  ;
 	} /* end switch(n1) */
 
       nn2 = n3 & 0x3f;
       if(n2 == 0xa || n2 == 0x9){
-          if(nn2 == 0x2f){
-              nn2 = (n3 >> 8) & 0x3f;
-              if(nn2 == 0x3f){
-                  nn2 = (n3 >> 16) & 0x3f;
-                  }
-              }
-          }
+	  if(nn2 == 0x2f){
+	      nn2 = (n3 >> 8) & 0x3f;
+	      if(nn2 == 0x3f){
+		  nn2 = (n3 >> 16) & 0x3f;
+		  }
+	      }
+	  }
       if(n2 == 0x9){
-          if(n3 & 0x4000000){
-              extended_instruction_flags[3] |= FLAG_3OP_U8;
-              sprintf(temp, "%d.%d.%du8", n1, n2, nn2&0x3f);
-              }
-          else
-              sprintf (temp, "%d.%d.%d", n1, n2, nn2&0x3f);
-          }
+	  if(n3 & 0x4000000){
+	      extended_instruction_flags[3] |= FLAG_3OP_U8;
+	      sprintf(temp, "%d.%d.%du8", n1, n2, nn2&0x3f);
+	      }
+	  else
+	      sprintf (temp, "%d.%d.%d", n1, n2, nn2&0x3f);
+	  }
       else
-      	/* Note this can grow to be 13 characters wide, make
+	/* Note this can grow to be 13 characters wide, make
 	   sure TEMP above is accommodating. */
-          sprintf (temp, "%d.%d.%d%s%s", n1, n2, nn2&0x3f,aamode,efmode);
+	  sprintf (temp, "%d.%d.%d%s%s", n1, n2, nn2&0x3f,aamode,efmode);
       break;
 
     case EXT_LONG_CORE_REGISTER:
       type_str = type_strings[4];
       if(n2!=0)
-          sprintf(temp,"%d%c",n1,n2);
-      else 
-          sprintf (temp, "%d", n1);
+	  sprintf(temp,"%d%c",n1,n2);
+      else
+	  sprintf (temp, "%d", n1);
       break;
 
     case EXT_CORE_REGISTER:
       type_str = type_strings[1];
       if(n2!=0)
-          sprintf(temp,"%d%c",n1,n2);
-      else 
-          sprintf (temp, "%d", n1);
+	  sprintf(temp,"%d%c",n1,n2);
+      else
+	  sprintf (temp, "%d", n1);
       break;
 
     case EXT_AUX_REGISTER:
@@ -1242,8 +1274,8 @@ arc_set_ext_seg (enum ExtOperType type, int n1, int n2, int n3)
   if (!symbol_find (section_name) || (n2 !=9 &&n2 !=10)){
       symbolS *sym;
       sym = (symbolS *) local_symbol_make (section_name,
-                                       absolute_section, 1,
-                                       &zero_address_frag);
+				       absolute_section, 1,
+				       &zero_address_frag);
       symbol_table_insert (sym);
       arcext_section = subseg_new (xstrdup (section_name), 0);
       bfd_set_section_flags (stdoutput, arcext_section,
@@ -1263,7 +1295,7 @@ arc_set_ext_seg (enum ExtOperType type, int n1, int n2, int n3)
  *      name   is name of register.
  *      value  is register number.
  *      mode   is r,w,r|w,w|r or blank for Read/Write usage.
- *      shortcut  can_shortcut 
+ *      shortcut  can_shortcut
  *                cannot_shortcut
  * extension auxiliary register.
  * format    .extAuxRegister name,value,mode
@@ -1405,31 +1437,31 @@ arc_extoper (int opertype)
 		{
 		  imode |= ARC_REGISTER_SIMD_VR;
 		  input_line_pointer +=6;
-                  iregextension = 'v';
+		  iregextension = 'v';
 		}
 	      else if (!strncasecmp (input_line_pointer, "SCALAR", 6))
 		{
 		  imode |= ARC_REGISTER_SIMD_I;
 		  input_line_pointer +=6;
-                  iregextension = 'i';
+		  iregextension = 'i';
 		}
 	      else if (!strncasecmp (input_line_pointer, "KSCALAR", 7))
 		{
 		  imode |= ARC_REGISTER_SIMD_K;
 		  input_line_pointer +=7;
-                  iregextension = 'k';
+		  iregextension = 'k';
 		}
 	      else if (!strncasecmp (input_line_pointer, "DMA", 3))
 		{
 		  imode |= ARC_REGISTER_SIMD_DR;
 		  input_line_pointer +=3;
-                  iregextension = 'd';
+		  iregextension = 'd';
 		}
-              else if (!strncasecmp (input_line_pointer, "CORE", 4))
-                  {
-                  input_line_pointer +=4;
-                  iregextension = 0;
-                  }
+	      else if (!strncasecmp (input_line_pointer, "CORE", 4))
+		  {
+		  input_line_pointer +=4;
+		  iregextension = 0;
+		  }
 	      else
 		{
 		  as_bad ("invalid register class");
@@ -1509,55 +1541,55 @@ arc_extoper (int opertype)
   switch (opertype)
     {
     case 0:
-        arc_set_ext_seg (EXT_COND_CODE, number, 0, 0);
-        p = frag_more (1);
-        *p = 3 + strlen (name) + 1;
-        p = frag_more (1);
-        *p = EXT_COND_CODE;
-        p = frag_more (1);
-        *p = number;
-        p = frag_more (strlen (name) + 1);
-        strcpy (p, name);
+	arc_set_ext_seg (EXT_COND_CODE, number, 0, 0);
+	p = frag_more (1);
+	*p = 3 + strlen (name) + 1;
+	p = frag_more (1);
+	*p = EXT_COND_CODE;
+	p = frag_more (1);
+	*p = number;
+	p = frag_more (strlen (name) + 1);
+	strcpy (p, name);
       break;
     case 1:
-        /* use extended format for vector registers */
-        if(imode & (ARC_REGISTER_SIMD_VR | ARC_REGISTER_SIMD_I |
-                    ARC_REGISTER_SIMD_K  | ARC_REGISTER_SIMD_DR)){
-            arc_set_ext_seg(EXT_LONG_CORE_REGISTER, number,iregextension,0);
-            p = frag_more(1);
-            *p = 8+strlen(name)+1;
-            p = frag_more(1);
-            *p = 9;
-            p = frag_more(1);
-            *p = number;
-            p = frag_more(1);/* first flags byte*/
-            *p = 0;
-            p = frag_more(1);/* second flags byte*/
-            *p = 0;
-            p = frag_more(1);/* third flags byte*/
-            *p = 0;
-            p = frag_more(1);/* fourth flags byte*/
-            *p = REG_WRITE | REG_READ;
-            if(imode & ARC_REGISTER_WRITEONLY)
-                *p = REG_WRITE;
-            if(imode & ARC_REGISTER_READONLY)
-                *p = REG_READ;
-            p = frag_more(1);
-            *p = 'v';
-            if(imode & ARC_REGISTER_SIMD_VR)
-                *p = 'v';
-            if(imode & ARC_REGISTER_SIMD_I)
-                *p = 'i';
-            if(imode & ARC_REGISTER_SIMD_K)
-                *p = 'k';
-            if(imode & ARC_REGISTER_SIMD_DR)
-                *p = 'd';
-            p = frag_more (strlen(name) + 1);
-            strcpy(p,name);
-            break;
-            }
+	/* use extended format for vector registers */
+	if(imode & (ARC_REGISTER_SIMD_VR | ARC_REGISTER_SIMD_I |
+		    ARC_REGISTER_SIMD_K  | ARC_REGISTER_SIMD_DR)){
+	    arc_set_ext_seg(EXT_LONG_CORE_REGISTER, number,iregextension,0);
+	    p = frag_more(1);
+	    *p = 8+strlen(name)+1;
+	    p = frag_more(1);
+	    *p = 9;
+	    p = frag_more(1);
+	    *p = number;
+	    p = frag_more(1);/* first flags byte*/
+	    *p = 0;
+	    p = frag_more(1);/* second flags byte*/
+	    *p = 0;
+	    p = frag_more(1);/* third flags byte*/
+	    *p = 0;
+	    p = frag_more(1);/* fourth flags byte*/
+	    *p = REG_WRITE | REG_READ;
+	    if(imode & ARC_REGISTER_WRITEONLY)
+		*p = REG_WRITE;
+	    if(imode & ARC_REGISTER_READONLY)
+		*p = REG_READ;
+	    p = frag_more(1);
+	    *p = 'v';
+	    if(imode & ARC_REGISTER_SIMD_VR)
+		*p = 'v';
+	    if(imode & ARC_REGISTER_SIMD_I)
+		*p = 'i';
+	    if(imode & ARC_REGISTER_SIMD_K)
+		*p = 'k';
+	    if(imode & ARC_REGISTER_SIMD_DR)
+		*p = 'd';
+	    p = frag_more (strlen(name) + 1);
+	    strcpy(p,name);
+	    break;
+	    }
        /* use old format for all others */
-      arc_set_ext_seg (EXT_CORE_REGISTER, number, iregextension, 0);      
+      arc_set_ext_seg (EXT_CORE_REGISTER, number, iregextension, 0);
       if (imode & (ARC_REGISTER_WRITEONLY | ARC_REGISTER_READONLY))
 	{
 	  p = frag_more (1);
@@ -1566,15 +1598,15 @@ arc_extoper (int opertype)
 	  *p = EXT_LONG_CORE_REGISTER;
 	  p = frag_more (1);
 	  *p = number;
-	  
+
 	  p = frag_more (3);
 	  *(p + 0) = 0;
 	  *(p + 1) = 0;
 	  *(p + 2) = 0;
-	  
+
 	  p = frag_more (1);
 	  *p = (imode == ARC_REGISTER_WRITEONLY) ? REG_WRITE : REG_READ;
-	  
+
 	  p = frag_more (strlen (name) + 1);
 	  strcpy (p, name);
 	}
@@ -1859,7 +1891,7 @@ arc_extinst (int ignore ATTRIBUTE_UNUSED)
 struct attributes {
   char *name;
   int len;
-  int class;  
+  int class;
   };
 
 static const struct attributes ac_suffixclass[] = {
@@ -1899,12 +1931,12 @@ static const struct attributes ac_suffixclass[] = {
 
 #define AC_MAXSUFFIXCLASS (sizeof (ac_suffixclass) / sizeof (struct attributes))
 
-/* remember, if any entries contain other entries as prefixes, the longer 
+/* remember, if any entries contain other entries as prefixes, the longer
  * entries must be first.
  */
 static const struct attributes ac_syntaxclass[] = {
   { "SYNTAX_3OP", 10, AC_SYNTAX_3OP},
-  { "SYNTAX_2OP", 10, AC_SYNTAX_2OP},  
+  { "SYNTAX_2OP", 10, AC_SYNTAX_2OP},
   { "SYNTAX_1OP", 10, AC_SYNTAX_1OP},
   { "SYNTAX_NOP", 10, AC_SYNTAX_NOP},
   { "SYNTAX_VbI0"     , 11, AC_SIMD_SYNTAX_VbI0},
@@ -1980,16 +2012,16 @@ arc_add_ext_inst (char *name, char *operands, unsigned long value,
 {
   char realsyntax[160];
   struct arc_opcode *ext_op;
-  
+
   ext_op = (struct arc_opcode *) xmalloc (sizeof (struct arc_opcode));
 
   strcpy (realsyntax,name);
-  
+
   if(suffix & AC_SUFFIX_COND){
     strcat(realsyntax,"%.q");
       }
-  
-  /* START ARC LOCAL */  
+
+  /* START ARC LOCAL */
   if(suffix & AC_SUFFIX_DIRECT){
     strcat(realsyntax,"%.V");
       }
@@ -2000,9 +2032,9 @@ arc_add_ext_inst (char *name, char *operands, unsigned long value,
       }
 
   strcat (realsyntax,operands);
-  
+
   flags = flags & ~(ARC_SIMD_ZERVA|ARC_SIMD_ZERVB|ARC_SIMD_ZERVC|
-                     ARC_SIMD_SETLM);
+		     ARC_SIMD_SETLM);
   if(suffix&AC_SIMD_ZERVA)
       flags |= ARC_SIMD_ZERVA;
   if(suffix&AC_SIMD_ZERVB){
@@ -2012,7 +2044,7 @@ arc_add_ext_inst (char *name, char *operands, unsigned long value,
       flags |= ARC_SIMD_ZERVC;
   if(suffix&AC_SIMD_SETLM)
       flags |= ARC_SIMD_SETLM;
-  
+
   ext_op->syntax = xstrdup (realsyntax);
   ext_op->value = value;
   ext_op->flags = flags | ARCOMPACT ;
@@ -2025,12 +2057,12 @@ arc_add_ext_inst (char *name, char *operands, unsigned long value,
 static void
 arc_add_long_ext_inst (char *name, char *operands, unsigned long value,
 		  unsigned long mask ATTRIBUTE_UNUSED, unsigned long value2,
-                       unsigned long mask2 ATTRIBUTE_UNUSED, 
-                       unsigned long flags, unsigned long suffix)
+		       unsigned long mask2 ATTRIBUTE_UNUSED,
+		       unsigned long flags, unsigned long suffix)
 {
   char realsyntax[160];
   struct arc_opcode *ext_op;
-  
+
   ext_op = (struct arc_opcode *) xmalloc (sizeof (struct arc_opcode));
 
   strcpy (realsyntax,name);
@@ -2038,19 +2070,19 @@ arc_add_long_ext_inst (char *name, char *operands, unsigned long value,
   if(suffix & AC_SUFFIX_COND){
     strcat(realsyntax,"%.q");
       }
-    
+
   if(flags & ARC_SIMD_LANEMASK){
       strcat(realsyntax,"%.]");
       }
-  
+
   if(suffix & AC_SUFFIX_FLAG){
     strcat(realsyntax,"%.f");
       }
 
   strcat (realsyntax,operands);
-  
+
   flags = flags & ~(ARC_SIMD_ZERVA | ARC_SIMD_ZERVB | ARC_SIMD_ZERVC|
-                     ARC_SIMD_SETLM);
+		     ARC_SIMD_SETLM);
   if(suffix & AC_SIMD_ZERVA)
       flags |= ARC_SIMD_ZERVA;
   if(suffix & AC_SIMD_ZERVB){
@@ -2071,7 +2103,7 @@ arc_add_long_ext_inst (char *name, char *operands, unsigned long value,
 }
 
 /* This function generates the operand strings based on the syntax class and
- *  syntax class modifiers and does some error checking.  
+ *  syntax class modifiers and does some error checking.
  * instruction name      name of instruction.
  * major-opcode          five bit major opcode.
  * sub_opcode            sub operation code. If long simd we also pack in
@@ -2120,7 +2152,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 	  | AC_SYNTAX_SIMD))
     {
     case AC_SYNTAX_3OP:
-      
+
       if(suffix_class & AC_SUFFIX_COND)
 	{
 	  arc_add_ext_inst (instruction_name, " 0,%L,%L%F",
@@ -2130,7 +2162,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 			    INSN_32(-1,-1,-1,32,-1,-1),
 			    syntax_class | syntax_class_modifiers,
 			    suffix_class & (AC_SUFFIX_FLAG | AC_SUFFIX_COND));
-	  
+
 	  arc_add_ext_inst (instruction_name, " 0,%L,%u%F",
 			    INSN_32(major_opcode,
 				    I_FIELD(sub_opcode, 1),
@@ -2138,7 +2170,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 			    INSN_32(-1,-1,-1,32,-1,0),
 			    syntax_class | syntax_class_modifiers,
 			    suffix_class & (AC_SUFFIX_FLAG | AC_SUFFIX_COND));
-	  
+
 	  arc_add_ext_inst (instruction_name, " 0,%L,%C%F",
 			    INSN_32(major_opcode,
 				    I_FIELD(sub_opcode, 1),
@@ -2146,7 +2178,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 			    INSN_32(-1,-1,-1,32,-1,0),
 			    syntax_class | syntax_class_modifiers,
 			    suffix_class & (AC_SUFFIX_FLAG | AC_SUFFIX_COND));
-	  
+
 	  if(!(syntax_class_modifiers & AC_OP1_MUST_BE_IMM))
 	    {
 	      arc_add_ext_inst (instruction_name, "%Q %#,%B,%L%F",
@@ -2156,7 +2188,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 				INSN_32(-1,-1,-1,0,0,0),
 				(syntax_class | syntax_class_modifiers),
 				suffix_class & (AC_SUFFIX_FLAG | AC_SUFFIX_COND));
-	      
+
 	      arc_add_ext_inst (instruction_name, " %#,%B,%u%F",
 				INSN_32(major_opcode,
 					I_FIELD(sub_opcode, 0),
@@ -2164,7 +2196,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 				INSN_32(-1,-1,-1,32,0,0),
 				(syntax_class | syntax_class_modifiers),
 				suffix_class & (AC_SUFFIX_FLAG | AC_SUFFIX_COND));
-	      
+
 	      arc_add_ext_inst (instruction_name, " %#,%B,%C%F",
 				INSN_32(major_opcode,
 					I_FIELD(sub_opcode, 1),
@@ -2175,33 +2207,33 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 	    }
 	}
       if(suffix_class & AC_EXTENDED_MULTIPLY)
-          {
-          arc_add_ext_inst (instruction_name, " 0,%B,%C%F",
-                            INSN_32(major_opcode,
-                                    I_FIELD(sub_opcode, 1),
-                                    3, 0, 0, 0),
-                            INSN_32(-1, -1, -1, 32, 0, 0),
-                            (syntax_class | syntax_class_modifiers),
-                            suffix_class & (AC_SUFFIX_FLAG | AC_SUFFIX_COND));
-          arc_add_ext_inst (instruction_name, " 0,%B,%L%F",
-                            INSN_32(major_opcode,
-                                    I_FIELD(sub_opcode, 1),
-                                    3, 0, 0, 62),
-                            INSN_32(-1, -1 , -1, 32, 0, -1),
-                            (syntax_class | syntax_class_modifiers),
-                            suffix_class & (AC_SUFFIX_FLAG | AC_SUFFIX_COND));
-          arc_add_ext_inst (instruction_name, " 0,%B,%u%F",
-                            INSN_32(major_opcode,
-                                    I_FIELD(sub_opcode, 1),
-                                    3, 32, 0, 0),
-                            INSN_32(-1, -1, -1, 32, 0, 0),
-                            (syntax_class | syntax_class_modifiers),
-                            suffix_class & (AC_SUFFIX_FLAG | AC_SUFFIX_COND));
-          }
-      
+	  {
+	  arc_add_ext_inst (instruction_name, " 0,%B,%C%F",
+			    INSN_32(major_opcode,
+				    I_FIELD(sub_opcode, 1),
+				    3, 0, 0, 0),
+			    INSN_32(-1, -1, -1, 32, 0, 0),
+			    (syntax_class | syntax_class_modifiers),
+			    suffix_class & (AC_SUFFIX_FLAG | AC_SUFFIX_COND));
+	  arc_add_ext_inst (instruction_name, " 0,%B,%L%F",
+			    INSN_32(major_opcode,
+				    I_FIELD(sub_opcode, 1),
+				    3, 0, 0, 62),
+			    INSN_32(-1, -1 , -1, 32, 0, -1),
+			    (syntax_class | syntax_class_modifiers),
+			    suffix_class & (AC_SUFFIX_FLAG | AC_SUFFIX_COND));
+	  arc_add_ext_inst (instruction_name, " 0,%B,%u%F",
+			    INSN_32(major_opcode,
+				    I_FIELD(sub_opcode, 1),
+				    3, 32, 0, 0),
+			    INSN_32(-1, -1, -1, 32, 0, 0),
+			    (syntax_class | syntax_class_modifiers),
+			    suffix_class & (AC_SUFFIX_FLAG | AC_SUFFIX_COND));
+	  }
+
       if(!(syntax_class_modifiers & AC_OP1_MUST_BE_IMM))
 	{
-	  
+
 	  arc_add_ext_inst (instruction_name, "%Q %A,%B,%L%F",
 			    INSN_32(major_opcode,
 				    I_FIELD(sub_opcode, 1),
@@ -2209,7 +2241,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 			    INSN_32(-1,-1,-1,0,0,-1),
 			    (syntax_class | syntax_class_modifiers),
 			    suffix_class & (AC_SUFFIX_FLAG));
-	  
+
 	  arc_add_ext_inst (instruction_name, " %#,%B,%K%F",
 			    INSN_32(major_opcode,
 				    I_FIELD(sub_opcode, 1),
@@ -2217,7 +2249,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 			    INSN_32(-1,-1,-1,0,0,0),
 			    (syntax_class | syntax_class_modifiers),
 			    suffix_class & (AC_SUFFIX_FLAG));
-	  
+
 	  arc_add_ext_inst (instruction_name, " %A,%B,%u%F",
 			    INSN_32(major_opcode,
 				    I_FIELD(sub_opcode, 2),
@@ -2225,7 +2257,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 			    INSN_32(-1,-1,-1,0,0,0),
 			    (syntax_class | syntax_class_modifiers),
 			    suffix_class & (AC_SUFFIX_FLAG));
-	  
+
 	  arc_add_ext_inst (instruction_name, " %A,%B,%C%F",
 			    INSN_32(major_opcode,
 				    I_FIELD(sub_opcode, 1),
@@ -2233,7 +2265,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 			    INSN_32(-1,-1,-1,0,0,0),
 			    (syntax_class | syntax_class_modifiers),
 			    suffix_class & (AC_SUFFIX_FLAG));
-	  
+
 	  arc_add_ext_inst (instruction_name, "%Q %A,%L,%L%F",
 			    INSN_32(major_opcode,
 				    I_FIELD(sub_opcode, 1),
@@ -2241,7 +2273,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 			    INSN_32(-1,-1,-1,0,-1,-1),
 			    (syntax_class | syntax_class_modifiers),
 			    suffix_class & (AC_SUFFIX_FLAG));
-	  
+
 	  arc_add_ext_inst (instruction_name, "%Q %A,%L,%u%F",
 			    INSN_32(major_opcode,
 				    I_FIELD(sub_opcode, 2),
@@ -2249,7 +2281,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 			    INSN_32(-1,-1,-1,0,-1,-1),
 			    (syntax_class | syntax_class_modifiers),
 			    suffix_class & (AC_SUFFIX_FLAG));
-	  
+
 	  arc_add_ext_inst (instruction_name, "%Q %A,%L,%C%F",
 			    INSN_32(major_opcode,
 				    I_FIELD(sub_opcode, 1),
@@ -2266,7 +2298,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 			INSN_32(-1,-1,-1,-1,-1,-1),
 			(syntax_class | syntax_class_modifiers),
 			suffix_class & (AC_SUFFIX_FLAG));
-      
+
       arc_add_ext_inst (instruction_name, "%Q 0,%L,%K%F",
 			INSN_32(major_opcode,
 				I_FIELD(sub_opcode, 1),
@@ -2274,7 +2306,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 			INSN_32(-1,-1,-1,0,-1,0),
 			(syntax_class | syntax_class_modifiers),
 			suffix_class & (AC_SUFFIX_FLAG));
-      
+
       arc_add_ext_inst (instruction_name, "%Q 0,%L,%u%F",
 			INSN_32(major_opcode,
 				I_FIELD(sub_opcode, 2),
@@ -2282,7 +2314,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 			INSN_32(-1,-1,-1,-1,-1,0),
 			(syntax_class | syntax_class_modifiers),
 			suffix_class & (AC_SUFFIX_FLAG));
-      
+
       arc_add_ext_inst (instruction_name, " 0,%L,%C%F",
 			INSN_32(major_opcode,
 				I_FIELD(sub_opcode, 1),
@@ -2290,7 +2322,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 			INSN_32(-1,-1,-1,0,0,0),
 			(syntax_class | syntax_class_modifiers),
 			suffix_class & (AC_SUFFIX_FLAG));
-      
+
       arc_add_ext_inst (instruction_name, "%Q 0,%B,%L%F",
 			INSN_32(major_opcode,
 				I_FIELD(sub_opcode, 1),
@@ -2298,7 +2330,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 			INSN_32(-1,-1,-1,-1,0,-1),
 			(syntax_class | syntax_class_modifiers),
 			suffix_class & (AC_SUFFIX_FLAG));
-      
+
       arc_add_ext_inst (instruction_name, " 0,%B,%u%F",
 			INSN_32(major_opcode,
 				I_FIELD(sub_opcode, 2),
@@ -2314,7 +2346,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 			INSN_32(-1,-1,-1,0,-1,0),
 			(syntax_class | syntax_class_modifiers),
 			suffix_class & (AC_SUFFIX_FLAG));
-      
+
       arc_add_ext_inst (instruction_name, " 0,%B,%C%F",
 			INSN_32(major_opcode,
 				I_FIELD(sub_opcode, 1),
@@ -2323,7 +2355,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 			(syntax_class | syntax_class_modifiers),
 			suffix_class & (AC_SUFFIX_FLAG));
       break;
-      
+
     case AC_SYNTAX_2OP:
       if (sub_opcode == 0x3f)
 	{
@@ -2337,7 +2369,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 			INSN_32(-1,-1,-1,-1,0,0),
 			(syntax_class | syntax_class_modifiers),
 			suffix_class & (AC_SUFFIX_FLAG));
-      
+
       arc_add_ext_inst (instruction_name, "%Q %L,%C%F",
 			INSN_32(major_opcode,
 				0x2f,
@@ -2345,7 +2377,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 			INSN_32(-1,-1,-1,-1,0,0),
 			(syntax_class | syntax_class_modifiers),
 			suffix_class & (AC_SUFFIX_FLAG));
-      
+
       arc_add_ext_inst (instruction_name, "%Q %B,%L%F",
 			INSN_32(major_opcode,
 				0x2f,
@@ -2353,7 +2385,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 			INSN_32(-1,-1,-1,-1,0,0),
 			(syntax_class | syntax_class_modifiers),
 			suffix_class & (AC_SUFFIX_FLAG));
-      
+
       arc_add_ext_inst (instruction_name, " %B,%u%F",
 			INSN_32(major_opcode,
 				0x2f,
@@ -2361,7 +2393,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 			INSN_32(-1,-1,-1,-1,0,0),
 			(syntax_class | syntax_class_modifiers),
 			suffix_class & (AC_SUFFIX_FLAG));
-      
+
       arc_add_ext_inst (instruction_name, " %B,%C%F",
 			INSN_32(major_opcode,
 				0x2f,
@@ -2369,7 +2401,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 			INSN_32(-1,-1,-1,-1,0,0),
 			(syntax_class | syntax_class_modifiers),
 			suffix_class & (AC_SUFFIX_FLAG));
-      
+
       arc_add_ext_inst (instruction_name, "%Q 0,%L%F",
 			INSN_32(major_opcode,
 				0x2f,
@@ -2377,7 +2409,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 			INSN_32(-1,-1,-1,-1,0,0),
 			(syntax_class | syntax_class_modifiers),
 			suffix_class & (AC_SUFFIX_FLAG));
-      
+
       arc_add_ext_inst (instruction_name, " 0,%u%F",
 			INSN_32(major_opcode,
 				0x2f,
@@ -2385,7 +2417,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 			INSN_32(-1,-1,-1,-1,0,0),
 			(syntax_class | syntax_class_modifiers),
 			suffix_class & (AC_SUFFIX_FLAG));
-      
+
       arc_add_ext_inst (instruction_name, " 0,%C%F",
 			INSN_32(major_opcode,
 				0x2f,
@@ -2397,42 +2429,42 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
       /* START ARC LOCAL */
       if(suffix_class & AC_SUFFIX_DIRECT)
       {
-         arc_add_ext_inst (instruction_name, " %#,[%C]",
+	 arc_add_ext_inst (instruction_name, " %#,[%C]",
 			   INSN_32(major_opcode,
 				   0x2f,
 				   0, sub_opcode, 0, 0),
 			   INSN_32(-1, -1, -1, -1, 0, 0),
 			   (syntax_class | syntax_class_modifiers),
 			   syntax_class & (AC_SUFFIX_DIRECT));
-          arc_add_ext_inst (instruction_name, " %#,[%L]",
+	  arc_add_ext_inst (instruction_name, " %#,[%L]",
 			    INSN_32(major_opcode,
 				    0x2f,
 				    0, sub_opcode, 0, 62),
 			    INSN_32(-1, -1, -1, -1, 0, -1),
 			    (syntax_class | syntax_class_modifiers),
 			    syntax_class & (AC_SUFFIX_DIRECT));
-          arc_add_ext_inst (instruction_name, " %#,[%u]",
+	  arc_add_ext_inst (instruction_name, " %#,[%u]",
 			    INSN_32(major_opcode,
 				    0x2f,
 				    1, sub_opcode, 0, 62),
 			    INSN_32(-1, -1, -1, -1, 0, -1),
 			    (syntax_class | syntax_class_modifiers),
 			    syntax_class & (AC_SUFFIX_DIRECT));
-          arc_add_ext_inst (instruction_name, " 0,[%C]",
+	  arc_add_ext_inst (instruction_name, " 0,[%C]",
 			    INSN_32(major_opcode,
 				    0x2f,
 				    0, sub_opcode, 62, 0),
 			    INSN_32(-1, -1, -1, -1, -1, 0),
 			    (syntax_class | syntax_class_modifiers),
 			    syntax_class & (AC_SUFFIX_DIRECT));
-          arc_add_ext_inst (instruction_name, " 0,[%L]",
+	  arc_add_ext_inst (instruction_name, " 0,[%L]",
 			    INSN_32(major_opcode,
 				    0x2f,
 				    0, sub_opcode, 62, 62),
 			    INSN_32(-1, -1, -1, -1, -1, 0),
 			    (syntax_class | syntax_class_modifiers),
 			    syntax_class & (AC_SUFFIX_DIRECT));
-          arc_add_ext_inst (instruction_name, " 0,[%u]",
+	  arc_add_ext_inst (instruction_name, " 0,[%u]",
 			    INSN_32(major_opcode,
 				    0x2f,
 				    1, sub_opcode, 62, 62),
@@ -2444,7 +2476,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 
       if (syntax_class_modifiers & AC_OP1_IMM_IMPLIED)
       {
-	  
+
 	  if(suffix_class & AC_SUFFIX_COND)
 	  {
 	      arc_add_ext_inst (instruction_name, "%Q %L,%C%F",
@@ -2454,7 +2486,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 				INSN_32(-1,-1,-1,32,-1,0),
 				syntax_class | syntax_class_modifiers,
 				suffix_class & (AC_SUFFIX_FLAG | AC_SUFFIX_COND));
-	  
+
 	      arc_add_ext_inst (instruction_name, "%Q %L,%u%F",
 				INSN_32(major_opcode,
 					I_FIELD(sub_opcode, 1),
@@ -2463,7 +2495,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 				syntax_class | syntax_class_modifiers,
 				suffix_class & (AC_SUFFIX_FLAG | AC_SUFFIX_COND));
 	  }
-      
+
 	  arc_add_ext_inst (instruction_name, "%Q %L,%u%F",
 			    INSN_32(major_opcode,
 				    I_FIELD(sub_opcode, 2),
@@ -2479,7 +2511,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 			    INSN_32(-1,-1,-1,-1,0,-1),
 			    (syntax_class | syntax_class_modifiers),
 			    suffix_class & (AC_SUFFIX_FLAG));
-      
+
 	  arc_add_ext_inst (instruction_name, " %B,%u%F",
 			    INSN_32(major_opcode,
 				    I_FIELD(sub_opcode, 2),
@@ -2495,7 +2527,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 			    INSN_32(-1,-1,-1,0,-1,0),
 			    (syntax_class | syntax_class_modifiers),
 			    suffix_class & (AC_SUFFIX_FLAG));
-      
+
 	  arc_add_ext_inst (instruction_name, " %B,%C%F",
 			    INSN_32(major_opcode,
 				    I_FIELD(sub_opcode, 1),
@@ -2504,11 +2536,11 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 			    (syntax_class | syntax_class_modifiers),
 			    suffix_class & (AC_SUFFIX_FLAG));
       }
-      
+
       break;
-      
+
     case AC_SYNTAX_1OP:
-      
+
       arc_add_ext_inst (instruction_name, "%Q %L%F",
 			INSN_32(major_opcode,
 				0x2f,
@@ -2516,7 +2548,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 			INSN_32(-1,-1,-1,-1,0,0),
 			(syntax_class | syntax_class_modifiers),
 			suffix_class & (AC_SUFFIX_FLAG));
-      
+
       arc_add_ext_inst (instruction_name, " %u%F",
 			INSN_32(major_opcode,
 				0x2f,
@@ -2524,7 +2556,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 			INSN_32(-1,-1,-1,-1,0,0),
 			(syntax_class | syntax_class_modifiers),
 			suffix_class & (AC_SUFFIX_FLAG));
-      
+
       arc_add_ext_inst (instruction_name, " %C%F",
 			INSN_32(major_opcode,
 				0x2f,
@@ -2533,9 +2565,9 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 			(syntax_class | syntax_class_modifiers),
 			suffix_class & (AC_SUFFIX_FLAG));
       break;
-      
+
     case AC_SYNTAX_NOP:
-      
+
       /* FIXME: The P field need not be 1 necessarily. The value to be
        * plugged in will depend on the final ABI statement for the same */
       arc_add_ext_inst (instruction_name, "%F",
@@ -2552,14 +2584,14 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
       suffixstr[0] = '\0';
       use_extended_instruction_format = 1;
       for(i = 0; i < RCLASS_SET_SIZE; i++)
-          extended_register_format[i] = 0;
+	  extended_register_format[i] = 0;
       for(i = 0; i < OPD_FORMAT_SIZE; i++){
-          extended_operand_format1[i] = 0;
-          extended_operand_format2[i] = 0;
-          extended_operand_format3[i] = 0;
-          }
+	  extended_operand_format1[i] = 0;
+	  extended_operand_format2[i] = 0;
+	  extended_operand_format3[i] = 0;
+	  }
       for(i = 0; i < 4; i++)
-          extended_instruction_flags[i] = 0;
+	  extended_instruction_flags[i] = 0;
       switch (syntax_class
 	      & (AC_SIMD_SYNTAX_VVV | AC_SIMD_SYNTAX_VV | AC_SIMD_SYNTAX_VV0
 		 | AC_SIMD_SYNTAX_VbI0 | AC_SIMD_SYNTAX_Vb00
@@ -2567,170 +2599,170 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 		 | AC_SIMD_SYNTAX_C0  | AC_SIMD_SYNTAX_D0 | AC_SIMD_SYNTAX_VD))
 	{
 	case AC_SIMD_SYNTAX_VVV:
-          extended_register_format[0] = 'v';
-          extended_register_format[1] = 'v';
-          extended_register_format[2] = 'v';
-          strcpy (op1, " %*,");
-          if(syntax_class_modifiers & AC_SIMD_IREGA){
-              if(suffix_class & AC_SIMD_KREG){
-                  extended_register_format[0] = 'k';
-                  strcpy(op1," %\15,");}
-              else {
-                  extended_register_format[0] = 'i';
-                  strcpy(op1," %\13,");}
-              }
-          if(suffix_class & AC_SIMD_ZERVA)
-              strcpy(op1," %\23,");
+	  extended_register_format[0] = 'v';
+	  extended_register_format[1] = 'v';
+	  extended_register_format[2] = 'v';
+	  strcpy (op1, " %*,");
+	  if(syntax_class_modifiers & AC_SIMD_IREGA){
+	      if(suffix_class & AC_SIMD_KREG){
+		  extended_register_format[0] = 'k';
+		  strcpy(op1," %\15,");}
+	      else {
+		  extended_register_format[0] = 'i';
+		  strcpy(op1," %\13,");}
+	      }
+	  if(suffix_class & AC_SIMD_ZERVA)
+	      strcpy(op1," %\23,");
 	  strcpy (op2, "%(,");
 	  strcpy (op3, "%)");
-          if(syntax_class & AC_SIMD_SYNTAX_VVI){
-              if(suffix_class & AC_SIMD_KREG){
-                  extended_register_format[2] = 'k';
-                  strcpy(op3, "%\17");}
-              else {
-                  extended_register_format[2] = 'i';
-                  strcpy(op3, "%}");}
-              }
-          if(syntax_class & AC_SIMD_SYNTAX_VVL){
-              extended_register_format[2] = '0';
-              strcpy(op3,"%\24");
-              suffix_class |= AC_SIMD_ZERVC;
-              }
+	  if(syntax_class & AC_SIMD_SYNTAX_VVI){
+	      if(suffix_class & AC_SIMD_KREG){
+		  extended_register_format[2] = 'k';
+		  strcpy(op3, "%\17");}
+	      else {
+		  extended_register_format[2] = 'i';
+		  strcpy(op3, "%}");}
+	      }
+	  if(syntax_class & AC_SIMD_SYNTAX_VVL){
+	      extended_register_format[2] = '0';
+	      strcpy(op3,"%\24");
+	      suffix_class |= AC_SIMD_ZERVC;
+	      }
 	  nop = 3;
 	  break;
 	case AC_SIMD_SYNTAX_VV:
 	  strcpy (op1, " %(");
-          extended_register_format[0] = 'v';
-          extended_register_format[1] = 'v';
-          if(suffix_class & AC_SIMD_EXTEND3){
-              strcpy (op1, " %)");
-              nop=1;
-              break;
-              }
-          if(suffix_class & AC_SIMD_ZERVB)
-              strcpy (op1, " %\23");
+	  extended_register_format[0] = 'v';
+	  extended_register_format[1] = 'v';
+	  if(suffix_class & AC_SIMD_EXTEND3){
+	      strcpy (op1, " %)");
+	      nop=1;
+	      break;
+	      }
+	  if(suffix_class & AC_SIMD_ZERVB)
+	      strcpy (op1, " %\23");
 	  strcpy (op2, ",%)");
-          if(syntax_class & AC_SIMD_SYNTAX_VVL){
-              extended_register_format[1] = '0';
-              strcpy(op2, ",%\24");
-              suffix_class |= AC_SIMD_ZERVC;
-              }
+	  if(syntax_class & AC_SIMD_SYNTAX_VVL){
+	      extended_register_format[1] = '0';
+	      strcpy(op2, ",%\24");
+	      suffix_class |= AC_SIMD_ZERVC;
+	      }
 	  nop = 2;
 	  break;
 	case AC_SIMD_SYNTAX_VV0:
-            extended_register_format[0] = 'v';
-            extended_register_format[1] = 'v';
-            if(suffix_class & AC_SIMD_EXTEND2){
-                strcpy(op1," %(,");
-                if(syntax_class_modifiers & AC_SIMD_IREGB){
-                    if(suffix_class & AC_SIMD_KREG){
-                        extended_register_format[0] = 'k';
-                        strcpy(op1," %\16,");}
-                    else {
-                        extended_register_format[0] = 'i';
-                        strcpy(op1," %{,");}
-                    }
-                if(suffix_class & AC_SIMD_ZERVB)
-                    strcpy(op1," %\23,");
-                strcpy(op2,"%)");
-                if(syntax_class & AC_SIMD_SYNTAX_VVI){
-                    if(suffix_class & AC_SIMD_KREG){
-                        extended_register_format[1] = 'k';
-                        strcpy(op2,"%\17");}
-                    else {
-                        extended_register_format[1] = 'i';
-                        strcpy(op2,"%}");}
-                    }
-                if(suffix_class & AC_SIMD_ENCODE_U6){
-                    extended_register_format[1] = '0';
-                    strcpy(op2,"%u");
-                    }
-                if(suffix_class & AC_SIMD_ENCODE_U16){
-                    extended_register_format[1] = '0';
-                    strcpy(op2,"%\20");
-                    }
-                if(suffix_class & AC_SIMD_ENCODE_U8){
-                    extended_register_format[1] = '0';
-                    strcpy(op2,"%?");
-                    }
-                if(syntax_class & AC_SIMD_SYNTAX_VVL){
-                    extended_register_format[1] = '0';
-                    strcpy(op2,"%\24");
-                    suffix_class |= AC_SIMD_ZERVC;
-                    }
-                if(syntax_class & AC_SIMD_SYNTAX_VVC){
-                    extended_register_format[1] = 'c';
-                    strcpy(op2,"%C");
-                    }
-                nop = 2;
-                break;
-                }
-            else 
-                {
-                strcpy (op1, " %*,");
-                if(syntax_class_modifiers & AC_SIMD_IREGA){
-                    if(suffix_class & AC_SIMD_KREG){
-                        extended_register_format[0] = 'k';
-                        strcpy(op1," %\15,");}
-                    else {
-                        extended_register_format[0] = 'i';
-                        strcpy(op1," %\13,");}
-                    }
-                if(suffix_class & AC_SIMD_ZERVA)
-                    strcpy(op1, " %\23,");
-                strcpy (op2, "%(,");
-                strcpy(op3,"");
-                switch  (syntax_class
-                         & (AC_SIMD_SYNTAX_VVC | AC_SIMD_SYNTAX_VVI | AC_SIMD_SYNTAX_VVL))
-                    {
-                    case AC_SIMD_SYNTAX_VVC:
-                        extended_register_format[2] = 'c';
-                        strcpy (op3, "%C");
-                        break;
-                    case AC_SIMD_SYNTAX_VVI:
-                        if(suffix_class & AC_SIMD_KREG){
-                            extended_register_format[2] = 'k';
-                            strcpy (op3, "%\17");}
-                        else {
-                            extended_register_format[2] = 'i';
-                            strcpy (op3, "%}");}
-                        break;
-                    case AC_SIMD_SYNTAX_VVL:
-                        extended_register_format[2] = '0';
-                        strcpy(op3,"%L");
-                        if(suffix_class & AC_SIMD_EXTENDED)
-                            strcpy(op3,"%\24");
-                        suffix_class |= AC_SIMD_ZERVC;
-                        break;
-                    default:
-                        if (suffix_class & AC_SIMD_ENCODE_U8){
-                            extended_register_format[2] = '0';
-                            strcpy (op3, "%?");}
-                        else if ( suffix_class & AC_SIMD_ENCODE_U6) {
-                            extended_register_format[2] = '0';
-                            strcpy (op3, "%u"); }
-                        else if ( suffix_class & AC_SIMD_ENCODE_U16) {
-                            extended_register_format[2] = '0';
-                            strcpy (op3, "%\20");}
-                        break;
-                    }
-                if(strcmp(op3,"")!=0)
-                    nop = 3;
-                else
-                    nop = 2;
-                }
+	    extended_register_format[0] = 'v';
+	    extended_register_format[1] = 'v';
+	    if(suffix_class & AC_SIMD_EXTEND2){
+		strcpy(op1," %(,");
+		if(syntax_class_modifiers & AC_SIMD_IREGB){
+		    if(suffix_class & AC_SIMD_KREG){
+			extended_register_format[0] = 'k';
+			strcpy(op1," %\16,");}
+		    else {
+			extended_register_format[0] = 'i';
+			strcpy(op1," %{,");}
+		    }
+		if(suffix_class & AC_SIMD_ZERVB)
+		    strcpy(op1," %\23,");
+		strcpy(op2,"%)");
+		if(syntax_class & AC_SIMD_SYNTAX_VVI){
+		    if(suffix_class & AC_SIMD_KREG){
+			extended_register_format[1] = 'k';
+			strcpy(op2,"%\17");}
+		    else {
+			extended_register_format[1] = 'i';
+			strcpy(op2,"%}");}
+		    }
+		if(suffix_class & AC_SIMD_ENCODE_U6){
+		    extended_register_format[1] = '0';
+		    strcpy(op2,"%u");
+		    }
+		if(suffix_class & AC_SIMD_ENCODE_U16){
+		    extended_register_format[1] = '0';
+		    strcpy(op2,"%\20");
+		    }
+		if(suffix_class & AC_SIMD_ENCODE_U8){
+		    extended_register_format[1] = '0';
+		    strcpy(op2,"%?");
+		    }
+		if(syntax_class & AC_SIMD_SYNTAX_VVL){
+		    extended_register_format[1] = '0';
+		    strcpy(op2,"%\24");
+		    suffix_class |= AC_SIMD_ZERVC;
+		    }
+		if(syntax_class & AC_SIMD_SYNTAX_VVC){
+		    extended_register_format[1] = 'c';
+		    strcpy(op2,"%C");
+		    }
+		nop = 2;
+		break;
+		}
+	    else
+		{
+		strcpy (op1, " %*,");
+		if(syntax_class_modifiers & AC_SIMD_IREGA){
+		    if(suffix_class & AC_SIMD_KREG){
+			extended_register_format[0] = 'k';
+			strcpy(op1," %\15,");}
+		    else {
+			extended_register_format[0] = 'i';
+			strcpy(op1," %\13,");}
+		    }
+		if(suffix_class & AC_SIMD_ZERVA)
+		    strcpy(op1, " %\23,");
+		strcpy (op2, "%(,");
+		strcpy(op3,"");
+		switch  (syntax_class
+			 & (AC_SIMD_SYNTAX_VVC | AC_SIMD_SYNTAX_VVI | AC_SIMD_SYNTAX_VVL))
+		    {
+		    case AC_SIMD_SYNTAX_VVC:
+			extended_register_format[2] = 'c';
+			strcpy (op3, "%C");
+			break;
+		    case AC_SIMD_SYNTAX_VVI:
+			if(suffix_class & AC_SIMD_KREG){
+			    extended_register_format[2] = 'k';
+			    strcpy (op3, "%\17");}
+			else {
+			    extended_register_format[2] = 'i';
+			    strcpy (op3, "%}");}
+			break;
+		    case AC_SIMD_SYNTAX_VVL:
+			extended_register_format[2] = '0';
+			strcpy(op3,"%L");
+			if(suffix_class & AC_SIMD_EXTENDED)
+			    strcpy(op3,"%\24");
+			suffix_class |= AC_SIMD_ZERVC;
+			break;
+		    default:
+			if (suffix_class & AC_SIMD_ENCODE_U8){
+			    extended_register_format[2] = '0';
+			    strcpy (op3, "%?");}
+			else if ( suffix_class & AC_SIMD_ENCODE_U6) {
+			    extended_register_format[2] = '0';
+			    strcpy (op3, "%u"); }
+			else if ( suffix_class & AC_SIMD_ENCODE_U16) {
+			    extended_register_format[2] = '0';
+			    strcpy (op3, "%\20");}
+			break;
+		    }
+		if(strcmp(op3,"")!=0)
+		    nop = 3;
+		else
+		    nop = 2;
+		}
 	  break;
 
 	case AC_SIMD_SYNTAX_VbI0:
-          extended_register_format[0] = 'v';
-          extended_register_format[1] = 'i';
-          extended_register_format[2] = '0';
+	  extended_register_format[0] = 'v';
+	  extended_register_format[1] = 'i';
+	  extended_register_format[2] = '0';
 	  strcpy (op1, " %*,");
-          if(suffix_class & AC_SIMD_KREG){
-              extended_register_format[1] = 'k';
-              strcpy (op2, "%\16,");}
-          else
-              strcpy (op2, "%{,");
+	  if(suffix_class & AC_SIMD_KREG){
+	      extended_register_format[1] = 'k';
+	      strcpy (op2, "%\16,");}
+	  else
+	      strcpy (op2, "%{,");
 	  if (suffix_class & AC_SIMD_ENCODE_U6)
 	    strcpy (op3, "%u");
 	  if (suffix_class & AC_SIMD_ENCODE_ZR)
@@ -2741,338 +2773,338 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 	    strcpy (op3, "%\14");
 	  nop = 3;
 	  if (!strcmp(op3,""))//temp .. please remove
-	    printf("SYNTAX_VbI0 op3 not found:%s\n",instruction_name); 
+	    printf("SYNTAX_VbI0 op3 not found:%s\n",instruction_name);
 	  break;
 
 	case AC_SIMD_SYNTAX_Vb00:
-          extended_register_format[0] = 'v';
-          extended_register_format[0] = 'i';
-          extended_register_format[0] = '0';
+	  extended_register_format[0] = 'v';
+	  extended_register_format[0] = 'i';
+	  extended_register_format[0] = '0';
 	  strcpy (op1, " %*,");
-          if(suffix_class & AC_SIMD_KREG){
-              extended_register_format[1] = 'k';
-              strcpy(op2,"%\16");}
-          else
-              strcpy(op2,"%{");
+	  if(suffix_class & AC_SIMD_KREG){
+	      extended_register_format[1] = 'k';
+	      strcpy(op2,"%\16");}
+	  else
+	      strcpy(op2,"%{");
 	  if (syntax_class & AC_SIMD_SYNTAX_VbC0){
-              extended_register_format[1] = 'c';
-              strcpy (op2, "%B");
-              }
+	      extended_register_format[1] = 'c';
+	      strcpy (op2, "%B");
+	      }
 	  if (suffix_class & AC_SIMD_ENCODE_ZR)
 	    strcpy (op3, ",%\25");
- 	  if (suffix_class & AC_SIMD_ENCODE_U8) 
- 	    strcpy (op3, ",%?"); 
- 	  if (suffix_class & AC_SIMD_ENCODE_S12) 
- 	    strcpy (op3, ",%\14"); 
-          if(strcmp(op3,"")!=0)
-              nop =3;
-          else {
-              extended_register_format[2] = 0;
-              nop = 2;
-              }
+	  if (suffix_class & AC_SIMD_ENCODE_U8)
+	    strcpy (op3, ",%?");
+	  if (suffix_class & AC_SIMD_ENCODE_S12)
+	    strcpy (op3, ",%\14");
+	  if(strcmp(op3,"")!=0)
+	      nop =3;
+	  else {
+	      extended_register_format[2] = 0;
+	      nop = 2;
+	      }
 	  break;
 
 	case AC_SIMD_SYNTAX_V00:
-            extended_register_format[0] = 'v';
-            extended_register_format[1] = '0';
-            if((suffix_class & AC_SIMD_EXTEND2) || (suffix_class & AC_SIMD_EXTEND3)){
-                strcpy(op1," %(,");
-                if(suffix_class & AC_SIMD_ZERVB){
-                    strcpy(op1," %\23,");
-                    }
-                strcpy(op2,"%u");
-                if(syntax_class_modifiers & AC_SIMD_IREGA){
-                    if(suffix_class & AC_SIMD_KREG){
-                        extended_register_format[1] = 'k';
-                        strcpy(op2,"%\17");}
-                    else {
-                        extended_register_format[1] = 'i';
-                        strcpy(op2,"%}");}
-                    }
-                if(syntax_class&AC_SIMD_SYNTAX_VC0)
-                    strcpy(op2,"%C");
-                if(suffix_class & AC_SIMD_ENCODE_LIMM){
-                    strcpy(op2,"%L");
-                    suffix_class |= AC_SIMD_ZERVC;
-                    }
-                if(syntax_class & AC_SIMD_SYNTAX_VL0){
-                    suffix_class |= AC_SIMD_ZERVC;
-                    strcpy(op2,"%L");
-                    }
-                if(suffix_class & AC_SIMD_ENCODE_S12)
-                    strcpy(op2,"%\14");
-                nop = 2;
-                }
-            else
-                {
-                strcpy (op1, " %*,");
-                if(syntax_class_modifiers & AC_SIMD_IREGA){
-                    if(suffix_class & AC_SIMD_KREG){
-                        extended_register_format[0] = 'k';
-                        strcpy(op1, " %\15,");}
-                    else {
-                        extended_register_format[0] = 'i';
-                        strcpy(op1, " %\13,");}
-                    }
-                if(suffix_class & AC_SIMD_ZERVA){
-                    strcpy(op1," %\23,");
-                    }
-
-                extended_register_format[2] = '0';
-                if (suffix_class & AC_SIMD_ENCODE_U8)
-                    strcpy (op3, "%?");
-                if(suffix_class & AC_SIMD_ENCODE_U6)
-                    strcpy(op3, "%u");
-                if(suffix_class & AC_SIMD_ENCODE_U16)
-                    strcpy(op3, "%\20");
-                if(suffix_class & AC_SIMD_ENCODE_LIMM){
-                    suffix_class |= AC_SIMD_ZERVC;
-                    strcpy(op3, "%L");
+	    extended_register_format[0] = 'v';
+	    extended_register_format[1] = '0';
+	    if((suffix_class & AC_SIMD_EXTEND2) || (suffix_class & AC_SIMD_EXTEND3)){
+		strcpy(op1," %(,");
+		if(suffix_class & AC_SIMD_ZERVB){
+		    strcpy(op1," %\23,");
+		    }
+		strcpy(op2,"%u");
+		if(syntax_class_modifiers & AC_SIMD_IREGA){
+		    if(suffix_class & AC_SIMD_KREG){
+			extended_register_format[1] = 'k';
+			strcpy(op2,"%\17");}
+		    else {
+			extended_register_format[1] = 'i';
+			strcpy(op2,"%}");}
+		    }
+		if(syntax_class&AC_SIMD_SYNTAX_VC0)
+		    strcpy(op2,"%C");
+		if(suffix_class & AC_SIMD_ENCODE_LIMM){
+		    strcpy(op2,"%L");
+		    suffix_class |= AC_SIMD_ZERVC;
+		    }
+		if(syntax_class & AC_SIMD_SYNTAX_VL0){
+		    suffix_class |= AC_SIMD_ZERVC;
+		    strcpy(op2,"%L");
+		    }
+		if(suffix_class & AC_SIMD_ENCODE_S12)
+		    strcpy(op2,"%\14");
+		nop = 2;
 		}
-                if(syntax_class & AC_SIMD_SYNTAX_VVC){
-                    extended_register_format[1] = 'c';
-                    strcpy(op3, "%C");
-                    }
-                if(suffix_class & AC_SIMD_ENCODE_S12)
-                    strcpy(op3,"%\14");
-                if(strcmp(op3,"")==0){
-                    extended_register_format[1] = '0';
-                    if (syntax_class & AC_SIMD_SYNTAX_VC0){
-                        extended_register_format[1] = 'c';
-                        strcpy (op2, "%B");
-                        }
-                    if(syntax_class & AC_SIMD_SYNTAX_VU0)
-                        strcpy(op2, "%u");
-                    if(syntax_class & AC_SIMD_SYNTAX_VL0){
-                        suffix_class |= AC_SIMD_ZERVC;
-                        strcpy(op2, "%L");
-                     }
-                    if(syntax_class_modifiers & AC_SIMD_IREGB){
-                        if(suffix_class & AC_SIMD_KREG){
-                            extended_register_format[1] = 'k';
-                            strcpy(op2, "%\16");}
-                        else {
-                            extended_register_format[1] = 'i';
-                            strcpy(op2, "%{");}
-                        }
-                    if(suffix_class & AC_SIMD_ENCODE_S12)
-                        strcpy(op2,"%\14");
-                    nop = 2;
-                    }
-                else
-                    {
-                    if (syntax_class & AC_SIMD_SYNTAX_VC0){
-                        extended_register_format[1] = 'c';
-                        strcpy (op2, "%B,");
-                        }
-                    if(syntax_class & AC_SIMD_SYNTAX_VU0){
-                        extended_register_format[1] = '0';
-                        strcpy(op2, "%u,");
-                        }
-                    if(syntax_class & AC_SIMD_SYNTAX_VL0){
-                        extended_register_format[1] = '0';
-                        strcpy(op2, "%L,");
-                        suffix_class |= AC_SIMD_ZERVB;
-                        }
-                    if(syntax_class_modifiers & AC_SIMD_IREGB){
-                        if(suffix_class & AC_SIMD_KREG){
-                            extended_register_format[1] = 'k';
-                            strcpy(op2, "%\16,");}
-                        else {
-                            extended_register_format[1] = 'i';
-                            strcpy(op2, "%{,");}
-                        }
-                    nop = 3;
-                    }
+	    else
+		{
+		strcpy (op1, " %*,");
+		if(syntax_class_modifiers & AC_SIMD_IREGA){
+		    if(suffix_class & AC_SIMD_KREG){
+			extended_register_format[0] = 'k';
+			strcpy(op1, " %\15,");}
+		    else {
+			extended_register_format[0] = 'i';
+			strcpy(op1, " %\13,");}
+		    }
+		if(suffix_class & AC_SIMD_ZERVA){
+		    strcpy(op1," %\23,");
+		    }
 
-                if(!strcmp(op2,""))
-                    printf ("SYNTAX_v00 .. unknown op2:%s\n",instruction_name);
-                }
+		extended_register_format[2] = '0';
+		if (suffix_class & AC_SIMD_ENCODE_U8)
+		    strcpy (op3, "%?");
+		if(suffix_class & AC_SIMD_ENCODE_U6)
+		    strcpy(op3, "%u");
+		if(suffix_class & AC_SIMD_ENCODE_U16)
+		    strcpy(op3, "%\20");
+		if(suffix_class & AC_SIMD_ENCODE_LIMM){
+		    suffix_class |= AC_SIMD_ZERVC;
+		    strcpy(op3, "%L");
+		}
+		if(syntax_class & AC_SIMD_SYNTAX_VVC){
+		    extended_register_format[1] = 'c';
+		    strcpy(op3, "%C");
+		    }
+		if(suffix_class & AC_SIMD_ENCODE_S12)
+		    strcpy(op3,"%\14");
+		if(strcmp(op3,"")==0){
+		    extended_register_format[1] = '0';
+		    if (syntax_class & AC_SIMD_SYNTAX_VC0){
+			extended_register_format[1] = 'c';
+			strcpy (op2, "%B");
+			}
+		    if(syntax_class & AC_SIMD_SYNTAX_VU0)
+			strcpy(op2, "%u");
+		    if(syntax_class & AC_SIMD_SYNTAX_VL0){
+			suffix_class |= AC_SIMD_ZERVC;
+			strcpy(op2, "%L");
+		     }
+		    if(syntax_class_modifiers & AC_SIMD_IREGB){
+			if(suffix_class & AC_SIMD_KREG){
+			    extended_register_format[1] = 'k';
+			    strcpy(op2, "%\16");}
+			else {
+			    extended_register_format[1] = 'i';
+			    strcpy(op2, "%{");}
+			}
+		    if(suffix_class & AC_SIMD_ENCODE_S12)
+			strcpy(op2,"%\14");
+		    nop = 2;
+		    }
+		else
+		    {
+		    if (syntax_class & AC_SIMD_SYNTAX_VC0){
+			extended_register_format[1] = 'c';
+			strcpy (op2, "%B,");
+			}
+		    if(syntax_class & AC_SIMD_SYNTAX_VU0){
+			extended_register_format[1] = '0';
+			strcpy(op2, "%u,");
+			}
+		    if(syntax_class & AC_SIMD_SYNTAX_VL0){
+			extended_register_format[1] = '0';
+			strcpy(op2, "%L,");
+			suffix_class |= AC_SIMD_ZERVB;
+			}
+		    if(syntax_class_modifiers & AC_SIMD_IREGB){
+			if(suffix_class & AC_SIMD_KREG){
+			    extended_register_format[1] = 'k';
+			    strcpy(op2, "%\16,");}
+			else {
+			    extended_register_format[1] = 'i';
+			    strcpy(op2, "%{,");}
+			}
+		    nop = 3;
+		    }
+
+		if(!strcmp(op2,""))
+		    printf ("SYNTAX_v00 .. unknown op2:%s\n",instruction_name);
+		}
 	  break;
-        case AC_SIMD_SYNTAX_C00:
-            extended_register_format[0] = 'c';
-            if(suffix_class & AC_SIMD_EXTEND2){
-                strcpy(op1," %B");
-                if(syntax_class_modifiers & AC_SIMD_IREGB){
-                    if(suffix_class & AC_SIMD_KREG){
-                        extended_register_format[0] = 'k';
-                        strcpy(op1," %\16");}
-                    else {
-                        extended_register_format[0] = 'i';
-                        strcpy(op1," %{");}
-                    }
-                if(syntax_class & AC_SIMD_SYNTAX_VVI){
-                    if(suffix_class & AC_SIMD_KREG){
-                        extended_register_format[1] = 'k';
-                        strcpy(op2,",%\17");}
-                    else {
-                        extended_register_format[1] = 'i';
-                        strcpy(op2,",%}");}
-                    }
-                extended_register_format[1] = '0';
-                if(syntax_class& AC_SIMD_SYNTAX_VVC){
-                    extended_register_format[1] = 'c';
-                    strcpy(op2,",%C");
-                    }
-                if (suffix_class & AC_SIMD_ENCODE_U8)
-                    strcpy (op2, ",%?");
-                if(suffix_class & AC_SIMD_ENCODE_U6)
-                    strcpy(op2,",%u");
-                if(suffix_class & AC_SIMD_ENCODE_U16)
-                    strcpy(op2,",%\20");
-                if(syntax_class & AC_SIMD_SYNTAX_VL0)
-                    strcpy(op2,",%L");
-                nop = 2;
-                break;
-                }
-            strcpy(op1," %A,");
-            extended_register_format[0] = 'c';
-            if(syntax_class_modifiers & AC_SIMD_IREGA){
-                if(suffix_class & AC_SIMD_KREG){
-                    extended_register_format[0] = 'k';
-                    strcpy(op1, " %\15,");}
-                else {
-                    extended_register_format[0] = 'i';
-                    strcpy(op1, " %\13,"); }
-                }
-            strcpy(op2,"%B,");
-            extended_register_format[1] = 'c';
-            if(syntax_class_modifiers & AC_SIMD_IREGB){
-                if(suffix_class & AC_SIMD_KREG){
-                    extended_register_format[1] = 'k';
-                    strcpy(op2,"%\16,");}
-                else {
-                    extended_register_format[2] = 'i';
-                    strcpy(op2,"%{,");}
-                }
-            extended_register_format[2] = 'c';
-            if (suffix_class & AC_SIMD_ENCODE_U8)
-                strcpy (op3, "%?");
-            if(suffix_class & AC_SIMD_ENCODE_U6)
-                strcpy(op3,"%u");
-            if(suffix_class & AC_SIMD_ENCODE_U16)
-                strcpy(op3,"%\20");
-            if(suffix_class & AC_SIMD_ENCODE_S12)
-                strcpy(op3,"%\14");
-            nop = 3;
-            break;
+	case AC_SIMD_SYNTAX_C00:
+	    extended_register_format[0] = 'c';
+	    if(suffix_class & AC_SIMD_EXTEND2){
+		strcpy(op1," %B");
+		if(syntax_class_modifiers & AC_SIMD_IREGB){
+		    if(suffix_class & AC_SIMD_KREG){
+			extended_register_format[0] = 'k';
+			strcpy(op1," %\16");}
+		    else {
+			extended_register_format[0] = 'i';
+			strcpy(op1," %{");}
+		    }
+		if(syntax_class & AC_SIMD_SYNTAX_VVI){
+		    if(suffix_class & AC_SIMD_KREG){
+			extended_register_format[1] = 'k';
+			strcpy(op2,",%\17");}
+		    else {
+			extended_register_format[1] = 'i';
+			strcpy(op2,",%}");}
+		    }
+		extended_register_format[1] = '0';
+		if(syntax_class& AC_SIMD_SYNTAX_VVC){
+		    extended_register_format[1] = 'c';
+		    strcpy(op2,",%C");
+		    }
+		if (suffix_class & AC_SIMD_ENCODE_U8)
+		    strcpy (op2, ",%?");
+		if(suffix_class & AC_SIMD_ENCODE_U6)
+		    strcpy(op2,",%u");
+		if(suffix_class & AC_SIMD_ENCODE_U16)
+		    strcpy(op2,",%\20");
+		if(syntax_class & AC_SIMD_SYNTAX_VL0)
+		    strcpy(op2,",%L");
+		nop = 2;
+		break;
+		}
+	    strcpy(op1," %A,");
+	    extended_register_format[0] = 'c';
+	    if(syntax_class_modifiers & AC_SIMD_IREGA){
+		if(suffix_class & AC_SIMD_KREG){
+		    extended_register_format[0] = 'k';
+		    strcpy(op1, " %\15,");}
+		else {
+		    extended_register_format[0] = 'i';
+		    strcpy(op1, " %\13,"); }
+		}
+	    strcpy(op2,"%B,");
+	    extended_register_format[1] = 'c';
+	    if(syntax_class_modifiers & AC_SIMD_IREGB){
+		if(suffix_class & AC_SIMD_KREG){
+		    extended_register_format[1] = 'k';
+		    strcpy(op2,"%\16,");}
+		else {
+		    extended_register_format[2] = 'i';
+		    strcpy(op2,"%{,");}
+		}
+	    extended_register_format[2] = 'c';
+	    if (suffix_class & AC_SIMD_ENCODE_U8)
+		strcpy (op3, "%?");
+	    if(suffix_class & AC_SIMD_ENCODE_U6)
+		strcpy(op3,"%u");
+	    if(suffix_class & AC_SIMD_ENCODE_U16)
+		strcpy(op3,"%\20");
+	    if(suffix_class & AC_SIMD_ENCODE_S12)
+		strcpy(op3,"%\14");
+	    nop = 3;
+	    break;
 	case AC_SIMD_SYNTAX_0:
-            extended_register_format[0] = '0';
-            if (syntax_class & AC_SIMD_SYNTAX_C){
-                extended_register_format[0] = 'c';
-                strcpy (op1, " %C");
-                }
-            else if (suffix_class & AC_SIMD_ENCODE_U6)
-                strcpy (op1, " %u");
-            else if (suffix_class & AC_SIMD_ENCODE_U16)
-                strcpy (op1, " %\20");
-            else if (syntax_class & AC_SIMD_SYNTAX_VVI){
-                if(suffix_class & AC_SIMD_KREG){
-                    extended_register_format[0] = 'k';
-                    strcpy (op1, " %\17");}
-                else {
-                    extended_register_format[0] = 'i';
-                    strcpy (op1, " %}");}
-                }
-            if(strcmp(op1,""))
-                nop = 1;
-            else
-                nop = 0;
+	    extended_register_format[0] = '0';
+	    if (syntax_class & AC_SIMD_SYNTAX_C){
+		extended_register_format[0] = 'c';
+		strcpy (op1, " %C");
+		}
+	    else if (suffix_class & AC_SIMD_ENCODE_U6)
+		strcpy (op1, " %u");
+	    else if (suffix_class & AC_SIMD_ENCODE_U16)
+		strcpy (op1, " %\20");
+	    else if (syntax_class & AC_SIMD_SYNTAX_VVI){
+		if(suffix_class & AC_SIMD_KREG){
+		    extended_register_format[0] = 'k';
+		    strcpy (op1, " %\17");}
+		else {
+		    extended_register_format[0] = 'i';
+		    strcpy (op1, " %}");}
+		}
+	    if(strcmp(op1,""))
+		nop = 1;
+	    else
+		nop = 0;
 	  break;
 
 
 	case AC_SIMD_SYNTAX_C0:
-/* special case of instruction with two constant 8 bit operands fitting 
- * into sixteen bit constant field 
+/* special case of instruction with two constant 8 bit operands fitting
+ * into sixteen bit constant field
  */
-            extended_register_format[0] = '0';
-            extended_register_format[1] = '0';
+	    extended_register_format[0] = '0';
+	    extended_register_format[1] = '0';
 
-            if((suffix_class & AC_SIMD_ENCODE_U6) &&
-               (suffix_class & AC_SIMD_ENCODE_U16)){
-                strcpy(op1," %\21");
-                strcpy(op2,",%\22");
-                nop = 2;
-                break;
-                }
-            strcpy (op1, " %B,");
-            extended_register_format[0] = 'c';
-            if(syntax_class_modifiers & AC_SIMD_SYNTAX_DISC){
-                extended_register_format[0] = '0';
-                strcpy(op1, " %u,");
-                }
-            if(syntax_class_modifiers & AC_SIMD_IREGB){
-                if(suffix_class & AC_SIMD_KREG){
-                    extended_register_format[0] = 'k';
-                    strcpy(op1, " %\16,");}
-                else {
-                    extended_register_format[0] = 'i';
-                    strcpy(op1, " %{,"); }
-                }
-            if (syntax_class & AC_SIMD_SYNTAX_CC){
-                extended_register_format[1] = 'c';
-                strcpy (op2, "%C");
-                }
-            if(syntax_class & AC_SIMD_SYNTAX_VVI){
-                if(suffix_class & AC_SIMD_KREG){
-                    extended_register_format[1] = 'k';
-                    strcpy(op2, "%\17");}
-                else {
-                    extended_register_format[1] = 'i';
-                    strcpy(op2, "%}");}
-                }
-            if(suffix_class & AC_SIMD_ENCODE_U6){
-                extended_register_format[1] = '0';
-                strcpy(op2,"%u");
-                }
-            if(suffix_class & AC_SIMD_ENCODE_U16){
-                extended_register_format[1] = '0';
-                strcpy(op2,"%\20");
-                }
-            if(suffix_class & AC_SIMD_ENCODE_U8){
-                extended_register_format[1] = '0';
-                strcpy(op2,"%?");
-                }
-            if(suffix_class & AC_SIMD_ENCODE_LIMM)
-                {
-                suffix_class |= AC_SIMD_ZERVC;
-                strcpy(op2,"%L");
-                extended_register_format[1] = '0';
-                }
-            nop = 2;
-            if (!strcmp(op2,""))
-                printf("SYNTAX_C0 op2 not found:%s\n",instruction_name); 
+	    if((suffix_class & AC_SIMD_ENCODE_U6) &&
+	       (suffix_class & AC_SIMD_ENCODE_U16)){
+		strcpy(op1," %\21");
+		strcpy(op2,",%\22");
+		nop = 2;
+		break;
+		}
+	    strcpy (op1, " %B,");
+	    extended_register_format[0] = 'c';
+	    if(syntax_class_modifiers & AC_SIMD_SYNTAX_DISC){
+		extended_register_format[0] = '0';
+		strcpy(op1, " %u,");
+		}
+	    if(syntax_class_modifiers & AC_SIMD_IREGB){
+		if(suffix_class & AC_SIMD_KREG){
+		    extended_register_format[0] = 'k';
+		    strcpy(op1, " %\16,");}
+		else {
+		    extended_register_format[0] = 'i';
+		    strcpy(op1, " %{,"); }
+		}
+	    if (syntax_class & AC_SIMD_SYNTAX_CC){
+		extended_register_format[1] = 'c';
+		strcpy (op2, "%C");
+		}
+	    if(syntax_class & AC_SIMD_SYNTAX_VVI){
+		if(suffix_class & AC_SIMD_KREG){
+		    extended_register_format[1] = 'k';
+		    strcpy(op2, "%\17");}
+		else {
+		    extended_register_format[1] = 'i';
+		    strcpy(op2, "%}");}
+		}
+	    if(suffix_class & AC_SIMD_ENCODE_U6){
+		extended_register_format[1] = '0';
+		strcpy(op2,"%u");
+		}
+	    if(suffix_class & AC_SIMD_ENCODE_U16){
+		extended_register_format[1] = '0';
+		strcpy(op2,"%\20");
+		}
+	    if(suffix_class & AC_SIMD_ENCODE_U8){
+		extended_register_format[1] = '0';
+		strcpy(op2,"%?");
+		}
+	    if(suffix_class & AC_SIMD_ENCODE_LIMM)
+		{
+		suffix_class |= AC_SIMD_ZERVC;
+		strcpy(op2,"%L");
+		extended_register_format[1] = '0';
+		}
+	    nop = 2;
+	    if (!strcmp(op2,""))
+		printf("SYNTAX_C0 op2 not found:%s\n",instruction_name);
 
 	  break;
 
 
 	case AC_SIMD_SYNTAX_D0:
-            extended_register_format[0] = 'd';
+	    extended_register_format[0] = 'd';
 	  strcpy (op1, " %<,");
 	  if (syntax_class & AC_SIMD_SYNTAX_CC){
-                extended_register_format[0] = 'c';
-                strcpy (op1, " %B,");
-              }
+		extended_register_format[0] = 'c';
+		strcpy (op1, " %B,");
+	      }
 	  if (syntax_class & AC_SIMD_SYNTAX_DC){
-              extended_register_format[1] = 'c';
-              strcpy (op2, "%C");
-              }
+	      extended_register_format[1] = 'c';
+	      strcpy (op2, "%C");
+	      }
 	  if (syntax_class & AC_SIMD_SYNTAX_VVI){
-              if(suffix_class & AC_SIMD_KREG){
-                  extended_register_format[1] = 'k';
-                  strcpy (op2, "%\17");}
-              else {
-                  extended_register_format[1] = 'i';
-                  strcpy (op2, "%}");}
-              }
-          if(syntax_class & AC_SIMD_SYNTAX_VL0){
-              extended_register_format[1] = '0';
-              strcpy(op2, "%L");
-              if( suffix_class & (AC_SIMD_EXTEND1 | AC_SIMD_EXTEND2))
-                  suffix_class |= AC_SIMD_ZERVC;
-              else
-                  suffix_class |= AC_SIMD_ZERVB;
-              }
+	      if(suffix_class & AC_SIMD_KREG){
+		  extended_register_format[1] = 'k';
+		  strcpy (op2, "%\17");}
+	      else {
+		  extended_register_format[1] = 'i';
+		  strcpy (op2, "%}");}
+	      }
+	  if(syntax_class & AC_SIMD_SYNTAX_VL0){
+	      extended_register_format[1] = '0';
+	      strcpy(op2, "%L");
+	      if( suffix_class & (AC_SIMD_EXTEND1 | AC_SIMD_EXTEND2))
+		  suffix_class |= AC_SIMD_ZERVC;
+	      else
+		  suffix_class |= AC_SIMD_ZERVB;
+	      }
 
 	  nop = 2;
 	  if (!strcmp(op2,""))//temp .. please remove
@@ -3081,8 +3113,8 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 
 
 	case AC_SIMD_SYNTAX_VD:
-          extended_register_format[0] = 'v';
-          extended_register_format[1] = 'd';
+	  extended_register_format[0] = 'v';
+	  extended_register_format[1] = 'd';
 	  strcpy (op1, " %(,");
 	  strcpy (op2, "%>");
 	  nop = 2;
@@ -3090,41 +3122,41 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 
 
 	default:
-	    printf("unmapped syntax class found:%s\n",instruction_name); 
+	    printf("unmapped syntax class found:%s\n",instruction_name);
 	  break;
 
 	}
 
       insn = mask =0;
       insn2 = mask2 = 0;
-      
+
       insn = (major_opcode << 27); /*SIMD Major Opcode*/
       mask = (-1 & 0xfc000000);
 
       if(suffix_class&AC_SUFFIX_LANEMASK){
-          syntax_class_modifiers |= ARC_SIMD_LANEMASK;
-          }
+	  syntax_class_modifiers |= ARC_SIMD_LANEMASK;
+	  }
       if(suffix_class & AC_SIMD_EXTENDED){
-          insn |= ((sub_opcode & 0x3f) << 16);
-          mask |= 0x3f << 16;
-          }
+	  insn |= ((sub_opcode & 0x3f) << 16);
+	  mask |= 0x3f << 16;
+	  }
       if(suffix_class & AC_SIMD_EXTEND2 || suffix_class&AC_SIMD_EXTEND1||
-          suffix_class & AC_SIMD_EXTEND3){
-          insn |= (((sub_opcode >> 8) & 0x3f));
-          mask |= 0x3f;
-          if((insn&0x3f)==0x3f){
-              insn |= (((sub_opcode >> 16) & 0x7)) << 24;
-              mask |= 0x7 << 24;
-              }
-          }
+	  suffix_class & AC_SIMD_EXTEND3){
+	  insn |= (((sub_opcode >> 8) & 0x3f));
+	  mask |= 0x3f;
+	  if((insn&0x3f)==0x3f){
+	      insn |= (((sub_opcode >> 16) & 0x7)) << 24;
+	      mask |= 0x7 << 24;
+	      }
+	  }
       if(suffix_class & AC_SIMD_EXTEND3){
-          insn |= (((sub_opcode >> 16) & 0x7) << 24);
-          mask |= 0x7 << 24;
-          }
+	  insn |= (((sub_opcode >> 16) & 0x7) << 24);
+	  mask |= 0x7 << 24;
+	  }
       if(suffix_class & (AC_SIMD_EXTENDED|AC_SIMD_EXTEND2|AC_SIMD_EXTEND3)){
-          insn2 |= (((sub_opcode>>24) & 3) << 30);
-          mask2 |= 3 << 30;
-          }
+	  insn2 |= (((sub_opcode>>24) & 3) << 30);
+	  mask2 |= 3 << 30;
+	  }
       if (suffix_class & AC_SIMD_FLAG_SET)
 	insn |= (1 << 15);
       mask |= (1 << 15);
@@ -3144,23 +3176,23 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 	     | AC_SIMD_SCALE_1|AC_SIMD_SCALE_0))
 	    {
 	    case AC_SIMD_SCALE_1:
-              extended_instruction_flags[2] |= FLAG_SCALE_1 >> 8;
+	      extended_instruction_flags[2] |= FLAG_SCALE_1 >> 8;
 	      syntax_class_modifiers |= ARC_SIMD_SCALE1;
 	      break;
 	    case AC_SIMD_SCALE_2:
-              extended_instruction_flags[2] |= FLAG_SCALE_2 >> 8;
+	      extended_instruction_flags[2] |= FLAG_SCALE_2 >> 8;
 	      syntax_class_modifiers |= ARC_SIMD_SCALE2;
 	      break;
 	    case AC_SIMD_SCALE_3:
-              extended_instruction_flags[2] |= FLAG_SCALE_3 >> 8;
+	      extended_instruction_flags[2] |= FLAG_SCALE_3 >> 8;
 	      syntax_class_modifiers |= ARC_SIMD_SCALE3;
 	      break;
 	    case AC_SIMD_SCALE_4:
-              extended_instruction_flags[2] |= FLAG_SCALE_4 >> 8;
+	      extended_instruction_flags[2] |= FLAG_SCALE_4 >> 8;
 	      syntax_class_modifiers |= ARC_SIMD_SCALE4;
 	      break;
-            case AC_SIMD_SCALE_0:
-                break;
+	    case AC_SIMD_SCALE_0:
+		break;
 	    default:
 	      abort();
 	      break;
@@ -3168,12 +3200,12 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 	}
       else {
 	sprintf (operand_string,"%s%s%s",op1,op2,op3);
-          }
+	  }
 
       if (suffix_class & AC_SIMD_ENCODE_S12)
-          extended_instruction_flags[2] |= FLAG_EXT_S16 >> 8;
+	  extended_instruction_flags[2] |= FLAG_EXT_S16 >> 8;
       if (suffix_class & AC_SIMD_ENCODE_U16)
-          extended_instruction_flags[2] |= FLAG_EXT_S16 >> 8;
+	  extended_instruction_flags[2] |= FLAG_EXT_S16 >> 8;
 
       if (suffix_class & AC_SIMD_FLAG1_SET)
 	{
@@ -3187,7 +3219,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 	  mask |= (1 << 22);
 	}
       /*FIXME:Bit 22 and 23  to be taken care of*/
-      /* OP3 
+      /* OP3
 	27-31 - major opcode (6 in this case)
 	26,25,24- op2-lower 3 bits
 	23- unknown
@@ -3210,13 +3242,13 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 	11-6- opc bits
 	5-0- sub_opcode
       */
-      
+
 
 
       switch (nop)
 	{
 	case 3:
-            extended_instruction_flags[3] |= FLAG_3OP;
+	    extended_instruction_flags[3] |= FLAG_3OP;
 	  if (suffix_class & AC_SIMD_ENCODE_U8)
 	    {
 	      insn |= ((sub_opcode & 0x1f) << 17);
@@ -3230,124 +3262,124 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 	  break;
 
 	case 2:
-            extended_instruction_flags[3] |= FLAG_2OP;
-            if(suffix_class&(AC_SIMD_EXTENDED|AC_SIMD_EXTEND2|AC_SIMD_EXTEND3|AC_SIMD_EXTEND1)){
-                if (suffix_class & AC_SIMD_ENCODE_U8)
-                    {
-                    insn |= ((sub_opcode & 0x1f) << 17);
-                    mask |= (0x1f << 17);
-                    }
-                else
-                    {
-                    insn |= ((sub_opcode & 0x3f) << 16);
-                    mask |= (0x3f << 16);
-                    }
-                break;
-              }
-          else
-              {
-              if(suffix_class & AC_SIMD_ENCODE_U8){
-                  insn |= ((sub_opcode & 0x1f) << 17);
-                  mask |= (0x1f << 17);
-                  }
-              else
-                  {
-                  insn |= ((sub_opcode & 0x3f) << 16);
-                  mask |= (0x3f << 16);
-                  }
-              }
+	    extended_instruction_flags[3] |= FLAG_2OP;
+	    if(suffix_class&(AC_SIMD_EXTENDED|AC_SIMD_EXTEND2|AC_SIMD_EXTEND3|AC_SIMD_EXTEND1)){
+		if (suffix_class & AC_SIMD_ENCODE_U8)
+		    {
+		    insn |= ((sub_opcode & 0x1f) << 17);
+		    mask |= (0x1f << 17);
+		    }
+		else
+		    {
+		    insn |= ((sub_opcode & 0x3f) << 16);
+		    mask |= (0x3f << 16);
+		    }
+		break;
+	      }
+	  else
+	      {
+	      if(suffix_class & AC_SIMD_ENCODE_U8){
+		  insn |= ((sub_opcode & 0x1f) << 17);
+		  mask |= (0x1f << 17);
+		  }
+	      else
+		  {
+		  insn |= ((sub_opcode & 0x3f) << 16);
+		  mask |= (0x3f << 16);
+		  }
+	      }
 	  break;
 
 	case 1:
-            extended_instruction_flags[3] |= FLAG_1OP;
-            if(suffix_class&(AC_SIMD_EXTENDED|AC_SIMD_EXTEND2|AC_SIMD_EXTEND3|AC_SIMD_EXTEND1)){
-                if (suffix_class & AC_SIMD_ENCODE_U8)
-                    {
-                    insn |= ((sub_opcode & 0x1f) << 17);
-                    mask |= (0x1f << 17);
-                    }
-                else
-                    {
-                    insn |= ((sub_opcode & 0x3f) << 16);
-                    mask |= (0x3f << 16);
-                    if((insn & 0x3f) == 0x3f){
-                        insn |= (((sub_opcode >> 16) & 0x7) << 24);
-                        mask |= 7 << 24;
-                        }
-                    }
-                break;
-                }
-            else
-                {
-                insn |= (0x2f << 16);
-                mask |= (0x3f << 16);
+	    extended_instruction_flags[3] |= FLAG_1OP;
+	    if(suffix_class&(AC_SIMD_EXTENDED|AC_SIMD_EXTEND2|AC_SIMD_EXTEND3|AC_SIMD_EXTEND1)){
+		if (suffix_class & AC_SIMD_ENCODE_U8)
+		    {
+		    insn |= ((sub_opcode & 0x1f) << 17);
+		    mask |= (0x1f << 17);
+		    }
+		else
+		    {
+		    insn |= ((sub_opcode & 0x3f) << 16);
+		    mask |= (0x3f << 16);
+		    if((insn & 0x3f) == 0x3f){
+			insn |= (((sub_opcode >> 16) & 0x7) << 24);
+			mask |= 7 << 24;
+			}
+		    }
+		break;
+		}
+	    else
+		{
+		insn |= (0x2f << 16);
+		mask |= (0x3f << 16);
 
-                insn |= (0x3f << 0);
-                mask |= (0x3f << 0);
+		insn |= (0x3f << 0);
+		mask |= (0x3f << 0);
 
-                insn |= ((sub_opcode & 0x7) << 24);
-                mask |= ((0x7) << 24);
-                }
+		insn |= ((sub_opcode & 0x7) << 24);
+		mask |= ((0x7) << 24);
+		}
 	  break;
-        case 0:
-            extended_instruction_flags[3] |= FLAG_NOP;
-            if(suffix_class&(AC_SIMD_EXTENDED|AC_SIMD_EXTEND2|AC_SIMD_EXTEND3|AC_SIMD_EXTEND1)){
-                if (suffix_class & AC_SIMD_ENCODE_U8)
-                    {
-                    insn |= ((sub_opcode & 0x1f) << 17);
-                    mask |= (0x1f << 17);
-                    }
-                else
-                    {
-                    insn |= ((sub_opcode & 0x3f) << 16);
-                    mask |= (0x3f << 16);
-                    if((insn & 0x3f) == 0x3f){
-                        insn |= (((sub_opcode >> 16) & 0x7) << 24);
-                        mask |= 7 << 24;
-                        }
-                    }
-                break;
-                }
-            else
-                {
-                insn |= (0x2f << 16);
-                mask |= (0x3f << 16);
-                insn |= ((sub_opcode & 0x3f) << 16);
-                mask |= ((0x3f) << 16);
-                }
-            break;
+	case 0:
+	    extended_instruction_flags[3] |= FLAG_NOP;
+	    if(suffix_class&(AC_SIMD_EXTENDED|AC_SIMD_EXTEND2|AC_SIMD_EXTEND3|AC_SIMD_EXTEND1)){
+		if (suffix_class & AC_SIMD_ENCODE_U8)
+		    {
+		    insn |= ((sub_opcode & 0x1f) << 17);
+		    mask |= (0x1f << 17);
+		    }
+		else
+		    {
+		    insn |= ((sub_opcode & 0x3f) << 16);
+		    mask |= (0x3f << 16);
+		    if((insn & 0x3f) == 0x3f){
+			insn |= (((sub_opcode >> 16) & 0x7) << 24);
+			mask |= 7 << 24;
+			}
+		    }
+		break;
+		}
+	    else
+		{
+		insn |= (0x2f << 16);
+		mask |= (0x3f << 16);
+		insn |= ((sub_opcode & 0x3f) << 16);
+		mask |= ((0x3f) << 16);
+		}
+	    break;
 
 	default:
 	  as_fatal ("Invalid syntax\n");
 	  break;
 	}
-      if(syntax_class & AC_SIMD_SYNTAX_VbI0 || 
-         syntax_class & AC_SIMD_SYNTAX_Vb00){
-          extended_operand_format2[0] |= '[';
-          extended_operand_format2[1] |= '%';
-          extended_operand_format2[2] |= 'o';
-          extended_operand_format3[0] |= '%';
-          extended_operand_format3[1] |= 'o';
-          extended_operand_format3[2] |= ']';
-          }
+      if(syntax_class & AC_SIMD_SYNTAX_VbI0 ||
+	 syntax_class & AC_SIMD_SYNTAX_Vb00){
+	  extended_operand_format2[0] |= '[';
+	  extended_operand_format2[1] |= '%';
+	  extended_operand_format2[2] |= 'o';
+	  extended_operand_format3[0] |= '%';
+	  extended_operand_format3[1] |= 'o';
+	  extended_operand_format3[2] |= ']';
+	  }
 
       xmitsuffix = suffix_class & (AC_SUFFIX_FLAG | AC_SUFFIX_COND | ARC_SIMD_LANEMASK | AC_SIMD_ZERVA | AC_SIMD_ZERVB | AC_SIMD_ZERVC | AC_SIMD_SETLM);
 
       syntax_class &= ~(ARC_SIMD_SCALE1 | ARC_SIMD_SCALE2 |
-                        ARC_SIMD_SCALE3 | ARC_SIMD_SCALE4);
+			ARC_SIMD_SCALE3 | ARC_SIMD_SCALE4);
       if(suffix_class&(AC_SIMD_EXTENDED | AC_SIMD_EXTEND2 | AC_SIMD_EXTEND3)){
-          arc_add_long_ext_inst(instruction_name,operand_string,
-                           insn,mask,insn2,mask2, 
-                                (syntax_class|syntax_class_modifiers),
-                                xmitsuffix);
-          }
+	  arc_add_long_ext_inst(instruction_name,operand_string,
+			   insn,mask,insn2,mask2,
+				(syntax_class|syntax_class_modifiers),
+				xmitsuffix);
+	  }
       else
       arc_add_ext_inst (instruction_name, operand_string,
 			insn,
 			mask,
 			(syntax_class | syntax_class_modifiers),
 			xmitsuffix);
-			
+
       break;
 
     default:
@@ -3374,7 +3406,7 @@ arc_generate_extinst16_operand_strings (char *instruction_name,
       ignore_rest_of_line ();
       return;
     }
-  
+
   switch(syntax_class &
 	 (AC_SYNTAX_3OP | AC_SYNTAX_2OP | AC_SYNTAX_1OP | AC_SYNTAX_NOP))
     {
@@ -3383,7 +3415,7 @@ arc_generate_extinst16_operand_strings (char *instruction_name,
 
       if (sub_opcode < 0x01 || sub_opcode > 0x1f)
 	as_bad ("Subopcode not in range [0x01 - 0x1f]\n");
-      
+
       arc_add_ext_inst (instruction_name, " %b,%b,%c",
 			INSN_16(major_opcode, 0, 0, sub_opcode),
 			INSN_16(-1, 0, 0, -1),
@@ -3391,19 +3423,19 @@ arc_generate_extinst16_operand_strings (char *instruction_name,
       break;
 
     case AC_SYNTAX_1OP:
-      
+
       /* if (sub_opcode < 0x00 || sub_opcode > 0x06) */
       if (sub_opcode > 0x06)
 	as_bad ("Subopcode not in range [0x00 - 0x06]\n");
-      
+
       arc_add_ext_inst (instruction_name, " %b",
 			INSN_16(major_opcode, 0, sub_opcode, 0),
 			INSN_16(-1, 0, -1, -1),
 			syntax_class, 0);
       break;
-      
+
     case AC_SYNTAX_NOP:
-      
+
       /*  if (sub_opcode < 0x00 || sub_opcode > 0x07) */
       if (sub_opcode > 0x07)
 	as_bad ("Subopcode not in range [0x00 - 0x07]\n");
@@ -3413,7 +3445,7 @@ arc_generate_extinst16_operand_strings (char *instruction_name,
 			INSN_16(-1, 0, -1, -1),
 			syntax_class, 0);
       break;
-      
+
     default:
 
       as_bad("Invalid syntax or unimplemented class\n");
@@ -3432,7 +3464,7 @@ arc_ac_extinst (ignore)
   unsigned char major_opcode;
   unsigned long sub_opcode,sub_op;
   unsigned long syntax_class = 0;
-  unsigned long syntax_class_modifiers = 0;  
+  unsigned long syntax_class_modifiers = 0;
   unsigned long suffix_class = 0;
   char *instruction_name;
   unsigned int name_length;
@@ -3441,13 +3473,13 @@ arc_ac_extinst (ignore)
   segT old_sec;
   int old_subsec;
 
-  
+
   /* Get all the parameters.  */
 
   /* Start off with the name of the instruction.  */
 
   SKIP_WHITESPACE ();
-  
+
   instruction_name = input_line_pointer;
   c = get_symbol_end ();
   instruction_name = xstrdup (instruction_name);
@@ -3457,7 +3489,7 @@ arc_ac_extinst (ignore)
   /* Get major opcode.  */
 
   SKIP_WHITESPACE ();
-  
+
   if (*input_line_pointer != ',')
     {
       as_bad ("expected comma after instruction name");
@@ -3471,7 +3503,7 @@ arc_ac_extinst (ignore)
     syntax_class |= (AC_SYNTAX_SIMD);
 
   /* Get sub-opcode.  */
-  
+
   SKIP_WHITESPACE ();
 
   if (*input_line_pointer != ',')
@@ -3517,7 +3549,7 @@ arc_ac_extinst (ignore)
 	}
 
       SKIP_WHITESPACE ();
-      
+
       if (*input_line_pointer == '|')
 	input_line_pointer++;		/* skip '|'.  */
       else
@@ -3533,7 +3565,7 @@ arc_ac_extinst (ignore)
     }
 
   /* Get syntax class and syntax class modifiers.  */
-  
+
   if (*input_line_pointer != ',')
     {
       as_bad ("expected comma after suffix class");
@@ -3567,7 +3599,7 @@ arc_ac_extinst (ignore)
 		input_line_pointer += ac_syntaxclass[i].len;
 		break;
 	      }
-	  
+
 	  if(i == AC_MAXSYNTAXCLASS)
 	    {
 	      as_bad ("invalid syntax");
@@ -3596,13 +3628,13 @@ arc_ac_extinst (ignore)
   /* Make extension instruction syntax strings.  */
   /* catch a few oddball cases */
   if(syntax_class&(AC_SIMD_SYNTAX_0|AC_SIMD_SYNTAX_C0|AC_SIMD_SYNTAX_VVV|
-                   AC_SIMD_SYNTAX_VV|AC_SIMD_SYNTAX_VV0|AC_SIMD_SYNTAX_D0)){
+		   AC_SIMD_SYNTAX_VV|AC_SIMD_SYNTAX_VV0|AC_SIMD_SYNTAX_D0)){
       syntax_class |= AC_SYNTAX_SIMD;
-      
+
       }
   nops = 0;
 /* don't use extended format unless needed*/
-  use_extended_instruction_format=0; 
+  use_extended_instruction_format=0;
   if (!strncmp (instruction_name + name_length - 2, "_s", 2))
     arc_generate_extinst16_operand_strings (instruction_name,
 				    major_opcode, sub_opcode,
@@ -3617,18 +3649,18 @@ arc_ac_extinst (ignore)
   sub_op = sub_opcode;
   if(syntax_class & AC_SYNTAX_SIMD){
       if(major_opcode==0xa){
-          if(suffix_class & AC_SIMD_FLAG2_SET)
-              sub_opcode |= 0x40000000;
-          if(suffix_class & AC_SIMD_FLAG1_SET)
-              sub_opcode |= 0x80000000;
-          }
+	  if(suffix_class & AC_SIMD_FLAG2_SET)
+	      sub_opcode |= 0x40000000;
+	  if(suffix_class & AC_SIMD_FLAG1_SET)
+	      sub_opcode |= 0x80000000;
+	  }
       sub_opcode = sub_opcode | (nops << 28);
       if(suffix_class & AC_SIMD_ENCODE_U8)
-          sub_opcode |= 0x4000000;
+	  sub_opcode |= 0x4000000;
       } /* end if(syntax_class & AC_SYNTAX_SIMD) */
 
   /* Done making the extension syntax strings.  */
-  
+
   /* OK, now that we know what this inst is, put a description in the
      arc extension section of the output file.  */
 
@@ -3640,13 +3672,13 @@ arc_ac_extinst (ignore)
   case 1:
       sub_op = sub_opcode & 0x3f;
       if(syntax_class & AC_SYNTAX_SIMD){
-          if(suffix_class & (AC_SIMD_EXTEND2 | AC_SIMD_EXTEND1)){
-              sub_op = (sub_opcode >> 8) & 0x3f;
-              }
-          if(suffix_class & AC_SIMD_EXTEND3){
-              sub_op = (sub_opcode >>16) & 0x3f;
-              }
-          }
+	  if(suffix_class & (AC_SIMD_EXTEND2 | AC_SIMD_EXTEND1)){
+	      sub_op = (sub_opcode >> 8) & 0x3f;
+	      }
+	  if(suffix_class & AC_SIMD_EXTEND3){
+	      sub_op = (sub_opcode >>16) & 0x3f;
+	      }
+	  }
       p = frag_more(OPD_FORMAT_SIZE*3+RCLASS_SET_SIZE+13);
       *p = OPD_FORMAT_SIZE*3+RCLASS_SET_SIZE+13+name_length+1;
       p++;
@@ -3657,35 +3689,35 @@ arc_ac_extinst (ignore)
       *p = sub_op;
       p++;
       for(i = 0; i < RCLASS_SET_SIZE; i++){
-          *p = extended_register_format[i];
-          p++;
-          }
+	  *p = extended_register_format[i];
+	  p++;
+	  }
       for(i = 0; i < OPD_FORMAT_SIZE; i++){
-          *p = extended_operand_format1[i];
-          p++;
-          }
+	  *p = extended_operand_format1[i];
+	  p++;
+	  }
       for(i = 0; i < OPD_FORMAT_SIZE; i++){
-          *p = extended_operand_format2[i];
-          p++;
-          }
+	  *p = extended_operand_format2[i];
+	  p++;
+	  }
       for(i = 0; i < OPD_FORMAT_SIZE; i++){
-          *p = extended_operand_format3[i];
-          p++;
-          }
+	  *p = extended_operand_format3[i];
+	  p++;
+	  }
       for(i = 0; i < 4; i++){
-          *p = extended_instruction_flags[i];
-          p++;
-          }
+	  *p = extended_instruction_flags[i];
+	  p++;
+	  }
       if(suffix_class & (AC_SIMD_EXTENDED|AC_SIMD_EXTEND2|AC_SIMD_EXTEND3))
-          *p = 1;
+	  *p = 1;
       else
-          *p = 0;
+	  *p = 0;
       p++;
       for(i = 0; i < 3; i++){
-          *p = 0;
-          p++;
-          }
-      *p = extended_instruction_flags[3];              
+	  *p = 0;
+	  p++;
+	  }
+      *p = extended_instruction_flags[3];
       p++;
       break;
     case 0:
@@ -3694,17 +3726,17 @@ arc_ac_extinst (ignore)
       p = frag_more (1);
 
       /* By comparing with the Metaware assembler, EXT_INSTRUCTION should be
-         0x40 as opposed to 0x00 which we have defined. arc-ext.h.  */
-  
+	 0x40 as opposed to 0x00 which we have defined. arc-ext.h.  */
+
       *p = EXT_INSTRUCTION32;
       p = frag_more (1);
       *p = major_opcode;
       p = frag_more (1);
       *p = sub_opcode;
       p = frag_more (1);
-      *p = syntax_class 
-          | (syntax_class_modifiers & (AC_OP1_DEST_IGNORED 
-                                       | AC_OP1_MUST_BE_IMM)? 0x10:0);
+      *p = syntax_class
+	  | (syntax_class_modifiers & (AC_OP1_DEST_IGNORED
+				       | AC_OP1_MUST_BE_IMM)? 0x10:0);
       break;
   case 2:
       demand_empty_rest_of_line();
@@ -3866,7 +3898,7 @@ arc_option (int ignore ATTRIBUTE_UNUSED)
   if (mach == -1)
     goto bad_cpu;
 
- 
+
   if (!mach_type_specified_p)
     {
 	arc_mach_type = mach;
@@ -3875,7 +3907,7 @@ arc_option (int ignore ATTRIBUTE_UNUSED)
 
       if (!bfd_set_arch_mach (stdoutput, bfd_arch_arc, mach))
 	as_fatal ("could not set architecture and machine");
-      
+
       mach_type_specified_p = 1;
     }
   else
@@ -3948,49 +3980,49 @@ md_chars_to_number (buf, n)
 {
   valueT result;
   unsigned char *where = (unsigned char *) buf;
- 
+
   result = 0;
- 
+
   if (target_big_endian)
     {
       if (n == -4) n = 4;
       switch (n)
-        {
-        case 2:
-        case 4:
-          while (n--)
-            {
-              result <<= 8;
-              result |= (*where++ & 255);
-            }
-          break;
-        default:
-          abort ();
-        }
+	{
+	case 2:
+	case 4:
+	  while (n--)
+	    {
+	      result <<= 8;
+	      result |= (*where++ & 255);
+	    }
+	  break;
+	default:
+	  abort ();
+	}
     }
   else
     {
       switch (n)
-        {
-        case 2:
-        case 4:
-          while (n--)
-            {
-              result <<= 8;
-              result |= (where[n] & 255);
-            }
-          break;
-        case -4:
-          result |= ((where[0] & 255) << 16);
-          result |= ((where[1] & 255) << 24);
-          result |= (where[2] & 255);
-          result |= ((where[3] & 255) << 8);
-          break;
-        default:
-          abort ();
-        }
+	{
+	case 2:
+	case 4:
+	  while (n--)
+	    {
+	      result <<= 8;
+	      result |= (where[n] & 255);
+	    }
+	  break;
+	case -4:
+	  result |= ((where[0] & 255) << 16);
+	  result |= ((where[1] & 255) << 24);
+	  result |= (where[2] & 255);
+	  result |= ((where[3] & 255) << 8);
+	  break;
+	default:
+	  abort ();
+	}
     }
- 
+
   return result;
 }
 
@@ -4004,7 +4036,7 @@ md_number_to_chars (char *buf, valueT val, int n)
 {
   void (*endian) (char *, valueT, int) = (target_big_endian)
     ? number_to_chars_bigendian : number_to_chars_littleendian;
- 
+
   switch (n)
     {
     case 1:
@@ -4066,7 +4098,7 @@ arc_code_symbol (expressionS *expressionP)
        * constants anyway (I guess that is a safe enough assumption). */
       if(expressionP->X_add_symbol->bsym)
 	  expressionP->X_add_symbol->sy_value.X_op = O_constant;
-      
+
       two.X_op = O_constant;
       two.X_add_symbol = two.X_op_symbol = NULL;
       two.X_add_number = 2;
@@ -4120,7 +4152,7 @@ md_operand (expressionS *expressionP)
 
 	  assembling_instruction = 0;
 	  expression (expressionP);
-	  assembling_instruction = 1;	  
+	  assembling_instruction = 1;
 
 	  if (*input_line_pointer != ')')
 	    {
@@ -4140,7 +4172,7 @@ md_operand (expressionS *expressionP)
 	  int i, l;
 	  struct arc_ext_operand_value *ext_oper = arc_ext_operands;
 	  p++;
-	  
+
 	  while (ext_oper)
 	    {
 	      l = strlen (ext_oper->operand.name);
@@ -4202,10 +4234,10 @@ arc_parse_name (name, expressionP)
 
   if(!assembling_instruction)
     return 0;
-  
+
   if(expressionP->X_op == O_symbol)
     return 0;
-  
+
   while (ext_oper)
     {
       l = strlen (ext_oper->operand.name);
@@ -4213,7 +4245,7 @@ arc_parse_name (name, expressionP)
 	{
 	  expressionP->X_op = O_register;
 	  expressionP->X_add_number = (offsetT) &ext_oper->operand;
-	  return 1;	  
+	  return 1;
 	}
       ext_oper = ext_oper->next;
     }
@@ -4224,7 +4256,7 @@ arc_parse_name (name, expressionP)
 	{
 	  expressionP->X_op = O_register;
 	  expressionP->X_add_number = (offsetT) &arc_reg_names[i];
-	  return 1;	  
+	  return 1;
 	  break;
 	}
     }
@@ -4242,8 +4274,8 @@ arc_parse_name (name, expressionP)
 symbolS *
 md_undefined_symbol (char *name ATTRIBUTE_UNUSED)
 {
-    /* The arc abi demands that a GOT[0] should be referencible as 
-       [ pc+_DYNAMIC@gotpc ].Hence we convert a _DYNAMIC@gotpc to 
+    /* The arc abi demands that a GOT[0] should be referencible as
+       [ pc+_DYNAMIC@gotpc ].Hence we convert a _DYNAMIC@gotpc to
        a GOTPC reference to _GLOBAL_OFFSET_TABLE_  */
     if ((*name == '_' && *(name+1) == 'G'
 	 && strcmp(name, GLOBAL_OFFSET_TABLE_NAME) == 0)
@@ -4253,15 +4285,15 @@ md_undefined_symbol (char *name ATTRIBUTE_UNUSED)
     {
 	if(!GOT_symbol)
 	{
-	    if(symbol_find(name)) 
+	    if(symbol_find(name))
 		as_bad("GOT already in symbol table");
-	    
-		GOT_symbol = symbol_new (GLOBAL_OFFSET_TABLE_NAME, undefined_section, 
+
+		GOT_symbol = symbol_new (GLOBAL_OFFSET_TABLE_NAME, undefined_section,
 					 (valueT) 0, &zero_address_frag);
 	};
 	return GOT_symbol;
     }
-    
+
     return 0;
 }
 
@@ -4278,7 +4310,7 @@ arc_parse_cons_expression (expressionS *exp,
 {
   char *p = input_line_pointer;
   int code_symbol_fix = 0;
-  
+
   for (; ! is_end_of_line[(unsigned char) *p]; p++)
     if (*p == '@' && !strncmp (p, "@h30", 4))
       {
@@ -4286,7 +4318,7 @@ arc_parse_cons_expression (expressionS *exp,
 	strcpy (p, ";   ");
       }
   expression_and_evaluate (exp);
-      
+
   if (code_symbol_fix)
     {
       arc_code_symbol (exp);
@@ -4315,7 +4347,7 @@ arc_cons_fix_new (fragS *frag,
     {
       static int bfd_reloc_map[] = {BFD_RELOC_NONE,BFD_RELOC_8,BFD_RELOC_16,
 				BFD_RELOC_24,BFD_RELOC_32,BFD_RELOC_NONE,
-				BFD_RELOC_NONE,BFD_RELOC_64 }; 
+				BFD_RELOC_NONE,BFD_RELOC_64 };
       fix_new_exp (frag, where, nbytes, exp, 0, bfd_reloc_map[nbytes]);
     }
 }
@@ -4369,7 +4401,7 @@ arc_get_sda_reloc (arc_insn insn, int compact_insn_16)
     case 12:
       return BFD_RELOC_ARC_SDA16_LD1;
     }
-  
+
   /* Refer to opcodes/arc-opc.c for 'insn to return value' mappings for this
      function.  */
   switch (ac_get_store_sdasym_insn_type (insn, compact_insn_16))
@@ -4453,65 +4485,65 @@ md_apply_fix (fixS *fixP, valueT *valueP, segT seg)
       opindex = (int) fixP->fx_r_type - (int) BFD_RELOC_UNUSED;
 
       operand = &arc_operands[opindex];
-      
+
       if (fixP->fx_done)
 	{
-          /* Only if the fixup is totally done up is it used
-             correctly. */
-      
-          /* Fetch the instruction, insert the fully resolved operand
-             value, and stuff the instruction back again.  */
-          where = fixP->fx_frag->fr_literal + fixP->fx_where;
-          if (arc_mach_a4)
+	  /* Only if the fixup is totally done up is it used
+	     correctly. */
+
+	  /* Fetch the instruction, insert the fully resolved operand
+	     value, and stuff the instruction back again.  */
+	  where = fixP->fx_frag->fr_literal + fixP->fx_where;
+	  if (arc_mach_a4)
 	    {
 	      if (target_big_endian)
 		insn = bfd_getb32 ((unsigned char *) where);
 	      else
 		insn = bfd_getl32 ((unsigned char *) where);
-            }
-          else
+	    }
+	  else
 	    {
-              switch (fixP->fx_size)
+	      switch (fixP->fx_size)
 		{
 		case 2:
-                  insn = md_chars_to_number (buf, fixP->fx_size);
-                  break;
+		  insn = md_chars_to_number (buf, fixP->fx_size);
+		  break;
 		case 4:
-                  insn = md_chars_to_number (buf, - fixP->fx_size);
-                  break;
+		  insn = md_chars_to_number (buf, - fixP->fx_size);
+		  break;
 		}
-            }
-          
-          insn = arc_insert_operand (insn, 0, operand, -1, NULL, (offsetT) value,
-                                     fixP->fx_file, fixP->fx_line);
-          if (arc_mach_a4)
+	    }
+
+	  insn = arc_insert_operand (insn, 0, operand, -1, NULL, (offsetT) value,
+				     fixP->fx_file, fixP->fx_line);
+	  if (arc_mach_a4)
 	    {
-              if (target_big_endian)
+	      if (target_big_endian)
 		bfd_putb32 ((bfd_vma) insn, (unsigned char *) where);
-              else
+	      else
 		bfd_putl32 ((bfd_vma) insn, (unsigned char *) where);
-            }
-          else
+	    }
+	  else
 	    {
-              switch (fixP->fx_size)
+	      switch (fixP->fx_size)
 		{
 		case 2:
-                  md_number_to_chars (buf, insn, fixP->fx_size);
-                  break;
-                case 4:
-                  md_number_to_chars (buf, insn, - fixP->fx_size);
-                  break;
+		  md_number_to_chars (buf, insn, fixP->fx_size);
+		  break;
+		case 4:
+		  md_number_to_chars (buf, insn, - fixP->fx_size);
+		  break;
 		}
-            }
-           return;
+	    }
+	   return;
 	}
 
-      /* FIXME:: 19th May 2005 . 
+      /* FIXME:: 19th May 2005 .
 	 Is this comment valid any longer with respect
-         to the relocations being in the addends and not in place. We no
+	 to the relocations being in the addends and not in place. We no
 	 longer have inplace addends in any case. The only thing valid that
-	 needs to be done is to set up the correct BFD reloc values and 
-	 nothing else. 
+	 needs to be done is to set up the correct BFD reloc values and
+	 nothing else.
       */
 
       /* Determine a BFD reloc value based on the operand information.
@@ -4542,7 +4574,7 @@ md_apply_fix (fixS *fixP, valueT *valueP, segT seg)
 	  fixP->fx_r_type = (arc_mach_a4) ? BFD_RELOC_32 : BFD_RELOC_ARC_32_ME;
 	}
       /* ARCtangent-A5 21-bit (shift by 2) PC-relative relocation. Used for
-         bl<cc> instruction */
+	 bl<cc> instruction */
       else if (!arc_mach_a4 && (operand->fmt == 'h'))
 	{
 	  gas_assert ((operand->flags & ARC_OPERAND_RELATIVE_BRANCH) != 0
@@ -4551,7 +4583,7 @@ md_apply_fix (fixS *fixP, valueT *valueP, segT seg)
 	  fixP->fx_r_type = BFD_RELOC_ARC_S21W_PCREL;
 	}
       /* ARCtangent-A5 25-bit (shift by 2) PC-relative relocation. Used for
-         'bl' instruction. */
+	 'bl' instruction. */
       else if (!arc_mach_a4 && (operand->fmt == 'H'))
 	{
 	  gas_assert ((operand->flags & ARC_OPERAND_RELATIVE_BRANCH) != 0
@@ -4560,7 +4592,7 @@ md_apply_fix (fixS *fixP, valueT *valueP, segT seg)
 	  fixP->fx_r_type = BFD_RELOC_ARC_S25W_PCREL;
 	}
       /* ARCtangent-A5 21-bit (shift by 1) PC-relative relocation. Used for
-         'b<cc>' instruction. */
+	 'b<cc>' instruction. */
       else if (!arc_mach_a4 && (operand->fmt == 'i'))
 	{
 	  gas_assert ((operand->flags & ARC_OPERAND_RELATIVE_BRANCH) != 0
@@ -4569,7 +4601,7 @@ md_apply_fix (fixS *fixP, valueT *valueP, segT seg)
 	  fixP->fx_r_type = BFD_RELOC_ARC_S21H_PCREL;
 	}
       /* ARCtangent-A5 25-bit (shift by 1) PC-relative relocation. Used for
-         unconditional branch ('b') instruction.  */
+	 unconditional branch ('b') instruction.  */
       else if (!arc_mach_a4 && (operand->fmt == 'I'))
 	{
 	  gas_assert ((operand->flags & ARC_OPERAND_RELATIVE_BRANCH) != 0
@@ -4578,12 +4610,12 @@ md_apply_fix (fixS *fixP, valueT *valueP, segT seg)
 	  fixP->fx_r_type = BFD_RELOC_ARC_S25H_PCREL;
 	}
       else if (!arc_mach_a4 && (operand->fmt == 'W'))
-        {
-          gas_assert ((operand->flags & ARC_OPERAND_RELATIVE_BRANCH) != 0
-                  && operand->bits == 11
-                  && operand->shift == 0);
-          fixP->fx_r_type = BFD_RELOC_ARC_S13_PCREL;
-        }
+	{
+	  gas_assert ((operand->flags & ARC_OPERAND_RELATIVE_BRANCH) != 0
+		  && operand->bits == 11
+		  && operand->shift == 0);
+	  fixP->fx_r_type = BFD_RELOC_ARC_S13_PCREL;
+	}
       else
 	{
 	  as_bad_where (fixP->fx_file, fixP->fx_line,
@@ -4595,7 +4627,7 @@ md_apply_fix (fixS *fixP, valueT *valueP, segT seg)
     {
       /* Zero out the in place addend for relocations */
       if ( !fixP->fx_done)
-        value = 0;
+	value = 0;
       switch (fixP->fx_r_type)
 	{
 	case BFD_RELOC_8:
@@ -4614,18 +4646,19 @@ md_apply_fix (fixS *fixP, valueT *valueP, segT seg)
 	  break;
 
 	case BFD_RELOC_32:
-  	  md_number_to_chars (fixP->fx_frag->fr_literal + fixP->fx_where,
+	case BFD_RELOC_ARC_PC32:
+	  md_number_to_chars (fixP->fx_frag->fr_literal + fixP->fx_where,
 			      value, 4);
 	  break;
 
 	case BFD_RELOC_ARC_GOTPC32:
 	case BFD_RELOC_ARC_GOTOFF:
-	case BFD_RELOC_ARC_32_ME:   
+	case BFD_RELOC_ARC_32_ME:
 	  md_number_to_chars (fixP->fx_frag->fr_literal + fixP->fx_where,
 			      value, -4);
-            
+
 	  break;
-	    
+
 	case BFD_RELOC_ARC_B26:
 	  /* If !fixP->fx_done then `value' is an implicit addend.
 	     We must shift it right by 2 in this case as well because the
@@ -4641,7 +4674,7 @@ md_apply_fix (fixS *fixP, valueT *valueP, segT seg)
 
 	case BFD_RELOC_ARC_PLT32:
 	    /* Currently we are treating PLT32 as a 25bit relocation type */
-	    
+
 	    break;
 
 	case BFD_RELOC_ARC_SDA:
@@ -4711,9 +4744,9 @@ tc_gen_reloc (asection *section ATTRIBUTE_UNUSED,
 		    bfd_get_reloc_code_name (fixP->fx_r_type));
       return NULL;
     }
- 
+
   gas_assert (!fixP->fx_pcrel == !reloc->howto->pc_relative);
-  
+
   reloc->addend = fixP->fx_offset;
 
   return reloc;
@@ -4829,6 +4862,7 @@ fprintf (stdout, "Matching ****** %s *************\n", str);
     {
       int past_opcode_p, fc, num_suffixes;
       int fix_up_at = 0;
+      int fix_up4_bbitbr = 0;
       unsigned char *syn;
       struct arc_fixup fixups[MAX_FIXUPS];
       int mods=0;
@@ -4840,16 +4874,17 @@ fprintf (stdout, "Matching ****** %s *************\n", str);
       const struct arc_operand_value *insn_suffixes[MAX_SUFFIXES];
       int regb_p;
       const struct arc_operand_value *regb;
+      const struct arc_operand_value *regh;
 
       /* Is this opcode supported by the selected cpu?  */
       if (!arc_opcode_supported (opcode))
 	continue;
 
       /* If opcode syntax is for 32-bit insn but input is 16-bit insn,
-         then go for the next opcode */
+	 then go for the next opcode */
       for (syn = opcode->syntax; *syn && ISALNUM (*syn); syn++);
       if (compact_insn_16 && !(*syn && *syn == '_' && *(syn + 1) == 's'))
-        if (strcmp(opcode->syntax,"unimp") !=0) /* FIXME: This is too bad a check!!! cleanup required */
+	if (strcmp(opcode->syntax,"unimp") !=0) /* FIXME: This is too bad a check!!! cleanup required */
 	  continue;
 
       /* Scan the syntax string.  If it doesn't match, try the next one.  */
@@ -4867,6 +4902,7 @@ fprintf (stdout, "Matching ****** %s *************\n", str);
       ext_suffix_p = 0;
       regb_p = 0;
       regb = NULL;
+      regh = NULL;
 #if DEBUG_INST_PATTERN
 fprintf (stdout, "Trying syntax %s\n", opcode->syntax);
 #endif
@@ -4879,26 +4915,26 @@ fprintf (stdout, "Trying syntax %s\n", opcode->syntax);
 #if DEBUG_INST_PATTERN
 printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 #endif
-          for(opindex = 0; opindex < arc_operand_prefix_num; opindex++) {
-                if (*syn == arc_operand_prefixes[opindex])
-                        break;
-          }
+	  for(opindex = 0; opindex < arc_operand_prefix_num; opindex++) {
+		if (*syn == arc_operand_prefixes[opindex])
+			break;
+	  }
 	  /* Non operand chars must match exactly.  */
 	    if (*syn != arc_operand_prefixes[opindex] || *++syn == arc_operand_prefixes[opindex])
 	      {
-	        if (*str == *syn || (*syn=='.'&&*str=='!'))
+		if (*str == *syn || (*syn=='.'&&*str=='!'))
 		  {
-                  if (*syn == ' '){
+		  if (*syn == ' '){
 		      past_opcode_p = 1;
-                      }
+		      }
 		    ++syn;
 		    ++str;
 		  }
-	        else
+		else
 		  break;
-	        continue;
+		continue;
 	      }
-          if(firstsuf==0)firstsuf = syn-1;
+	  if(firstsuf==0)firstsuf = syn-1;
 	  /* We have an operand.  Pick out any modifiers.  */
 	  mods = 0;
 	  while (ARC_MOD_P (arc_operands[arc_operand_map[(int) ((opindex<<8)|*syn)]].flags))
@@ -4917,14 +4953,14 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 	    } /* end while(ARC_MOD_P(...)) */
 	  operand = arc_operands + arc_operand_map[(int) ((opindex<<8)|*syn)];
 	  if (operand->fmt == 0){
-	    as_fatal ("unknown syntax format characters `%c%c'", arc_operand_prefixes[opindex], *syn);
-              }
+	    as_fatal ("unknown syntax format characters '%c%c'", arc_operand_prefixes[opindex], *syn);
+	      }
 
 	  if (operand->flags & ARC_OPERAND_FAKE)
 	    {
 	      const char *errmsg = NULL;
 	      if (operand->insert)
-                  {
+		{
 		  insn = (*operand->insert) (insn,&insn2, operand, mods, NULL, 0,
 					     &errmsg);
 		  if (errmsg != (const char *) NULL)
@@ -4948,18 +4984,39 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		    {
 		      fixups[fix_up_at].opindex = arc_operand_map[operand->fmt];
 		    }
-                  /*FIXME! This is a hack for STAR9000593624: there
-                    are cases when an st or ld instruction needs a
-                    shimm fixup. When the fixup is created, the
-                    limm_reloc_p is also setup, we need to turn it
-                    off. Hence we do it so at the end of the ld or st
-                    instruction. This is not the way of handling
-                    fixups.*/
-                  if (limm_reloc_p
-                      && (operand->fmt == '1' || operand->fmt == '0'))
-                    {
-                      limm_reloc_p = 0;
-                    }                    
+		  /*FIXME! This is a hack for STAR9000593624: there
+		    are cases when an st or ld instruction needs a
+		    shimm fixup. When the fixup is created, the
+		    limm_reloc_p is also setup, we need to turn it
+		    off. Hence we do it so at the end of the ld or st
+		    instruction. This is not the way of handling
+		    fixups.*/
+		  if (limm_reloc_p
+		      && (operand->fmt == '1' || operand->fmt == '0'))
+		    {
+		      limm_reloc_p = 0;
+		    }
+		  /*ARCv2: Value of bit Y for branch prediction can be
+		    done only when we know the displacement. Hence, I
+		    override the 'd' modchar fixup with an insert
+		    function that depends on the mnemonic <.T> flag*/
+		  if (arc_get_branch_prediction() &&
+		      (operand->fmt == 144 || operand->fmt == 145))
+		    {
+		      if (operand->fmt == 144)
+			{
+			  /*BBIT*/
+			  fixups[fix_up4_bbitbr].opindex =
+			    arc_operand_map[operand->fmt + arc_get_branch_prediction() - 1];
+			}
+		      if (operand->fmt == 145)
+			{
+			  /*BR*/
+			  fixups[fix_up4_bbitbr].opindex =
+			    arc_operand_map[operand->fmt - arc_get_branch_prediction() + 1];
+			}
+		      arc_reset_branch_prediction();
+		    }
 		}
 	      ++syn;
 	    }
@@ -4970,12 +5027,12 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 	      char c;
 	      char *s, *t;
 	      const struct arc_operand_value *suf, *suffix_end;
-              struct arc_operand_value *varsuf;
+	      struct arc_operand_value *varsuf;
 	      const struct arc_operand_value *suffix = NULL;
 
 	      if (!(operand->flags & ARC_OPERAND_SUFFIX)){
 		abort ();
-                  }
+		  }
 
 
 	      /* If we're at a space in the input string, we want to skip the
@@ -4989,17 +5046,17 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 
 
 	      s = str;
-              negflg = 0;
+	      negflg = 0;
 	      if (mods & ARC_MOD_DOT)
 		{
-                negflg = *s=='!';
+		negflg = *s=='!';
 		  if (*s != '.'&&*s != '!')
 		    break;
 		  ++s;
-                if(!negflg && *s == '!'){
-                    negflg = 1;
-                    ++s;
-                    }
+		if(!negflg && *s == '!'){
+		    negflg = 1;
+		    ++s;
+		    }
 		}
 	      else
 		{
@@ -5016,240 +5073,240 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		continue;
 	      c = *t;
 	      *t = '\0';
-              found = 0;
-              suf = NULL;
-              if(!found && ((insn >> 27) == 0x0a)){
-                  char *restore;
-                  int sum=0;
-                  if(num_suf.type == 0){
-                      int i;
-                      for(i=0;i<256;i++){
-                          if(arc_operands[i].fmt == ']'){
-                              num_suf.type = i;
-                              break;
-                              }
-                          if(arc_operands[i].fmt == 0)break;
-                          }
-                      } /* end if(num_suf.type == 0) */
+	      found = 0;
+	      suf = NULL;
+	      if(!found && ((insn >> 27) == 0x0a)){
+		  char *restore;
+		  int sum=0;
+		  if(num_suf.type == 0){
+		      int i;
+		      for(i=0;i<256;i++){
+			  if(arc_operands[i].fmt == ']'){
+			      num_suf.type = i;
+			      break;
+			      }
+			  if(arc_operands[i].fmt == 0)break;
+			  }
+		      } /* end if(num_suf.type == 0) */
 
-                  if(*syn == ']' || *(syn+3) == ']'){
-                      restore = str;
-                      if(*str == '.' || *str == '!')str++;
-                      if(*str == '.' || *str == '!')str++;
-                      if((*str == 'i' || *str == 'I') && (*(str+1) >= '0' 
-                                 && *(str+1)<='9')){
-                          str++;
-                          sum = 0;
-                              if(*str  ==  '1'){
-                                  sum = 1;
-                                  str++;
-                              }
-                              if(*str >= '0' && *str <= '9'){
-                                  sum = sum*10 + *str-'0';
-                                  str++;
-                                  }
-                              sum = sum & 0xf;
-                              if(negflg)
-                                  sum |= 0x40; //negation flag
-                              suf = &num_suf;
-                              varsuf = &num_suf;
-                              varsuf->value = sum;
-                              insn2 |= sum << 15;
-                              insn2 |= 1 << 29;
-                              lm_present = 1;
-                              if(firstsuf)
-                                  syn = firstsuf-1;
-                              found = 1;
-                          } 
-                      else
-                          {
-                          if(*str == '0' && *(str+1) == 'x'){
-                              str = str+2;
-                              while(1){
-                                  if(*str >= '0' && *str <= '9')
-                                      {
-                                      sum = (sum << 4) + *str-'0';
-                                      str++;
-                                      }
-                                  else {
-                                      if(*str >= 'a' && *str <= 'z'){
-                                          sum = (sum <<4) + *str-'a'+10;
-                                          str++;
-                                          }
-                                      else
-                                          break;
-                                      }
-                                  } /* end while(1) */
-                              suf = &num_suf;
-                              varsuf = &num_suf;
-                              /* lane masks accumulate */
-                              varsuf->value |= sum;
-                              found = 1;
-                              if(firstsuf)
-                                  syn = firstsuf-1;
-                              insn2 |= sum << 15;
-                              lm_present = 1;
-                              } 
-                          else
-                              {
-                              if(*(str) >= '0' && *(str) <= '9'){
-                                  while(*str >= '0' && *str <= '9'){
-                                      sum = sum*10 + *str-'0';
-                                      str++;
-                                      }
-                                  suf = &num_suf;
-                                  varsuf = &num_suf;
-                                  /* lane masks accumulate */
-                                  varsuf->value |= sum;
-                                  found = 1;
-                                  if(firstsuf)
-                                      syn = firstsuf-1;
-                                  insn2 |= sum << 15;
-                                  lm_present = 1;
-                                  } 
-                              else 
-                                  {
-                                  if(*str == 'u'){
-                                      str++;
-                                      if(*str == 's' || *str == 'S')str++;
-                                      found = 1;
-                                      sum = 0x20;
-                                      insn2 |= sum << 23;
-                                      lm_present = 1;
-                                      suf=&num_suf;
-                                      }
-                                  if((*str == 's' || *str == 'S') && found == 0){
-                                      found = 1;
-                                      str++;
-                                      sum = 0x14;
-                                      insn2 |= sum << 23;
-                                      lm_present = 1;
-                                      suf = &num_suf;
-                                      }
-                                  if((*str == 'l' || *str == 'L') && found == 0){
-                                      found = 1;
-                                      str++;
-                                      sum = 0xc;
-                                      if(*str == 'e' || *str == 'E'){
-                                          str++;
-                                          sum = 0xc;
-                                          }
-                                      if(*str == 's' || *str == 'S'){
-                                          str++;
-                                          sum = 0xf;
-                                          }
-                                      if(*str == 't' || *str == 'T'){
-                                          str++;
-                                          sum = 0xb;
-                                          }
-                                      if(*str == 'o' || *str == 'O'){
-                                          str++;
-                                          sum = 0x5;
-                                          }
-                                      insn2 |= sum << 23;
-                                      lm_present = 1;
-                                      suf = &num_suf;
-                                      }
-                                  if((*str == 'g' || *str == 'G') && found==0){
-                                      found = 1;
-                                      str++;
-                                      sum = 0xa;
-                                      if(*str == 'e' || *str == 'E'){
-                                          str++;
-                                          sum = 0xa;
-                                          }
-                                      if(*str == 't' || *str == 'T'){
-                                          str++;
-                                          sum = 0x9;
-                                          }
-                                      insn2 |= sum << 23;
-                                      suf = &num_suf;
-                                      lm_present = 1;
-                                      }
-                                  if((*str == 'h' || *str == 'H') && found==0){
-                                      found = 1;
-                                      str++;
-                                      sum = 0xd;
-                                      if(*str == 'i' || *str == 'I'){
-                                          str++;
-                                          sum = 0xd;
-                                          }
-                                      if(*str == 's' || *str == 'S'){
-                                          str++;
-                                          sum = 0x6;
-                                          }
-                                      insn2 |= sum << 23;
-                                      lm_present = 1;
-                                      suf = &num_suf;
-                                      }
-                                  if((*str == 'z' || *str == 'Z') && found == 0){
-                                      str++;
-                                      insn2 |= 1 << 23;
-                                      found = 1;
-                                      lm_present = 1;
-                                      suf = &num_suf;
-                                      }
-                                  }
-                              if((*str == 'e' || *str == 'E') && found == 0){
-                                  str++;
-                                  if(*str == 'q') str++;
-                                  insn2 |= 1 << 23;
-                                  lm_present = 1;
-                                  found = 1;
-                                  suf = &num_suf;
-                                  }
-                              if((*str == 'f' || *str == 'F') && found == 0){
-                                  str++;
-                                  insn |= 1 << 15;
-                                  found = 1;
-                                  suf = &num_suf;
-                                  lm_present = 1;
-                                  }
-                              if((*str == 'n' || *str == 'N') && found == 0){
-                                  str++;
-                                  sum = 2;
-                                  if(*str == 'z' || *str == 'Z'){
-                                      str++;
-                                      sum = 2;
-                                      }
-                                  if(*str == 'e' || *str == 'E'){
-                                      str++;
-                                      sum = 2;
-                                      }
-                                  if(*str == 'c' || *str == 'C'){
-                                      str++;
-                                      sum = 6;
-                                      }
-                                  insn2 |= sum << 23;
-                                  found = 1;
-                                  lm_present = 1;
-                                  suf = &num_suf;
-                                  }
-                              if((*str == 'c' || *str == 'C') && found == 0){
-                                  str++;
-                                  if(*str == 'c' || *str == 'C')str++;
-                                  sum = 6;
-                                  found = 1;
-                                  insn2 |= sum << 23;
-                                  suf = &num_suf;
-                                  lm_present = 1;
-                                  }
-                              if(!found){
-                                  str = restore;
-                                  }
-                              }
-                          }
-                      }
-                  } /* end if(!found&&insn>>27==0x0a) */
-              if(!suf){
-                  if ((suf = get_ext_suffix (s,*syn))){
-                      ext_suffix_p = 1;
-                      }
-                  else 
-                      {
-                      suf = hash_find (arc_suffix_hash, s);
-                      }
-                  }
+		  if(*syn == ']' || *(syn+3) == ']'){
+		      restore = str;
+		      if(*str == '.' || *str == '!')str++;
+		      if(*str == '.' || *str == '!')str++;
+		      if((*str == 'i' || *str == 'I') && (*(str+1) >= '0'
+				 && *(str+1)<='9')){
+			  str++;
+			  sum = 0;
+			      if(*str  ==  '1'){
+				  sum = 1;
+				  str++;
+			      }
+			      if(*str >= '0' && *str <= '9'){
+				  sum = sum*10 + *str-'0';
+				  str++;
+				  }
+			      sum = sum & 0xf;
+			      if(negflg)
+				  sum |= 0x40; //negation flag
+			      suf = &num_suf;
+			      varsuf = &num_suf;
+			      varsuf->value = sum;
+			      insn2 |= sum << 15;
+			      insn2 |= 1 << 29;
+			      lm_present = 1;
+			      if(firstsuf)
+				  syn = firstsuf-1;
+			      found = 1;
+			  }
+		      else
+			  {
+			  if(*str == '0' && *(str+1) == 'x'){
+			      str = str+2;
+			      while(1){
+				  if(*str >= '0' && *str <= '9')
+				      {
+				      sum = (sum << 4) + *str-'0';
+				      str++;
+				      }
+				  else {
+				      if(*str >= 'a' && *str <= 'z'){
+					  sum = (sum <<4) + *str-'a'+10;
+					  str++;
+					  }
+				      else
+					  break;
+				      }
+				  } /* end while(1) */
+			      suf = &num_suf;
+			      varsuf = &num_suf;
+			      /* lane masks accumulate */
+			      varsuf->value |= sum;
+			      found = 1;
+			      if(firstsuf)
+				  syn = firstsuf-1;
+			      insn2 |= sum << 15;
+			      lm_present = 1;
+			      }
+			  else
+			      {
+			      if(*(str) >= '0' && *(str) <= '9'){
+				  while(*str >= '0' && *str <= '9'){
+				      sum = sum*10 + *str-'0';
+				      str++;
+				      }
+				  suf = &num_suf;
+				  varsuf = &num_suf;
+				  /* lane masks accumulate */
+				  varsuf->value |= sum;
+				  found = 1;
+				  if(firstsuf)
+				      syn = firstsuf-1;
+				  insn2 |= sum << 15;
+				  lm_present = 1;
+				  }
+			      else
+				  {
+				  if(*str == 'u'){
+				      str++;
+				      if(*str == 's' || *str == 'S')str++;
+				      found = 1;
+				      sum = 0x20;
+				      insn2 |= sum << 23;
+				      lm_present = 1;
+				      suf=&num_suf;
+				      }
+				  if((*str == 's' || *str == 'S') && found == 0){
+				      found = 1;
+				      str++;
+				      sum = 0x14;
+				      insn2 |= sum << 23;
+				      lm_present = 1;
+				      suf = &num_suf;
+				      }
+				  if((*str == 'l' || *str == 'L') && found == 0){
+				      found = 1;
+				      str++;
+				      sum = 0xc;
+				      if(*str == 'e' || *str == 'E'){
+					  str++;
+					  sum = 0xc;
+					  }
+				      if(*str == 's' || *str == 'S'){
+					  str++;
+					  sum = 0xf;
+					  }
+				      if(*str == 't' || *str == 'T'){
+					  str++;
+					  sum = 0xb;
+					  }
+				      if(*str == 'o' || *str == 'O'){
+					  str++;
+					  sum = 0x5;
+					  }
+				      insn2 |= sum << 23;
+				      lm_present = 1;
+				      suf = &num_suf;
+				      }
+				  if((*str == 'g' || *str == 'G') && found==0){
+				      found = 1;
+				      str++;
+				      sum = 0xa;
+				      if(*str == 'e' || *str == 'E'){
+					  str++;
+					  sum = 0xa;
+					  }
+				      if(*str == 't' || *str == 'T'){
+					  str++;
+					  sum = 0x9;
+					  }
+				      insn2 |= sum << 23;
+				      suf = &num_suf;
+				      lm_present = 1;
+				      }
+				  if((*str == 'h' || *str == 'H') && found==0){
+				      found = 1;
+				      str++;
+				      sum = 0xd;
+				      if(*str == 'i' || *str == 'I'){
+					  str++;
+					  sum = 0xd;
+					  }
+				      if(*str == 's' || *str == 'S'){
+					  str++;
+					  sum = 0x6;
+					  }
+				      insn2 |= sum << 23;
+				      lm_present = 1;
+				      suf = &num_suf;
+				      }
+				  if((*str == 'z' || *str == 'Z') && found == 0){
+				      str++;
+				      insn2 |= 1 << 23;
+				      found = 1;
+				      lm_present = 1;
+				      suf = &num_suf;
+				      }
+				  }
+			      if((*str == 'e' || *str == 'E') && found == 0){
+				  str++;
+				  if(*str == 'q') str++;
+				  insn2 |= 1 << 23;
+				  lm_present = 1;
+				  found = 1;
+				  suf = &num_suf;
+				  }
+			      if((*str == 'f' || *str == 'F') && found == 0){
+				  str++;
+				  insn |= 1 << 15;
+				  found = 1;
+				  suf = &num_suf;
+				  lm_present = 1;
+				  }
+			      if((*str == 'n' || *str == 'N') && found == 0){
+				  str++;
+				  sum = 2;
+				  if(*str == 'z' || *str == 'Z'){
+				      str++;
+				      sum = 2;
+				      }
+				  if(*str == 'e' || *str == 'E'){
+				      str++;
+				      sum = 2;
+				      }
+				  if(*str == 'c' || *str == 'C'){
+				      str++;
+				      sum = 6;
+				      }
+				  insn2 |= sum << 23;
+				  found = 1;
+				  lm_present = 1;
+				  suf = &num_suf;
+				  }
+			      if((*str == 'c' || *str == 'C') && found == 0){
+				  str++;
+				  if(*str == 'c' || *str == 'C')str++;
+				  sum = 6;
+				  found = 1;
+				  insn2 |= sum << 23;
+				  suf = &num_suf;
+				  lm_present = 1;
+				  }
+			      if(!found){
+				  str = restore;
+				  }
+			      }
+			  }
+		      }
+		  } /* end if(!found&&insn>>27==0x0a) */
+	      if(!suf){
+		  if ((suf = get_ext_suffix (s,*syn))){
+		      ext_suffix_p = 1;
+		      }
+		  else
+		      {
+		      suf = hash_find (arc_suffix_hash, s);
+		      }
+		  }
 
 	      if (!suf)
 		{
@@ -5260,7 +5317,7 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		  break;
 		}
 	      /* Is it the right type?  Note that the same character is used
-                 several times, so we have to examine all of them.  This is
+		 several times, so we have to examine all of them.  This is
 		 relatively efficient as equivalent entries are kept
 		 together.  If it's not the right type, don't increment `str'
 		 so we try the next one in the series.  */
@@ -5394,6 +5451,31 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		      else if (ISALNUM (*(str + 3)))
 			match_failed = 1;
 		      break;
+		      /*ARCv2 special registers*/
+		    case 129: /* R1*/
+		      if (*str == '%')
+			str++;
+		      if (strncmp(str, "r1", 2))
+			match_failed = 1;
+		      else if (ISALNUM (*(str + 2)))
+			match_failed = 1;
+		      break;
+		    case 130: /* R2 */
+		      if (*str == '%')
+			str++;
+		      if (strncmp(str, "r2", 2))
+			match_failed = 1;
+		      else if (ISALNUM (*(str + 2)))
+			match_failed = 1;
+		      break;
+		    case 131: /* R3 */
+		      if (*str == '%')
+			str++;
+		      if (strncmp(str, "r3", 2))
+			match_failed = 1;
+		      else if (ISALNUM (*(str + 2)))
+			match_failed = 1;
+		      break;
 		    } /* end switch(operand->fmt) */
 		  if (match_failed)
 		    break;
@@ -5433,6 +5515,7 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		str = input_line_pointer;
 		input_line_pointer = hold;
 	      }
+
 	      if (exp.X_op == O_illegal)
 		as_bad ("illegal operand");
 	      else if (exp.X_op == O_absent)
@@ -5445,7 +5528,7 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		  if (!arc_mach_a4)
 		    {
 		      /* Try next insn syntax, if the current operand being
-		         matched is not a constant operand */
+			 matched is not a constant operand */
 		      if (!ac_constant_operand (operand))
 			break;
 		      switch (operand->fmt)
@@ -5456,68 +5539,68 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 					   mnemonics of BRcc .  */
 			  if ((value < 0) || (value > 63)){
 			    match_failed = 1;
-                              }
+			      }
 			  break;
 			case 'K':
 			  if ((value < -2048) || (value > 2047))
 			    match_failed = 1;
 			  break;
 			case 'o':
-                            if ((value < -256) || (value > 255)){
+			    if ((value < -256) || (value > 255)){
 			    match_failed = 1;
-/* Test for instruction convertable to scaled load/store instruction 
+/* Test for instruction convertable to scaled load/store instruction
  * This is necessary to mesh with MetaWare which automagically converts
  * suitable unscaled signed nine bit load/stores that are out of range to
  * in range scaled loads/stores.
  * If the scaled/writeback field mask 0x18 for store and 0x600 for load is
  * zero the instruction is suitable for conversion.
  * No conversion is done if the address constant is in range to begin with.
- * No conversion is done if the short constant is not even or the long 
+ * No conversion is done if the short constant is not even or the long
  *  constant is not a multiple of four.
- */ 
+ */
 
 /* test and convert load */
-                                if( (insn >> 27) == 0x2 
-                                    && ((insn & 0x600) >> 9) == 0 
-                                    && arc_test_wb() == 0)
-                                    {
-                                    if(((insn>>7)&3) == 2 && (value & 1) == 0 
-                                       && value >= -512 && value <= 511)
-                                        {     
-                                        match_failed = 0;
-                                        convert_scaled = 0x600;
-                                        value = value >> 1;
-                                        }
-                                    if(((insn >> 7) & 3) == 0 
-                                       && (value & 3) == 0  && value >=-1024 
-                                       && value <=1023 && arc_test_wb()==0)
-                                        {     
-                                        match_failed = 0;
-                                        convert_scaled = 0x600;
-                                        value = value >>2;
-                                        }
-                                    }
+				if( (insn >> 27) == 0x2
+				    && ((insn & 0x600) >> 9) == 0
+				    && arc_test_wb() == 0)
+				    {
+				    if(((insn>>7)&3) == 2 && (value & 1) == 0
+				       && value >= -512 && value <= 511)
+					{
+					match_failed = 0;
+					convert_scaled = 0x600;
+					value = value >> 1;
+					}
+				    if(((insn >> 7) & 3) == 0
+				       && (value & 3) == 0  && value >=-1024
+				       && value <=1023 && arc_test_wb()==0)
+					{
+					match_failed = 0;
+					convert_scaled = 0x600;
+					value = value >>2;
+					}
+				    }
 /* test and convert store */
-                                if( (insn>>27) == 0x3 
-                                    && ((insn & 0x18)>>3) == 0 
-                                    && arc_test_wb() == 0)
-                                    {
-                                    if(((insn>>1)&3) == 2 && (value&1) == 0 
-                                       && value >=-512 && value <= 511 )
-                                        {
-                                        match_failed = 0;
-                                        convert_scaled = 0x18;
-                                        value = value >> 1;
-                                        }
-                                    if(((insn>>1)&3) == 0 && (value&3) == 0 
-                                       && value >=-1024 && value <= 1023)
-                                        {
-                                        match_failed = 0;
-                                        convert_scaled = 0x18;
-                                        value = value >> 2;
-                                        }
-                                    } /* end if((insn>>27)==0x3 &&...) */
-                                } /* end if( (value<-256) || (value>255) )*/
+				if( (insn>>27) == 0x3
+				    && ((insn & 0x18)>>3) == 0
+				    && arc_test_wb() == 0)
+				    {
+				    if(((insn>>1)&3) == 2 && (value&1) == 0
+				       && value >=-512 && value <= 511 )
+					{
+					match_failed = 0;
+					convert_scaled = 0x18;
+					value = value >> 1;
+					}
+				    if(((insn>>1)&3) == 0 && (value&3) == 0
+				       && value >=-1024 && value <= 1023)
+					{
+					match_failed = 0;
+					convert_scaled = 0x18;
+					value = value >> 2;
+					}
+				    } /* end if((insn>>27)==0x3 &&...) */
+				} /* end if( (value<-256) || (value>255) )*/
 			  break;
 			case 'e':
 			  if ((value < 0) || (value > 7))
@@ -5552,6 +5635,8 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 			    match_failed = 1;
 			  break;
 			case 'O':
+			  if ((value % 2))
+			    as_warn ("The constant must be 2-byte aligned");
 			  if ((value % 2) || (value < -512) || (value > 511))
 			    match_failed = 1;
 			  break;
@@ -5559,59 +5644,59 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 			  if ((value % 4) || (value < -1024) || (value > 1023))
 			    match_failed = 1;
 			  break;
-                        case '\24':
-                            if((value > 0x3fff) || (value <-(0x3fff)))
-                                match_failed = 1;
-                            break;
-                        case '\25':
-                            if(value !=0)
-                                match_failed = 1;
-                            break;
-                        case '\20':
-                        case '\23': /* discarded constant field */
-                            break;
-                        case '\21':
-                        case '\22':
-                            if(value<0||value >0xff)
-                                match_failed = 1;
-                            break;
-                        case '\14': /* signed 12 bit operand */
-                            switch(opcode->flags&(ARC_SIMD_SCALE1
-  					   | ARC_SIMD_SCALE2
+			case '\24':
+			    if((value > 0x3fff) || (value <-(0x3fff)))
+				match_failed = 1;
+			    break;
+			case '\25':
+			    if(value !=0)
+				match_failed = 1;
+			    break;
+			case '\20':
+			case '\23': /* discarded constant field */
+			    break;
+			case '\21':
+			case '\22':
+			    if(value<0||value >0xff)
+				match_failed = 1;
+			    break;
+			case '\14': /* signed 12 bit operand */
+			    switch(opcode->flags&(ARC_SIMD_SCALE1
+					   | ARC_SIMD_SCALE2
 					   | ARC_SIMD_SCALE3
-                                           | ARC_SIMD_SCALE4)){
-                            case ARC_SIMD_SCALE1:
-                                if((value&0x1)!=0)
-                                    as_warn("Offset must be divisible by 2.");
-                                value = value>>1;
-                                if((value>2047)||(value<-2048))
-                                    match_failed = 1;
-                                break;
-                            case ARC_SIMD_SCALE2:
-                                if((value&0x3)!=0)
-                                    as_warn("Offset must be divisible by 4.");
-                                value = value>>2;
-                                if((value>2047)||(value<-2048))
-                                    match_failed = 1;
-                                break;
-                            case ARC_SIMD_SCALE3:
-                                if((value&0x7)!=0)
-                                    as_warn("Offset must be divisible by 8.");
-                                value = value>>3;
-                                if((value>2047)||(value<-2048))
-                                    match_failed = 1;
-                                break;
-                            case ARC_SIMD_SCALE4:
-                                if((value&0xf)!=0)
-                                    as_warn("Offset must be divisible by 16.");
-                                value = value>>4;
-                                if((value>2047)||(value<-2048))
-                                    match_failed = 1;
-                                break;
-                            default:;
-                                break;
-                            } /* end switch(opcode->flags&&(...)) */
-                            break;
+					   | ARC_SIMD_SCALE4)){
+			    case ARC_SIMD_SCALE1:
+				if((value&0x1)!=0)
+				    as_warn("Offset must be divisible by 2.");
+				value = value>>1;
+				if((value>2047)||(value<-2048))
+				    match_failed = 1;
+				break;
+			    case ARC_SIMD_SCALE2:
+				if((value&0x3)!=0)
+				    as_warn("Offset must be divisible by 4.");
+				value = value>>2;
+				if((value>2047)||(value<-2048))
+				    match_failed = 1;
+				break;
+			    case ARC_SIMD_SCALE3:
+				if((value&0x7)!=0)
+				    as_warn("Offset must be divisible by 8.");
+				value = value>>3;
+				if((value>2047)||(value<-2048))
+				    match_failed = 1;
+				break;
+			    case ARC_SIMD_SCALE4:
+				if((value&0xf)!=0)
+				    as_warn("Offset must be divisible by 16.");
+				value = value>>4;
+				if((value>2047)||(value<-2048))
+				    match_failed = 1;
+				break;
+			    default:;
+				break;
+			    } /* end switch(opcode->flags&&(...)) */
+			    break;
 			case '?':       /* SIMD Unsigned 8 bit operand */
 			  switch (opcode->flags & (ARC_SIMD_SCALE1
 						   | ARC_SIMD_SCALE2
@@ -5645,8 +5730,78 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 /* for compatibility with corner cases of MetaWare assembler allow to -128 */
 			  if ((value < 0) || (value > 255)){
 			    match_failed = 1;
-                              }
+			      }
 			  break;
+			case 'd': /* 9bit signed immediate, used by bbit*/
+			  if (value % 2)
+			    {
+			      as_warn ("The constant must be 2-byte aligned");
+			      match_failed = 1;
+			    }
+			  if ((value > 255) || (value < -256))
+			    {
+			      match_failed = 1;
+			    }
+			  break;
+			  /* Not very nice: check constants for ARCv2*/
+			case 'L':
+			  break;
+			case 132: /*w6 6bit signed*/
+			  if ((value > 31 || value < -32))
+			    {
+			      match_failed = 1;
+			    }
+			  break;
+			case 133: /*s3 3bit signed*/
+			  if ((value > 6 || value < -1))
+			    {
+			      match_failed = 1;
+			    }
+			  break;
+			case 134: /*u6 6bit unsigned as used in ADD_S*/
+			case 135: /*u6 as used in ENTER_S*/
+			  if ((value > 63 || value < 0))
+			    {
+			      match_failed = 1;
+			    }
+			  break;
+			case 136: /* u10*/
+			  if ((value > 0x3FF || value < 0))
+			    {
+			      match_failed = 1;
+			    }
+			  break;
+			case 138: /*u7 as is leave_s*/
+			case 137: /*u7 as in ldi_s*/
+			  if ((value > 0x7F || value < 0))
+			    {
+			      match_failed = 1;
+			    }
+			  break;
+			case 141: /*s11 as in st_s*/
+			  if (value % 4)
+			    {
+			      as_warn ("The constant must be 4-byte aligned");
+			      match_failed = 1;
+			    }
+			  if((value < -1024) || (value > 1023))
+			    {
+			      match_failed = 1;
+			    }
+			  break;
+			case 142: /*u5 as in ld_s*/
+			  if (value % 4)
+			    {
+			      as_warn ("The constant must be 4-byte aligned");
+			      match_failed = 1;
+			    }
+			  if((value < 0) || (value > 63))
+			    {
+			      match_failed = 1;
+			    }
+			  break;
+			default:
+			  as_warn ("Unchecked constant");
 			} /* end switch(operand->fmt) */
 
 		      if (match_failed)
@@ -5658,23 +5813,24 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		 is a symbol but the current operand being matched is not a
 		 symbol operand */
 	      else if (!arc_mach_a4 && (exp.X_op == O_symbol)
-		       && !ac_symbol_operand (operand)){
-                  break;}
+		       && !ac_symbol_operand (operand))
+		{
+		  break;
+		}
 
 	      /* For ARCompact ISA, try next insn syntax if "%st" operand is
 		 not being matched with long-immediate operand */
 	      else if (!arc_mach_a4 && (exp.X_op == O_right_shift)
 		       && (operand->fmt != 'L'))
 		break;
-			  else if (!arc_mach_a4 && (exp.X_op != O_register)
-				   && (operand->fmt != 'L')
-				   && ( (insn_name[0] == 'a' || insn_name[0] == 'A') && 
-						(insn_name[1] == 'd' || insn_name[1] == 'D') && 
-						(insn_name[2] == 'd' || insn_name[2] == 'D') ) )
-					   {
-					
-					break;
-			  }
+	      else if (!arc_mach_a4 && (exp.X_op != O_register)
+		       && (operand->fmt != 'L')
+		       && ( (insn_name[0] == 'a' || insn_name[0] == 'A') &&
+			    (insn_name[1] == 'd' || insn_name[1] == 'D') &&
+			    (insn_name[2] == 'd' || insn_name[2] == 'D') ) )
+		{
+		  break;
+		}
 	      else if (exp.X_op == O_register)
 		{
 		  reg = (struct arc_operand_value *) exp.X_add_number;
@@ -5764,7 +5920,7 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 				}
 			      if (flg){
 				break;
-                                  }
+				  }
 			      ext_oper = ext_oper->next;
 			    } /* end while(ext_oper ) */
 
@@ -5804,6 +5960,18 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 			      regb = reg;
 			    }
 			}
+		      /*ARCv2 Specific: h reg must be the same if appears multiple times*/
+		      if (*syn == 128)
+			{
+			  if (regh != NULL && regh != reg)
+			    {
+			      break;
+			    }
+			  else
+			    {
+			      regh = reg;
+			    }
+			}
 
 		      /* Try next insn syntax, if input operand is a auxiliary
 			 regiser but the current operand being matched is
@@ -5826,16 +5994,14 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		    }
 		  else
 		    {
-		
-
-     
- 			int needGOTSymbol = 0;
+		      int needGOTSymbol = 0;
 		      if (strchr (str, '@'))
 			{
 			  if (!strncmp (str, "@gotpc", 6))
 			    {
 			      str += 6;
-			      if (arc_mach_type != bfd_mach_arc_arc700)
+			      if ((arc_mach_type != bfd_mach_arc_arc700) &&
+				  (arc_mach_type != bfd_mach_arc_arcv2))
 				as_warn ("PIC not supported for processors prior to ARC 700\n");
 			      else
 				current_special_sym_flag = GOT_TYPE;
@@ -5845,7 +6011,8 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 			  else if (!strncmp (str, "@plt", 4))
 			    {
 			      str += 4;
-			      if (arc_mach_type != bfd_mach_arc_arc700)
+			      if ((arc_mach_type != bfd_mach_arc_arc700) &&
+				  (arc_mach_type != bfd_mach_arc_arcv2))
 				as_warn ("PIC not supported for processors prior to ARC 700\n");
 			      else
 				current_special_sym_flag = PLT_TYPE;
@@ -5853,7 +6020,8 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 			    }
 			  else if (!strncmp (str, "@gotoff", 7))
 			    {
-			      if (arc_mach_type != bfd_mach_arc_arc700)
+			      if ((arc_mach_type != bfd_mach_arc_arc700) &&
+				  (arc_mach_type != bfd_mach_arc_arcv2))
 				as_warn ("PIC not supported for processors prior to ARC 700\n");
 			      else
 				current_special_sym_flag = GOTOFF_TYPE;
@@ -5901,18 +6069,18 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 
 /* START ARC LOCAL */
 /*				      input_line_pointer = str + (*(str) == '+'); */
-                                      char savedchar;
+				      char savedchar;
 
-                                      savedchar = *(str - 1);
-                                      *(str - 1) = '0';
-                                      input_line_pointer = str - 1;
+				      savedchar = *(str - 1);
+				      *(str - 1) = '0';
+				      input_line_pointer = str - 1;
 				      expression (&new_exp);
-                                      *(str - 1) = savedchar;
+				      *(str - 1) = savedchar;
 /* END ARC LOCAL */
 				      if (new_exp.X_op == O_constant)
 					{
 					  exp.X_add_number
-                                              += (new_exp.X_add_number);
+					      += (new_exp.X_add_number);
 					  str = input_line_pointer;
 					}
 				      //     if (input_line_pointer != str)
@@ -5922,11 +6090,11 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 				}
 			    }
 
-			/* Force GOT symbols to be limm in case of ld (@gotpc & @gotoff) instruction: 	workaround*/			
+			/* Force GOT symbols to be limm in case of ld (@gotpc & @gotoff) instruction: 	workaround*/
 
-			if (arc_cond_p ==0 && 
+			if (arc_cond_p ==0 &&
 			current_special_sym_flag != SDA_REF_TYPE &&
-			 needGOTSymbol == 1 && 
+			 needGOTSymbol == 1 &&
 			(insn_name[0] == 'l' || insn_name[0] == 'L') &&
 			 (insn_name[1] == 'd' || insn_name[1] == 'D') &&
 			 (!(insn_name[2] == '_')) ) {
@@ -5945,22 +6113,21 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 			  //			  fprintf (stderr, "Not the sda syntax string. Trying next ********\n");
 			  break;
 			}
-
 		    }
 
-                  /* Check the st/ld mnemonic:It should be able to
-                     accomodate an immediate. Hence, no register
-                     here!*/
-                  if (!arc_mach_a4 && !ac_constant_operand(operand)
-                      && ( ((insn_name[0] == 'l' || insn_name[0] == 'L')
-                            && (insn_name[1] == 'd' || insn_name[1] == 'D')) ||
-                           ((insn_name[0] == 's' || insn_name[0] == 'S')
-                            && (insn_name[1] == 't' || insn_name[1] == 'T'))))
-                    {
-                      /* It is a register of some sort. We cannot
-                         do fixups on registers.*/
-                      break;
-                    }
+		  /* Check the st/ld mnemonic:It should be able to
+		     accomodate an immediate. Hence, no register
+		     here!*/
+		  if (!arc_mach_a4 && !ac_constant_operand(operand)
+		      && ( ((insn_name[0] == 'l' || insn_name[0] == 'L')
+			    && (insn_name[1] == 'd' || insn_name[1] == 'D')) ||
+			   ((insn_name[0] == 's' || insn_name[0] == 'S')
+			    && (insn_name[1] == 't' || insn_name[1] == 'T'))))
+		    {
+		      /* It is a register of some sort. We cannot
+			 do fixups on registers.*/
+		      break;
+		    }
 
 		  /* We need to generate a fixup for this expression.  */
 		  if (fc >= MAX_FIXUPS)
@@ -5968,6 +6135,13 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		  fixups[fc].exp = exp;
 		  fixups[fc].modifier_flags = mods;
 
+		  /* We don't support shimm relocs. break here to force
+		     the assembler to output a limm.  */
+/*
+		 #define IS_REG_SHIMM_OFFSET(o) ((o) == 'd')
+		 if (IS_REG_SHIMM_OFFSET (*syn))
+		 break;
+*/
 		  /* If this is a register constant (IE: one whose
 		     register value gets stored as 61-63) then this
 		     must be a limm.  */
@@ -5986,7 +6160,14 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		      /* ??? We need a cleaner interface than this.  */
 		      (*arc_operands[arc_operand_map['Q']].insert)
 			(insn, &insn2,operand, mods, reg, 0L, &junk);
-		      fixups[fc].opindex = arc_operand_map[(int) *syn]; //arc_operand_map
+		      fixups[fc].opindex = arc_operand_map[(int) *syn]; //arc_operand_map[0];
+		    }
+		  else if (*syn == 'd')
+		    {
+		      /*ARCv2: This is a bbit or br. I need to
+			override this FIXUP to handle also the Ybit*/
+		      fix_up4_bbitbr = fc;
+		      fixups[fc].opindex = arc_operand_map[(int) *syn];
 		    }
 		  else
 		    fixups[fc].opindex = arc_operand_map[(int) *syn];
@@ -6010,7 +6191,7 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		      if (operand->flags & ARC_OPERAND_ERROR)
 			{
 			  as_bad (errmsg);
-                          assembling_instruction = 0;
+			  assembling_instruction = 0;
 			  return;
 			}
 		      else if (operand->flags & ARC_OPERAND_WARN)
@@ -6024,7 +6205,7 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		    {
 		    case 'K':
 		      insn |= ((value & 0x3f) << operand->shift);
-                      insn |= ((value >>6 ) & 0x3f);
+		      insn |= ((value >>6 ) & 0x3f);
 		      break;
 		    case 'l':
 		      insn |= (value >> 2) << operand->shift;
@@ -6040,7 +6221,7 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 	      else
 		insn |= (value & ((1 << operand->bits) - 1)) << operand->shift;
 
-              insn |= convert_scaled;
+	      insn |= convert_scaled;
 	      ++syn;
 	    }
 	} /* end for(str=start,...) */
@@ -6051,71 +6232,71 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 	  int i;
 	  char *f;
 	  long limm, limm_p;
-          const char *errmsg=0;
+	  const char *errmsg=0;
 	  const struct arc_operand *operand;
 #if DEBUG_INST_PATTERN
 fprintf (stdout, "Matched syntax %s\n", opcode->syntax);
 #endif
-          if(!lm_present && !(opcode->flags & AC_SIMD_SETLM))
-              insn2 |= (0xff << 15);
-          if(opcode->flags & ARC_SIMD_ZERVA){
-              long limm_p, limm;
-              limm_p = arc_opcode_limm_p (&limm);
-              if(limm_p)
-                  insn2 = insn2+(limm&0x7fff);
-              operand = &arc_operands[arc_operand_map[zer_rega.type]];
-              if(operand->insert){
+	  if(!lm_present && !(opcode->flags & AC_SIMD_SETLM))
+	      insn2 |= (0xff << 15);
+	  if(opcode->flags & ARC_SIMD_ZERVA){
+	      long limm_p, limm;
+	      limm_p = arc_opcode_limm_p (&limm);
+	      if(limm_p)
+		  insn2 = insn2+(limm&0x7fff);
+	      operand = &arc_operands[arc_operand_map[zer_rega.type]];
+	      if(operand->insert){
 		  insn = (*operand->insert) (insn,&insn2, operand, mods,
 					     &zer_rega, (long)zer_rega.value, &errmsg);
-                  }
-              else
-                  {
-                  insn |= ((zer_rega.value & ((1 << operand->bits) - 1)) 
-                           <<  operand->shift);
-                  }
+		  }
+	      else
+		  {
+		  insn |= ((zer_rega.value & ((1 << operand->bits) - 1))
+			   <<  operand->shift);
+		  }
 
-              }
-          if(opcode->flags & ARC_SIMD_ZERVB)
-              {
-              long limm_p, limm;
-              limm_p = arc_opcode_limm_p (&limm);
-              if(limm_p)
-                  insn2 = insn2+(limm&0x7fff);
-              operand = &arc_operands[arc_operand_map[zer_regb.type]];
-              insn2 = insn2+(limm&0x7fff);
-              if(operand->insert)
-                  {
+	      }
+	  if(opcode->flags & ARC_SIMD_ZERVB)
+	      {
+	      long limm_p, limm;
+	      limm_p = arc_opcode_limm_p (&limm);
+	      if(limm_p)
+		  insn2 = insn2+(limm&0x7fff);
+	      operand = &arc_operands[arc_operand_map[zer_regb.type]];
+	      insn2 = insn2+(limm&0x7fff);
+	      if(operand->insert)
+		  {
 		  insn = (*operand->insert) (insn,&insn2, operand, mods,
 					     &zer_regb, (long)zer_regb.value, &errmsg);
-                  }
-              else
-                  {
-                  insn |= ((zer_regb.value & ((1 << operand->bits) - 1)) <<
-                      operand->shift);
-                  }
+		  }
+	      else
+		  {
+		  insn |= ((zer_regb.value & ((1 << operand->bits) - 1)) <<
+		      operand->shift);
+		  }
 
 
-              }
-          if(opcode->flags & ARC_SIMD_ZERVC)
-              {
-              long limm_p, limm;
-              limm_p = arc_opcode_limm_p (&limm);
-              if(limm_p)
-                  insn2 = insn2+(limm&0x7fff);
-              operand = &arc_operands[arc_operand_map[zer_regc.type]];
-              if(operand->insert){
+	      }
+	  if(opcode->flags & ARC_SIMD_ZERVC)
+	      {
+	      long limm_p, limm;
+	      limm_p = arc_opcode_limm_p (&limm);
+	      if(limm_p)
+		  insn2 = insn2+(limm&0x7fff);
+	      operand = &arc_operands[arc_operand_map[zer_regc.type]];
+	      if(operand->insert){
 		  insn = (*operand->insert) (insn,&insn2, operand, mods,
 					     &zer_regc, (long)zer_regc.value, &errmsg);
-                  }
-              else
-                  {
-                  insn |= ((zer_regc.value & ((1 << operand->bits) - 1)) <<
-                      operand->shift);
-                  }
-              }
-          if(opcode->flags&ARC_SIMD_SETLM){
-              insn2 |= (0x3f)<<23;
-              }
+		  }
+	      else
+		  {
+		  insn |= ((zer_regc.value & ((1 << operand->bits) - 1)) <<
+		      operand->shift);
+		  }
+	      }
+	  if(opcode->flags&ARC_SIMD_SETLM){
+	      insn2 |= (0x3f)<<23;
+	      }
 	  /* For the moment we assume a valid `str' can only contain blanks
 	     now.  IE: We needn't try again with a longer version of the
 	     insn and it is assumed that longer versions of insns appear
@@ -6129,10 +6310,10 @@ fprintf (stdout, "Matched syntax %s\n", opcode->syntax);
 
 	  /* Is there a limm value?  */
 	  limm_p = arc_opcode_limm_p (&limm);
-          if(insn>>27==0x0a){
-              limm_p = 1;
-              limm = insn2;
-              }
+	  if(insn>>27==0x0a){
+	      limm_p = 1;
+	      limm = insn2;
+	      }
 
 	  /* Perform various error and warning tests.  */
 
@@ -6158,7 +6339,8 @@ fprintf (stdout, "Matched syntax %s\n", opcode->syntax);
 		    break;
 		  case 'q':
 		    conditional = insn_suffixes[i]->value;
-		    if (arc_mach_type != bfd_mach_arc_arc700
+		    if ((arc_mach_type != bfd_mach_arc_arc700 ||
+			 arc_mach_type != bfd_mach_arc_arcv2)
 		       && conditional > 15
 		       && !ext_suffix_p)
 		      {
@@ -6173,6 +6355,11 @@ fprintf (stdout, "Matched syntax %s\n", opcode->syntax);
 		    break;
 		  }
 	      }
+	    /* Some short instructions are not defined having the %N attribute*/
+	    if (!arc_mach_a4 && em_jumplink_or_jump_insn (insn, compact_insn_16))
+	      {
+		delay_slot_type = ARC_DELAY_JUMP;
+	      }
 
 	    insert_last_insn (insn, delay_slot_type, limm_p,
 			      fixups[0].exp.X_add_symbol);
@@ -6181,7 +6368,7 @@ fprintf (stdout, "Matched syntax %s\n", opcode->syntax);
 	       be legal, but let's warn the user anyway.  Ditto for 8 byte
 	       jumps with delay slots.  */
 	    if (in_delay_slot_p && limm_p)
-	      as_warn ("8 byte instruction in delay slot");
+	      as_bad ("Instruction with long immediate data in delay slot");
 
 	    if (delay_slot_type != ARC_DELAY_NONE
 	      && limm_p && arc_insn_not_jl (insn)) /* except for jl  addr */
@@ -6191,17 +6378,19 @@ fprintf (stdout, "Matched syntax %s\n", opcode->syntax);
 	      {
 		if (!arc_mach_a4)
 		  {
-		    if (ac_branch_or_jump_insn (insn, compact_insn_16)) {
-
-		      as_bad ("branch/jump instruction in delay slot");
-			}
+		    if (ac_branch_or_jump_insn (insn, compact_insn_16) ||
+			em_branch_or_jump_insn (insn, compact_insn_16))
+		      {
+			as_bad ("branch/jump instruction in delay slot");
+		      }
 		    else if (ac_lpcc_insn (insn))
 		      as_bad ("lpcc instruction in delay slot");
 		    else if (ARC700_rtie_insn (insn))
 		      as_bad ("rtie instruction in delay slot");
 		  }
 
-		if (arc_mach_type != bfd_mach_arc_arc700)
+		if (arc_mach_type != bfd_mach_arc_arc700 ||
+		    arc_mach_type != bfd_mach_arc_arcv2)
 		  {
 		    if (a4_brk_insn (insn))
 		      as_bad ("brk instruction in delay slot");
@@ -6346,14 +6535,14 @@ fprintf (stdout, "Matched syntax %s\n", opcode->syntax);
 		reloc_type = arc_get_sda_reloc (insn, compact_insn_16);
 		break;
 	      case GOT_TYPE:
-		  reloc_type = BFD_RELOC_ARC_GOTPC32;
-		  break;
+		reloc_type = BFD_RELOC_ARC_GOTPC32;
+		break;
 	      case PLT_TYPE:
-		  reloc_type = BFD_RELOC_ARC_PLT32;
-		  break;
+		reloc_type = BFD_RELOC_ARC_PLT32;
+		break;
 	      case GOTOFF_TYPE:
-		  reloc_type = BFD_RELOC_ARC_GOTOFF;
-		  break;
+		reloc_type = BFD_RELOC_ARC_GOTOFF;
+		break;
 	      default:
 		break;
 	      }
@@ -6452,7 +6641,7 @@ void
 arc_handle_align (fragS* fragP)
 {
   if ((fragP)->fr_type == rs_align_code)
-    { 
+    {
       char *dest = (fragP)->fr_literal + (fragP)->fr_fix;
       int pad_bytes_a4;
       valueT count = ((fragP)->fr_next->fr_address
@@ -6460,7 +6649,7 @@ arc_handle_align (fragS* fragP)
 
       pad_bytes_a4    = ((count & 3));
       (fragP)->fr_var = (arc_mach_a4 ? 4  : 2);
-       
+
       if (arc_mach_a4)
 	{
 	  if (pad_bytes_a4)

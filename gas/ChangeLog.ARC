@@ -1,3 +1,10 @@
+2013-04-27  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* config/tc-arc.c (get_arc_exp_reloc_type):
+	Use BFD_RELOC_ARC_PC32 instead of BFD_RELOC_32 if EXP is a difference
+	with the subtrahend being a symbol in the current section.
+	(md_apply_fix): Handle BFD_RELOC_ARC_PC32.
+
 2013-04-05  Simon Cook  <simon.cook@embecosm.com>
 
 	Port from
