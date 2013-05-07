@@ -3593,6 +3593,8 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
   /* START ARC LOCAL */
   case 44:
       /* rtsc instruction */
+  	  FIELD_B();
+  	  fieldA=fieldB;
       /* The source operand has no use.  */
       fieldB = fieldBisReg = 0;
 

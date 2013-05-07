@@ -1,3 +1,8 @@
+2013-05-07  Simon Cook  <simon.cook@embecosm.com>
+
+	* arc-opc.c (arc_opcodes): Added RTSC instruction.
+	* arcompact-dis.c (dsmOneArcInst): Fixed decoding of RTSC.
+
 2013-01-30  Simon Cook  <simon.cook@embecosm.com>
 
 	* arc-opc.c (arc_opcodes): Applied Claudiu Zissulescu's fixes to
