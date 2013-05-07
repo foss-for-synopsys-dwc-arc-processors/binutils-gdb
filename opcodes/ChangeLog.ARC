@@ -1,3 +1,7 @@
+2013-05-07  Simon Cook  <simon.cook@embecosm.com>
+
+	* arc-opc-old.c (arc_opcodes): Added RTSC encoding.
+
 2013-04-12  Simon Cook  <simon.cook@embecosm.com>
 
 	* arcompact-dis.c (ARCompact_decodeInstr): Change number of bytes per
