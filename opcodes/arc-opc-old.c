@@ -3811,6 +3811,10 @@ static struct arc_opcode arc_opcodes[] = {
   { (unsigned char *) "rtsc %B,0", 0x0, 0x306f001a, ARCOMPACT, 0, 0, 0, 0},
   { (unsigned char *) "rtsc 0,0",  0x0, 0x366f701a, ARCOMPACT, 0, 0, 0, 0},
 
+  /* RTSC */
+  { (unsigned char *) "rtsc %B,0", 0x0, 0x306f001a, ARCOMPACT, 0, 0, 0, 0},
+  { (unsigned char *) "rtsc 0,0",  0x0, 0x366f701a, ARCOMPACT, 0, 0, 0, 0},
+
   /* Android Extension Instructions */
   { (unsigned char *) "avgqb %A,%B,%C%F",     0x0, 0x30230000, ARCOMPACT, 0, 0, 0, 0},
   { (unsigned char *) "avgqb %A,%B,%u%F",     0x0, 0x30630000, ARCOMPACT, 0, 0, 0, 0},
