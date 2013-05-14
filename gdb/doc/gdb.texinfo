@@ -20818,6 +20818,7 @@ acceptable commands.
 
 
 @menu
+* ARC::                         Synopsys ARC600, ARC700 and ARC v2 EM
 * ARM::                         ARM RDI
 * M32R/D::                      Renesas M32R/D
 * M68K::                        Motorola M68K
@@ -20832,6 +20833,61 @@ acceptable commands.
 * CRIS::                        CRIS
 * Super-H::                     Renesas Super-H
 @end menu
+
+@node ARC
+@subsection Synopsys ARC600, ARC700 and ARC v2 EM
+@cindex Synopsys ARC600, ARC700 and ARC v2 EM
+@cindex ARC specific commands
+@cindex ARC600
+@cindex ARC700
+@cindex ARC v2 EM
+
+@value{GDBN} provides the following ARC-specific commands:
+
+@table @code
+@item set debug arc
+@kindex set debug arc
+Control the level of ARC specific debug messages. Use 0 for no
+messages (the default) and 1 for debug messages. At present higher
+values offer no further messages.
+
+@item show debug arc
+@kindex show debug arc
+Show the level of ARC specific debugging in operation.
+
+@end table
+
+@value{GDBN} makes available a fixed set of the auxilliary registers
+in the full set of registers. In addition to the core register set and
+extension core register set, the command
+@example
+info register all
+@end example
+will show the following registers:
+@example
+lp_start_regnum
+lp_end_regnum
+status32_regnum
+status32_l1_regnum
+status32_l2_regnum
+aux_irq_lv12_regnum
+aux_irq_lev_regnum
+aux_irq_hint_regnum
+eret_regnum
+erbta_regnum
+erstatus_regnum
+ecr_regnum
+efa_regnum
+icause1_regnum
+icause2_regnum
+aux_ienable_regnum
+aux_itrigger_regnum
+bta_regnum
+bta_l1_regnum
+bta_l2_regnum
+aux_irq_pulse_cancel_regnum
+aux_irq_pending_regnum
+@end example
 
 @node ARM
 @subsection ARM
