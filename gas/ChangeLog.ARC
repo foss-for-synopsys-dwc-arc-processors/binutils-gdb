@@ -1,3 +1,30 @@
+2013-05-14  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* doc/as.texinfo (Target ARC options): Remove -marc4, -marc5,
+	-marc8 -mEB and -mEL. Add -mcpu, -mA6, -mARC600, -mARC601, -mA7,
+	-mARC700, -mEM, -mARCv2EM, -mav2em, -mld-extension-reg-mask,
+	-muser-mode-only, -mbarrel-shifter, -mdpfp, -mdpfp-compact,
+	-mdpfp-fast, -mdsp-packa, -mdvbf, -mea, -mlock, -mmac-24,
+	-mmac-d16, -mmin-max, -mmul64, -mno-mpy, -mnorm, -mrtsc, -msimd,
+	-mspfp, -mspfp-compact, -mspfp-fast, -mswap, -mswape, -mtelephony
+	and -mxy.
+	* doc/c-arc.texi (ARC Dependent Features): Add descriptions of
+	-mbarrel-shifter, -mcpu, -mA6, -mARC600, -mARC601, -mA7, -mARC700,
+	-mEM, -mARCv2EM, -mav2em, -mld-extension-reg-mask,
+	-muser-mode-only, -mdpfp -mdpfp-compact, -mdpfp-fast, -mdsp-packa,
+	-mdvbf, -mea, -mmac-24, -mmac-d16, -mmin-max, -mmul64, -mno-mpy,
+	-mnorm, -msimd, -mspfp, -mspfp-compact, -mspfp-fast, -mswap,
+	-mtelephony and -mxy options.  Mark -EB, -EL, -mbarrel_shifter,
+	-mdpfp_compact, -mdpfp_fast, -mdsp_packa, -mEA, -mmac_24,
+	-mmac_d16, -mmin_max, -mspfp_compact and -mspfp_fast options as
+	deprecated. Remove -mA4 and -mA5 options. Add description of '%',
+	'@' and '-' syntax. Add description for 'Register Names'
+	section. Add description of FPX extension for Floating Point.
+	Provide definitions of .2byte, .3byte, .4byte, .half and .long
+	directives. Remove .extCoreRegister, .extAuxRegister, .extCondCode
+	.extCoreRegister, .extInstruction, .arc5 and .arc8 directives
+
+
 2013-04-27  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* config/tc-arc.c (get_arc_exp_reloc_type):
