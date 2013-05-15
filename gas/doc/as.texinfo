@@ -266,8 +266,28 @@ gcc(1), ld(1), and the Info entries for @file{binutils} and @file{ld}.
 @ifset ARC
 
 @emph{Target ARC options:}
-   [@b{-marc[5|6|7|8]}]
-   [@b{-EB}|@b{-EL}]
+   [@b{-mcpu=@var{cpu}}|@b{-mA6}|@b{-mARC600}|@b{-mARC601}|@b{-mA7}|@b{-mARC700}|@b{-mEM}|@b{-mARCv2EM}|@b{-mav2em}]
+   [@b{-mld-extension-reg-mask=@var{mask}}]
+   [@b{-muser-mode-only}]
+   [@b{-mbarrel-shifter}]
+   [@b{-mdpfp}|@b{-mdpfp-compact}|@b{-mdpfp-fast}]
+   [@b{-mdsp-packa}]
+   [@b{-mdvbf}]
+   [@b{-mea}]
+   [@b{-mlock}]
+   [@b{-mmac-24}]
+   [@b{-mmac-d16}]
+   [@b{-mmin-max}]
+   [@b{-mmul64}]
+   [@b{-mno-mpy}]
+   [@b{-mnorm}]
+   [@b{-mrtsc}]
+   [@b{-msimd}]
+   [@b{-mspfp}|@b{-mspfp-compact}|@b{-mspfp-fast}]
+   [@b{-mswap}]
+   [@b{-mswape}]
+   [@b{-mtelephony}]
+   [@b{-mxy}]
 @end ifset
 @ifset ARM
 
