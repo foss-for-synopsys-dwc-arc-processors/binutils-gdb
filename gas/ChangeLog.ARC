@@ -1,5 +1,10 @@
 2013-05-14  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
+	* doc/c-arc.texi (ARC Dependent Features): Tidy up various small
+	typos.
+
+2013-05-14  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
 	* doc/as.texinfo (Target ARC options): Remove -marc4, -marc5,
 	-marc8 -mEB and -mEL. Add -mcpu, -mA6, -mARC600, -mARC601, -mA7,
 	-mARC700, -mEM, -mARCv2EM, -mav2em, -mld-extension-reg-mask,
