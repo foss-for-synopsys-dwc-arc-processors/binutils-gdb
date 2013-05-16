@@ -85,9 +85,11 @@ trigger an error.
 
 @c ARC extension instructions
 ARC is a family of configurable processors.  Different extensions
-provide additional instructions which must be supportd by the
-assembler.  The following options control which extension instructions
-are supported:
+provide additional instructions which must be supported by the
+assembler.  For ARC v2 EM, all possible extensions are supported by
+the assembler, and no options are provided to control these
+extensions.  For the ARC 600 and ARC 700 cores, the following options
+control which extension instructions are supported:
 
 @table @code
 
@@ -108,7 +110,7 @@ compiler, where the different options provide different effects.
 
 @item -mdsp-packa
 @cindex @code{-mdsp-packa} command line option, ARC
-Assemble instructions supported by the DSP 3.1 Pack A extensions.
+Assemble instructions supported by the DSP Pack A extensions.
 
 @item -mdvbf
 @cindex @code{-mdvbf} command line option, ARC
@@ -117,20 +119,21 @@ extension.
 
 @item -mea
 @cindex @code{-mea} command line option, ARC
-Assemble extended arithmetic instructions.
+Assemble extended arithmetic instructions.  @emph{Note:} this
+functionality is not available with ARC v2 EM.
 
 @item -mlock
 @cindex @code{-mlock} command line option, ARC
 Assemble instructions supported by the @code{LLOCK} and @code{SCOND}
-extensions added with the ARC700 core 4 processor, version v4.10.
+extensions added with the ARC770 processor.
 
 @item -mmac-24
 @cindex @code{-mmac-24} command line option, ARC
-Assemble instructions supported by the @code{MMAC-24} extenson.
+Assemble instructions supported by the @code{MMAC-24} extension.
 
 @item -mmac-d16
 @cindex @code{-mmac-d16} command line option, ARC
-Assemble instructions supported by the @code{MMAC-D16} extenson.
+Assemble instructions supported by the @code{MMAC-D16} extension.
 
 @item -mmin-max
 @cindex @code{-mmin-max} command line option, ARC
@@ -151,7 +154,7 @@ Assemble @code{norm} instructions.
 @item -mrtsc
 @cindex @code{-mrtsc} command line option, ARC
 Assemble instructions supported by the @code{RTSC} extension added
-with the ARC700 core 4 processor, version v4.10.
+with the ARC770 processor.
 
 @item -msimd
 @cindex @code{-msimd} command line option, ARC
@@ -175,7 +178,7 @@ Assemble @code{swap} instructions.
 @item -mswape
 @cindex @code{-mswape} command line option, ARC
 Assemble instructions supported by the @code{SWAPE} extension added
-with the ARC700 core 4 processor, version v4.10.
+with the ARC770 processor.
 
 @item -mtelephony
 @cindex @code{-mtelephony} command line option, ARC
@@ -184,8 +187,7 @@ Assemble single and dual operand instructions supported by the
 
 @item -mxy
 @cindex @code{-mxy} command line option, ARC
-Assemble instructions supported by the XY Memory extension (DSP
-version 3).
+Assemble instructions supported by the @code{XY} memory extension.
 
 @end table
 
@@ -292,19 +294,21 @@ mov r0, @@r0
 @end example
 moves the address of symbol @code{r0} into register @code{r0}.
 
-@item -
-@cindex C pre-processor macro separator, ARC
-@cindex ARC C pre-processor macro separator
-Used as a separator to obtain a sequence of commands from a C
-pre-processor macro.
-
-@end table
-
+@item `
 @cindex line separator, ARC
 @cindex statement separator, ARC
 @cindex ARC line separator
-@emph{Note:} the ARC assembler does not support a line separator
-character, other than the use of @samp{-} in C pre-processor macros.
+The @samp{`} (backtick) character is used to separate statements on a
+single line.
+
+@cindex line
+@item -
+@cindex C preprocessor macro separator, ARC
+@cindex ARC C preprocessor macro separator
+Used as a separator to obtain a sequence of commands from a C
+preprocessor macro.
+
+@end table
 
 @node ARC-Regs
 @subsection Register Names
@@ -339,12 +343,20 @@ The stack pointer and a synonym for @code{28}.
 @item ilink1
 @cindex level 1 interrupt link register, ARC
 @cindex ARC level 1 interrupt link register
-The level 1 interrupt link register and a synonym for @code{r29}.
+For ARC600 and ARC700, the level 1 interrupt link register and a
+synonym for @code{r29}.  Not supported for ARC v2 EM.
+
+@item ilink
+@cindex interrupt link register, ARC
+@cindex ARC interrupt link register
+For ARC v2 EM, the interrupt link register and a synonym for
+@code{r29}.  Not supported for ARC600 and ARC700.
 
 @item ilink2
 @cindex level 2 interrupt link register, ARC
 @cindex ARC level 2 interrupt link register
-The level 2 interrupt link register and a synonym for @code{r30}.
+For ARC600 and ARC700, the level 2 interrupt link register and a
+synonym for @code{r30}.  Not supported for ARC v2 EM.
 
 @item blink
 @cindex link register, ARC
@@ -370,7 +382,7 @@ The word aligned program counter.
 @end table
 
 In addition the ARC processor has a large number of @emph{auxiliary
-registers}. The precise set depends on the extensions being supported,
+registers}. The precise set depends on the extensions being supported, 
 but the following baseline set are always defined:
 
 @table @code
@@ -466,14 +478,15 @@ processor architecture version and extensions selected by the options.
 @cindex floating point, ARC (@sc{ieee})
 @cindex ARC floating point (@sc{ieee})
 The baseline ARC core does not have hardware floating point
-support. Software floating point support is provided by @code{GCC}
-following @sc{ieee 754}.
+support. Software floating point support is provided by GCC following
+@sc{ieee 754}.
 
-Hardware floating point is provided through the @code{FPX} extension.
-The additional assembler notation required is enabled through the
-@option{-mdpfp}, @option{-mdpfp-compact}, @option{-mdpfp-fast},
-@option{-mspfp}, @option{-mspfp-compact} and @option{-mspfp-fast}
-options.
+Hardware floating point is provided through the double precision and
+single precision @code{FPX} extensions.  The additional assembler
+notation required is enabled through the @option{-mdpfp},
+@option{-mdpfp-compact}, @option{-mdpfp-fast} options for double
+precision, and @option{-mspfp}, @option{-mspfp-compact} and
+@option{-mspfp-fast} options for single precision.
 
 @node ARC Directives
 @section ARC Machine Directives
@@ -485,46 +498,234 @@ machine directives:
 
 @table @code
 
-@item .2byte @var{expression} [, @var{expression}]*
-@item .3byte @var{expression} [, @var{expression}]*
-@item .4byte @var{expression} [, @var{expression}]*
-@cindex @code{2byte} directive, ARC
-@cindex @code{3byte} directive, ARC
-@cindex @code{4byte} directive, ARC
-Write 2, 3 or 4-byte values to the current output section.
+@item .extAuxRegister @var{name}, @var{addr}, @var{mode}
+@cindex @code{extAuxRegister} directive, ARC
+Auxiliary registers can be defined in the assembler source code by
+using this directive.  The first parameter, @var{name}, is the name of the
+new auxiliary register.  The second parameter, @var{addr}, is
+address the of the auxiliary register.  The third parameter,
+@var{mode}, specifies whether the register is readable and/or writable
+and is one of: 
+@table @code
+@item r
+Read only 
 
-@item .half @var{expression} [, @var{expression}]*
-@cindex @code{half} directive, ARC
-@item .short @var{expression} [, @var{expression}]*
-@cindex @code{short} directive, ARC
-Write 2-byte values to the current output section.
+@item w
+Write only
 
-@item .long @var{expression} [, @var{expression}]*
-@cindex @code{long} directive, ARC
-@item .word @var{expression} [, @var{expression}]*
-@cindex @code{word} directive, ARC
-Write 4-byte values to the current output section.
+@item r|w
+Read and write
+
+@end table
+
+For example:
+@example
+        .extAuxRegister mulhi, 0x12, w
+@end example
+specifies a write only extension auxiliary register, @var{mulhi} at
+address 0x12.
+
+@item .extCondCode @var{suffix}, @var{val}
+@cindex @code{extCondCode} directive, ARC
+ARC supports extensible condition codes. This directive defines a new
+condition code, to be known by the suffix, @var{suffix} and will
+depend on the value, @var{val} in the condition code.
+
+For example:
+@example
+        .extCondCode is_busy,0x14
+        add.is_busy  r1,r2,r3
+@end example
+will only execute the @code{add} instruction if the condition code
+value is 0x14.
+
+@item .extCoreRegister @var{name},@var{regnum},@var{mode},@var{shortcut}
+@cindex @code{extCoreRegister} directive, ARC
+Specifies an extension core register named @var{name} as a synonym for
+the register numbered @var{regnum}.  The register number must be
+between 32 and 59. The third argument, @var{mode}, indicates whether the
+register is readable and/or writable and is one of:
+@table @code
+@item r
+Read only 
+
+@item w
+Write only
+
+@item r|w
+Read and write
+
+@end table
+
+The final parameter, @var{shortcut} indicates whether the register has
+a short cut in the pipeline.  The valid values are:
+@table @code
+@item can_shortcut
+The register has a short cut in the pipeline.
+
+@item cannot_shortcut
+The register does not have a short cut in the pipeline.
+@end table
+
+For example:
+@example
+        .extCoreRegister mlo, 57, r , can_shortcut
+@end example
+defines a read only extension core register, @code{mlo}, which is
+register 57, and can short cut the pipeline.
+
+@item .extInstruction @var{name},@var{opcode},@var{subopcode},@var{suffixclass},@var{syntaxclass}
+@cindex @code{extInstruction} directive, ARC
+ARC allows the user to specify extension instructions.  These
+extension instructions are not macros; the assembler creates encodings
+for use of these instructions according to the specification by the
+user.
+
+The first argument, @var{name}, gives the name of the instruction.
+
+The second argument, @var{opcode}, is the opcode to be used (bits 31:27
+in the encoding). Valid values are 0x03 or 0x10-0x1f.
+
+The third argument, @var{subopcode}, is the sub-opcode to be used, but
+the correct value also depends on the fifth argument,
+@var{syntaxclass}
+
+The fourth argument, @var{suffixclass}, determines the kinds of
+suffixes to be allowed.  Valid values are:
+@table @code
+@item SUFFIX_NONE
+No suffixes are permitted.
+
+@item SUFFIX_COND
+Conditional suffixes are permitted.
+
+@item SUFFIX_FLAG
+Flag setting suffixes are permitted.
+
+@item SUFFIX_COND|SUFFIX_FLAG
+Both conditional and flag setting suffices are permitted.
+
+@end table
+
+The fifth and final argument, @var{syntaxclass}, determines the syntax
+class for the instruction.  It can have the following values:
+@table @code
+@item SYNTAX_2OP
+2 Operand Instruction 
+
+@item SYNTAX_3OP
+3 Operand Instruction 
+@end table
+
+The syntax class may be followed by @samp{|} and one of the following
+modifiers:
+@table @code
+
+@item OP1_MUST_BE_IMM
+Modifies syntax class @code{SYNTAX_3OP}, specifying that the first
+operand of a three-operand instruction must be an immediate (i.e., the
+result is discarded).  This is usually used to set the flags using
+specific instructions and not retain results.
+
+@item OP1_IMM_IMPLIED
+Modifies syntax class @code{SYNTAX_20P}, specifying that there is an
+implied immediate destination operand which does not appear in the
+syntax.
+
+For example, if the source code contains an instruction like:
+@example
+inst r1,r2 
+@end example
+it really means that the first argument is an implied immediate (that
+is, the result is discarded).  This is the same as though the source
+code were: inst 0,r1,r2.
+
+@end table
+
+For example, defining a 64-bit multiplier with immediate operands:
+@example
+        .extInstruction  mp64, 0x14, 0x0, SUFFIX_COND|SUFFIX_FLAG,
+                         SYNTAX_3OP|OP1_MUST_BE_IMM
+@end example
+which specifies an extension instruction named @code{mp64} with 3
+operands.  It sets the flags and can be used with a condition code,
+for which the first operand is an immediate, i.e. equivalent to
+discarding the result of the operation.
+
+A 2-instruction variant would be:
+@example
+        .extInstruction mul64,0x14,0x00,SUFFIX_COND, SYNTAX_2OP|OP1_IMM_IMPLIED
+@end example
+which describes a 2 operand instruction with an implicit first
+immediate operand.  The result of this operation would be discarded.
 
 @item .option @var{cpu}
 @cindex @code{option} directive, ARC
 The @code{.option} directive must be followed by the desired core
 version. Permitted values for CPU are:
 @table @code
-@item arc6
+@item ARC600
 Assemble for the ARC600 instruction set
 
-@item arc7
+@item ARC700
 Assemble for the ARC700 instruction set
 
-@item arc
-A synonym for arc@value{ARC_CORE_DEFAULT}.
+@item ARCv2EM
+Assemble for the ARC v2 EM instruction set
 
 @end table
 
 Note: the @code{.option} directive overrides the command line options
 @code{-mcpu=@var{cpu}} and its aliases; a warning is emitted when the
-version is not consistent between the two - even for the implicit
-default core version (arc@value{ARC_CORE_DEFAULT}).
+version is not consistent between the two.
+
+@end table
+
+The following directives were previously listed as ARC dependent, but
+are now standard GNU assembler directives:
+@table @code
+
+@item .short @var{expression} [, @var{expression}]*
+@cindex @code{short} directive, ARC
+@itemx .long @var{expression} [, @var{expression}]*
+@cindex @code{long} directive, ARC
+@itemx .word @var{expression} [, @var{expression}]*
+@cindex @code{word} directive, ARC
+
+@end table
+
+The following directives are now deprecated and will be removed in a
+future release.
+@table @code
+
+@item .2byte @var{expression} [, @var{expression}]*
+@cindex @code{2byte} directive, ARC
+@itemx .half @var{expression} [, @var{expression}]*
+@cindex @code{half} directive, ARC
+Use the standard @samp{.hword} directive.
+
+@item .3byte @var{expression} [, @var{expression}]*
+@cindex @code{3byte} directive, ARC
+It is not clear if this was ever used, but it can be replaced by a
+combination of @samp{.hword} and @samp{.byte} directives.
+
+@item .4byte @var{expression} [, @var{expression}]*
+@cindex @code{4byte} directive, ARC
+Use the standard @samp{.int} directive.
+
+@end table
+
+The following arguments to the .samp{.option} directive are now
+deprecated and will be removed in a future release:
+@table @code
+@item arc6
+Use @samp{ARC600}
+
+@item arc7
+Use @samp{ARC700}
+
+@item arc
+Use the explicit option required.
 
 @end table
 

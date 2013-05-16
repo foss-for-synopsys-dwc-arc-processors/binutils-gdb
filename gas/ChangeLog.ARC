@@ -1,9 +1,21 @@
-2013-05-14  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+2013-05-16  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* doc/c-arc.texi: Spell check and correct throughout.
+	(Options): Note all relevant options are implicit for ARC v2 EM,
+	ARC 700 core 4 v 4.10 replaced by ARC 770 throughout. -mdsp-packa
+	description clarified. -mxy description clarified. Use of backtick
+	for line separator added. Add ilink and clarify use as
+	register. Distinguish between double and single precision
+	FPX. Mark relevant directives as deprecated, add back
+	.extAuxRegister, .extCondCode, .extCoreRegister and
+	.extInstruction, add upper case variants for .option.
+
+2013-05-15  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* doc/c-arc.texi (ARC Dependent Features): Tidy up various small
 	typos.
 
-2013-05-14  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+2013-05-15  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* doc/as.texinfo (Target ARC options): Remove -marc4, -marc5,
 	-marc8 -mEB and -mEL. Add -mcpu, -mA6, -mARC600, -mARC601, -mA7,
