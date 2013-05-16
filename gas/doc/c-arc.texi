@@ -715,7 +715,7 @@ Use the standard @samp{.int} directive.
 
 @end table
 
-The following arguments to the .samp{.option} directive are now
+The following arguments to the @samp{.option} directive are now
 deprecated and will be removed in a future release:
 @table @code
 @item arc6

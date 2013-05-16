@@ -1,5 +1,9 @@
 2013-05-16  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
+	* doc/c-arc/texi (ARC Machine Directives): Correct typo.
+
+2013-05-16  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
 	* doc/c-arc.texi: Spell check and correct throughout.
 	(Options): Note all relevant options are implicit for ARC v2 EM,
 	ARC 700 core 4 v 4.10 replaced by ARC 770 throughout. -mdsp-packa
