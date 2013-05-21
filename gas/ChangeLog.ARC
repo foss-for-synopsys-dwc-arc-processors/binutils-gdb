@@ -1,6 +1,16 @@
+2013-05-20  Matt Hammond  <matt.hammond@synopsys.com>
+
+	* doc/as.texinfo (Flonums): Change ARC to ARC architecture.
+	(Align): Change arc to ARC.
+	* doc/c-arc.texi: Change ARC 600 to ARC600 and ARC 700 to ARC700
+	throughout. Correct punctuation of lists introduced by ':'.
+	(ARC Machine Directives): Reworded example for modifiers to
+	.extInstruction syntax class.
+	(ARC Opcodes): Changed location for Programmer's Reference Manual.
+
 2013-05-16  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
-	* doc/c-arc/texi (ARC Machine Directives): Correct typo.
+	* doc/c-arc.texi (ARC Machine Directives): Correct typo.
 
 2013-05-16  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
