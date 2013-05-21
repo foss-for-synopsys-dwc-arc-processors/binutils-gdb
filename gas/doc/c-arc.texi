@@ -88,7 +88,7 @@ ARC is a family of configurable processors.  Different extensions
 provide additional instructions which must be supported by the
 assembler.  For ARC v2 EM, all possible extensions are supported by
 the assembler, and no options are provided to control these
-extensions.  For the ARC 600 and ARC 700 cores, the following options
+extensions.  For the ARC600 and ARC700 cores, the following options
 control which extension instructions are supported:
 
 @table @code
@@ -594,10 +594,10 @@ The fourth argument, @var{suffixclass}, determines the kinds of
 suffixes to be allowed.  Valid values are:
 @table @code
 @item SUFFIX_NONE
-No suffixes are permitted.
+No suffixes are permitted;
 
 @item SUFFIX_COND
-Conditional suffixes are permitted.
+Conditional suffixes are permitted; and
 
 @item SUFFIX_FLAG
 Flag setting suffixes are permitted.
@@ -611,14 +611,14 @@ The fifth and final argument, @var{syntaxclass}, determines the syntax
 class for the instruction.  It can have the following values:
 @table @code
 @item SYNTAX_2OP
-2 Operand Instruction 
+2 Operand Instruction; or
 
 @item SYNTAX_3OP
-3 Operand Instruction 
+3 Operand Instruction .
 @end table
 
 The syntax class may be followed by @samp{|} and one of the following
-modifiers:
+modifiers.
 @table @code
 
 @item OP1_MUST_BE_IMM
@@ -636,9 +636,9 @@ For example, if the source code contains an instruction like:
 @example
 inst r1,r2 
 @end example
-it really means that the first argument is an implied immediate (that
-is, the result is discarded).  This is the same as though the source
-code were: inst 0,r1,r2.
+the first argument is an implied immediate (that is, the result is
+discarded).  This is the same as though the source code were: inst
+0,r1,r2.
 
 @end table
 
@@ -734,7 +734,7 @@ Use the explicit option required.
 
 The following additional assembler modifiers have been added for
 position-independent code.  These modifiers are available only with
-the ARC 700 processor and generate relocation entries, which are
+the ARC700 processor and generate relocation entries, which are
 interpreted by the linker as follows:
 
 @table @code
@@ -760,7 +760,7 @@ instructions and PC-relative calls.
 
 The following assembler symbols will prove useful when developing
 position-independent code.  These symbols are available only with the
-ARC 700 processor.
+ARC700 processor.
 
 @table @code
 @item __GLOBAL_OFFSET_TABLE__
@@ -781,5 +781,5 @@ An alias for the Global Offset Table
 @cindex ARC opcodes
 @cindex opcodes for ARC
 
-For information on the ARC instruction set, see @cite{ARC Programmers
-Reference Manual}, ARC International (www.arc.com)
+For information on the ARC instruction set, see the @cite{ARC Programmers
+Reference Manual}, available where you download the processor IP library.
