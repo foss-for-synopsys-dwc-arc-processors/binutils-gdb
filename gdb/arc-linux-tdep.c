@@ -302,7 +302,7 @@ arc_linux_is_sigtramp (struct frame_info *this_frame)
   const gdb_byte *arc_sigtramp_insns = byte_order == BFD_ENDIAN_LITTLE
     ? arc_sigtramp_insns_le : arc_sigtramp_insns_be;
   CORE_ADDR pc = get_frame_pc (this_frame);
-  gdb_byte buf[sizeof (arc_sigtramp_insns)];
+  gdb_byte buf[sizeof (arc_sigtramp_insns_le)];
 
   /* Read the memory at the PC. Since we are stopped any breakpoints will
      have been removed (despite the name, this really does take THIS frame). */
