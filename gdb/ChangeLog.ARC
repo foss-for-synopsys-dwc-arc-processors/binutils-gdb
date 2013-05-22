@@ -1,3 +1,7 @@
+2013-05-22  Vineet Gupta <vgupta@synopsys.com>
+
+	* arc-linux-tdep.c: Fix signature of signal trampoline
+
 2014-04-26  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* arc-elf-tdep.c: Make simulator header inclusion dependent on
