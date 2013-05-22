@@ -1,8 +1,14 @@
+2013-05-22  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	* arc-linux-tdep.c (arc_linux_is_sigtramp): Correct sizing of buf.
+	* ChangeLog.ARC: Fix errors in the record.
+
 2013-05-22  Vineet Gupta <vgupta@synopsys.com>
 
-	* arc-linux-tdep.c: Fix signature of signal trampoline
+	* arc-linux-tdep.c (arc_linux_is_sigtramp): Fix signature of
+	signal trampoline
 
-2014-04-26  Jeremy Bennett <jeremy.bennett@embecosm.com>
+2013-04-26  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* arc-elf-tdep.c: Make simulator header inclusion dependent on
 	WITH_SIM.
@@ -10,7 +16,7 @@
 	(arc_gdbarch_osabi_init): Only call arc_set_register_mapping if
 	WITH_SIM is defined.
 
-2014-04-18  Jeremy Bennett <jeremy.bennett@embecosm.com>
+2013-04-18  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* arc-elf-tdep.c (arc_push_memory_call): Do not change endianness
 	of args when pushing (already done), add more debug for arg
