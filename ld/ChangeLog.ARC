@@ -1,3 +1,11 @@
+2013-05-24  Vineet Gupta <vgupta@synopsys.com>
+
+	* emulparams/arclinux.sh: Define COMMONPAGESIZE as 8k which
+	enables generation of DATA_SEGMENT_ALIGN in linker scripts.
+	* emulparams/arclinux_prof.sh: likewise
+	* emulparams/arceblinux.sh: likewise
+	* emulparams/arceblinux_prof.sh: likewise
+
 2013-03-18  Simon Cook  <simon.cook@embecosm.com>
 
 	* emulparams/arcelf.sh, emulparams/arcelf_prof.sh, emulparams/arclinux.sh,
