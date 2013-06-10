@@ -4,6 +4,15 @@
         * config/tc-arc.c: Add -mav2em option for EM, enable SPFP and
 	DPFP extensions for EM.
 
+2013-06-06  Simon Cook  <simon.cook@embecosm.com>
+
+	* config/tc-arc.c (options): Added OPTION_MCPU for -mcpu
+	matching.
+	(md_longopts): Added new options based on updated
+	documentation.
+	(md_parse_option): Added support for specifying architecture
+	via -mcpu option.
+
 2013-05-20  Matt Hammond  <matt.hammond@synopsys.com>
 
 	* doc/as.texinfo (Flonums): Change ARC to ARC architecture.
