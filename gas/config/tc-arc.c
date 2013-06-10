@@ -242,6 +242,7 @@ struct option md_longopts[] =
   { "mARC700", no_argument, NULL, OPTION_ARC700 },
   { "mA7", no_argument, NULL, OPTION_ARC700 },
   { "mEM", no_argument, NULL, OPTION_ARCEM },
+  { "mav2em", no_argument, NULL, OPTION_ARCEM },
   { "mcpu", required_argument, NULL, OPTION_MCPU },
   { "muser-mode-only", no_argument, NULL, OPTION_USER_MODE },
   { "mld-extension-reg-mask", required_argument, NULL, OPTION_LD_EXT_MASK },
@@ -676,7 +677,7 @@ md_show_usage (FILE *stream)
 ARC Options:\n\
   -mA[4|5]                select processor variant (default arc%d)\n\
   -mARC[600|700]          select processor variant\n\
-  -mEM                    select ARCv2 EM processor variant\n\
+  -mEM|-mav2em            select ARCv2 EM processor variant\n\
   -EB                     assemble code for a big endian cpu\n\
   -EL                     assemble code for a little endian cpu\n", arc_mach_type + 5);
 }
@@ -792,9 +793,10 @@ arc_process_extinstr_options (void)
       break;
     }
 
-  /*For ARCv2EM disable all lib extensions. All ARCv2 instructions are
-    recognized by default by the GAS*/
-  if (arc_mach_type == bfd_mach_arc_arcv2 && (extinsnlib))
+  /*For ARCv2EM disable all lib extensions (Except the FP ops). All
+    ARCv2 instructions are recognized by default by the GAS*/
+  if ((arc_mach_type == bfd_mach_arc_arcv2)
+      && (extinsnlib & ~(SP_FLOAT_INSN | DP_FLOAT_INSN)))
     {
       as_bad ("This option cannot be used with ARC-EM");
       exit (1);
