@@ -1,3 +1,9 @@
+2013-06-06  Claudiu Zissulescu <claziss@synopsys.com>
+
+	* config/extlib/arcextlib.s : Define __ARCCOMPACT__ also for ARCv2
+        * config/tc-arc.c: Add -mav2em option for EM, enable SPFP and
+	DPFP extensions for EM.
+
 2013-05-20  Matt Hammond  <matt.hammond@synopsys.com>
 
 	* doc/as.texinfo (Flonums): Change ARC to ARC architecture.
