@@ -1,3 +1,7 @@
+2013-06-10  Claudiu Zissulescu <claziss@synopsys.com>
+
+       * arc-opc-old.c: add variant of prefetch instruction
+
 2013-06-06  Claudiu Zissulescu <claziss@synopsys.com>
 
        * arc-em.h: add seti/clri as valid instructions

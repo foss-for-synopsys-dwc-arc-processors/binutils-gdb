@@ -3318,6 +3318,7 @@ static struct arc_opcode arc_opcodes[] = {
   /* prefetch<.aa>    [b] 	0001 0bbb 0000 0000 0BBB 0aa0 0011 1110  */
   { (unsigned char *) "prefetch%.p [%g]%3",                      0xF8FF89FF, 0x1000003E, ARC_MACH_ARCV2, 0, 0, 0, 0},
   /* prefetch<.aa>    [limm] 	0001 0110 0000 0000 0111 0aa0 0011 1110  */
+  { (unsigned char *) "prefetch%.p%Q [%[L]%1",                    0xFFFFF9FF, 0x1600703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
   { (unsigned char *) "prefetch%.p%Q [%L]%1",                    0xFFFFF9FF, 0x1600703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
   /*LD 0 */
   /* ld<.aa><.di><.x><.ZZ>    0,[b,c] 	0010 0bbb aa11 0ZZX DBBB CCCC CC11 1110  */
