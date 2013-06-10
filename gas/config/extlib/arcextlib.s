@@ -7,18 +7,18 @@
 ;; it under the terms of the GNU General Public License as published by
 ;; the Free Software Foundation; either version 2 of the License, or
 ;; (at your option) any later version.
-;; 
+;;
 ;; This program is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
-;; 
+;;
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program; if not, write to the Free Software
 ;; Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 ;; Driver option -Xtelephony causes all telephony extensions to be activated
-	
+
 .ifdef __Xtelephony
     ; ARC4-only options.
     .set   __Xins_tel,1
@@ -26,55 +26,58 @@
     .set   __Xxmac_d16_tel,1
     .set   __Xdvbf,1
 .endif
-	
+
 .ifdef __Xins_tel
 	.ifndef __Xbarrel_shifter
-            .set   __Xbarrel_shifter,1
-        .endif
-        .ifndef __Xswap	
-            .set           __Xswap,1
-        .endif  	
+	    .set   __Xbarrel_shifter,1
+	.endif
+	.ifndef __Xswap
+	    .set           __Xswap,1
+	.endif
 	.ifndef __Xmin_max
-            .set   __Xmin_max,1
+	    .set   __Xmin_max,1
 	.endif
 .endif
-	
+
 .ifdef __Xdsp_packa
     .set   __Xmul32x16,1
     .ifndef __Xea
-            .set   __Xea,1
+	    .set   __Xea,1
     .endif
 .endif
-.ifdef __Xmult32	
-        .ifndef __Xmul32x16
+.ifdef __Xmult32
+	.ifndef __Xmul32x16
 	.set __Xmul32x16,1
-        .endif
+	.endif
 	.ifndef __Xmul32x32
 	.set __Xmul32x32,1
-        .endif
-.endif        
-        	
+	.endif
+.endif
+
 .ifndef __ARCCOMPACT__
-        .ifdef __ARC700__
-               .set   __ARCCOMPACT__,1
-        .endif
-        .ifdef __ARC600__
-                .set  __ARCCOMPACT__,1
-        .endif
-        .ifdef __ARC601__
-                .set  __ARCCOMPACT__,1
-        .endif
-.endif        	
-	
+	.ifdef __ARC700__
+	       .set   __ARCCOMPACT__,1
+	.endif
+	.ifdef __ARC600__
+		.set  __ARCCOMPACT__,1
+	.endif
+	.ifdef __ARC601__
+		.set  __ARCCOMPACT__,1
+	.endif
+	.ifdef __ARCv2__
+		.set  __ARCCOMPACT__,1
+	.endif
+.endif
+
 ;;  SWAP Extensions
 .ifdef __Xswap
     .ifndef __ARCCOMPACT__
-	.ifndef __ARC700__	
+	.ifndef __ARC700__
 		.extInstruction	swap, 0x05, 0x00, SUFFIX_FLAG, SYNTAX_2OP
-        .else
-                .extInstruction	swap, 0x03, 0x09, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
-        .endif
-     .endif		
+	.else
+		.extInstruction	swap, 0x03, 0x09, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
+	.endif
+     .endif
 .endif
 
 ;; Normalise Extensions
@@ -82,8 +85,8 @@
     .ifdef __ARCCOMPACT__
 		.extInstruction	norm , 0x05, 0x01, SUFFIX_FLAG, SYNTAX_2OP
 		.extInstruction	normw, 0x05, 0x08, SUFFIX_FLAG, SYNTAX_2OP
-                .else
-                .extInstruction	norm, 0x03, 0x0A, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
+		.else
+		.extInstruction	norm, 0x03, 0x0A, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
     .endif
 .endif
 
@@ -115,39 +118,39 @@
 ;;  Dual and Single Operand Saturated Arithmetic Instructions
 .ifdef __Xea
     .ifdef __ARCCOMPACT__
-    	.extInstruction	sat16,  0x05, 0x02, SUFFIX_FLAG, SYNTAX_2OP
-    	.extInstruction	rnd16,  0x05, 0x03, SUFFIX_FLAG, SYNTAX_2OP
-    	.extInstruction	abssw,  0x05, 0x04, SUFFIX_FLAG, SYNTAX_2OP
-    	.extInstruction	abss,   0x05, 0x05, SUFFIX_FLAG, SYNTAX_2OP
-    	.extInstruction	negsw,  0x05, 0x06, SUFFIX_FLAG, SYNTAX_2OP
-    	.extInstruction	negs,   0x05, 0x07, SUFFIX_FLAG, SYNTAX_2OP
+	.extInstruction	sat16,  0x05, 0x02, SUFFIX_FLAG, SYNTAX_2OP
+	.extInstruction	rnd16,  0x05, 0x03, SUFFIX_FLAG, SYNTAX_2OP
+	.extInstruction	abssw,  0x05, 0x04, SUFFIX_FLAG, SYNTAX_2OP
+	.extInstruction	abss,   0x05, 0x05, SUFFIX_FLAG, SYNTAX_2OP
+	.extInstruction	negsw,  0x05, 0x06, SUFFIX_FLAG, SYNTAX_2OP
+	.extInstruction	negs,   0x05, 0x07, SUFFIX_FLAG, SYNTAX_2OP
 
-        .extInstruction adds,   0x05, 0x06, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
-        .extInstruction subs,   0x05, 0x07, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
-    	.extInstruction	divaw,  0x05, 0x08, SUFFIX_COND, SYNTAX_3OP
+	.extInstruction adds,   0x05, 0x06, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction subs,   0x05, 0x07, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction	divaw,  0x05, 0x08, SUFFIX_COND, SYNTAX_3OP
 
-        .extInstruction	asls,   0x05, 0x0A, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
-    	.extInstruction	asrs,   0x05, 0x0B, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction	asls,   0x05, 0x0A, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction	asrs,   0x05, 0x0B, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
 
-        .extInstruction addsdw, 0x05, 0x28, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
-        .extInstruction subsdw, 0x05, 0x29, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction addsdw, 0x05, 0x28, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction subsdw, 0x05, 0x29, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
     .else
 	.ifndef __A4__
-        ;; Single Operand Instructions
-        .extInstruction sat,    0x03, 0x10, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
-        .extInstruction sabss,  0x03, 0x11, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
-        .extInstruction labss,  0x03, 0x12, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
-        .extInstruction rnd16,  0x03, 0x13, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
-        .extInstruction snegs,  0x03, 0x14, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
-        .extInstruction lnegs,  0x03, 0x15, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
-        .extInstruction snorm,  0x03, 0x16, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
-        .extInstruction lnorm,  0x03, 0x17, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
+	;; Single Operand Instructions
+	.extInstruction sat,    0x03, 0x10, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
+	.extInstruction sabss,  0x03, 0x11, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
+	.extInstruction labss,  0x03, 0x12, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
+	.extInstruction rnd16,  0x03, 0x13, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
+	.extInstruction snegs,  0x03, 0x14, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
+	.extInstruction lnegs,  0x03, 0x15, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
+	.extInstruction snorm,  0x03, 0x16, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
+	.extInstruction lnorm,  0x03, 0x17, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
 
-        .extInstruction adds,   0x1A, 0x00, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
-        .extInstruction subs,   0x1B, 0x00, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
-        .extInstruction diva,   0x14, 0x00, SUFFIX_COND            , SYNTAX_3OP
-        .extInstruction asls,   0x16, 0x00, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
-        .extInstruction asrs,   0x17, 0x00, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction adds,   0x1A, 0x00, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction subs,   0x1B, 0x00, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction diva,   0x14, 0x00, SUFFIX_COND            , SYNTAX_3OP
+	.extInstruction asls,   0x16, 0x00, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction asrs,   0x17, 0x00, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
 	.endif
     .endif
 
@@ -159,7 +162,7 @@
 .endif
 
 .ifndef __Xno_mpy
-    .ifdef __ARC700__	
+    .ifdef __ARC700__
 	.extInstruction mpy,  0x04, 0x1A, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
 	.extInstruction mpyh,  0x04, 0x1B, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
 	.extInstruction mpyhu, 0x04, 0x1C, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
@@ -182,14 +185,14 @@
 
 	;; It's important that the longer syntax versions appear after
 	;; the shorter syntax versions because internally that's how the
-	;; assembler works. 
+	;; assembler works.
 
-	        .extInstruction	mul64 , 0x05, 0x04, SUFFIX_COND|EXTENDED_MULTIPLY, SYNTAX_2OP|OP1_IMM_IMPLIED|OP1_DEST_IGNORED
+		.extInstruction	mul64 , 0x05, 0x04, SUFFIX_COND|EXTENDED_MULTIPLY, SYNTAX_2OP|OP1_IMM_IMPLIED|OP1_DEST_IGNORED
 		.extInstruction	mul64 , 0x05, 0x04, SUFFIX_COND|EXTENDED_MULTIPLY, SYNTAX_3OP|OP1_MUST_BE_IMM|OP1_DEST_IGNORED
 		.extInstruction	mulu64, 0x05, 0x05, SUFFIX_COND|EXTENDED_MULTIPLY, SYNTAX_2OP|OP1_IMM_IMPLIED|OP1_DEST_IGNORED
 		.extInstruction	mulu64, 0x05, 0x05, SUFFIX_COND|EXTENDED_MULTIPLY, SYNTAX_3OP|OP1_MUST_BE_IMM|OP1_DEST_IGNORED
 
-        .else
+	.else
 	.extInstruction	mul64 , 0x14, 0x00,SUFFIX_COND, SYNTAX_2OP|OP1_IMM_IMPLIED
 	.extInstruction	mul64 , 0x14, 0x00,SUFFIX_COND, SYNTAX_3OP|OP1_MUST_BE_IMM
 	.extInstruction	mulu64, 0x15, 0x00,SUFFIX_COND, SYNTAX_2OP|OP1_IMM_IMPLIED
@@ -209,77 +212,77 @@
 	.extInstruction	mulhlw, 0x05,0x38,SUFFIX_COND|SUFFIX_FLAG,SYNTAX_3OP
 	.extInstruction	mulhflw,0x05,0x39,SUFFIX_COND|SUFFIX_FLAG,SYNTAX_3OP
 
-        .extCondCode     Ss,    0x10
-        .extCondCode     Sc,    0x11
-        .extCondCode     AS,    0x12
-        .extCondCode     ASc,   0x13
-        .extCondCode     AZ,    0x18
-        .extCondCode     AZc,   0x19
-        .extCondCode     AN,    0x1A
-        .extCondCode     AP,    0x1B
-        .extCondCode     PS,    0x1C
-        .extCondCode     PSc,   0x1D
+	.extCondCode     Ss,    0x10
+	.extCondCode     Sc,    0x11
+	.extCondCode     AS,    0x12
+	.extCondCode     ASc,   0x13
+	.extCondCode     AZ,    0x18
+	.extCondCode     AZc,   0x19
+	.extCondCode     AN,    0x1A
+	.extCondCode     AP,    0x1B
+	.extCondCode     PS,    0x1C
+	.extCondCode     PSc,   0x1D
 
-        .extAuxRegister	 aux_macmode, 0x41, r|w
+	.extAuxRegister	 aux_macmode, 0x41, r|w
 	.extAuxRegister  aux_xmac1632h, 0x9f, r|w
 	.extAuxRegister  aux_xmac1632l, 0xa0, r|w
 
-        .extCoreRegister acc1,  56, w|r, can_shortcut
-        .extCoreRegister acc2,  57, w|r, can_shortcut
+	.extCoreRegister acc1,  56, w|r, can_shortcut
+	.extCoreRegister acc2,  57, w|r, can_shortcut
 .ifndef __Xmult32
-        .extCoreRegister r56,  56, w|r, can_shortcut
-        .extCoreRegister r57,  57, w|r, can_shortcut
+	.extCoreRegister r56,  56, w|r, can_shortcut
+	.extCoreRegister r57,  57, w|r, can_shortcut
 .endif
 
 .endif
 
 ;; 2 New condition codes
 .ifdef __ARC700__
-	
+
     .extCondCode     qf,    0x1e
     .extCondCode     qnf,   0x1f
 
 .endif
-	
+
 ;;; arc simd control instructions
-.ifdef __ARC700__	
+.ifdef __ARC700__
     .extInstruction	chsd,     0x05, 0x3f, SUFFIX_NONE, SYNTAX_3OP
 .endif
-	
+
 ;; double-precision floating point extensions
 .ifdef __Xdpfp
 	.ifdef __ARCCOMPACT__
-        .extInstruction dmulh11,0x06,0x08,SUFFIX_FLAG,SYNTAX_3OP
-        .extInstruction dmulh12,0x06,0x09,SUFFIX_FLAG,SYNTAX_3OP
-        .extInstruction dmulh21,0x06,0x0a,SUFFIX_FLAG,SYNTAX_3OP
-        .extInstruction dmulh22,0x06,0x0b,SUFFIX_FLAG,SYNTAX_3OP
+	.extInstruction dmulh11,0x06,0x08,SUFFIX_FLAG,SYNTAX_3OP
+	.extInstruction dmulh12,0x06,0x09,SUFFIX_FLAG,SYNTAX_3OP
+	.extInstruction dmulh21,0x06,0x0a,SUFFIX_FLAG,SYNTAX_3OP
+	.extInstruction dmulh22,0x06,0x0b,SUFFIX_FLAG,SYNTAX_3OP
 
-        .extInstruction daddh11,0x06,0x0c,SUFFIX_FLAG,SYNTAX_3OP
-        .extInstruction daddh12,0x06,0x0d,SUFFIX_FLAG,SYNTAX_3OP
-        .extInstruction daddh21,0x06,0x0e,SUFFIX_FLAG,SYNTAX_3OP
-        .extInstruction daddh22,0x06,0x0f,SUFFIX_FLAG,SYNTAX_3OP
+	.extInstruction daddh11,0x06,0x0c,SUFFIX_FLAG,SYNTAX_3OP
+	.extInstruction daddh12,0x06,0x0d,SUFFIX_FLAG,SYNTAX_3OP
+	.extInstruction daddh21,0x06,0x0e,SUFFIX_FLAG,SYNTAX_3OP
+	.extInstruction daddh22,0x06,0x0f,SUFFIX_FLAG,SYNTAX_3OP
 
-        .extInstruction dsubh11,0x06,0x10,SUFFIX_FLAG,SYNTAX_3OP
-        .extInstruction dsubh12,0x06,0x11,SUFFIX_FLAG,SYNTAX_3OP
-        .extInstruction dsubh21,0x06,0x12,SUFFIX_FLAG,SYNTAX_3OP
-        .extInstruction dsubh22,0x06,0x13,SUFFIX_FLAG,SYNTAX_3OP
+	.extInstruction dsubh11,0x06,0x10,SUFFIX_FLAG,SYNTAX_3OP
+	.extInstruction dsubh12,0x06,0x11,SUFFIX_FLAG,SYNTAX_3OP
+	.extInstruction dsubh21,0x06,0x12,SUFFIX_FLAG,SYNTAX_3OP
+	.extInstruction dsubh22,0x06,0x13,SUFFIX_FLAG,SYNTAX_3OP
 
-        .extInstruction drsubh11,0x06,0x14,SUFFIX_FLAG,SYNTAX_3OP
-        .extInstruction drsubh12,0x06,0x15,SUFFIX_FLAG,SYNTAX_3OP
-        .extInstruction drsubh21,0x06,0x16,SUFFIX_FLAG,SYNTAX_3OP
-        .extInstruction drsubh22,0x06,0x17,SUFFIX_FLAG,SYNTAX_3OP
+	.extInstruction drsubh11,0x06,0x14,SUFFIX_FLAG,SYNTAX_3OP
+	.extInstruction drsubh12,0x06,0x15,SUFFIX_FLAG,SYNTAX_3OP
+	.extInstruction drsubh21,0x06,0x16,SUFFIX_FLAG,SYNTAX_3OP
+	.extInstruction drsubh22,0x06,0x17,SUFFIX_FLAG,SYNTAX_3OP
 
-        .extInstruction dexcl1,0x06,0x18,SUFFIX_NONE,SYNTAX_3OP
-        .extInstruction dexcl2,0x06,0x19,SUFFIX_NONE,SYNTAX_3OP
+	.extInstruction dexcl1,0x06,0x18,SUFFIX_NONE,SYNTAX_3OP
+	.extInstruction dexcl2,0x06,0x19,SUFFIX_NONE,SYNTAX_3OP
 
-        .extAuxRegister dp_build,0x6c,r
-        .extAuxRegister dp_status,0x305,r
+	.extAuxRegister dp_build,0x6c,r
+	.extAuxRegister dp_status,0x305,r
 	;; compiler uses these instead of the AUX_DPFPDx variety
-        .extAuxRegister D1L,0x301,r|w
-        .extAuxRegister D1H,0x302,r|w
-        .extAuxRegister D2L,0x303,r|w
-        .extAuxRegister D2H,0x304,r|w
-        .endif
+	.extAuxRegister D1L,0x301,r|w
+	.extAuxRegister D1H,0x302,r|w
+	.extAuxRegister D2L,0x303,r|w
+	.extAuxRegister D2H,0x304,r|w
+	.endif
 .endif
 
 .ifdef __Xspfp
@@ -288,7 +291,7 @@
 	.extInstruction fmul, 0x6, 0x0, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
 	.extInstruction fsub, 0x6, 0x2, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
 .endif
-.endif	
+.endif
 
 .ifdef __Xxy
 	.ifndef __ARCCOMPACT__
@@ -309,7 +312,7 @@
 	.extCoreRegister t3,      47, r|w, can_shortcut
 
 	; Address and Modifier Register definitions
-   
+
 	.extAuxRegister ax0,      0x30, r|w
 	.extAuxRegister ax1,      0x31, r|w
 	.extAuxRegister ay0,      0x32, r|w
@@ -324,12 +327,12 @@
 	.extAuxRegister burstxym, 0x3b, r|w
 	.extAuxRegister burstsz,  0x3c, r|w
 	.extAuxRegister burstval, 0x3d, r|w
-                ;; 	add_check xy, 2
+		;; 	add_check xy, 2
 	.endif
 .endif
-	
-.ifdef __Xxy	
-        .ifdef __ARCCOMPACT__
+
+.ifdef __Xxy
+	.ifdef __ARCCOMPACT__
 ;;	XY Memory extension (DSP version 3)
 	.extCoreRegister x0_u0, 32,  r|w, cannot_shortcut,CORE
 	.extCoreRegister x0_u1, 33,  r|w, cannot_shortcut,CORE
@@ -393,96 +396,96 @@
 	.extAuxRegister burstval, 0x9c, r|w
 	.extAuxRegister xylsbasex,0x9d, r|w
 	.extAuxRegister xylsbasey,0x9e, r|w
-        .endif
+	.endif
 .endif
-	
 
-	
+
+
 .ifdef __Xxmac_d16
 	.ifndef __Xxmac
-                .set  __Xxmac,1
-        .endif
-.endif        
+		.set  __Xxmac,1
+	.endif
+.endif
 .ifdef __Xxmac_24
 	.ifndef _Xxmac
-                .set  __Xxmac,1
+		.set  __Xxmac,1
 	.endif
-.endif        
+.endif
 .ifdef __Xmult32
 	.ifndef __Xxmac
 	.set  __Xxmac,1
-        .endif          
+	.endif
 	.ifndef __Xxmac_d16
 	.set __Xxmac_d16,1
-        .endif
-.endif        	
+	.endif
+.endif
 
-.ifdef __Xxmac	
+.ifdef __Xxmac
 .ifdef __ARCCOMPACT__
-        .extCoreRegister a1,  58, w|r, cannot_shortcut, CORE
-        .extCoreRegister a2,  59, w|r, cannot_shortcut, CORE
-        .extAuxRegister aux_macmode, 0x41, r|w
+	.extCoreRegister a1,  58, w|r, cannot_shortcut, CORE
+	.extCoreRegister a2,  59, w|r, cannot_shortcut, CORE
+	.extAuxRegister aux_macmode, 0x41, r|w
 
-        .extCondCode     Ss,    0x10
-        .extCondCode     Sc,    0x11
-        .extCondCode     AS,    0x12
-        .extCondCode     ASc,   0x13
-        .extCondCode     AZ,    0x18
-        .extCondCode     AZc,   0x19
-        .extCondCode     AN,    0x1A
-        .extCondCode     AP,    0x1B
+	.extCondCode     Ss,    0x10
+	.extCondCode     Sc,    0x11
+	.extCondCode     AS,    0x12
+	.extCondCode     ASc,   0x13
+	.extCondCode     AZ,    0x18
+	.extCondCode     AZc,   0x19
+	.extCondCode     AN,    0x1A
+	.extCondCode     AP,    0x1B
 
 	.ifdef __Xxmac_d16
-        .extInstruction muldw,  0x05, 0x0c, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
-        .extInstruction muludw, 0x05, 0x0d, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
-        .extInstruction mulrdw, 0x05, 0x0e, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
-        .extInstruction macdw,  0x05, 0x10, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
-        .extInstruction macudw, 0x05, 0x11, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
-        .extInstruction macrdw, 0x05, 0x12, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
-        .extInstruction msubdw, 0x05, 0x14, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
-        .extInstruction cmacrdw,0x05, 0x26, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction muldw,  0x05, 0x0c, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction muludw, 0x05, 0x0d, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction mulrdw, 0x05, 0x0e, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction macdw,  0x05, 0x10, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction macudw, 0x05, 0x11, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction macrdw, 0x05, 0x12, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction msubdw, 0x05, 0x14, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction cmacrdw,0x05, 0x26, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
 	.endif
-	
-        .ifndef __ARC700__
+
+	.ifndef __ARC700__
 	    ;; FFT butterfly accelerator (not supported for ARC 700)
 	    .extInstruction fbfdw,  0x05, 0x0b, SUFFIX_FLAG, SYNTAX_2OP
 	.endif
 
 	.ifdef __Xxmac_24
-        .extInstruction mult,   0x05, 0x18, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
-        .extInstruction mulut,  0x05, 0x19, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
-        .extInstruction mulrt,  0x05, 0x1a, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
-        .extInstruction mact,   0x05, 0x1c, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
-        .extInstruction macrt,  0x05, 0x1e, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
-        .extInstruction msubt,  0x05, 0x20, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction mult,   0x05, 0x18, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction mulut,  0x05, 0x19, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction mulrt,  0x05, 0x1a, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction mact,   0x05, 0x1c, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction macrt,  0x05, 0x1e, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction msubt,  0x05, 0x20, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
 	.endif
     .else
 	.ifndef __A4__
-        .extInstruction msubnr, 0x15, 0x00, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
-        .extInstruction macnr,  0x18, 0x00, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
-        .extInstruction macunr, 0x19, 0x00, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
-        .extInstruction mulnr,  0x1C, 0x00, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
-        .extInstruction mulr,   0x1D, 0x00, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction msubnr, 0x15, 0x00, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction macnr,  0x18, 0x00, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction macunr, 0x19, 0x00, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction mulnr,  0x1C, 0x00, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction mulr,   0x1D, 0x00, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
 	.endif
-                ;; 	add_check xmac_d16, 3
+		;; 	add_check xmac_d16, 3
     .endif
 
     .ifdef __ARCCOMPACT__
-        .extCoreRegister acc1,  56, w|r, can_shortcut, CORE
-        .extCoreRegister acc2,  57, w|r, can_shortcut, CORE
+	.extCoreRegister acc1,  56, w|r, can_shortcut, CORE
+	.extCoreRegister acc2,  57, w|r, can_shortcut, CORE
     .else
-        .extCoreRegister acc0,  56, w|r, can_shortcut, CORE
-        .extCoreRegister acc1,  57, w|r, can_shortcut, CORE
+	.extCoreRegister acc0,  56, w|r, can_shortcut, CORE
+	.extCoreRegister acc1,  57, w|r, can_shortcut, CORE
     .endif
 
-        .extAuxRegister aux_macmode, 0x41, r|w
-        .extAuxRegister aux_xmac0,   0x44, r|w
-        .extAuxRegister aux_xmac1,   0x45, r|w
-        .extAuxRegister aux_xmac2,   0x46, r|w
+	.extAuxRegister aux_macmode, 0x41, r|w
+	.extAuxRegister aux_xmac0,   0x44, r|w
+	.extAuxRegister aux_xmac1,   0x45, r|w
+	.extAuxRegister aux_xmac2,   0x46, r|w
 	.ifdef __Xxmac_24
-        .extAuxRegister aux_xmac0_24,   0x2c, r|w
-        .extAuxRegister aux_xmac1_24,   0x2d, r|w
-        .extAuxRegister aux_xmac2_24,   0x2e, r|w
+	.extAuxRegister aux_xmac0_24,   0x2c, r|w
+	.extAuxRegister aux_xmac1_24,   0x2d, r|w
+	.extAuxRegister aux_xmac2_24,   0x2e, r|w
 	.endif
     .ifdef __ARCCOMPACT__
 	.ifndef __ARC700__
@@ -490,54 +493,54 @@
 	.endif
     .endif
 
-        .extCondCode     Ss,    0x10
-        .extCondCode     Sc,    0x11
-        .extCondCode     AS,    0x12
-        .extCondCode     ASc,   0x13
-        .extCondCode     AZ,    0x18
-        .extCondCode     AZc,   0x19
-        .extCondCode     AN,    0x1A
-        .extCondCode     AP,    0x1B
-        .extCondCode     PS,    0x1C
-        .extCondCode     PSc,   0x1D
+	.extCondCode     Ss,    0x10
+	.extCondCode     Sc,    0x11
+	.extCondCode     AS,    0x12
+	.extCondCode     ASc,   0x13
+	.extCondCode     AZ,    0x18
+	.extCondCode     AZc,   0x19
+	.extCondCode     AN,    0x1A
+	.extCondCode     AP,    0x1B
+	.extCondCode     PS,    0x1C
+	.extCondCode     PSc,   0x1D
 .endif
 
 ;;  Dual and Single Operand Instructions for Telephony
 .ifdef __Xea
     .ifdef __ARCCOMPACT__
-    	.extInstruction	sat16,  0x05, 0x02, SUFFIX_FLAG, SYNTAX_2OP
-    	.extInstruction	rnd16,  0x05, 0x03, SUFFIX_FLAG, SYNTAX_2OP
-    	.extInstruction	abssw,  0x05, 0x04, SUFFIX_FLAG, SYNTAX_2OP
-    	.extInstruction	abss,   0x05, 0x05, SUFFIX_FLAG, SYNTAX_2OP
-    	.extInstruction	negsw,  0x05, 0x06, SUFFIX_FLAG, SYNTAX_2OP
-    	.extInstruction	negs,   0x05, 0x07, SUFFIX_FLAG, SYNTAX_2OP
+	.extInstruction	sat16,  0x05, 0x02, SUFFIX_FLAG, SYNTAX_2OP
+	.extInstruction	rnd16,  0x05, 0x03, SUFFIX_FLAG, SYNTAX_2OP
+	.extInstruction	abssw,  0x05, 0x04, SUFFIX_FLAG, SYNTAX_2OP
+	.extInstruction	abss,   0x05, 0x05, SUFFIX_FLAG, SYNTAX_2OP
+	.extInstruction	negsw,  0x05, 0x06, SUFFIX_FLAG, SYNTAX_2OP
+	.extInstruction	negs,   0x05, 0x07, SUFFIX_FLAG, SYNTAX_2OP
 
-        .extInstruction adds,   0x05, 0x06, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
-        .extInstruction subs,   0x05, 0x07, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
-    	.extInstruction	divaw,  0x05, 0x08, SUFFIX_COND, SYNTAX_3OP
+	.extInstruction adds,   0x05, 0x06, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction subs,   0x05, 0x07, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction	divaw,  0x05, 0x08, SUFFIX_COND, SYNTAX_3OP
 	.ifdef __Xbarrel_shifter
-        .extInstruction	asls,   0x05, 0x0A, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
-    	.extInstruction	asrs,   0x05, 0x0B, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction	asls,   0x05, 0x0A, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction	asrs,   0x05, 0x0B, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
 	.endif
-        .extInstruction addsdw, 0x05, 0x28, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
-        .extInstruction subsdw, 0x05, 0x29, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction addsdw, 0x05, 0x28, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction subsdw, 0x05, 0x29, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
     .else
 	.ifndef __A4__
-        ;; Single Operand Instructions
-        .extInstruction sat,    0x03, 0x10, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
-        .extInstruction sabss,  0x03, 0x11, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
-        .extInstruction labss,  0x03, 0x12, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
-        .extInstruction rnd16,  0x03, 0x13, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
-        .extInstruction snegs,  0x03, 0x14, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
-        .extInstruction lnegs,  0x03, 0x15, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
-        .extInstruction snorm,  0x03, 0x16, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
-        .extInstruction lnorm,  0x03, 0x17, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
+	;; Single Operand Instructions
+	.extInstruction sat,    0x03, 0x10, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
+	.extInstruction sabss,  0x03, 0x11, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
+	.extInstruction labss,  0x03, 0x12, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
+	.extInstruction rnd16,  0x03, 0x13, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
+	.extInstruction snegs,  0x03, 0x14, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
+	.extInstruction lnegs,  0x03, 0x15, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
+	.extInstruction snorm,  0x03, 0x16, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
+	.extInstruction lnorm,  0x03, 0x17, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
 
-        .extInstruction adds,   0x1A, 0x00, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
-        .extInstruction subs,   0x1B, 0x00, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
-        .extInstruction diva,   0x14, 0x00, SUFFIX_COND, SYNTAX_3OP
-        .extInstruction asls,   0x16, 0x00, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
-        .extInstruction asrs,   0x17, 0x00, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction adds,   0x1A, 0x00, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction subs,   0x1B, 0x00, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction diva,   0x14, 0x00, SUFFIX_COND, SYNTAX_3OP
+	.extInstruction asls,   0x16, 0x00, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	.extInstruction asrs,   0x17, 0x00, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
 	.endif
     .endif
 
@@ -573,28 +576,28 @@
 ;; Dual viterbi butterfly extension
 .ifdef __Xdvbf
     .ifdef __ARCCOMPACT__
-        .extInstruction vbfdw, 0x05, 0x0A, SUFFIX_FLAG, SYNTAX_2OP
+	.extInstruction vbfdw, 0x05, 0x0A, SUFFIX_FLAG, SYNTAX_2OP
     .else
 	.ifndef __A4__
-        .extInstruction	dvbf, 0x03, 0x18, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
+	.extInstruction	dvbf, 0x03, 0x18, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_2OP
 	.endif
     .endif
-        .ifndef __A4__
+	.ifndef __A4__
 	; these are the names for telephony and A5 DSP ver 3.0
-        .extAuxRegister aux_dvbf_mode,    0x26,  r|w
-        .extAuxRegister aux_dvbf_bm0,     0x27,  r|w
-        .extAuxRegister aux_dvbf_bm1,     0x28,  r|w
-        .extAuxRegister aux_dvbf_accu,    0x29,  r|w
-        .extAuxRegister aux_dvbf_ofst,    0x2A,  r|w
-        .extAuxRegister aux_dvbf_intstat, 0x2B,  r|w
+	.extAuxRegister aux_dvbf_mode,    0x26,  r|w
+	.extAuxRegister aux_dvbf_bm0,     0x27,  r|w
+	.extAuxRegister aux_dvbf_bm1,     0x28,  r|w
+	.extAuxRegister aux_dvbf_accu,    0x29,  r|w
+	.extAuxRegister aux_dvbf_ofst,    0x2A,  r|w
+	.extAuxRegister aux_dvbf_intstat, 0x2B,  r|w
 
 	; these are the names for A5 DSP ver 3.1 and later
-        .extAuxRegister aux_vbfdw_mode,    0x26,  r|w
-        .extAuxRegister aux_vbfdw_bm0,     0x27,  r|w
-        .extAuxRegister aux_vbfdw_bm1,     0x28,  r|w
-        .extAuxRegister aux_vbfdw_accu,    0x29,  r|w
-        .extAuxRegister aux_vbfdw_ofst,    0x2A,  r|w
-        .extAuxRegister aux_vbfdw_intstat, 0x2B,  r|w
+	.extAuxRegister aux_vbfdw_mode,    0x26,  r|w
+	.extAuxRegister aux_vbfdw_bm0,     0x27,  r|w
+	.extAuxRegister aux_vbfdw_bm1,     0x28,  r|w
+	.extAuxRegister aux_vbfdw_accu,    0x29,  r|w
+	.extAuxRegister aux_vbfdw_ofst,    0x2A,  r|w
+	.extAuxRegister aux_vbfdw_intstat, 0x2B,  r|w
 
 	; No known reliable BCR check for vbfdw
 	.endif
@@ -604,8 +607,8 @@
 .ifdef __Xcrc
     .ifdef __ARCCOMPACT__
 	.extInstruction crc, 0x05, 0x2c, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
-        .extAuxRegister aux_crc_poly, 0x32,  r|w
-        .extAuxRegister aux_crc_mode, 0x33,  r|w
+	.extAuxRegister aux_crc_poly, 0x32,  r|w
+	.extAuxRegister aux_crc_mode, 0x33,  r|w
 	; No known BCR check for CRC.
     .endif
 .endif
