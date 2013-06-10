@@ -202,7 +202,6 @@ enum options
   OPTION_ARC601,
   OPTION_ARC700,
   OPTION_ARCEM,
-  OPTION_MCPU,
   OPTION_USER_MODE,
   OPTION_LD_EXT_MASK,
   OPTION_SWAP,
@@ -242,37 +241,27 @@ struct option md_longopts[] =
   { "mARC700", no_argument, NULL, OPTION_ARC700 },
   { "mA7", no_argument, NULL, OPTION_ARC700 },
   { "mEM", no_argument, NULL, OPTION_ARCEM },
-  { "mcpu", required_argument, NULL, OPTION_MCPU },
+  { "mav2em", no_argument, NULL, OPTION_ARCEM },
   { "muser-mode-only", no_argument, NULL, OPTION_USER_MODE },
   { "mld-extension-reg-mask", required_argument, NULL, OPTION_LD_EXT_MASK },
 
 /* ARC Extension library options.  */
   { "mswap", no_argument, NULL, OPTION_SWAP },
   { "mnorm", no_argument, NULL, OPTION_NORM },
-  { "mbarrel-shifter", no_argument, NULL, OPTION_BARREL_SHIFT },
   { "mbarrel_shifter", no_argument, NULL, OPTION_BARREL_SHIFT },
-  { "mmin-max", no_argument, NULL, OPTION_MIN_MAX },
   { "mmin_max", no_argument, NULL, OPTION_MIN_MAX },
   { "mno-mpy", no_argument, NULL, OPTION_NO_MPY },
-  { "mea", no_argument, NULL, OPTION_EA },
   { "mEA", no_argument, NULL, OPTION_EA },
   { "mmul64", no_argument, NULL, OPTION_MUL64 },
   { "msimd", no_argument, NULL, OPTION_SIMD},
   { "mspfp", no_argument, NULL, OPTION_SPFP},
-  { "mspfp-compact", no_argument, NULL, OPTION_SPFP},
   { "mspfp_compact", no_argument, NULL, OPTION_SPFP},
-  { "mspfp-fast", no_argument, NULL, OPTION_SPFP},
   { "mspfp_fast", no_argument, NULL, OPTION_SPFP},
   { "mdpfp", no_argument, NULL, OPTION_DPFP},
-  { "mdpfp-compact", no_argument, NULL, OPTION_DPFP},
   { "mdpfp_compact", no_argument, NULL, OPTION_DPFP},
-  { "mdpfp-fast", no_argument, NULL, OPTION_DPFP},
   { "mdpfp_fast", no_argument, NULL, OPTION_DPFP},
-  { "mmac-d16", no_argument, NULL, OPTION_XMAC_D16},
   { "mmac_d16", no_argument, NULL, OPTION_XMAC_D16},
-  { "mmac-24", no_argument, NULL, OPTION_XMAC_24},
   { "mmac_24", no_argument, NULL, OPTION_XMAC_24},
-  { "mdsp-packa", no_argument, NULL, OPTION_DSP_PACKA},
   { "mdsp_packa", no_argument, NULL, OPTION_DSP_PACKA},
   { "mcrc", no_argument, NULL, OPTION_CRC},
   { "mdvbf", no_argument, NULL, OPTION_DVBF},
@@ -538,7 +527,7 @@ arc_check_label (symbolS *labelsym)
  */
 
 int
-md_parse_option (int c, char *arg)
+md_parse_option (int c, char *arg ATTRIBUTE_UNUSED)
 {
   switch (c)
     {
@@ -571,20 +560,6 @@ md_parse_option (int c, char *arg)
       mach_type_specified_p = 1;
       arc_mach_type = bfd_mach_arc_arcv2;
       arc_mach_a4= 0;
-      break;
-    case OPTION_MCPU:
-      if (arg == NULL)
-	as_warn (_("No CPU identifier specified"));
-      else if (strcmp (arg, "ARC600") == 0)
-	return md_parse_option (OPTION_ARC600, NULL);
-      else if (strcmp (arg, "ARC601") == 0)
-	return md_parse_option (OPTION_ARC601, NULL);
-      else if (strcmp (arg, "ARC700") == 0)
-	return md_parse_option (OPTION_ARC700, NULL);
-      else if (strcmp (arg, "ARCv2EM") == 0)
-	return md_parse_option (OPTION_ARCEM, NULL);
-      else
-	as_warn(_("Unknown CPU identifier `%s'"), arg);
       break;
     case OPTION_USER_MODE:
       arc_user_mode_only = 1;
@@ -676,7 +651,7 @@ md_show_usage (FILE *stream)
 ARC Options:\n\
   -mA[4|5]                select processor variant (default arc%d)\n\
   -mARC[600|700]          select processor variant\n\
-  -mEM                    select ARCv2 EM processor variant\n\
+  -mEM|-mav2em            select ARCv2 EM processor variant\n\
   -EB                     assemble code for a big endian cpu\n\
   -EL                     assemble code for a little endian cpu\n", arc_mach_type + 5);
 }
@@ -792,9 +767,10 @@ arc_process_extinstr_options (void)
       break;
     }
 
-  /*For ARCv2EM disable all lib extensions. All ARCv2 instructions are
-    recognized by default by the GAS*/
-  if (arc_mach_type == bfd_mach_arc_arcv2 && (extinsnlib))
+  /*For ARCv2EM disable all lib extensions (Except the FP ops). All
+    ARCv2 instructions are recognized by default by the GAS*/
+  if ((arc_mach_type == bfd_mach_arc_arcv2)
+      && (extinsnlib & ~(SP_FLOAT_INSN | DP_FLOAT_INSN)))
     {
       as_bad ("This option cannot be used with ARC-EM");
       exit (1);

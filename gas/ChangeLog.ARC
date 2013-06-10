@@ -1,11 +1,8 @@
-2013-06-06  Simon Cook  <simon.cook@embecosm.com>
+2013-06-06  Claudiu Zissulescu <claziss@synopsys.com>
 
-	* config/tc-arc.c (options): Added OPTION_MCPU for -mcpu
-	matching.
-	(md_longopts): Added new options based on updated
-	documentation.
-	(md_parse_option): Added support for specifying architecture
-	via -mcpu option.
+	* config/extlib/arcextlib.s : Define __ARCCOMPACT__ also for ARCv2
+        * config/tc-arc.c: Add -mav2em option for EM, enable SPFP and
+	DPFP extensions for EM.
 
 2013-05-20  Matt Hammond  <matt.hammond@synopsys.com>
 
@@ -93,13 +90,17 @@
 	* config/tc-arc.c (tc_gen_reloc): Adjust offset to reflect
 	difference between relocation location and instruction start.
 
-2012-03-04  Simon Cook  <simon.cook@embecosm.com>
+2013-03-04  Simon Cook  <simon.cook@embecosm.com>
 
 	* testsuite/gas/all/redef3.d: Replace arc-*-* with arc*-*-*.
 	* testsuite/gas/arc/ex_arc700.s: Likewise.
 	* testsuite/gas/arc/ld_arc700.s: Likewise.
 	* testsuite/gas/arc/warn.s: Likewise.
 	* testsuite/gas/lns/lns.exp: Likewise.
+
+2013-01-30  Claudiu Zissulescu <claziss@synopsys.com>
+
+	* config/tc-arc.c: Added ARCv2 support
 
 2012-12-06  Simon Cook  <simon.cook@embecosm.com>
 
