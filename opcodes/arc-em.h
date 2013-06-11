@@ -692,19 +692,19 @@
 { (unsigned char *) "aex%.q%Q %B,[%L]",                      0xF8FF8FE0, 0x20E70F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*CLRI */
 /* clri    c            	0010 0111 0010 1111 0000 CCCC CC11 1111  */
-{ (unsigned char *) "clri",                                0xFFFFFFFF, 0x276F003F, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "clri %C",                             0xFFFFF03F, 0x272F003F, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* clri    u6           	0010 0111 0110 1111 0000 uuuu uu11 1111  */
 { (unsigned char *) "clri [%u]",                               0xFFFFF03F, 0x276F003F, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "clri",                                0xFFFFFFFF, 0x276F003F, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*LP */
 { (unsigned char *) "lp %Y",                                 0xFFFFF000, 0x20A80000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "lp %y",                                 0xFFFFF03F, 0x20680000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "lp%.q %y",                              0xFFFFF020, 0x20E80020, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "lp%q %y",                               0xFFFFF020, 0x20E80020, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*SETI */
-{ (unsigned char *) "seti",                                    0xFFFFFFFF, 0x266F003F, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "seti %C",                               0xFFFFF03F, 0x262F003F, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "seti [%u]",                               0xFFFFF03F, 0x266F003F, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "seti",                                    0xFFFFFFFF, 0x266F003F, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*ADD_S */
 /* add_s    a,b,c       	0110 0bbb ccc1 1aaa  */
 { (unsigned char *) "add_s %a,%b,%c",                        0xF818, 0x6018, ARC_MACH_ARCV2, 0, 0, 0, 0},
