@@ -1,3 +1,7 @@
+2013-06-14  Simon Cook  <simon.cook@embecosm.com>
+
+	* gas/arc/warn.s: Update long immediate data error message
+
 2013-06-14  Claudiu Zissulescu <claziss@synopsys.com>
 
 	* gas/arc/warn.s: Update error message

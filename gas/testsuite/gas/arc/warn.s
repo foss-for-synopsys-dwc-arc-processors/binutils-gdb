@@ -3,7 +3,7 @@
 ; { dg-do assemble { target arc*-*-* } }
 
 	b.d foo
-	mov r0,256	; { dg-warning "Instruction with long immediate data in delay slot" "8 byte instruction in delay slot" }
+	mov r0,256	; { dg-warning "Instruction with long immediate data in delay slot" "Instruction with long immediate data in delay slot" }
 
 	j.d foo		; { dg-warning "8 byte jump instruction with delay slot" "8 byte jump instruction with delay slot" }
 	mov r0,r1
