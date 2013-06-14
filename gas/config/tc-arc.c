@@ -4216,7 +4216,7 @@ md_operand (expressionS *expressionP)
 	  for (i = 0; i < arc_reg_names_count; i++)
 	    {
 	      l = strlen (arc_reg_names[i].name);
-	      if (!strncasecmp (p, arc_reg_names[i].name, l) && !ISALNUM (*(p + l)))
+	      if (!strncmp (p, arc_reg_names[i].name, l) && !ISALNUM (*(p + l)))
 		{
 		  input_line_pointer += l + 1;
 		  expressionP->X_op = O_register;

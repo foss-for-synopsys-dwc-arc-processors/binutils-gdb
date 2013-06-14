@@ -1,7 +1,3 @@
-2013-06-14  Claudiu Zissulescu <claziss@synopsys.com>
-
-	*  config/tc-arc.c: Allow case-insensitive register names
-
 2013-06-06  Claudiu Zissulescu <claziss@synopsys.com>
 
 	* config/extlib/arcextlib.s : Define __ARCCOMPACT__ also for ARCv2
