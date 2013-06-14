@@ -1,5 +1,9 @@
 2013-06-11  Claudiu Zissulescu <claziss@synopsys.com>
 
+        * arc-em.h: Allow seti/clri instructions without []
+
+2013-06-11  Claudiu Zissulescu <claziss@synopsys.com>
+
         * arc-em.h: rearange seti/clri instructions
 
 2013-06-10  Claudiu Zissulescu <claziss@synopsys.com>
