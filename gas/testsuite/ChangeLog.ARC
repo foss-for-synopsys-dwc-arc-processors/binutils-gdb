@@ -1,3 +1,8 @@
+2013-06-14  Claudiu Zissulescu <claziss@synopsys.com>
+
+	* gas/arc/warn.exp: Extend script for errors and warnings
+        * gas/arc/extopts-err-1.s: test the extended library options for EM.
+
 2013-06-14  Simon Cook  <simon.cook@embecosm.com>
 
 	* gas/arc/warn.s: Update long immediate data error message

@@ -798,8 +798,7 @@ arc_process_extinstr_options (void)
   if ((arc_mach_type == bfd_mach_arc_arcv2)
       && (extinsnlib & ~(SP_FLOAT_INSN | DP_FLOAT_INSN)))
     {
-      as_bad ("This option cannot be used with ARC-EM");
-      exit (1);
+      extinsnlib &= (SP_FLOAT_INSN | DP_FLOAT_INSN);
     }
 
   if ((extinsnlib & NO_MPY_INSN) && (arc_mach_type != bfd_mach_arc_arc700))
