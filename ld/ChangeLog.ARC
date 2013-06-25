@@ -1,3 +1,7 @@
+2013-06-25  Simon Cook  <simon.cook@embecosm.com>
+
+	* scripttempl/arclinux.sc: Only define ENTRY when not relocating.
+
 2013-05-24  Vineet Gupta <vgupta@synopsys.com>
 
 	* emulparams/arclinux.sh: Define COMMONPAGESIZE as 8k which
