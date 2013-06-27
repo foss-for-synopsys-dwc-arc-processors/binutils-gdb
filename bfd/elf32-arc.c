@@ -641,15 +641,11 @@ of opposite endian-ness"),
     }
   else
     {
-      if((mach_ibfd==EM_ARC && mach_obfd==EM_ARCOMPACT) ||
-	 (mach_ibfd==EM_ARCOMPACT && mach_obfd==EM_ARC))
+      if(mach_ibfd != mach_obfd)
 	{
-	  _bfd_error_handler (_("\ERROR: Attempting to link an %s binary(%B) \
-with a binary incompatible %s binary(%s)"),
-			      (mach_ibfd == EM_ARC) ? "A4" : "ARCompact",
-			      ibfd,
-			      (mach_obfd == EM_ARC) ? "A4" : "ARCompact",
-			      bfd_get_filename (obfd));
+	  _bfd_error_handler (_("ERROR: Attempting to link %B \
+with a binary %s of different architecture"),
+			      ibfd, bfd_get_filename (obfd));
 	  return FALSE;
 	}
     }
@@ -690,6 +686,9 @@ arc_elf_object_p (bfd *abfd)
       break;
     case E_ARC_MACH_ARC700:
       mach = bfd_mach_arc_arc700;
+      break;
+    case E_ARC_MACH_ARCV2:
+      mach = bfd_mach_arc_arcv2;
       break;
     default:
       /* Unknown cpu type.  ??? What to do?  */
@@ -737,6 +736,10 @@ arc_elf_final_write_processing (bfd *abfd,
     case bfd_mach_arc_arc700:
       val = E_ARC_MACH_ARC700;
       elf_elfheader (abfd)->e_machine = EM_ARCOMPACT;
+      break;
+    case bfd_mach_arc_arcv2:
+      val = E_ARC_MACH_ARCV2;
+      elf_elfheader (abfd)->e_machine = EM_ARCOMPACT2;
       break;
     default:
       abort();
@@ -3207,6 +3210,7 @@ elf32_arc_gc_sweep_hook (bfd *                     abfd,
 #define ELF_ARCH		bfd_arch_arc
 #define ELF_MACHINE_CODE	EM_ARC
 #define ELF_MACHINE_ALT1	EM_ARCOMPACT
+#define ELF_MACHINE_ALT2	EM_ARCOMPACT2
 #define ELF_TARGET_ID           ARC_ELF_DATA
 #define ELF_MAXPAGESIZE		0x2000
 
