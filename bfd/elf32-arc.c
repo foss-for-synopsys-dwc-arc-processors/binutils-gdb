@@ -641,18 +641,11 @@ of opposite endian-ness"),
     }
   else
     {
-      /*czi
-      if((mach_ibfd==EM_ARC && mach_obfd==EM_ARCOMPACT) ||
-	 (mach_ibfd==EM_ARCOMPACT && mach_obfd==EM_ARC))
-      */
       if(mach_ibfd != mach_obfd)
 	{
-	  _bfd_error_handler (_("\ERROR: Attempting to link an %s binary(%B) \
-with a binary incompatible %s binary(%s)"),
-			      (mach_ibfd == EM_ARC) ? "A4" : "ARCompact",
-			      ibfd,
-			      (mach_obfd == EM_ARC) ? "A4" : "ARCompact",
-			      bfd_get_filename (obfd));
+	  _bfd_error_handler (_("ERROR: Attempting to link %B \
+with a binary %s of different architecture"),
+			      ibfd, bfd_get_filename (obfd));
 	  return FALSE;
 	}
     }

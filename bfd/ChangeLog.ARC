@@ -1,3 +1,8 @@
+2013-06-27 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* elf32-arc.c : Clean up. Rezolve crashing of the linker when
+	two different architecture binary are linked together.
+
 2013-01-30 Claudiu Zissulescu <claziss@synopsys.com>
 
 	* cpu-arc.c (arc_info_struct): Add EM as valid processor type.
