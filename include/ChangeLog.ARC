@@ -1,3 +1,7 @@
+2013-06-28 Vineet Gupta <vgupta@synopsys.com>
+
+	* elf/common.h: Replaced EM_ARCOMPACT2 with EM_ARCV2
+
 2013-01-30 Claudiu Zissulescu <claziss@synopsys.com>
 
 	* elf/common.h : Defined EM_ARCOMPACT2 for EM architectures
