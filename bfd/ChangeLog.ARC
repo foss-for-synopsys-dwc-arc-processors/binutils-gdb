@@ -1,3 +1,7 @@
+2013-06-28 Vineet Gupta <vgupta@synopsys.com>
+
+	* elf32-arc.c: Replaced EM_ARCOMPACT2 with EM_ARCV2
+
 2013-06-27 Claudiu Zissulescu <claziss@synopsys.com>
 
 	* elf32-arc.c : Clean up. Rezolve crashing of the linker when
