@@ -1,3 +1,9 @@
+2013-06-28 Vineet Gupta <vgupta@synopsys.com>
+
+	* readelf.c : Globally replaced EM_ARCOMPACT2 with EM_ARCV2.
+	(get_machine_flags) Changed strings to "ARCv2"
+	(get_machine_name) likewise
+
 2012-10-08  Simon Cook  <simon.cook@embecosm.com>
 
 	* testsuite/binutils-all/arc: Added objdump test

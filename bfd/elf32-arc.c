@@ -739,7 +739,7 @@ arc_elf_final_write_processing (bfd *abfd,
       break;
     case bfd_mach_arc_arcv2:
       val = E_ARC_MACH_ARCV2;
-      elf_elfheader (abfd)->e_machine = EM_ARCOMPACT2;
+      elf_elfheader (abfd)->e_machine = EM_ARCV2;
       break;
     default:
       abort();
@@ -3210,7 +3210,7 @@ elf32_arc_gc_sweep_hook (bfd *                     abfd,
 #define ELF_ARCH		bfd_arch_arc
 #define ELF_MACHINE_CODE	EM_ARC
 #define ELF_MACHINE_ALT1	EM_ARCOMPACT
-#define ELF_MACHINE_ALT2	EM_ARCOMPACT2
+#define ELF_MACHINE_ALT2	EM_ARCV2
 #define ELF_TARGET_ID           ARC_ELF_DATA
 #define ELF_MAXPAGESIZE		0x2000
 
