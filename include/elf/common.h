@@ -295,7 +295,7 @@
 #define EM_MICROBLAZE	189	/* Xilinx MicroBlaze 32-bit RISC soft processor core */
 #define EM_CUDA		190	/* NVIDIA CUDA architecture */
 #define EM_TILEGX	191	/* Tilera TILE-Gx multicore architecture family */
-#define EM_ARCOMPACT2	195	/* ARCv2 Cores */
+#define EM_ARCV2	195	/* ARCv2 Cores */
 #define EM_RL78		197	/* Renesas RL78 family.  */
 #define EM_78K0R	199	/* Renesas 78K0R.  */
 #define EM_INTEL205	205	/* Reserved by Intel */
