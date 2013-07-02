@@ -775,6 +775,8 @@
 { (unsigned char *) "mov_s%Q 0,%L",                          0xFFFF, 0x46DB, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* mov_s.ne    b,h      	0111 0bbb hhh1 11HH  */
 { (unsigned char *) "mov_s.ne %b,%€",                        0xF81C, 0x701C, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* mov_s.nz    b,h      	0111 0bbb hhh1 11HH  */
+{ (unsigned char *) "mov_s.nz %b,%€",                        0xF81C, 0x701C, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* mov_s.ne    b, 0  This is a sub_s.ne b,b,b */
 /*{ (unsigned char *) "mov_s.ne %b,0",                     0xF8FF, 0x78C0, ARC_MACH_ARCV2, 0, 0, 0, 0},*/
 /* mov_s.ne    b,limm   	0111 0bbb 1101 1111  */
