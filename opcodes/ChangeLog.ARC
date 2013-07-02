@@ -1,3 +1,7 @@
+2013-07-02  Claudiu Zissulescu <claziss@synopsys.com>
+
+        * arc-em.h: Allow mov_s.nz
+
 2013-06-11  Claudiu Zissulescu <claziss@synopsys.com>
 
         * arc-em.h: Allow seti/clri instructions without []
