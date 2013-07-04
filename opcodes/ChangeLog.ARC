@@ -1,3 +1,7 @@
+2013-07-04  Claudiu Zissulescu <claziss@synopsys.com>
+
+        * arc-em.h: Remove the previous commit.
+
 2013-07-02  Claudiu Zissulescu <claziss@synopsys.com>
 
         * arc-em.h: Allow mov_s.nz
