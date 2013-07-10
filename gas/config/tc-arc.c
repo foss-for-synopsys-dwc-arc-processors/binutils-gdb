@@ -46,9 +46,15 @@ extern int arc_insn_not_jl (arc_insn);
 extern int arc_test_wb(void);
 extern unsigned char arc_get_branch_prediction(void);
 extern void arc_reset_branch_prediction(void);
+extern unsigned char em_jumplink_or_jump_insn (arc_insn insn,
+					       int compact_insn16);
+extern unsigned char em_branch_or_jump_insn (arc_insn insn,
+					     int compact_insn16);
 
 extern int arc_get_noshortcut_flag (void);
-static void arc_set_ext_seg (enum ExtOperType, int, int, int);
+/* Commented out because it triggers error regarding invalid storage class,
+   and it is not needed. */
+/* static void arc_set_ext_seg (enum ExtOperType, int, int, int); */
 
 extern int a4_brk_insn(arc_insn insn);
 extern int ac_brk_s_insn(arc_insn insn);
@@ -61,12 +67,20 @@ static arc_insn arc_insert_operand (arc_insn, long *,
 static valueT md_chars_to_number (char *, int);
 
 static void arc_common (int);
-static void arc_handle_extinst (int);
-static void arc_extinst (int);
-static void arc_extoper (int);
+/* Commented out because it triggers error regarding invalid storage class,
+   and it is not needed. */
+/* static void arc_handle_extinst (int); */
+/* Commented out because it triggers error regarding invalid storage class,
+   and with reordering it is not needed. */
+/* static void arc_extinst (int); */
+/* Commented out because it triggers error regarding invalid storage class,
+   and it is not needed. */
+/* static void arc_extoper (int); */
 static void arc_option (int);
-static int  get_arc_exp_reloc_type (int, int, expressionS *,
-				    expressionS *);
+/* Commented out because it triggers error regarding invalid storage class,
+   and it is not needed. */
+/* static int  get_arc_exp_reloc_type (int, int, expressionS *, */
+/* 				    expressionS *); */
 static int  arc_get_sda_reloc (arc_insn, int);
 
 static void init_opcode_tables (int);
@@ -1043,7 +1057,12 @@ arc_insert_operand (arc_insn insn, long *insn2,
       errmsg = NULL;
       insn = (*operand->insert) (insn,insn2, operand, mods, reg, (long) val, &errmsg);
       if (errmsg != (const char *) NULL)
-	as_warn (errmsg);
+	{
+	  /* Yuk! This is meant to have a literal argument, so it can be
+	     translated. We add a dummy empty string argument, which keeps
+	     -Wformat-security happy for now. */
+	  as_warn (errmsg, "");
+	}
     }
   else
     insn |= (((long) val & ((1 << operand->bits) - 1))
@@ -1090,7 +1109,7 @@ struct arc_fixup
    called for data or limm values we use real reloc types.  */
 
 static int
-get_arc_exp_reloc_type (int data_p,
+get_arc_exp_reloc_type (int data_p ATTRIBUTE_UNUSED,
 			int default_type,
 			expressionS *exp,
 			expressionS *expnew)
@@ -1165,7 +1184,7 @@ get_arc_exp_reloc_type (int data_p,
 	30-31  flag1 and flag2
 */
 
-void
+static void
 arc_set_ext_seg (enum ExtOperType type, int n1, int n2, int n3)
 {
   int nn2;
@@ -1686,16 +1705,6 @@ arc_extoper (int opertype)
    functions.  */
 
 static void
-arc_handle_extinst (ignore)
-     int ignore ATTRIBUTE_UNUSED;
-{
-  if (arc_mach_a4)
-    arc_extinst (ignore);
-  else
-    arc_ac_extinst (ignore);
-}
-
-static void
 arc_extinst (int ignore ATTRIBUTE_UNUSED)
 {
   char syntax[129];
@@ -1862,7 +1871,7 @@ arc_extinst (int ignore ATTRIBUTE_UNUSED)
   strcat (syntax, "%S%L");
 
   ext_op = xmalloc (sizeof (struct arc_opcode));
-  ext_op->syntax = xstrdup (syntax);
+  ext_op->syntax = (unsigned char *) xstrdup (syntax);
 
   ext_op->mask  = I (-1) | ((0x3 == opcode) ? C (-1) : 0);
   ext_op->value = I (opcode) | ((0x3 == opcode) ? C (subopcode) : 0);
@@ -1903,6 +1912,15 @@ arc_extinst (int ignore ATTRIBUTE_UNUSED)
   subseg_set (old_sec, old_subsec);
 
   demand_empty_rest_of_line ();
+}
+
+static void
+arc_handle_extinst (int ignore)
+{
+  if (arc_mach_a4)
+    arc_extinst (ignore);
+  else
+    arc_ac_extinst (ignore);
 }
 
 /*********************************************************************/
@@ -2072,7 +2090,7 @@ arc_add_ext_inst (char *name, char *operands, unsigned long value,
   if(suffix&AC_SIMD_SETLM)
       flags |= ARC_SIMD_SETLM;
 
-  ext_op->syntax = xstrdup (realsyntax);
+  ext_op->syntax = (unsigned char *) xstrdup (realsyntax);
   ext_op->value = value;
   ext_op->flags = flags | ARCOMPACT ;
   ext_op->next_asm = arc_ext_opcodes;
@@ -2120,7 +2138,7 @@ arc_add_long_ext_inst (char *name, char *operands, unsigned long value,
   if(suffix & AC_SIMD_SETLM)
       flags |= ARC_SIMD_SETLM;
 
-  ext_op->syntax = xstrdup (realsyntax);
+  ext_op->syntax = (unsigned char *) xstrdup (realsyntax);
   ext_op->value = value;
   ext_op->value2 = value2;
   ext_op->flags = flags | ARCOMPACT | SIMD_LONG_INST;
@@ -2155,7 +2173,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 {
   char op1[6], op2[6], op3[6], operand_string[18];
   unsigned long xmitsuffix;
-  char suffixstr[10];
+  /* char suffixstr[10]; */
   int nop = 0;
   int i;
   unsigned long insn,mask,insn2,mask2;
@@ -2608,7 +2626,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
     case AC_SYNTAX_SIMD:
       op1[0] = op2 [0] = op3[0] = operand_string[0] = '\0';
       nop = 0;
-      suffixstr[0] = '\0';
+      /* suffixstr[0] = '\0'; */
       use_extended_instruction_format = 1;
       for(i = 0; i < RCLASS_SET_SIZE; i++)
 	  extended_register_format[i] = 0;
@@ -4855,7 +4873,7 @@ md_assemble (char *str)
   {;}
 
 
-  for (insn_name_idx = 0; insn_name_idx < (int) strlen(str); insn_name_idx++)
+  for (insn_name_idx = 0; insn_name_idx < (unsigned int) strlen(str); insn_name_idx++)
   {
 	if ( !(ISALNUM(str[insn_name_idx]) || str[insn_name_idx] == '_') ){
 		break;
@@ -4911,7 +4929,7 @@ fprintf (stdout, "Matching ****** %s *************\n", str);
 	 then go for the next opcode */
       for (syn = opcode->syntax; *syn && ISALNUM (*syn); syn++);
       if (compact_insn_16 && !(*syn && *syn == '_' && *(syn + 1) == 's'))
-	if (strcmp(opcode->syntax,"unimp") !=0) /* FIXME: This is too bad a check!!! cleanup required */
+	if (strcmp((char *) (opcode->syntax), "unimp") !=0) /* FIXME: This is too bad a check!!! cleanup required */
 	  continue;
 
       /* Scan the syntax string.  If it doesn't match, try the next one.  */
@@ -4961,7 +4979,8 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		  break;
 		continue;
 	      }
-	  if(firstsuf==0)firstsuf = syn-1;
+	  if (firstsuf==0)
+	    firstsuf = (char *) (syn-1);
 	  /* We have an operand.  Pick out any modifiers.  */
 	  mods = 0;
 	  while (ARC_MOD_P (arc_operands[arc_operand_map[(int) ((opindex<<8)|*syn)]].flags))
@@ -4995,12 +5014,22 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		      last_errmsg = errmsg;
 		      if (operand->flags & ARC_OPERAND_ERROR)
 			{
-			  as_bad (errmsg);
+			  /* Yuk! This is meant to have a literal argument, so
+			     it can be translated. We add a dummy empty string
+			     argument, which keeps -Wformat-security happy for
+			     now. */
+			  as_bad (errmsg, "");
 			  assembling_instruction = 0;
 			  return;
 			}
 		      else if (operand->flags & ARC_OPERAND_WARN)
-			as_warn (errmsg);
+			{
+			  /* Yuk! This is meant to have a literal argument, so
+			     it can be translated. We add a dummy empty string
+			     argument, which keeps -Wformat-security happy for
+			     now. */
+			  as_warn (errmsg, "");
+			}
 		      break;
 		    }
 		  if (limm_reloc_p
@@ -5052,7 +5081,7 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 	    {
 	      int found,negflg;
 	      char c;
-	      char *s, *t;
+	      char *s2, *t;
 	      const struct arc_operand_value *suf, *suffix_end;
 	      struct arc_operand_value *varsuf;
 	      const struct arc_operand_value *suffix = NULL;
@@ -5072,31 +5101,31 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		}
 
 
-	      s = str;
+	      s2 = str;
 	      negflg = 0;
 	      if (mods & ARC_MOD_DOT)
 		{
-		negflg = *s=='!';
-		  if (*s != '.'&&*s != '!')
+		negflg = *s2=='!';
+		  if (*s2 != '.'&&*s2 != '!')
 		    break;
-		  ++s;
-		if(!negflg && *s == '!'){
+		  ++s2;
+		if(!negflg && *s2 == '!'){
 		    negflg = 1;
-		    ++s;
+		    ++s2;
 		    }
 		}
 	      else
 		{
 		  /* This can happen in "b.nd foo" and we're currently looking
 		     for "%q" (ie: a condition code suffix).  */
-		  if (*s == '.')
+		  if (*s2 == '.')
 		    {
 		      ++syn;
 		      continue;
 		    }
 		}
 	      /* Pick the suffix out and look it up via the hash table.  */
-	      for (t = s; *t && ISALNUM (*t); ++t)
+	      for (t = s2; *t && ISALNUM (*t); ++t)
 		continue;
 	      c = *t;
 	      *t = '\0';
@@ -5142,7 +5171,7 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 			      insn2 |= 1 << 29;
 			      lm_present = 1;
 			      if(firstsuf)
-				  syn = firstsuf-1;
+				syn = (unsigned char *) (firstsuf-1);
 			      found = 1;
 			  }
 		      else
@@ -5170,7 +5199,7 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 			      varsuf->value |= sum;
 			      found = 1;
 			      if(firstsuf)
-				  syn = firstsuf-1;
+				syn = (unsigned char *) (firstsuf-1);
 			      insn2 |= sum << 15;
 			      lm_present = 1;
 			      }
@@ -5187,7 +5216,7 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 				  varsuf->value |= sum;
 				  found = 1;
 				  if(firstsuf)
-				      syn = firstsuf-1;
+				    syn = (unsigned char *) (firstsuf-1);
 				  insn2 |= sum << 15;
 				  lm_present = 1;
 				  }
@@ -5326,12 +5355,12 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		      }
 		  } /* end if(!found&&insn>>27==0x0a) */
 	      if(!suf){
-		  if ((suf = get_ext_suffix (s,*syn))){
+		  if ((suf = get_ext_suffix (s2,*syn))){
 		      ext_suffix_p = 1;
 		      }
 		  else
 		      {
-		      suf = hash_find (arc_suffix_hash, s);
+		      suf = hash_find (arc_suffix_hash, s2);
 		      }
 		  }
 
@@ -6013,7 +6042,7 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		as_bad ("symbol as destination register");
 	      else
 		{
-		  int sda_seen_p = 0;
+		  /* int sda_seen_p = 0; */
 		  if (!strncmp (str, "@h30", 4))
 		    {
 		      arc_code_symbol (&exp);
@@ -6084,7 +6113,7 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 				      break;
 				    }
 
-				  sda_seen_p = 1;
+				  /* sda_seen_p = 1; */
 				  current_special_sym_flag = SDA_REF_TYPE;
 				  str += 4;
 
@@ -6217,12 +6246,22 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		      last_errmsg = errmsg;
 		      if (operand->flags & ARC_OPERAND_ERROR)
 			{
-			  as_bad (errmsg);
+			  /* Yuk! This is meant to have a literal argument, so
+			     it can be translated. We add a dummy empty string
+			     argument, which keeps -Wformat-security happy for
+			     now. */
+			  as_bad (errmsg, "");
 			  assembling_instruction = 0;
 			  return;
 			}
 		      else if (operand->flags & ARC_OPERAND_WARN)
-			as_warn (errmsg);
+			{
+			  /* Yuk! This is meant to have a literal argument, so
+			     it can be translated. We add a dummy empty string
+			     argument, which keeps -Wformat-security happy for
+			     now. */
+			  as_warn (errmsg, "");
+			}
 		      break;
 		    }
 		}
@@ -6267,10 +6306,10 @@ fprintf (stdout, "Matched syntax %s\n", opcode->syntax);
 	  if(!lm_present && !(opcode->flags & AC_SIMD_SETLM))
 	      insn2 |= (0xff << 15);
 	  if(opcode->flags & ARC_SIMD_ZERVA){
-	      long limm_p, limm;
-	      limm_p = arc_opcode_limm_p (&limm);
-	      if(limm_p)
-		  insn2 = insn2+(limm&0x7fff);
+	      long limm2_p, limm2;
+	      limm2_p = arc_opcode_limm_p (&limm2);
+	      if(limm2_p)
+		  insn2 = insn2+(limm2&0x7fff);
 	      operand = &arc_operands[arc_operand_map[zer_rega.type]];
 	      if(operand->insert){
 		  insn = (*operand->insert) (insn,&insn2, operand, mods,
@@ -6285,12 +6324,12 @@ fprintf (stdout, "Matched syntax %s\n", opcode->syntax);
 	      }
 	  if(opcode->flags & ARC_SIMD_ZERVB)
 	      {
-	      long limm_p, limm;
-	      limm_p = arc_opcode_limm_p (&limm);
-	      if(limm_p)
-		  insn2 = insn2+(limm&0x7fff);
+	      long limm2_p, limm2;
+	      limm2_p = arc_opcode_limm_p (&limm2);
+	      if(limm2_p)
+		  insn2 = insn2+(limm2&0x7fff);
 	      operand = &arc_operands[arc_operand_map[zer_regb.type]];
-	      insn2 = insn2+(limm&0x7fff);
+	      insn2 = insn2+(limm2&0x7fff);
 	      if(operand->insert)
 		  {
 		  insn = (*operand->insert) (insn,&insn2, operand, mods,
@@ -6306,10 +6345,10 @@ fprintf (stdout, "Matched syntax %s\n", opcode->syntax);
 	      }
 	  if(opcode->flags & ARC_SIMD_ZERVC)
 	      {
-	      long limm_p, limm;
-	      limm_p = arc_opcode_limm_p (&limm);
-	      if(limm_p)
-		  insn2 = insn2+(limm&0x7fff);
+	      long limm2_p, limm2;
+	      limm2_p = arc_opcode_limm_p (&limm2);
+	      if(limm2_p)
+		  insn2 = insn2+(limm2&0x7fff);
 	      operand = &arc_operands[arc_operand_map[zer_regc.type]];
 	      if(operand->insert){
 		  insn = (*operand->insert) (insn,&insn2, operand, mods,
@@ -6511,7 +6550,7 @@ fprintf (stdout, "Matched syntax %s\n", opcode->syntax);
 	      int size = 4;   /* size of the fixup; mostly used for error
 				 checking */
 	      expressionS exptmp;
-	      const struct arc_operand *operand;
+	      const struct arc_operand *operand2;
 
 	      /* Create a fixup for this operand.
 		 At this point we do not use a bfd_reloc_code_real_type for
@@ -6573,13 +6612,13 @@ fprintf (stdout, "Matched syntax %s\n", opcode->syntax);
 	      default:
 		break;
 	      }
-	      operand = &arc_operands[op_type];
+	      operand2 = &arc_operands[op_type];
 
 	      /* Calculate appropriate offset and size for the fixup */
 	      if (compact_insn_16)
 		{
 		  /* If limm is needed */
-		  if ((operand->flags & ARC_OPERAND_LIMM)
+		  if ((operand2->flags & ARC_OPERAND_LIMM)
 		      && (!(fixups[i].modifier_flags & ARC_MOD_SDASYM) || ac_add_reg_sdasym_insn (insn) || reloc_type == BFD_RELOC_ARC_GOTPC32))
 		    {
 		      offset = 2;
@@ -6592,18 +6631,18 @@ fprintf (stdout, "Matched syntax %s\n", opcode->syntax);
 	      else /* for 32-bit instructions */
 		{
 		  /* If limm is needed */
-		  if ((operand->flags & ARC_OPERAND_LIMM)
+		  if ((operand2->flags & ARC_OPERAND_LIMM)
 		      && (!(fixups[i].modifier_flags & ARC_MOD_SDASYM) || ac_add_reg_sdasym_insn (insn) || reloc_type == BFD_RELOC_ARC_GOTPC32))
 		    offset = 4;
 		}
 
 	      fix_new_exp (frag_now,
 			   ((f - frag_now->fr_literal) + offset),
-			   /* + (operand->flags & ARC_OPERAND_LIMM ? 4 : 0)),*/
+			   /* + (operand2->flags & ARC_OPERAND_LIMM ? 4 : 0)),*/
 			   size,
 			   &exptmp,
 			   (current_special_sym_flag == PLT_TYPE)?0:
-			   (operand->flags & ARC_OPERAND_RELATIVE_BRANCH) != 0,
+			   (operand2->flags & ARC_OPERAND_RELATIVE_BRANCH) != 0,
 			   (bfd_reloc_code_real_type) reloc_type);
 	    }
 	  assembling_instruction = 0;
@@ -6617,7 +6656,13 @@ fprintf (stdout, "Matched syntax %s\n", opcode->syntax);
     as_bad ("bad instruction `%s'", start);
       }
   else
-    as_bad (last_errmsg);
+    {
+      /* Yuk! This is meant to have a literal argument, so
+	 it can be translated. We add a dummy empty string
+	 argument, which keeps -Wformat-security happy for
+	 now. */
+      as_bad (last_errmsg, "");
+    }
   assembling_instruction = 0;
 }
 

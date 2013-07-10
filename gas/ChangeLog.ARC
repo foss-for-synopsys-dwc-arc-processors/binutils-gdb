@@ -1,3 +1,31 @@
+2013-07-10  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* config/tc-arc.c (em_jumplink_or_jump_insn): Add extern
+	declaration.
+	(em_branch_or_jump_insn): Likewise.
+	(arc_set_ext_seg): Comment out unneeded forward declaration, mark
+	as static.
+	(arc_handle_extinst): Comment out unneeded forward declaration,
+	mark as static.  Move declaration after arc_extinst, and properly
+	declare argument, which is not unused.
+	(arc_extinst): Comment out unneeded forward declaration, mark
+	as static.  Cast results of xstrdup to (unsigned char *).
+	(arc_extoper): Comment out unneeded forward declaration, mark
+	as static.
+	(get_arc_exp_reloc_type): Likewise.
+	(arc_insert_operand): Add dummy argument to as_warn ().
+	(get_arc_exp_reloc_type): Mark first argument unused.
+	(arc_add_ext_inst): Cast results of xstrdup to (unsigned char *).
+	(arc_add_long_ext_inst): Likewise.
+	(arc_generate_extinst32_operand_strings): Comment out unused
+	suffixstr.
+	(md_assemble): Cast loop test for insn_name_idx to unsigned
+	int.  Cast args of strcmp and assignments to firstsuf to
+	char *.  Add dummy arguments to as_warn and as_bad. Replace
+	shadowed "s" by "s2".  Cast assignments to syn to unsigned
+	char *.  Comment out unused sda_seen_p.  Replaced shadowed limm_p
+	by limm2_p and limm by limm2.  Replaced shadowed operand by operand2.
+
 2013-06-06  Claudiu Zissulescu <claziss@synopsys.com>
 
         * config/tc-arc.c: Silently ignore all the extension library options
