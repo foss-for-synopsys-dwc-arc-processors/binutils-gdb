@@ -47,6 +47,17 @@ enum operand {OP_NONE,OP_REG,OP_SHIMM,OP_LIMM};
 
 
 /* -------------------------------------------------------------------------- */
+/*   prototypes for external functions (to calm -Werror=missing-prototypes)   */
+/* -------------------------------------------------------------------------- */
+
+extern unsigned char arc_get_branch_prediction(void);
+extern void arc_reset_branch_prediction(void);
+extern unsigned char em_jumplink_or_jump_insn(arc_insn insn,
+					      int compact_insn16);
+extern unsigned char em_branch_or_jump_insn(arc_insn insn,
+					    int compact_insn16);
+
+/* -------------------------------------------------------------------------- */
 /*                      forward declarations of functions                     */
 /* -------------------------------------------------------------------------- */
 
@@ -144,7 +155,8 @@ static long limm;
 
 /*Nonzero if we've seen an <.T> flag*/
 static enum { NONE = 0, TAKEN = 1, NTAKEN =2} tflag_p = NONE;
-static unsigned char brpredict = 0;
+/* Commented out, since unused. */
+/* static unsigned char brpredict = 0; */
 
 /* Configuration flags.  */
 
@@ -3093,23 +3105,23 @@ static struct arc_opcode arc_opcodes[] = {
 
   /*Pseudo mnemonics for BRcc instruction*/
   { (unsigned char *) "brgt%.n %C,%B,%d", 0xf801003f, 0x08010002, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
-  { (unsigned char *) "brgt%.n %B,%u,%d", 0xf801003f, 0x08010013, ARCOMPACT & (~ARC_MACH_ARCV2)|ARC_INCR_U6, 0, 0 ,0,0},
+  { (unsigned char *) "brgt%.n %B,%u,%d", 0xf801003f, 0x08010013, ARCOMPACT & ((~ARC_MACH_ARCV2) | ARC_INCR_U6), 0, 0 ,0,0},
   { (unsigned char *) "brgt%Q %L,%B,%d",  0xf8010fff, 0x08010f82, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
   { (unsigned char *) "brgt%Q %C,%L,%d",  0xff01703f, 0x0e017002, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 
   { (unsigned char *) "brle%.n %C,%B,%d", 0xf801003f, 0x08010003, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
-  { (unsigned char *) "brle%.n %B,%u,%d", 0xf801003f, 0x08010012, ARCOMPACT & (~ARC_MACH_ARCV2)|ARC_INCR_U6, 0, 0 ,0,0},
+  { (unsigned char *) "brle%.n %B,%u,%d", 0xf801003f, 0x08010012, (ARCOMPACT & (~ARC_MACH_ARCV2)) | ARC_INCR_U6, 0, 0 ,0,0},
   { (unsigned char *) "brle%Q %L,%B,%d",  0xf8010fff, 0x08010f83, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
   { (unsigned char *) "brle%Q %C,%L,%d",  0xff01703f, 0x0e017003, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 
   { (unsigned char *) "brhi%.n %C,%B,%d", 0xf801003f, 0x08010004, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
-  { (unsigned char *) "brhi%.n %B,%u,%d", 0xf801003f, 0x08010015, ARCOMPACT & (~ARC_MACH_ARCV2)|ARC_INCR_U6, 0, 0 ,0,0},
+  { (unsigned char *) "brhi%.n %B,%u,%d", 0xf801003f, 0x08010015, (ARCOMPACT & (~ARC_MACH_ARCV2)) | ARC_INCR_U6, 0, 0 ,0,0},
   { (unsigned char *) "brhi%Q %L,%B,%d",  0xf8010fff, 0x08010f84, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
   { (unsigned char *) "brhi%Q %C,%L,%d",  0xff01703f, 0x0e017004, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 
 
   { (unsigned char *) "brls%.n %C,%B,%d", 0xf801003f, 0x08010005, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
-  { (unsigned char *) "brls%.n %B,%u,%d", 0xf801003f, 0x08010014, ARCOMPACT & (~ARC_MACH_ARCV2)|ARC_INCR_U6, 0, 0 ,0,0},
+  { (unsigned char *) "brls%.n %B,%u,%d", 0xf801003f, 0x08010014, (ARCOMPACT & (~ARC_MACH_ARCV2)) | ARC_INCR_U6, 0, 0 ,0,0},
   { (unsigned char *) "brls%Q %L,%B,%d",  0xf8010fff, 0x08010f85, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
   { (unsigned char *) "brls%Q %C,%L,%d",  0xff01703f, 0x0e017005, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 

@@ -701,116 +701,117 @@ typedef struct cpu_desc_list
   CGEN_CPU_DESC cd;
 } cpu_desc_list;
 
-int
-print_insn_arc (bfd_vma pc, disassemble_info *info)
-{
-  static cpu_desc_list *cd_list = 0;
-  cpu_desc_list *cl = 0;
-  static CGEN_CPU_DESC cd = 0;
-  static CGEN_BITSET *prev_isa;
-  static int prev_mach;
-  static int prev_endian;
-  int length;
-  CGEN_BITSET *isa;
-  int mach;
-  int endian = (info->endian == BFD_ENDIAN_BIG
-		? CGEN_ENDIAN_BIG
-		: CGEN_ENDIAN_LITTLE);
-  enum bfd_architecture arch;
+/* This function just isn't used, so for now it is commented out. */
+/* int */
+/* print_insn_arc (bfd_vma pc, disassemble_info *info) */
+/* { */
+/*   static cpu_desc_list *cd_list = 0; */
+/*   cpu_desc_list *cl = 0; */
+/*   static CGEN_CPU_DESC cd = 0; */
+/*   static CGEN_BITSET *prev_isa; */
+/*   static int prev_mach; */
+/*   static int prev_endian; */
+/*   int length; */
+/*   CGEN_BITSET *isa; */
+/*   int mach; */
+/*   int endian = (info->endian == BFD_ENDIAN_BIG */
+/* 		? CGEN_ENDIAN_BIG */
+/* 		: CGEN_ENDIAN_LITTLE); */
+/*   enum bfd_architecture arch; */
 
-  /* ??? gdb will set mach but leave the architecture as "unknown" */
-#ifndef CGEN_BFD_ARCH
-#define CGEN_BFD_ARCH bfd_arch_arc
-#endif
-  arch = info->arch;
-  if (arch == bfd_arch_unknown)
-    arch = CGEN_BFD_ARCH;
+/*   /\* ??? gdb will set mach but leave the architecture as "unknown" *\/ */
+/* #ifndef CGEN_BFD_ARCH */
+/* #define CGEN_BFD_ARCH bfd_arch_arc */
+/* #endif */
+/*   arch = info->arch; */
+/*   if (arch == bfd_arch_unknown) */
+/*     arch = CGEN_BFD_ARCH; */
    
-  /* There's no standard way to compute the machine or isa number
-     so we leave it to the target.  */
-#ifdef CGEN_COMPUTE_MACH
-  mach = CGEN_COMPUTE_MACH (info);
-#else
-  mach = info->mach;
-#endif
+/*   /\* There's no standard way to compute the machine or isa number */
+/*      so we leave it to the target.  *\/ */
+/* #ifdef CGEN_COMPUTE_MACH */
+/*   mach = CGEN_COMPUTE_MACH (info); */
+/* #else */
+/*   mach = info->mach; */
+/* #endif */
 
-#ifdef CGEN_COMPUTE_ISA
-  {
-    static CGEN_BITSET *permanent_isa;
+/* #ifdef CGEN_COMPUTE_ISA */
+/*   { */
+/*     static CGEN_BITSET *permanent_isa; */
 
-    if (!permanent_isa)
-      permanent_isa = cgen_bitset_create (MAX_ISAS);
-    isa = permanent_isa;
-    cgen_bitset_clear (isa);
-    cgen_bitset_add (isa, CGEN_COMPUTE_ISA (info));
-  }
-#else
-  isa = info->insn_sets;
-#endif
+/*     if (!permanent_isa) */
+/*       permanent_isa = cgen_bitset_create (MAX_ISAS); */
+/*     isa = permanent_isa; */
+/*     cgen_bitset_clear (isa); */
+/*     cgen_bitset_add (isa, CGEN_COMPUTE_ISA (info)); */
+/*   } */
+/* #else */
+/*   isa = info->insn_sets; */
+/* #endif */
 
-  /* If we've switched cpu's, try to find a handle we've used before */
-  if (cd
-      && (cgen_bitset_compare (isa, prev_isa) != 0
-	  || mach != prev_mach
-	  || endian != prev_endian))
-    {
-      cd = 0;
-      for (cl = cd_list; cl; cl = cl->next)
-	{
-	  if (cgen_bitset_compare (cl->isa, isa) == 0 &&
-	      cl->mach == mach &&
-	      cl->endian == endian)
-	    {
-	      cd = cl->cd;
- 	      prev_isa = cd->isas;
-	      break;
-	    }
-	}
-    } 
+/*   /\* If we've switched cpu's, try to find a handle we've used before *\/ */
+/*   if (cd */
+/*       && (cgen_bitset_compare (isa, prev_isa) != 0 */
+/* 	  || mach != prev_mach */
+/* 	  || endian != prev_endian)) */
+/*     { */
+/*       cd = 0; */
+/*       for (cl = cd_list; cl; cl = cl->next) */
+/* 	{ */
+/* 	  if (cgen_bitset_compare (cl->isa, isa) == 0 && */
+/* 	      cl->mach == mach && */
+/* 	      cl->endian == endian) */
+/* 	    { */
+/* 	      cd = cl->cd; */
+/*  	      prev_isa = cd->isas; */
+/* 	      break; */
+/* 	    } */
+/* 	} */
+/*     }  */
 
-  /* If we haven't initialized yet, initialize the opcode table.  */
-  if (! cd)
-    {
-      const bfd_arch_info_type *arch_type = bfd_lookup_arch (arch, mach);
-      const char *mach_name;
+/*   /\* If we haven't initialized yet, initialize the opcode table.  *\/ */
+/*   if (! cd) */
+/*     { */
+/*       const bfd_arch_info_type *arch_type = bfd_lookup_arch (arch, mach); */
+/*       const char *mach_name; */
 
-      if (!arch_type)
-	abort ();
-      mach_name = arch_type->printable_name;
+/*       if (!arch_type) */
+/* 	abort (); */
+/*       mach_name = arch_type->printable_name; */
 
-      prev_isa = cgen_bitset_copy (isa);
-      prev_mach = mach;
-      prev_endian = endian;
-      cd = arc_cgen_cpu_open (CGEN_CPU_OPEN_ISAS, prev_isa,
-				 CGEN_CPU_OPEN_BFDMACH, mach_name,
-				 CGEN_CPU_OPEN_ENDIAN, prev_endian,
-				 CGEN_CPU_OPEN_END);
-      if (!cd)
-	abort ();
+/*       prev_isa = cgen_bitset_copy (isa); */
+/*       prev_mach = mach; */
+/*       prev_endian = endian; */
+/*       cd = arc_cgen_cpu_open (CGEN_CPU_OPEN_ISAS, prev_isa, */
+/* 				 CGEN_CPU_OPEN_BFDMACH, mach_name, */
+/* 				 CGEN_CPU_OPEN_ENDIAN, prev_endian, */
+/* 				 CGEN_CPU_OPEN_END); */
+/*       if (!cd) */
+/* 	abort (); */
 
-      /* Save this away for future reference.  */
-      cl = xmalloc (sizeof (struct cpu_desc_list));
-      cl->cd = cd;
-      cl->isa = prev_isa;
-      cl->mach = mach;
-      cl->endian = endian;
-      cl->next = cd_list;
-      cd_list = cl;
+/*       /\* Save this away for future reference.  *\/ */
+/*       cl = xmalloc (sizeof (struct cpu_desc_list)); */
+/*       cl->cd = cd; */
+/*       cl->isa = prev_isa; */
+/*       cl->mach = mach; */
+/*       cl->endian = endian; */
+/*       cl->next = cd_list; */
+/*       cd_list = cl; */
 
-      arc_cgen_init_dis (cd);
-    }
+/*       arc_cgen_init_dis (cd); */
+/*     } */
 
-  /* We try to have as much common code as possible.
-     But at this point some targets need to take over.  */
-  /* ??? Some targets may need a hook elsewhere.  Try to avoid this,
-     but if not possible try to move this hook elsewhere rather than
-     have two hooks.  */
-  length = CGEN_PRINT_INSN (cd, pc, info);
-  if (length > 0)
-    return length;
-  if (length < 0)
-    return -1;
+/*   /\* We try to have as much common code as possible. */
+/*      But at this point some targets need to take over.  *\/ */
+/*   /\* ??? Some targets may need a hook elsewhere.  Try to avoid this, */
+/*      but if not possible try to move this hook elsewhere rather than */
+/*      have two hooks.  *\/ */
+/*   length = CGEN_PRINT_INSN (cd, pc, info); */
+/*   if (length > 0) */
+/*     return length; */
+/*   if (length < 0) */
+/*     return -1; */
 
-  (*info->fprintf_func) (info->stream, UNKNOWN_INSN_MSG);
-  return cd->default_insn_bitsize / 8;
-}
+/*   (*info->fprintf_func) (info->stream, UNKNOWN_INSN_MSG); */
+/*   return cd->default_insn_bitsize / 8; */
+/* } */

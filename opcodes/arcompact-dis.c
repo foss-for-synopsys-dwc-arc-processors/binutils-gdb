@@ -267,7 +267,7 @@ static bfd_vma bfd_getm32_ac (unsigned int) ATTRIBUTE_UNUSED;
 
 /****************** <.T> syntax **************************/
 #define CHECK_T(x) {                             \
-   if (BITS(state->words[0],3,3) == x)		\
+    if (BITS(state->words[0],3,3) == (x))	 \
 	{					\
 	  if (((int) FIELDS9(state->words[0]))> 0)	\
 	    {					\
@@ -4480,7 +4480,6 @@ ARCompact_decodeInstr (bfd_vma           address,    /* Address of this instruct
   struct arcDisState s;	/* ARC Disassembler state */
   void *stream = info->stream; /* output stream */
   fprintf_ftype func = info->fprintf_func;
-  int bytes;
   int lowbyte, highbyte;
   char buf[256];
 
@@ -4506,7 +4505,7 @@ ARCompact_decodeInstr (bfd_vma           address,    /* Address of this instruct
       return -1;
     }
 
-  if (((buffer[lowbyte] & 0xf8) > 0x38) && ((buffer[lowbyte] & 0xf8) != 0x48)
+  if ((((buffer[lowbyte] & 0xf8) > 0x38) && ((buffer[lowbyte] & 0xf8) != 0x48))
       || ((info->mach == E_ARC_MACH_ARCV2) && ((buffer[lowbyte] & 0xF8) == 0x48)))
   {
     s.instructionLen = 2;
@@ -4546,8 +4545,8 @@ ARCompact_decodeInstr (bfd_vma           address,    /* Address of this instruct
   s.condCodeName = _condCodeName;
   s.instName = _instName;
 
-  /* disassemble */
-  bytes = dsmOneArcInst(address, (void *)&s, info);
+  /* disassemble, discarding result which is never used. */
+  (void) dsmOneArcInst(address, (void *)&s, info);
 
   /* display the disassembled instruction */
   {
@@ -4623,7 +4622,6 @@ arcAnalyzeInstr
   int status;
   bfd_byte buffer[4];
   struct arcDisState s;	/* ARC Disassembler state */
-  int bytes;
   int lowbyte, highbyte;
 
   lowbyte = ((info->endian == BFD_ENDIAN_LITTLE) ? 1 : 0);
@@ -4681,8 +4679,8 @@ arcAnalyzeInstr
   s.condCodeName = _condCodeName;
   s.instName = _instName;
 
-  /* disassemble */
-  bytes = dsmOneArcInst(address, (void *)&s, info);
+  /* disassemble, throwing away result which is never used. */
+  (void) dsmOneArcInst(address, (void *)&s, info);
   /* We print max bytes for instruction */
   info->bytes_per_line = 8;
   return s;

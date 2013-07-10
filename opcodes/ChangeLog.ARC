@@ -1,3 +1,19 @@
+2013-07-10  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* arc-dis.c (print_insn_arc): Comment out unused function.
+	* arc-opc-old.c (arc_get_branch_prediction): Add prototype
+	declaration.
+	(arc_reset_branch_prediction): Likewise.
+	(em_jumplink_or_jump_insn): Likewise.
+	(em_branch_or_jump_insn): Likewise.
+	(brpredict): Comment out - unused.
+	(arc_opcodes): Add parentheses to clarify expressions in pseudo
+	menomnics or BRcc instruction.
+	* arcompact-dis.c (CHECK_T): Add parentheses around use of "x".
+	(ARCompact_decodeInstr): Remove all references to unused "bytes".
+	Add extra parentheses to clarify logical expressions.
+	(arcAnalyzeInstr): Remove all references to unused "bytes".
+
 2013-07-02  Claudiu Zissulescu <claziss@synopsys.com>
 
         * arc-em.h: Allow mov_s.nz
