@@ -1,3 +1,8 @@
+2013-07-11  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* arc-opc-old.c (arc_opcodes): Correct parentheses change for
+	"brgt%.n %B,%u,%d".
+
 2013-07-10  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* arc-dis.c (print_insn_arc): Comment out unused function.
