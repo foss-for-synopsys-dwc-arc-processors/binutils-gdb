@@ -5081,7 +5081,7 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 	    {
 	      int found,negflg;
 	      char c;
-	      char *s2, *t;
+	      char /* *s, */ *t;	/* Can reuse "s" from above */
 	      const struct arc_operand_value *suf, *suffix_end;
 	      struct arc_operand_value *varsuf;
 	      const struct arc_operand_value *suffix = NULL;
@@ -5101,31 +5101,31 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		}
 
 
-	      s2 = str;
+	      s = str;
 	      negflg = 0;
 	      if (mods & ARC_MOD_DOT)
 		{
-		negflg = *s2=='!';
-		  if (*s2 != '.'&&*s2 != '!')
+		negflg = *s=='!';
+		  if (*s != '.'&&*s != '!')
 		    break;
-		  ++s2;
-		if(!negflg && *s2 == '!'){
+		  ++s;
+		if(!negflg && *s == '!'){
 		    negflg = 1;
-		    ++s2;
+		    ++s;
 		    }
 		}
 	      else
 		{
 		  /* This can happen in "b.nd foo" and we're currently looking
 		     for "%q" (ie: a condition code suffix).  */
-		  if (*s2 == '.')
+		  if (*s == '.')
 		    {
 		      ++syn;
 		      continue;
 		    }
 		}
 	      /* Pick the suffix out and look it up via the hash table.  */
-	      for (t = s2; *t && ISALNUM (*t); ++t)
+	      for (t = s; *t && ISALNUM (*t); ++t)
 		continue;
 	      c = *t;
 	      *t = '\0';
@@ -5355,12 +5355,12 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		      }
 		  } /* end if(!found&&insn>>27==0x0a) */
 	      if(!suf){
-		  if ((suf = get_ext_suffix (s2,*syn))){
+		  if ((suf = get_ext_suffix (s,*syn))){
 		      ext_suffix_p = 1;
 		      }
 		  else
 		      {
-		      suf = hash_find (arc_suffix_hash, s2);
+		      suf = hash_find (arc_suffix_hash, s);
 		      }
 		  }
 
@@ -6305,11 +6305,13 @@ fprintf (stdout, "Matched syntax %s\n", opcode->syntax);
 #endif
 	  if(!lm_present && !(opcode->flags & AC_SIMD_SETLM))
 	      insn2 |= (0xff << 15);
-	  if(opcode->flags & ARC_SIMD_ZERVA){
-	      long limm2_p, limm2;
-	      limm2_p = arc_opcode_limm_p (&limm2);
-	      if(limm2_p)
-		  insn2 = insn2+(limm2&0x7fff);
+	  if(opcode->flags & ARC_SIMD_ZERVA)
+	    {
+	      /* No  need for shadow declarations, can reuse. */
+	      /* long limm_p, limm; */
+	      limm_p = arc_opcode_limm_p (&limm);
+	      if(limm_p)
+		  insn2 = insn2+(limm&0x7fff);
 	      operand = &arc_operands[arc_operand_map[zer_rega.type]];
 	      if(operand->insert){
 		  insn = (*operand->insert) (insn,&insn2, operand, mods,
@@ -6324,12 +6326,13 @@ fprintf (stdout, "Matched syntax %s\n", opcode->syntax);
 	      }
 	  if(opcode->flags & ARC_SIMD_ZERVB)
 	      {
-	      long limm2_p, limm2;
-	      limm2_p = arc_opcode_limm_p (&limm2);
-	      if(limm2_p)
-		  insn2 = insn2+(limm2&0x7fff);
+	      /* No  need for shadow declarations, can reuse. */
+	      /* long limm_p, limm; */
+	      limm_p = arc_opcode_limm_p (&limm);
+	      if(limm_p)
+		  insn2 = insn2+(limm&0x7fff);
 	      operand = &arc_operands[arc_operand_map[zer_regb.type]];
-	      insn2 = insn2+(limm2&0x7fff);
+	      insn2 = insn2+(limm&0x7fff);
 	      if(operand->insert)
 		  {
 		  insn = (*operand->insert) (insn,&insn2, operand, mods,
@@ -6345,10 +6348,11 @@ fprintf (stdout, "Matched syntax %s\n", opcode->syntax);
 	      }
 	  if(opcode->flags & ARC_SIMD_ZERVC)
 	      {
-	      long limm2_p, limm2;
-	      limm2_p = arc_opcode_limm_p (&limm2);
-	      if(limm2_p)
-		  insn2 = insn2+(limm2&0x7fff);
+	      /* No  need for shadow declarations, can reuse. */
+	      /* long limm_p, limm; */
+	      limm_p = arc_opcode_limm_p (&limm);
+	      if(limm_p)
+		  insn2 = insn2+(limm&0x7fff);
 	      operand = &arc_operands[arc_operand_map[zer_regc.type]];
 	      if(operand->insert){
 		  insn = (*operand->insert) (insn,&insn2, operand, mods,
