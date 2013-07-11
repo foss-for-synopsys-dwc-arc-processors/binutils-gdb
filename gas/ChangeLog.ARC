@@ -1,3 +1,9 @@
+2013-07-11  Jeremy Bennett  <jeremy.bennett@embecosm.com>
+
+	* config/tc-arc.c (md_assemble): No need to replace s by s2, limm
+	by limm2 or limm_p by limm2_p. In each case we can just remove
+	shadow declaration and reuse existing declaration.
+
 2013-07-10  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* config/tc-arc.c (em_jumplink_or_jump_insn): Add extern
