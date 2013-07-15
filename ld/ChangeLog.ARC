@@ -1,3 +1,7 @@
+2013-07-15: Christian Ruppert <christian.ruppert@abilis.com>
+
+	* scripttempl/arcelf.sc: Only define ENTRY when not relocating.
+
 2013-06-25  Simon Cook  <simon.cook@embecosm.com>
 
 	* scripttempl/arclinux.sc: Only define ENTRY when not relocating.
