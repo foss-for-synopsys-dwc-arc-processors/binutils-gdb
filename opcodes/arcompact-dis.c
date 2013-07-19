@@ -25,6 +25,7 @@
 #include <stdarg.h>
 #include <ansidecl.h>
 #include <string.h>
+#include <assert.h>
 
 #include "dis-asm.h"
 #include "opcode/arc.h"
@@ -311,7 +312,7 @@ static bfd_vma bfd_getm32_ac (unsigned int) ATTRIBUTE_UNUSED;
 
 #define add_target(x) 	(state->targets[state->tcnt++] = (x))
 
-static char comment_prefix[] = "\t; ";
+static char comment_prefix[] ATTRIBUTE_UNUSED = "\t; ";
 static short int enable_simd = 0;
 static short int enable_insn_stream = 0;
 
@@ -563,9 +564,11 @@ my_sprintf (struct arcDisState *state, char *buf, const char*format, ...)
 }
 
 static void
-write_comments_(struct arcDisState *state, int shimm, int is_limm, long limm_value)
+write_comments_(struct arcDisState *state, int shimm ATTRIBUTE_UNUSED,
+		int is_limm ATTRIBUTE_UNUSED, long limm_value ATTRIBUTE_UNUSED)
 {
-  if (state->commentBuffer != 0)
+  assert (state->commentBuffer == 0);
+  /*if (state->commentBuffer != 0)
     {
       int i;
       if (is_limm)
@@ -579,7 +582,7 @@ write_comments_(struct arcDisState *state, int shimm, int is_limm, long limm_val
 	  else  strcat(state->commentBuffer, ", ");
 	  strncat(state->commentBuffer, state->comm[i], sizeof(state->commentBuffer));
 	}
-    }
+	}*/
 }
 
 #define write_comments2(x)	write_comments_(state, x, is_limm, limm_value)

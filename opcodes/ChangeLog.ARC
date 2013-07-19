@@ -1,3 +1,9 @@
+2013-07-19  Simon Cook  <simon.cook@embecosm.com>
+
+	* arc-dis-old.c (write_comments_): Comment out unused function.
+	(comment_prefix): Mark as ATTRIBUTE_UNUSED (used by above function).
+	* arcompact-dis.c: Likewise.
+
 2013-07-11  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* arc-opc-old.c (arc_opcodes): Correct parentheses change for
