@@ -29,6 +29,7 @@
 #include "elf-bfd.h"
 #include "elf/arc.h"
 #include "opintl.h"
+#include <assert.h>
 
 #include <stdarg.h>
 #include "arc-dis-old.h"
@@ -179,7 +180,7 @@ typedef enum
 
 #define add_target(x)	(state->targets[state->tcnt++] = (x))
 
-static char comment_prefix[] = "\t; ";
+static char comment_prefix[] ATTRIBUTE_UNUSED = "\t; ";
 
 static const char *
 core_reg_name (struct arcDisState * state, int val)
@@ -418,11 +419,12 @@ arc_sprintf (struct arcDisState *state, char *buf, const char *format, ...)
 
 static void
 write_comments_(struct arcDisState * state,
-		int shimm,
-		int is_limm,
-		long limm_value)
+		int shimm ATTRIBUTE_UNUSED,
+		int is_limm ATTRIBUTE_UNUSED,
+		long limm_value ATTRIBUTE_UNUSED)
 {
-  if (state->commentBuffer != 0)
+  assert (state->commentBuffer == 0);
+  /*if (state->commentBuffer != 0)
     {
       int i;
 
@@ -442,7 +444,7 @@ write_comments_(struct arcDisState * state,
 	  strncat (state->commentBuffer, state->comm[i],
 		   sizeof (state->commentBuffer));
 	}
-    }
+	}*/
 }
 
 #define write_comments2(x) write_comments_ (state, x, is_limm, limm_value)
