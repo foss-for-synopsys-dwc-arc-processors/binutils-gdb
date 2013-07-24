@@ -1089,3 +1089,9 @@
 { (unsigned char *) "min%.q%.f%Q 0,%L,%L%F",                 0xFFFF7FE0, 0x26C97F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*SUB1/SUB3*/
 { (unsigned char *) "sub1%.f%Q %A,%L,%L%F",                  0xFFFF7FC0, 0x26177F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
+
+/*LLOCK */
+{ (unsigned char *) "llock%.V %B,[%C]",                        0xF8FF003F, 0x202F0010, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "llock%.V%Q %B,[%L]",                      0xF8FF0FFF, 0x202F0F90, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "llock%.V 0,[%C]",                         0xFFFF703F, 0x262F7010, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "llock%.V%Q 0,[%L]",                       0xFFFF7FFF, 0x262F7F90, ARC_MACH_ARCV2, 0, 0, 0, 0},

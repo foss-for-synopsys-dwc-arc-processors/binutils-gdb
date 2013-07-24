@@ -1,3 +1,7 @@
+2013-07-24  Claudiu Zissulescu <claziss@synopsys.com>
+
+        * arc-em.h: Add LLOCK mnemonic to EM
+
 2013-07-19  Simon Cook  <simon.cook@embecosm.com>
 
 	* arc-dis-old.c (write_comments_): Comment out unused function.
