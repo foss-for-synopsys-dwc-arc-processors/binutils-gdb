@@ -1,3 +1,7 @@
+2013-07-24 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* elf32-arc.c : add PLT support for ARCv2 cores.
+
 2013-06-28 Vineet Gupta <vgupta@synopsys.com>
 
 	* elf32-arc.c: Replaced EM_ARCOMPACT2 with EM_ARCV2
