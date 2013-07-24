@@ -982,8 +982,9 @@ bfd_put_32_me (bfd *abfd, bfd_vma value,unsigned char *data)
    the linker specs */
 #define ELF_DYNAMIC_INTERPRETER  "/sbin/ld-uClibc.so"
 
-/* size of one plt entry */
+/* size of one plt entry in bytes*/
 #define PLT_ENTRY_SIZE  12
+#define PLT_ENTRY_SIZE_V2 16
 
 /* Instructions appear in memory as a sequence of half-words (16 bit);
    individual half-words are represented on the target in target byte order.
@@ -1016,7 +1017,41 @@ static const insn_hword elf_arc_abs_pltn_entry [PLT_ENTRY_SIZE/2] =
     0x0000,			/* ------ " " -------------- */
     0x0000,			/* ------ " " -------------- */
     0x7c20,			/* j_s.d [%r12]              */
-    0x74ef,			/* mov_s %r12, %pcl          */
+    0x74ef			/* mov_s %r12, %pcl          */
+  };
+
+/* The zeroth entry in the absolute plt entry for ARCv2 */
+static const insn_hword elf_arcV2_abs_plt0_entry [2 * PLT_ENTRY_SIZE_V2/2] =
+  {
+    0x1600,			/* ld %r11, [0] */
+    0x700b,
+    0x0000,
+    0x0000,
+    0x1600,			/* ld %r10, [0] */
+    0x700a,			/*  */
+    0,
+    0,
+    0x2020,			/* j [%r10] */
+    0x0280,			/* ---"---- */
+    0x0000,			/* pad */
+    0x0000,			/* pad */
+    0x0000,			/* pad */
+    0x0000,			/* pad */
+    0x0000,			/* pad */
+    0x0000			/* pad */
+  };
+
+/* Contents of the subsequent entries in the absolute plt for ARCv2 */
+static const insn_hword elf_arcV2_abs_pltn_entry [PLT_ENTRY_SIZE_V2/2] =
+  {
+    0x2730,			/* ld %r12, [%pcl,func@gotpc] */
+    0x7f8c,			/* ------ " " --------------  */
+    0x0000,			/* ------ " " --------------  */
+    0x0000,			/* ------ " " --------------  */
+    0x78e0,			/* nop_s                      */
+    0x7c20,			/* j_s.d [%r12]               */
+    0x240a,			/* mov %r12, %pcl             */
+    0x1fc0			/* ------ " " --------------  */
   };
 
 /* The zeroth entry in the pic plt entry */
@@ -1045,6 +1080,40 @@ static const insn_hword elf_arc_pic_pltn_entry [PLT_ENTRY_SIZE/2] =
     0x0000,			/* ------ " " -------------- */
     0x7c20,			/* j_s.d [%r12]              */
     0x74ef,			/* mov_s %r12, %pcl          */
+  };
+
+/* The zeroth entry in the pic plt entry for ARCv2 */
+static const insn_hword elf_arcV2_pic_plt0_entry [2 * PLT_ENTRY_SIZE_V2/2] =
+  {
+    0x2730,			/* ld %r11, [pcl,0] : 0 to be replaced by _DYNAMIC@GOTPC+4 */
+    0x7f8b,
+    0x0000,
+    0x0000,
+    0x2730,			/* ld %r10, [pcl,0] : 0 to be replaced by -DYNAMIC@GOTPC+8  */
+    0x7f8a,			/*  */
+    0,
+    0,
+    0x2020,			/* j [%r10] */
+    0x0280,			/* ---"---- */
+    0x0000,			/* pad */
+    0x0000,			/* pad */
+    0x0000,			/* pad */
+    0x0000,			/* pad */
+    0x0000,			/* pad */
+    0x0000			/* pad */
+  };
+
+/* Contents of the subsequent entries in the pic plt for ARCv2*/
+static const insn_hword elf_arcV2_pic_pltn_entry [PLT_ENTRY_SIZE_V2/2] =
+  {
+    0x2730,			/* ld %r12, [%pc,func@got]   */
+    0x7f8c,			/* ------ " " -------------- */
+    0x0000,			/* ------ " " -------------- */
+    0x0000,			/* ------ " " -------------- */
+    0x78e0,			/* nop_s                     */
+    0x7c20,			/* j_s.d [%r12]              */
+    0x240a,			/* mov %r12, %pcl            */
+    0x1fc0			/* ------ " " -------------- */
   };
 
 
@@ -2363,8 +2432,8 @@ elf_arc_finish_dynamic_symbol (bfd *output_bfd,
 	 corresponds to this symbol.  This is the index of this symbol
 	 in all the symbols for which we are making plt entries.  The
 	 first TWO entries in the procedure linkage table are reserved.  */
-      plt_index = h->plt.offset / PLT_ENTRY_SIZE - 2;
-
+      plt_index = h->plt.offset / (bfd_get_mach (output_bfd) == bfd_mach_arc_arcv2
+				   ? PLT_ENTRY_SIZE_V2 : PLT_ENTRY_SIZE) - 2;
 
       /* Get the offset into the .got table of the entry that
 	 corresponds to this function.  Each .got entry is 4 bytes.
@@ -2374,9 +2443,18 @@ elf_arc_finish_dynamic_symbol (bfd *output_bfd,
       /* Fill in the entry in the procedure linkage table.  */
       if (! info->shared)
 	{
-	  pltcpy (output_bfd,
-		  splt->contents + h->plt.offset, elf_arc_abs_pltn_entry,
-		  PLT_ENTRY_SIZE);
+	  if (bfd_get_mach (output_bfd) == bfd_mach_arc_arcv2)
+	    {
+	      pltcpy (output_bfd,
+		      splt->contents + h->plt.offset, elf_arcV2_abs_pltn_entry,
+		      PLT_ENTRY_SIZE_V2);
+	    }
+	  else
+	    {
+	      pltcpy (output_bfd,
+		      splt->contents + h->plt.offset, elf_arc_abs_pltn_entry,
+		      PLT_ENTRY_SIZE);
+	    }
 
 	  /* fill in the limm in the plt entry to make it jump through its corresponding *(gotentry) */
 	  bfd_put_32_me (output_bfd,
@@ -2389,9 +2467,18 @@ elf_arc_finish_dynamic_symbol (bfd *output_bfd,
 	}
       else
 	{
-	  pltcpy (output_bfd,
-		  splt->contents + h->plt.offset, elf_arc_pic_pltn_entry,
-		  PLT_ENTRY_SIZE);
+	  if (bfd_get_mach (output_bfd) == bfd_mach_arc_arcv2)
+	    {
+	      pltcpy (output_bfd,
+		      splt->contents + h->plt.offset, elf_arcV2_pic_pltn_entry,
+		      PLT_ENTRY_SIZE_V2);
+	    }
+	  else
+	    {
+	      pltcpy (output_bfd,
+		      splt->contents + h->plt.offset, elf_arc_pic_pltn_entry,
+		      PLT_ENTRY_SIZE);
+	    }
 
 	  /* fill in the limm in the plt entry to make it jump through its corresponding *(gotentry) */
 	  bfd_put_32_me (output_bfd,
@@ -2670,8 +2757,16 @@ elf_arc_finish_dynamic_sections (bfd *output_bfd,struct bfd_link_info *info)
 	{
 	  if (info->shared)
 	    {
-	      pltcpy (output_bfd, splt->contents,
-		      elf_arc_pic_plt0_entry, 2 * PLT_ENTRY_SIZE);
+	      if (bfd_get_mach (output_bfd) == bfd_mach_arc_arcv2)
+		{
+		  pltcpy (output_bfd, splt->contents,
+			  elf_arcV2_pic_plt0_entry, 2 * PLT_ENTRY_SIZE_V2);
+		}
+	      else
+		{
+		  pltcpy (output_bfd, splt->contents,
+			  elf_arc_pic_plt0_entry, 2 * PLT_ENTRY_SIZE);
+		}
 	      
 	      /* fill in the _DYNAMIC@GOTPC+4 and  
 		 _DYNAMIC@GOTPC+8 at PLT0+4 and PLT0+12 */
@@ -2691,8 +2786,16 @@ elf_arc_finish_dynamic_sections (bfd *output_bfd,struct bfd_link_info *info)
 	    }
 	  else
 	    {
-	      pltcpy (output_bfd, splt->contents, elf_arc_abs_plt0_entry,
-		      2 * PLT_ENTRY_SIZE);
+	      if (bfd_get_mach (output_bfd) == bfd_mach_arc_arcv2)
+		{
+		  pltcpy (output_bfd, splt->contents, elf_arcV2_abs_plt0_entry,
+			  2 * PLT_ENTRY_SIZE_V2);
+		}
+	      else
+		{
+		  pltcpy (output_bfd, splt->contents, elf_arc_abs_plt0_entry,
+			  2 * PLT_ENTRY_SIZE);
+		}
 
 	      /* in the executable, fill in the exact got addresses
 		 for the module id ptr (gotbase+4) and the dl resolve
@@ -2708,10 +2811,7 @@ elf_arc_finish_dynamic_sections (bfd *output_bfd,struct bfd_link_info *info)
 	      bfd_put_32 (output_bfd,
 			  (sgot->output_section->vma + sgot->output_offset),
 			  splt->contents + 20);
-
 	    }
-
-
 	}
 
       /* UnixWare sets the entsize of .plt to 4, although that doesn't
@@ -2797,7 +2897,8 @@ elf_arc_adjust_dynamic_symbol (struct bfd_link_info *info,
 	 first entry.  */
       if (s->size == 0)
 	{
-	  s->size += 2 *PLT_ENTRY_SIZE;
+	  s->size += 2 * (bfd_get_mach (dynobj) == bfd_mach_arc_arcv2
+			  ? PLT_ENTRY_SIZE_V2 : PLT_ENTRY_SIZE);
 	  BFD_DEBUG_PIC (fprintf (stderr, "first plt entry at %d\n", s->size));
 	}
       else
@@ -2819,7 +2920,8 @@ elf_arc_adjust_dynamic_symbol (struct bfd_link_info *info,
       h->plt.offset = s->size;
 
       /* Make room for this entry.  */
-      s->size += PLT_ENTRY_SIZE;
+      s->size += (bfd_get_mach (dynobj) == bfd_mach_arc_arcv2
+		  ? PLT_ENTRY_SIZE_V2 : PLT_ENTRY_SIZE);
 
       /* We also need to make an entry in the .got.plt section, which
 	 will be placed in the .got section by the linker script.  */
