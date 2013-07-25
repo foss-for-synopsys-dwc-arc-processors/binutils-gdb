@@ -1,6 +1,11 @@
+2013-07-25 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* elf32-arc.c: Use j.d instead of nop_s j_s.d in PLT entry for
+	ARCv2 cores.
+
 2013-07-24 Claudiu Zissulescu <claziss@synopsys.com>
 
-	* elf32-arc.c : add PLT support for ARCv2 cores.
+	* elf32-arc.c: Add PLT support for ARCv2 cores.
 
 2013-06-28 Vineet Gupta <vgupta@synopsys.com>
 
