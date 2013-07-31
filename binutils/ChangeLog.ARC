@@ -1,3 +1,8 @@
+2013-07-30 Vineet Gupta <vgupta@synopsys.com>
+
+	* readelf.c (get_machine_flags): print ABI v3 flag for EM_ARCOMPACT.
+	EM_ARCV2 only supports E_ARC_OSABI_V3 in Linux OS ABI
+
 2013-06-28 Vineet Gupta <vgupta@synopsys.com>
 
 	* readelf.c : Globally replaced EM_ARCOMPACT2 with EM_ARCV2.

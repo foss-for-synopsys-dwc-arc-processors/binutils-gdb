@@ -2248,12 +2248,9 @@ get_machine_flags (unsigned e_flags, unsigned e_machine)
 	    }
 	  switch(e_flags & EF_ARC_OSABI_MSK)
 	    {
-	    case E_ARC_OSABI_ORIG:
-	      strcat (buf, ", legacy syscall ABI");
-	      break;
-	    case E_ARC_OSABI_V2:
-	      /* For 3.2+ Linux kernels which use asm-generic hdrs */
-	      strcat (buf, ", v2 syscall ABI");
+	      /* Only upstream 3.9+ kernels will support ARCv2 ISA */
+	    case E_ARC_OSABI_V3:
+	      strcat (buf, ", v3 no-legacy-syscalls ABI");
 	      break;
 	    }
 	  break;
@@ -2284,6 +2281,10 @@ get_machine_flags (unsigned e_flags, unsigned e_machine)
 	    case E_ARC_OSABI_V2:
 	      /* For 3.2+ Linux kernels which use asm-generic hdrs */
 	      strcat (buf, ", v2 syscall ABI");
+	      break;
+	    case E_ARC_OSABI_V3:
+	      /* upstream 3.9+ kernels which don't use any legacy syscalls */
+	      strcat (buf, ", v3 no-legacy-syscalls ABI");
 	      break;
 	    }
 	  break;
