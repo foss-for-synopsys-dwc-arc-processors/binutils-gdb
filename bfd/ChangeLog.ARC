@@ -1,3 +1,8 @@
+2013-07-31 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* elf32-arc.c: Add relocation support for ld_s r1,[gp,s11]
+	and st_s r0,[gp,s11] instructions.
+
 2013-07-25 Claudiu Zissulescu <claziss@synopsys.com>
 
 	* elf32-arc.c: Use j.d instead of nop_s j_s.d in PLT entry for
