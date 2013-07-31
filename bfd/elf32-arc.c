@@ -1421,7 +1421,16 @@ arc_plugin_one_reloc (unsigned long insn, Elf_Internal_Rela *rel,
     value >>= 1;
   case R_ARC_SDA_LDST:
     value &= 0x1ff;
-    insn |= ( ((value & 0xff) << 16)  | ((value >> 8) << 15));
+    if ((insn &  0xF8180000) == 0x50100000)
+      {
+	/* insert ARCv2 S11 value into ST_S RO,[GP,S11]. */
+	insn |= (value & 0x1F8) << 18;
+	insn |= (value & 0x07) << 16;
+      }
+    else
+      {
+	insn |= ( ((value & 0xff) << 16)  | ((value >> 8) << 15));
+      }
     break;
 
   case R_ARC_SDA16_LD:
@@ -1436,7 +1445,16 @@ arc_plugin_one_reloc (unsigned long insn, Elf_Internal_Rela *rel,
 
   case R_ARC_SDA16_LD2:
     /* FIXME: The 16-bit insns shd not come in as higher bits of a 32-bit word */
-    insn |= ((value >> 2) & 0x1ff) <<16;
+    if ((insn & 0xF8180000) == 0x50000000)
+      {
+	/* insert ARCv2 S11 value. */
+	insn |= ((value >> 2) & 0x1F8) << 18;
+	insn |= ((value >> 2) & 0x07) << 16;
+      }
+    else
+      {
+	insn |= ((value >> 2) & 0x1ff) <<16;
+      }
     break;
     
     

@@ -1,3 +1,9 @@
+2013-07-31 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* arc-em.h: Add relocation support for ld_s r1,[gp,s11] and
+	st_s r0,[gp,s11] instructions.
+	* arc-opc-old.c: Likewise.
+
 2013-07-24  Claudiu Zissulescu <claziss@synopsys.com>
 
         * arc-em.h: Add LLOCK mnemonic to EM

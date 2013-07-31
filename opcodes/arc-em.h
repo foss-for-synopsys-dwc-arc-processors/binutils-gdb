@@ -794,7 +794,9 @@
 { (unsigned char *) "ldi%Q 0,[%L]",                          0xFFFFFFFF, 0x26267F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*ST_S */
 /* st_s    R0,[GP,Ss11] 	0101 0SSS SSS1 0sss  */
+{ (unsigned char *) "st_s %4,[%5,%[L]",                         0xF818, 0x5010, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "st_s %4,[%5,%ç]",                       0xF818, 0x5010, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "st_s %4,[%5]",                             0xF818, 0x5010, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*ST */
 { (unsigned char *) "st%z%.w%.D %Ñ,[%g]%0",                  0xF8FF8001, 0x18000001, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "st%z%.w%.D %Ñ,[%g,%o]%0",               0xF8000001, 0x18000001, ARC_MACH_ARCV2, 0, 0, 0, 0},
@@ -819,7 +821,10 @@
 /* ld_s<.aa>    a,[b,c] 	0100 1bbb ccc0 0aaa  */
 { (unsigned char *) "ld_s.as %a,[%b,%c]",                    0xF818, 0x4800, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* ld_s    R1,[GP,Ss11] 	0101 0SSS SSS0 0sss  */
+{ (unsigned char *) "ld_s %Å,[%5,%[L]",                         0xF818, 0x5000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "ld_s %Å,[%5,%ç]",                       0xF818, 0x5000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "ld_s %Å,[%5]",                             0xF818, 0x5000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+
 /*J missing J [BLINK]*/
 /* j    c               	0010 0RRR 0010 0000 RRRR CCCC CCRR RRRR  */
 { (unsigned char *) "j [%C]",                                0xFFFFF03F, 0x20200000, ARC_MACH_ARCV2, 0, 0, 0, 0},

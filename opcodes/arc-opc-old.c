@@ -5249,6 +5249,10 @@ ac_get_load_sdasym_insn_type (arc_insn insn, int compact_insn_16)
 	  load_type = 12;
 	  break;
 	}
+     if ((insn & 0xF818) == 0x5000)
+	{
+	  load_type = 10;
+	}
     }
   else
     {
@@ -5296,34 +5300,44 @@ ac_get_load_sdasym_insn_type (arc_insn insn, int compact_insn_16)
 */
 int
 ac_get_store_sdasym_insn_type (arc_insn insn,
-			       int compact_insn_16 ATTRIBUTE_UNUSED)
+			       int compact_insn_16)
 {
   int store_type = -1;
 
-  /* st/stw/stb */
-  switch (insn & 0xf8000007)
+  /* st_s r0,[gp,s11] */
+  if (compact_insn_16)
     {
-      /* st */
-    case 0x18000000:
-      if (((insn>>3) & 3) == 3)
-	store_type = 0;
-      else
-	store_type = 1;
-      break;
+      if ((insn &  0xF818) == 0x5010)
+	{
+	  store_type = 0;
+	}
+    }
+  else
+    {
+      /* st/stw/stb */
+      switch (insn & 0xf8000007)
+	{
+	  /* st */
+	case 0x18000000:
+	  if (((insn>>3) & 3) == 3)
+	    store_type = 0;
+	  else
+	    store_type = 1;
+	  break;
 
-      /* stw */
-    case 0x18000004:
-      if (((insn>>3) & 3) == 3)
-	store_type = 2;
-      else
-	store_type = 1;
-      break;
+	  /* stw */
+	case 0x18000004:
+	  if (((insn>>3) & 3) == 3)
+	    store_type = 2;
+	  else
+	    store_type = 1;
+	  break;
 
-      /* stb */
-    case 0x18000002:
-      store_type = 1;
-      break;
-
+	  /* stb */
+	case 0x18000002:
+	  store_type = 1;
+	  break;
+	}
     }
 
   return store_type;
