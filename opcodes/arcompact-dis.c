@@ -4341,7 +4341,7 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 
   case 57:
     /*enter_s/leave_s*/
-    fieldC = BITS(state->words[0],8,9) << 4;
+    fieldC = BITS(state->words[0],8,10) << 4;
     fieldC |= BITS(state->words[0],1,4);
     fieldCisReg = 0;
 
@@ -4350,8 +4350,15 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
     /*print*/
     char *bp;
     bp = state->operandBuffer;
-    sprintf(bp, "{r13-r%d", (13 + (fieldC & 0x0F)));
+    sprintf(bp, "{");
     bp = bp+strlen(bp);
+
+    if (fieldC & 0x0F)
+      {
+	sprintf(bp, "r13-r%d", (12 + (fieldC & 0x0F)));
+	bp = bp+strlen(bp);
+      }
+
     if (fieldC & 0x10)
       {
 	sprintf(bp, ",fp");
@@ -4360,6 +4367,12 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
     if (fieldC & 0x20)
       {
 	sprintf(bp, ",blink");
+	bp = bp+strlen(bp);
+      }
+
+    if (fieldC & 0x40)
+      {
+	sprintf(bp, ",pcl");
 	bp = bp+strlen(bp);
       }
 

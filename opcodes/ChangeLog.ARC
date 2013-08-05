@@ -1,3 +1,9 @@
+2013-08-05 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* arc-em.h: Modify enter_s and leave_s mnemonics by adding
+	  parantheses.
+	* arcompact-dis.c: Fix leave_s disassembled code.
+
 2013-07-31 Claudiu Zissulescu <claziss@synopsys.com>
 
 	* arc-em.h: Add relocation support for ld_s r1,[gp,s11] and
