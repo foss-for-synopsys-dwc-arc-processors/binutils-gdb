@@ -745,7 +745,8 @@
 { (unsigned char *) "cmp_s%Q %L,%…",                         0xF8FF, 0x70D7, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*ENTER_S */
 /* enter_s    Eu6       	1100 00UU 111u uuu0  */
-{ (unsigned char *) "enter_s %‡",                            0xFCE1, 0xC0E0, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "enter_s {%‡}",                          0xFCE1, 0xC0E0, ARC_MACH_ARCV2, 0, 0, 0, 0},
+
 /*EI_S */
 /* ei_s    u10          	0101 11uu uuuu uuuu  */
 { (unsigned char *) "ei_s %ˆ",                               0xFC00, 0x5C00, ARC_MACH_ARCV2, 0, 0, 0, 0},
@@ -757,7 +758,8 @@
 { (unsigned char *) "ldi_s %b,[%‰]",                         0xF808, 0x5008, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*LEAVE_S */
 /* leave_s    u7        	1100 0UUU 110u uuu0  */
-{ (unsigned char *) "leave_s %Š",                            0xF8E1, 0xC0C0, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "leave_s {%Š}",                          0xF8E1, 0xC0C0, ARC_MACH_ARCV2, 0, 0, 0, 0},
+
 /*MOV_S */
 /* mov_s    h,s3        	0111 0sss hhh0 11HH  */
 { (unsigned char *) "mov_s %€,%…",                           0xF81C, 0x700C, ARC_MACH_ARCV2, 0, 0, 0, 0},

@@ -1,3 +1,9 @@
+2013-08-05  Claudiu Zissulescu <claziss@synopsys.com>
+
+        * config/tc-arc.c: Add parseEnterLeaveMnemonic procedure. It
+          parses enter_s and leave_s mnemonics and returns a suited
+          value for the corresponding instruction.
+
 2013-07-11  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* config/tc-arc.c (md_assemble): No need to replace s by s2, limm

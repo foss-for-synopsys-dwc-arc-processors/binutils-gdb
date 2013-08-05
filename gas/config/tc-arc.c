@@ -4830,6 +4830,169 @@ static struct arc_operand_value zer_regc={"ZEROV",62,')',0};
 static const char arc_operand_prefixes[] = "%+";
 static const int  arc_operand_prefix_num = 2;
 
+
+/* Parse enter_s or leave_s arguments. */
+static int
+parseEnterLeaveMnemonic(char **str,
+			bfd_boolean leave_p)
+{
+  int value = -1;
+  char *old_input_line_pointer;
+  bfd_boolean saw_comma = FALSE;
+  bfd_boolean saw_arg = FALSE;
+  bfd_boolean saw_fp = FALSE;
+  bfd_boolean saw_dash = FALSE;
+  bfd_boolean saw_r13 = FALSE;
+  bfd_boolean saw_blink = FALSE;
+  bfd_boolean saw_pcl = FALSE;
+  unsigned char regVal = 0;
+
+  /* Save and restore input_line_pointer around this function.  */
+  old_input_line_pointer = input_line_pointer;
+  input_line_pointer = *str;
+
+  while (*input_line_pointer)
+    {
+      SKIP_WHITESPACE();
+      switch (*input_line_pointer)
+        {
+	case '}':
+        case '\0':
+          goto fini;
+
+        case ',':
+          input_line_pointer++;
+          if (saw_comma || !saw_arg)
+            goto err;
+          saw_comma = TRUE;
+	  saw_arg = FALSE;
+          break;
+
+	case '-':
+	  if (saw_dash)
+	    goto err;
+	  saw_dash = TRUE;
+
+	case '%':
+	  input_line_pointer++;
+	  break;
+
+	case 'f':
+	  if (saw_arg && !saw_comma)
+	    goto err;
+
+	  if (saw_fp)
+	    goto err;
+
+	  if (strncmp (input_line_pointer, "fp", 2))
+	    goto err;
+
+	  input_line_pointer +=2;
+	  saw_fp    = TRUE;
+	  saw_comma = FALSE;
+	  saw_arg   = TRUE;
+	  break;
+
+	case 'b':
+	  if (saw_arg && !saw_comma)
+	    goto err;
+
+	  if (strncmp (input_line_pointer, "blink", 5))
+	    goto err;
+
+	  if (saw_blink)
+	    goto err;
+
+	  input_line_pointer +=5;
+	  saw_blink = TRUE;
+	  saw_comma = FALSE;
+	  saw_arg   = TRUE;
+	  break;
+
+	case 'p':
+	  if (saw_arg && !saw_comma)
+	    goto err;
+
+	  if (!leave_p)
+	    goto err;
+
+	  if (strncmp (input_line_pointer, "pcl", 3))
+	    goto err;
+
+	  if (saw_pcl)
+	    goto err;
+
+	  input_line_pointer +=3;
+	  saw_pcl   = TRUE;
+	  saw_comma = FALSE;
+	  saw_arg   = TRUE;
+	  break;
+
+	case 'r':
+          if (saw_arg && !(saw_comma ^ saw_dash))
+	    goto err;
+
+	  if (!saw_r13 && strncmp (input_line_pointer, "r13", 3))
+	    goto err;
+
+	  if (saw_r13 && !saw_dash)
+	    goto err;
+
+	  input_line_pointer += (saw_r13) ? 1 : 3;
+	  if (saw_r13)
+	    {
+	      /* Expect r13 to r26 */
+	      unsigned char v0 = *input_line_pointer++;
+	      unsigned char v1 = *input_line_pointer++;
+	      if ((v0 < '1' || v0 > '2') || (v1 < '0' || v1 >'9'))
+		{
+		  as_bad (_("register out of range"));
+		  goto err;
+		}
+	      regVal = (v0 - '0')*10 + (v1 - '0');
+	    }
+	  else
+	    {
+	      regVal = 13;
+	    }
+
+	  saw_r13   = TRUE;
+	  saw_comma = FALSE;
+	  saw_arg   = TRUE;
+	  break;
+
+	default:
+	  goto err;
+	}
+    }
+
+ fini:
+  if (saw_comma)
+    goto err;
+  if (saw_r13 && (regVal > 26 || regVal < 13))
+    goto err;
+  *str = input_line_pointer;
+  input_line_pointer = old_input_line_pointer;
+
+  value = (saw_r13) ? regVal - 12 : 0x00;
+  value |= (saw_fp) ? 0x10 : 0x00;
+  value |= (saw_blink) ? 0x20 : 0x00;
+  value |= (saw_pcl && leave_p) ? 0x40 : 0x00;
+
+  return value;
+
+ err:
+  if (saw_comma)
+    as_bad (_("extra comma"));
+  else if (!saw_arg)
+    as_bad (_("missing argument"));
+  else
+    as_bad (_("wrong input"));
+  input_line_pointer = old_input_line_pointer;
+  return -1;
+
+}
+
 /* This routine is called for each instruction to be assembled.  */
 
 void
@@ -5426,6 +5589,48 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		    as_bad ("too many suffixes");
 		  else
 		    insn_suffixes[num_suffixes++] = suffix;
+		}
+	    }
+	  else if ((operand->fmt == 135) || (operand->fmt == 138))
+	    {
+	      /* enter or leave mnemonic, parse the string and
+		 compute the value. */
+
+	      bfd_boolean leave_p = (operand->fmt == 138) ? TRUE : FALSE;
+	      int value = parseEnterLeaveMnemonic(&str, leave_p);
+	      if (value == -1)
+		break;
+	      syn++;
+
+	      /* Insert the register or expression into the instruction.  */
+	      if (operand->insert)
+		{
+		  const char *errmsg = NULL;
+		  insn = (*operand->insert) (insn, NULL, operand, 0,
+					     NULL, (long) value, &errmsg);
+		  if (errmsg != (const char *) NULL)
+		    {
+		      last_errmsg = errmsg;
+		      if (operand->flags & ARC_OPERAND_ERROR)
+			{
+			  /* Yuk! This is meant to have a literal argument, so
+			     it can be translated. We add a dummy empty string
+			     argument, which keeps -Wformat-security happy for
+			     now. */
+			  as_bad (errmsg, "");
+			  assembling_instruction = 0;
+			  return;
+			}
+		      else if (operand->flags & ARC_OPERAND_WARN)
+			{
+			  /* Yuk! This is meant to have a literal argument, so
+			     it can be translated. We add a dummy empty string
+			     argument, which keeps -Wformat-security happy for
+			     now. */
+			  as_warn (errmsg, "");
+			}
+		      break;
+		    }
 		}
 	    }
 	  else
