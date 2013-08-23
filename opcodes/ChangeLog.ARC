@@ -1,3 +1,9 @@
+2013-08-23 Anton Kolesov <akolesov@synopsys.com>
+
+	* arcompact-dis.c, arc-dis-old.c (dsmOneArcInst): Field _addrWriteBack was
+	not written to result structure. This field is required by GDB to properly
+	recognize prologue in functions without full debug information.
+
 2013-08-05 Claudiu Zissulescu <claziss@synopsys.com>
 
 	* arc-em.h: Modify enter_s and leave_s mnemonics by adding
