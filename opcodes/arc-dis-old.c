@@ -1137,6 +1137,7 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState * state)
     }
 
   state->_cond = cond;
+  state->_addrWriteBack = addrWriteBack;
   return state->instructionLen = offset;
 }
 
