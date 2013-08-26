@@ -1995,8 +1995,27 @@ arc_frame_this_id (struct frame_info *this_frame,
   ARC_ENTRY_DEBUG ("")
 
   stack_addr = arc_frame_cache (this_frame, this_cache)->frame_base;
-  code_addr = get_frame_register_unsigned (this_frame,
-					   ARC_PC_REGNUM);
+
+  /* There are 4 possible situation which decide how frame_id->code_addr is
+   * evaluated:
+   *   1) function is compiled with option -g. Then frame_id will be created in
+   *      dwarf_* function and not in this function. NB: even if target binary
+   *      is compiled with -g, some std functions like __start and _init are
+   *      not, so they still will follow one of the following choices.
+   *   2) function is compiled without -g and binary hasn't been stripped in any
+   *      way. In this case GDB still has enough information to evaluate frame
+   *      code_addr properly. This case is covered by call to get_frame_func().
+   *   3) binary has been striped with option -g (strip debug symbols). In this
+   *      case there is still enough symbols for get_frame_func() to work
+   *      properly, so this case is also covered by it.
+   *   4) binary has been striped with option -s (strip all symbols). In this
+   *      case GDB cannot get function start address properly, so we return
+   *      current PC value instead.
+   */
+  code_addr = get_frame_func(this_frame);
+  if (!code_addr)
+    code_addr = get_frame_register_unsigned(this_frame, ARC_PC_REGNUM);
+
   *this_id = frame_id_build (stack_addr, code_addr);
 
 }	/* arc_frame_this_id () */
