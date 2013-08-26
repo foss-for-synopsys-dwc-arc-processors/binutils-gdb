@@ -1,3 +1,8 @@
+2013-08-26	Anton Kolesov <akolesov@synopsys.com>
+
+	* arc-tdep.c (arc_frame_this_id): Return correct frame code address
+	without full debug symbols
+
 2013-05-22  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* arc-linux-tdep.c (arc_linux_is_sigtramp): Correct sizing of buf.
