@@ -4064,10 +4064,13 @@ Watchpoint 1: *(int *) 6293584
 
 @value{GDBN} sets a @dfn{hardware watchpoint} if possible.  Hardware
 watchpoints execute very quickly, and the debugger reports a change in
-value at the exact instruction where the change occurs.  If @value{GDBN}
-cannot set a hardware watchpoint, it sets a software watchpoint, which
-executes more slowly and reports the change in value at the next
-@emph{statement}, not the instruction, after the change occurs.
+value at the exact instruction where the change occurs.  If
+@value{GDBN} cannot set a hardware watchpoint, then on native targets,
+it sets a software watchpoint, which executes more slowly and reports
+the change in value at the next @emph{statement}, not the instruction,
+after the change occurs.  On remote targets there is no such automatic
+fallback, and the user must explicitly force use of software
+watchpoints using @kbd{can-use-hw-watchpoints}.
 
 @cindex use only software watchpoints
 You can force @value{GDBN} to use only software watchpoints with the
