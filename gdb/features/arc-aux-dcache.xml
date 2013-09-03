@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!-- Copyright (C) 2007-2013 Free Software Foundation, Inc.
+     Copyright 2013 Synopsys Inc.
+
+     Contributor Jeremy Bennett <jeremy.bennett@embecosm.com> on behalf of
+     Synopsys Inc.
+
+     Copying and distribution of this file, with or without modification,
+     are permitted in any medium without royalty provided the copyright
+     notice and this notice are preserved.  -->
+
+<!DOCTYPE feature SYSTEM "gdb-target.dtd">
+<feature name="org.gnu.gdb.arc.aux-dcache">
+  <!-- ARC data cache auxiliary register set -->
+  <reg name="dc_ivdc" bitsize="32"/>
+  <reg name="dc_ctrl" bitsize="32"/>
+  <reg name="dc_flsh" bitsize="32"/>
+  <reg name="aux_cache_limit" bitsize="32"/>
+  <reg name="dc_ldl" bitsize="32"/>
+  <reg name="dc_ivdl" bitsize="32"/>
+  <reg name="dc_fldl" bitsize="32"/>
+  <reg name="dc_ram_addr" bitsize="32"/>
+  <reg name="dc_tag" bitsize="32"/>
+  <reg name="dc_data" bitsize="32"/>
+</feature>
