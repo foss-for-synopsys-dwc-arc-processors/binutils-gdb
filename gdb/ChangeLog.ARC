@@ -1,4 +1,10 @@
-2013-05-22  Jeremy Bennett <jeremy.bennett@embecosm.com>
+2013-09-03  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	* features/arc-core.xml: Correct typo for lp_count.
+	* features/arc-core-extension.xml: Created.
+	* features/arc700.xml: Add core extension registers.
+
+2013-09-03  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* features/arc-a5-cpu.xml: Deleted.
 	* features/arc-aux-registers.dtd: Likewise.
