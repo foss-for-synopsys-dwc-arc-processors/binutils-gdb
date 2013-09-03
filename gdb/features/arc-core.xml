@@ -44,7 +44,7 @@
   <reg name="ilink" bitsize="32" regnum="29" group="general"/>
   <reg name="r30" bitsize="32" regnum="30" group="general"/>
   <reg name="blink" bitsize="32" regnum="31" group="general"/>
-  <reg name="lpcount" bitsize="32" regnum="60" group="general"/>
+  <reg name="lp_count" bitsize="32" regnum="60" group="general"/>
   <reg name="limm" bitsize="32" regnum="62" group="general"/>
   <reg name="pcl" bitsize="32" regnum="63" group="general"/>
 </feature>
