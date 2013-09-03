@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<!-- Copyright (C) 2007-2013 Free Software Foundation, Inc.
+     Copyright 2013 Synopsys Inc.
+
+     Contributor Jeremy Bennett <jeremy.bennett@embecosm.com> on behalf of
+     Synopsys Inc.
+
+     Copying and distribution of this file, with or without modification,
+     are permitted in any medium without royalty provided the copyright
+     notice and this notice are preserved.  -->
+
+<!DOCTYPE feature SYSTEM "gdb-target.dtd">
+<feature name="org.gnu.gdb.arc.aux-mpu">
+  <!-- ARC memory protection unit auxiliary register set -->
+  <reg name="mpu_build" bitsize="32"/>
+  <reg name="mpu_en" bitsize="32"/>
+  <reg name="mpu_ecr" bitsize="32"/>
+  <reg name="mpu_rdb0" bitsize="32"/>
+  <reg name="mpu_rdp0" bitsize="32"/>
+  <reg name="mpu_rdb1" bitsize="32"/>
+  <reg name="mpu_rdp1" bitsize="32"/>
+  <reg name="mpu_rdb2" bitsize="32"/>
+  <reg name="mpu_rdp2" bitsize="32"/>
+  <reg name="mpu_rdb3" bitsize="32"/>
+  <reg name="mpu_rdp3" bitsize="32"/>
+  <reg name="mpu_rdb4" bitsize="32"/>
+  <reg name="mpu_rdp4" bitsize="32"/>
+  <reg name="mpu_rdb5" bitsize="32"/>
+  <reg name="mpu_rdp5" bitsize="32"/>
+  <reg name="mpu_rdb6" bitsize="32"/>
+  <reg name="mpu_rdp6" bitsize="32"/>
+  <reg name="mpu_rdb7" bitsize="32"/>
+  <reg name="mpu_rdp7" bitsize="32"/>
+  <reg name="mpu_rdb8" bitsize="32"/>
+  <reg name="mpu_rdp8" bitsize="32"/>
+  <reg name="mpu_rdb9" bitsize="32"/>
+  <reg name="mpu_rdp9" bitsize="32"/>
+  <reg name="mpu_rdb10" bitsize="32"/>
+  <reg name="mpu_rdp10" bitsize="32"/>
+  <reg name="mpu_rdb11" bitsize="32"/>
+  <reg name="mpu_rdp11" bitsize="32"/>
+  <reg name="mpu_rdb12" bitsize="32"/>
+  <reg name="mpu_rdp12" bitsize="32"/>
+  <reg name="mpu_rdb13" bitsize="32"/>
+  <reg name="mpu_rdp13" bitsize="32"/>
+  <reg name="mpu_rdb14" bitsize="32"/>
+  <reg name="mpu_rdp14" bitsize="32"/>
+  <reg name="mpu_rdb15" bitsize="32"/>
+  <reg name="mpu_rdp15" bitsize="32"/>
+</feature>

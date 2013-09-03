@@ -1,4 +1,28 @@
-2013-08-26	Anton Kolesov <akolesov@synopsys.com>
+2013-05-22  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	* features/arc-a5-cpu.xml: Deleted.
+	* features/arc-aux-registers.dtd: Likewise.
+	* features/arc600-cpu.xml: Likewise.
+	* features/arc700-cpu.xml: Likewise.
+	* features/arc-aux-baseline.xml: Created.
+	* features/arc-aux-bcr.xml: Likewise.
+	* features/arc-aux-dcache.xml: Likewise.
+	* features/arc-aux-dccm.xml: Likewise.
+	* features/arc-aux-debug.xml: Likewise.
+	* features/arc-aux-exception.xml: Likewise.
+	* features/arc-aux-icache.xml: Likewise.
+	* features/arc-aux-iccm.xml: Likewise.
+	* features/arc-aux-iset.xml: Likewise.
+	* features/arc-aux-mpu.xml: Likewise.
+	* features/arc-aux-pmrr.xml: Likewise.
+	* features/arc-aux-smart.xml: Likewise.
+	* features/arc-aux-timer.xml: Likewise.
+	* features/arc-aux-user.xml: Likewise.
+	* features/arc-core.xml: Likewise.
+	* features/arc-reduced-core.xml: Likewise.
+	* features/arc700.xml: Likewise.
+
+2013-08-26  Anton Kolesov <akolesov@synopsys.com>
 
 	* arc-tdep.c (arc_frame_this_id): Return correct frame code address
 	without full debug symbols
