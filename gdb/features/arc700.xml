@@ -17,6 +17,7 @@
 
   <!-- Core register definitions (with fixed numbering) -->
   <xi:include href="arc-core.xml"/>
+  <xi:include href="arc-core-extension.xml"/>
 
   <!-- Auxiliary register definitions (baseline is required) -->
   <xi:include href="arc-aux-baseline.xml"/>
