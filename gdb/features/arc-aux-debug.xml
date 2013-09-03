@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!-- Copyright (C) 2007-2013 Free Software Foundation, Inc.
+     Copyright 2013 Synopsys Inc.
+
+     Contributor Jeremy Bennett <jeremy.bennett@embecosm.com> on behalf of
+     Synopsys Inc.
+
+     Copying and distribution of this file, with or without modification,
+     are permitted in any medium without royalty provided the copyright
+     notice and this notice are preserved.  -->
+
+<!DOCTYPE feature SYSTEM "gdb-target.dtd">
+<feature name="org.gnu.gdb.arc.aux-debug">
+  <!-- ARC external host debug auxiliary register set -->
+  <reg name="debug" bitsize="32"/>
+</feature>
