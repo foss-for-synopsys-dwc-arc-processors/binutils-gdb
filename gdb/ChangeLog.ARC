@@ -1,3 +1,8 @@
+2013-09-04  Anton Kolesov <akolesov@synopsys.com>
+
+	* arc-tdep.c (arc_is_in_prologue, arc_is_update_fp_fi): Recognize 'mov_s
+	fp,sp' instruction in prologue for ARC v2.
+
 2013-09-03  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* features/arc-core.xml: Correct typo for lp_count.
