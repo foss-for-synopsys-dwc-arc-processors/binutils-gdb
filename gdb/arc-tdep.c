@@ -369,12 +369,12 @@ arc_is_push_fp_fi (struct arc_unwind_cache *info, struct arcDisState *state)
 
     @param[out] info   Frame unwind cache to be updated if non-NULL.
     @param[in]  state  Instruction state to analyse.
-    @return            Non-zero (true) if this was "push fp". Zero (false)
+    @return            Non-zero (true) if this was "mov[_s] fp,sp". Zero (false)
                        otherwise. */
 static int
 arc_is_update_fp_fi (struct arc_unwind_cache *info, struct arcDisState *state)
 {
-  if ((0 == strcmp(state->instrBuffer, "mov"))
+  if (((0 == strcmp(state->instrBuffer, "mov")) || (0 == strcmp(state->instrBuffer, "mov_s")))
       && (strstr (state->operandBuffer, "fp,sp") == state->operandBuffer))
     {
       if (info)
@@ -888,10 +888,13 @@ arc_is_in_prologue (struct arc_unwind_cache * info, struct arcDisState *instr)
 	}
     }
 
-  else if (instr->_opcode == 0x4)
+  else if (instr->_opcode == 0x4
+       || (instr->_opcode == 0x8 && 
+           gdbarch_bfd_arch_info (gdbarch)->mach == bfd_mach_arc_arcv2))
     {
       /* A major opcode 0x4 instruction */
       /* We are usually interested in a mov or a sub */
+      /* ARC v2 uses mov_s instruction in prologue, major opcode is 0x8 */
       if (arc_is_update_fp_fi (info, instr)
 	  || arc_is_sub_sp_fi (info, instr))
 	{
