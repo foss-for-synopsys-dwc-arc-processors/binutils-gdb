@@ -10,8 +10,8 @@
      notice and this notice are preserved.  -->
 
 <!DOCTYPE feature SYSTEM "gdb-target.dtd">
-<feature name="org.gnu.gdb.arc.reduced-core">
-  <!-- ARC reduced baseline core register set -->
+<feature name="org.gnu.gdb.arc.core-reduced">
+  <!-- ARC core register set -->
   <reg name="r0" bitsize="32" regnum="0" group="general"/>
   <reg name="r1" bitsize="32" regnum="1" group="general"/>
   <reg name="r2" bitsize="32" regnum="2" group="general"/>
@@ -24,13 +24,4 @@
   <reg name="r14" bitsize="32" regnum="14" group="general"/>
   <reg name="r15" bitsize="32" regnum="15" group="general"/>
   <!--- No r16-r25 when reduced -->
-  <reg name="gp" bitsize="32" regnum="26" type="data_ptr" group="general"/>
-  <reg name="fp" bitsize="32" regnum="27" type="data_ptr" group="general"/>
-  <reg name="sp" bitsize="32" regnum="28" type="data_ptr" group="general"/>
-  <reg name="ilink_p0" bitsize="32" regnum="29" type="code_ptr" group="general"/>
-  <reg name="r30" bitsize="32" regnum="30" group="general"/>
-  <reg name="blink" bitsize="32" regnum="31" type="code_ptr" group="general"/>
-  <reg name="lpcount" bitsize="32" regnum="60" group="general"/>
-  <reg name="limm" bitsize="32" regnum="62" group="general"/>
-  <reg name="pcl" bitsize="32" regnum="63" type="code_ptr" group="general"/>
 </feature>
