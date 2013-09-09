@@ -10,9 +10,9 @@
      notice and this notice are preserved.  -->
 
 <!DOCTYPE feature SYSTEM "gdb-target.dtd">
-<feature name="org.gnu.gdb.arc.aux-smart">
-  <!-- ARC SmaRT auxiliary register set -->
-  <reg name="smart_build" bitsize="32"/>
-  <reg name="smart_control" bitsize="32"/>
-  <reg name="smart_data" bitsize="32"/>
+<feature name="org.gnu.gdb.arc.core-pointers">
+  <!-- ARC core pointer registers -->
+  <reg name="gp" bitsize="32" regnum="26" type="data_ptr" group="general"/>
+  <reg name="fp" bitsize="32" regnum="27" type="data_ptr" group="general"/>
+  <reg name="sp" bitsize="32" regnum="28" type="data_ptr" group="general"/>
 </feature>

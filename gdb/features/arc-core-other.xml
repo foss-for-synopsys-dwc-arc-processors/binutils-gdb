@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!-- Copyright (C) 2007-2013 Free Software Foundation, Inc.
+     Copyright 2013 Synopsys Inc.
+
+     Contributor Jeremy Bennett <jeremy.bennett@embecosm.com> on behalf of
+     Synopsys Inc.
+
+     Copying and distribution of this file, with or without modification,
+     are permitted in any medium without royalty provided the copyright
+     notice and this notice are preserved.  -->
+
+<!DOCTYPE feature SYSTEM "gdb-target.dtd">
+<feature name="org.gnu.gdb.arc.core">
+  <!-- ARC core "other" registers -->
+  <reg name="lp_count" bitsize="32" regnum="60" group="general"/>
+  <reg name="limm" bitsize="32" regnum="62" group="general"/>
+  <reg name="pcl" bitsize="32" regnum="63" type="code_ptr" group="general"/>
+</feature>

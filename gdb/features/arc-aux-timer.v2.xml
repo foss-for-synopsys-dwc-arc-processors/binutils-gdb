@@ -10,8 +10,8 @@
      notice and this notice are preserved.  -->
 
 <!DOCTYPE feature SYSTEM "gdb-target.dtd">
-<feature name="org.gnu.gdb.arc.aux-timer">
-  <!-- ARC timer auxiliary register set -->
+<feature name="org.gnu.gdb.arc.aux-timer.v2">
+  <!-- ARC timer auxiliary register set for V2 architecture -->
   <reg name="count0" bitsize="32"/>
   <reg name="control0" bitsize="32"/>
   <reg name="limit0" bitsize="32"/>

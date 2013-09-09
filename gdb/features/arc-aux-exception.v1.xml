@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!-- Copyright (C) 2007-2013 Free Software Foundation, Inc.
+     Copyright 2013 Synopsys Inc.
+
+     Contributor Jeremy Bennett <jeremy.bennett@embecosm.com> on behalf of
+     Synopsys Inc.
+
+     Copying and distribution of this file, with or without modification,
+     are permitted in any medium without royalty provided the copyright
+     notice and this notice are preserved.  -->
+
+<!DOCTYPE feature SYSTEM "gdb-target.dtd">
+<feature name="org.gnu.gdb.arc.aux-exception.v1">
+  <!-- ARC extended exception state auxiliary register set for V1
+       architecture. -->
+  <reg name="efa" bitsize="32"/>
+  <reg name="bta_l1" bitsize="32"/>
+  <reg name="bta_l2" bitsize="32"/>
+</feature>
