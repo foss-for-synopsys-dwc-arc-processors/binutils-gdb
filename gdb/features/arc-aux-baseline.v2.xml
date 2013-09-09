@@ -10,18 +10,18 @@
      notice and this notice are preserved.  -->
 
 <!DOCTYPE feature SYSTEM "gdb-target.dtd">
-<feature name="org.gnu.gdb.arc.aux-baseline">
+<feature name="org.gnu.gdb.arc.aux-baseline.v2 for V2 architecture">
   <!-- ARC baseline auxiliary register set -->
-  <reg name="identity" bitsize="32"/>
-  <reg name="pc" bitsize="32"/>
-  <reg name="status32" bitsize="32"/>
-  <reg name="bta" bitsize="32"/>
+  <reg name="identity" bitsize="32" regnum="64"/>
+  <reg name="pc" bitsize="32" type="code_ptr" regnum="65"/>
+  <reg name="status32" bitsize="32" regnum="66"/>
+  <reg name="bta" type="code_ptr" bitsize="32"/>
   <reg name="ecr" bitsize="32"/>
   <reg name="int_vector_base" bitsize="32"/>
   <reg name="status32_P0" bitsize="32"/>
-  <reg name="aux_user_sp" bitsize="32"/>
-  <reg name="eret" bitsize="32"/>
-  <reg name="erbta" bitsize="32"/>
+  <reg name="aux_user_sp" type="data_ptr" bitsize="32"/>
+  <reg name="eret" type="code_ptr" bitsize="32"/>
+  <reg name="erbta" type="code_ptr" bitsize="32"/>
   <reg name="erstatus" bitsize="32"/>
   <reg name="bcr_ver" bitsize="32"/>
   <reg name="bta_link_build" bitsize="32"/>

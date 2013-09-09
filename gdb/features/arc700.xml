@@ -16,15 +16,18 @@
   <!-- No compatibility for ARC -->
 
   <!-- Core register definitions (with fixed numbering) -->
-  <xi:include href="arc-core.xml"/>
+  <xi:include href="arc-core-basecase.xml"/>
+  <xi:include href="arc-core-pointers.xml"/>
+  <xi:include href="arc-core-linkregs.v1.xml"/>
   <xi:include href="arc-core-extension.xml"/>
+  <xi:include href="arc-core-other.xml"/>
 
   <!-- Auxiliary register definitions (baseline is required) -->
-  <xi:include href="arc-aux-baseline.xml"/>
+  <xi:include href="arc-aux-baseline.v1.xml"/>
   <xi:include href="arc-aux-iset.xml"/>
   <xi:include href="arc-aux-debug.xml"/>
   <xi:include href="arc-aux-exception.xml"/>
-  <xi:include href="arc-aux-timer.xml"/>
+  <xi:include href="arc-aux-timer.v1.xml"/>
   <xi:include href="arc-aux-user.xml"/>
   <xi:include href="arc-aux-bcr.xml"/>
   <xi:include href="arc-aux-icache.xml"/>

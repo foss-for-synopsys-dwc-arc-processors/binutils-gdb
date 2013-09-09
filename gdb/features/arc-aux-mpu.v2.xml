@@ -10,8 +10,9 @@
      notice and this notice are preserved.  -->
 
 <!DOCTYPE feature SYSTEM "gdb-target.dtd">
-<feature name="org.gnu.gdb.arc.aux-mpu">
-  <!-- ARC memory protection unit auxiliary register set -->
+<feature name="org.gnu.gdb.arc.aux-mpu.v2">
+  <!-- ARC memory protection unit auxiliary register set for V2 architecture
+       only -->
   <reg name="mpu_build" bitsize="32"/>
   <reg name="mpu_en" bitsize="32"/>
   <reg name="mpu_ecr" bitsize="32"/>
