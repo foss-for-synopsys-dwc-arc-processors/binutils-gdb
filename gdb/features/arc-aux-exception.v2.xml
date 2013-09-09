@@ -10,7 +10,8 @@
      notice and this notice are preserved.  -->
 
 <!DOCTYPE feature SYSTEM "gdb-target.dtd">
-<feature name="org.gnu.gdb.arc.aux-exception">
-  <!-- ARC extended exception state auxiliary register set -->
+<feature name="org.gnu.gdb.arc.aux-exception.v2">
+  <!-- ARC extended exception state auxiliary register set for V2
+       architecture. -->
   <reg name="efa" bitsize="32"/>
 </feature>
