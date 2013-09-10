@@ -1,3 +1,7 @@
+2013-09-10  Anton Kolesov  <akolesov@synopsys.com>
+
+	* binutils-all/objcopy.exp: Build testglue only if required.
+
 2012-11-27  Roland McGrath  <mcgrathr@google.com>
 
 	* lib/binutils-common.exp (is_zlib_supported): New function.
