@@ -3359,5 +3359,6 @@ elf32_arc_gc_sweep_hook (bfd *                     abfd,
 #define elf_backend_plt_readonly 1
 #define elf_backend_want_plt_sym 0
 #define elf_backend_got_header_size 12
+#define elf_backend_default_execstack 0
 
 #include "elf32-target.h"

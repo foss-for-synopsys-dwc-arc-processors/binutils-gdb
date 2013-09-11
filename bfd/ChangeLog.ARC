@@ -1,3 +1,8 @@
+2013-09-11 Simon Cook  <simon.cook@embecosm.com>
+
+	* elf32-arc.c (elf_backend_default_execstack): Set default stack state
+	to non-executable.
+
 2013-07-31 Claudiu Zissulescu <claziss@synopsys.com>
 
 	* elf32-arc.c: Add relocation support for ld_s r1,[gp,s11]
