@@ -3323,6 +3323,37 @@ elf32_arc_gc_sweep_hook (bfd *                     abfd,
   return TRUE;
 }
 
+/* GDB expects general purpose registers to be in section .reg. However Linux
+ * kernel doesn't create this section and instead writes registers to NOTE
+ * section. It is up to the binutils to create a pseudo-section .reg from the
+ * contents of NOTE. Also BFD will read pid and signal number from NOTE. This
+ * function relies on offsets inside elf_prstatus structure in Linux to be
+ * stable. */
+static bfd_boolean
+elf32_arc_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
+{
+  int offset;
+  size_t size;
+
+  switch (note->descsz)
+  {
+    default:
+      return FALSE;
+    case 236: /* sizeof(struct elf_prstatus) on Linux/arc.  */
+      /* pr_cursig */
+      elf_tdata (abfd)->core->signal = bfd_get_16 (abfd, note->descdata + 12);
+      /* pr_pid */
+      elf_tdata (abfd)->core->lwpid = bfd_get_32 (abfd, note->descdata + 24);
+      /* pr_regs */
+      offset = 72; 
+      size = ( 40 * 4 ); /* There are 40 registers in user_regs_struct */
+      break;
+  }
+  /* Make a ".reg/999" section.  */
+  return _bfd_elfcore_make_pseudosection (abfd, ".reg", size,
+                                          note->descpos + offset);
+}
+
 #define TARGET_LITTLE_SYM	bfd_elf32_littlearc_vec
 #define TARGET_LITTLE_NAME	"elf32-littlearc"
 #define TARGET_BIG_SYM		bfd_elf32_bigarc_vec
@@ -3352,6 +3383,8 @@ elf32_arc_gc_sweep_hook (bfd *                     abfd,
 #define elf_backend_create_dynamic_sections  _bfd_elf_create_dynamic_sections
 
 #define elf_backend_size_dynamic_sections    elf_arc_size_dynamic_sections
+
+#define elf_backend_grok_prstatus elf32_arc_grok_prstatus
 
 #define elf_backend_gc_sweep_hook	elf32_arc_gc_sweep_hook
 #define elf_backend_can_gc_sections    1
