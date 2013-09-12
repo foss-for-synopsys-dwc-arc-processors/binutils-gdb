@@ -1,3 +1,9 @@
+2013-09-12 Anton Kolesov <akolesov@synopsys.com>
+
+	* elf32-arc.c (elf32_arc_grok_prstatus): New function to parse NOTE
+	section in core dump files. GDB requires this to work properly with core
+	dumps.
+
 2013-09-11 Simon Cook  <simon.cook@embecosm.com>
 
 	* elf32-arc.c (elf_backend_default_execstack): Set default stack state
