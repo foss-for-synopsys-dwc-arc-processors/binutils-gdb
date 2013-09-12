@@ -1,3 +1,9 @@
+2013-09-12  Anton Kolesov <akolesov@synopsys.com>
+
+	* arc-linux-tdep.c (arc_linux_core_reg_offsets,arc_linux_sc_reg_offset):
+	Correct order of registers to be the same as in gregs. Fix offsets to
+	match those in the user_regs_struct from linux headers
+
 2013-09-04  Anton Kolesov <akolesov@synopsys.com>
 
 	* arc-tdep.c (arc_is_in_prologue, arc_is_update_fp_fi): Recognize 'mov_s
