@@ -69,56 +69,110 @@
 /*! Mapping between the general-purpose registers in `struct sigcontext' format
     and GDB's register cache layout.
 
-    arc_linux_sc_reg_offset[i] is the sigcontext offset of GDB regnum `i'. */
+    arc_linux_sc_reg_offset[i] is the sigcontext offset of GDB regnum `i'.
+	
+	At the moment of this writing sigcontext is the same as user_regs_struct
+	used for core dumps. The only difference is that sigcontext uses only a
+	subset of registers from user_regs_struct, namely "scratch" part.*/
 
-/* From <asm/sigcontext.h>.  */
+/* From <include/uapi/asm/sigcontext.h> and <include/uapi/asm/ptrace.h>. */
 static const int arc_linux_sc_reg_offset[ARC_NUM_RAW_REGS] = {
-  23 * BYTES_IN_REGISTER,	/* r0       */
-  22 * BYTES_IN_REGISTER,	/* r1       */
-  21 * BYTES_IN_REGISTER,	/* r2       */
-  20 * BYTES_IN_REGISTER,	/* r3       */
-  19 * BYTES_IN_REGISTER,	/* r4       */
-  18 * BYTES_IN_REGISTER,	/* r5       */
-  17 * BYTES_IN_REGISTER,	/* r6       */
-  16 * BYTES_IN_REGISTER,	/* r7       */
-  15 * BYTES_IN_REGISTER,	/* r8       */
-  14 * BYTES_IN_REGISTER,	/* r9       */
-  13 * BYTES_IN_REGISTER,	/* r10      */
-  12 * BYTES_IN_REGISTER,	/* r11      */
-  11 * BYTES_IN_REGISTER,	/* r12      */
-  REGISTER_NOT_PRESENT,		/* r13      */
-  REGISTER_NOT_PRESENT,		/* r14      */
-  REGISTER_NOT_PRESENT,		/* r15      */
-  REGISTER_NOT_PRESENT,		/* r16      */
-  REGISTER_NOT_PRESENT,		/* r17      */
-  REGISTER_NOT_PRESENT,		/* r18      */
-  REGISTER_NOT_PRESENT,		/* r19      */
-  REGISTER_NOT_PRESENT,		/* r20      */
-  REGISTER_NOT_PRESENT,		/* r21      */
-  REGISTER_NOT_PRESENT,		/* r22      */
-  REGISTER_NOT_PRESENT,		/* r23      */
-  REGISTER_NOT_PRESENT,		/* r24      */
-  REGISTER_NOT_PRESENT,		/* r25      */
-  10 * BYTES_IN_REGISTER,	/* r26      */
-  2 * BYTES_IN_REGISTER,	/* bta      */
-  3 * BYTES_IN_REGISTER,	/* lp_start */
-  4 * BYTES_IN_REGISTER,	/* lp_end   */
-  5 * BYTES_IN_REGISTER,	/* lp_count */
-  6 * BYTES_IN_REGISTER,	/* status32 */
-  8 * BYTES_IN_REGISTER,	/* blink    */
-  9 * BYTES_IN_REGISTER,	/* fp       */
-  1 * BYTES_IN_REGISTER,	/* sp       */
-  REGISTER_NOT_PRESENT,		/* efa      */
-  7 * BYTES_IN_REGISTER,	/* ret      */
-  REGISTER_NOT_PRESENT,		/* orig_r8  */
-  REGISTER_NOT_PRESENT		/* stop_pc  */
+  22 * BYTES_IN_REGISTER,	/* r0       */
+  21 * BYTES_IN_REGISTER,	/* r1       */
+  20 * BYTES_IN_REGISTER,	/* r2       */
+  19 * BYTES_IN_REGISTER,	/* r3       */
+  18 * BYTES_IN_REGISTER,	/* r4       */
+  17 * BYTES_IN_REGISTER,	/* r5       */
+  16 * BYTES_IN_REGISTER,	/* r6       */
+  15 * BYTES_IN_REGISTER,	/* r7       */
+  14 * BYTES_IN_REGISTER,	/* r8       */
+  13 * BYTES_IN_REGISTER,	/* r9       */
+  12 * BYTES_IN_REGISTER,	/* r10      */
+  11 * BYTES_IN_REGISTER,	/* r11      */
+  10 * BYTES_IN_REGISTER,	/* r12      */
+  REGISTER_NOT_PRESENT,  	/* r13      */
+  REGISTER_NOT_PRESENT,  	/* r14      */
+  REGISTER_NOT_PRESENT,  	/* r15      */
+  REGISTER_NOT_PRESENT,  	/* r16      */
+  REGISTER_NOT_PRESENT,  	/* r17      */
+  REGISTER_NOT_PRESENT,  	/* r18      */
+  REGISTER_NOT_PRESENT,  	/* r19      */
+  REGISTER_NOT_PRESENT,  	/* r20      */
+  REGISTER_NOT_PRESENT,  	/* r21      */
+  REGISTER_NOT_PRESENT,  	/* r22      */
+  REGISTER_NOT_PRESENT,  	/* r23      */
+  REGISTER_NOT_PRESENT,  	/* r24      */
+  REGISTER_NOT_PRESENT,  	/* r25      */
+  9 * BYTES_IN_REGISTER,	/* r26 (gp) */
+  8 * BYTES_IN_REGISTER,	/* fp       */
+  23 * BYTES_IN_REGISTER,	/* sp       */
+  REGISTER_NOT_PRESENT,  	/* ilink1   */
+  REGISTER_NOT_PRESENT,  	/* ilink2   */
+  7 * BYTES_IN_REGISTER,	/* blink    */
+
+  REGISTER_NOT_PRESENT,  	/* r32      */
+  REGISTER_NOT_PRESENT,  	/* r33      */
+  REGISTER_NOT_PRESENT,  	/* r34      */
+  REGISTER_NOT_PRESENT,  	/* r35      */
+  REGISTER_NOT_PRESENT,  	/* r36      */
+  REGISTER_NOT_PRESENT,  	/* r37      */
+  REGISTER_NOT_PRESENT,  	/* r38      */
+  REGISTER_NOT_PRESENT,  	/* r39      */
+  REGISTER_NOT_PRESENT,  	/* r40      */
+  REGISTER_NOT_PRESENT,  	/* r41      */
+  REGISTER_NOT_PRESENT,  	/* r42      */
+  REGISTER_NOT_PRESENT,  	/* r43      */
+  REGISTER_NOT_PRESENT,  	/* r44      */
+  REGISTER_NOT_PRESENT,  	/* r45      */
+  REGISTER_NOT_PRESENT,  	/* r46      */
+  REGISTER_NOT_PRESENT,  	/* r47      */
+  REGISTER_NOT_PRESENT,  	/* r48      */
+  REGISTER_NOT_PRESENT,  	/* r49      */
+  REGISTER_NOT_PRESENT,  	/* r50      */
+  REGISTER_NOT_PRESENT,  	/* r51      */
+  REGISTER_NOT_PRESENT,  	/* r52      */
+  REGISTER_NOT_PRESENT,  	/* r53      */
+  REGISTER_NOT_PRESENT,  	/* r54      */
+  REGISTER_NOT_PRESENT,  	/* r55      */
+  REGISTER_NOT_PRESENT,  	/* r56      */
+  REGISTER_NOT_PRESENT,  	/* r57      */
+  REGISTER_NOT_PRESENT,  	/* r58      */
+  REGISTER_NOT_PRESENT,  	/* r59      */
+  4 * BYTES_IN_REGISTER,	/* lp_count */
+  REGISTER_NOT_PRESENT,  	/* reserved */
+  REGISTER_NOT_PRESENT,  	/* limm     */
+  REGISTER_NOT_PRESENT,  	/* pcl      */
+
+  REGISTER_NOT_PRESENT,  	/* stop_pc  */
+  2 * BYTES_IN_REGISTER,	/* lp_start */
+  3 * BYTES_IN_REGISTER,	/* lp_end   */
+  5 * BYTES_IN_REGISTER,	/* status32 */
+  REGISTER_NOT_PRESENT,  	/* st32_l1  */
+  REGISTER_NOT_PRESENT,  	/* st32_l2  */
+  REGISTER_NOT_PRESENT,  	/* irq_lv12 */
+  REGISTER_NOT_PRESENT,  	/* irq_lev  */
+  REGISTER_NOT_PRESENT,  	/* irq_hint */
+  6 * BYTES_IN_REGISTER,	/* ret      */
+  REGISTER_NOT_PRESENT,  	/* erbta    */
+  REGISTER_NOT_PRESENT,  	/* erstatus */
+  REGISTER_NOT_PRESENT,  	/* ecr      */
+  REGISTER_NOT_PRESENT,  	/* efa      */
+  REGISTER_NOT_PRESENT,  	/* icause1  */
+  REGISTER_NOT_PRESENT,  	/* icause2  */
+  REGISTER_NOT_PRESENT,  	/* ienable  */
+  REGISTER_NOT_PRESENT,  	/* itrigger */
+  1 * BYTES_IN_REGISTER,	/* bta      */
+  REGISTER_NOT_PRESENT,  	/* bta_l1   */
+  REGISTER_NOT_PRESENT,  	/* bta_l2   */
+  REGISTER_NOT_PRESENT,  	/* irq pulse*/
+  REGISTER_NOT_PRESENT,  	/* irq pend */
 };
 
 
 /* arc_linux_core_reg_offsets[i] is the offset in the .reg section of GDB
  * regnum i.
  *
- * From include/asm-arc/user.h in the ARC Linux sources.
+ * From include/uapi/asm/ptrace.h in the ARC Linux sources.
  */
 
 static const int arc_linux_core_reg_offsets[ARC_NUM_RAW_REGS] = {
@@ -135,32 +189,84 @@ static const int arc_linux_core_reg_offsets[ARC_NUM_RAW_REGS] = {
   12 * BYTES_IN_REGISTER,	/* r10      */
   11 * BYTES_IN_REGISTER,	/* r11      */
   10 * BYTES_IN_REGISTER,	/* r12      */
-  39 * BYTES_IN_REGISTER,	/* r13      */
-  38 * BYTES_IN_REGISTER,	/* r14      */
-  37 * BYTES_IN_REGISTER,	/* r15      */
-  36 * BYTES_IN_REGISTER,	/* r16      */
-  35 * BYTES_IN_REGISTER,	/* r17      */
-  34 * BYTES_IN_REGISTER,	/* r18      */
-  33 * BYTES_IN_REGISTER,	/* r19      */
-  32 * BYTES_IN_REGISTER,	/* r20      */
-  31 * BYTES_IN_REGISTER,	/* r21      */
-  30 * BYTES_IN_REGISTER,	/* r22      */
-  29 * BYTES_IN_REGISTER,	/* r23      */
-  28 * BYTES_IN_REGISTER,	/* r24      */
-  27 * BYTES_IN_REGISTER,	/* r25      */
-  9 * BYTES_IN_REGISTER,	/* r26      */
-  1 * BYTES_IN_REGISTER,	/* bta      */
+  37 * BYTES_IN_REGISTER,	/* r13      */
+  36 * BYTES_IN_REGISTER,	/* r14      */
+  35 * BYTES_IN_REGISTER,	/* r15      */
+  34 * BYTES_IN_REGISTER,	/* r16      */
+  33 * BYTES_IN_REGISTER,	/* r17      */
+  32 * BYTES_IN_REGISTER,	/* r18      */
+  31 * BYTES_IN_REGISTER,	/* r19      */
+  30 * BYTES_IN_REGISTER,	/* r20      */
+  29 * BYTES_IN_REGISTER,	/* r21      */
+  28 * BYTES_IN_REGISTER,	/* r22      */
+  27 * BYTES_IN_REGISTER,	/* r23      */
+  26 * BYTES_IN_REGISTER,	/* r24      */
+  25 * BYTES_IN_REGISTER,	/* r25      */
+  9 * BYTES_IN_REGISTER,	/* r26 (gp) */
+  8 * BYTES_IN_REGISTER,	/* fp       */
+  23 * BYTES_IN_REGISTER,	/* sp       */
+  REGISTER_NOT_PRESENT,  	/* ilink1   */
+  REGISTER_NOT_PRESENT,  	/* ilink2   */
+  7 * BYTES_IN_REGISTER,	/* blink    */
+
+  REGISTER_NOT_PRESENT,  	/* r32      */
+  REGISTER_NOT_PRESENT,  	/* r33      */
+  REGISTER_NOT_PRESENT,  	/* r34      */
+  REGISTER_NOT_PRESENT,  	/* r35      */
+  REGISTER_NOT_PRESENT,  	/* r36      */
+  REGISTER_NOT_PRESENT,  	/* r37      */
+  REGISTER_NOT_PRESENT,  	/* r38      */
+  REGISTER_NOT_PRESENT,  	/* r39      */
+  REGISTER_NOT_PRESENT,  	/* r40      */
+  REGISTER_NOT_PRESENT,  	/* r41      */
+  REGISTER_NOT_PRESENT,  	/* r42      */
+  REGISTER_NOT_PRESENT,  	/* r43      */
+  REGISTER_NOT_PRESENT,  	/* r44      */
+  REGISTER_NOT_PRESENT,  	/* r45      */
+  REGISTER_NOT_PRESENT,  	/* r46      */
+  REGISTER_NOT_PRESENT,  	/* r47      */
+  REGISTER_NOT_PRESENT,  	/* r48      */
+  REGISTER_NOT_PRESENT,  	/* r49      */
+  REGISTER_NOT_PRESENT,  	/* r50      */
+  REGISTER_NOT_PRESENT,  	/* r51      */
+  REGISTER_NOT_PRESENT,  	/* r52      */
+  REGISTER_NOT_PRESENT,  	/* r53      */
+  REGISTER_NOT_PRESENT,  	/* r54      */
+  REGISTER_NOT_PRESENT,  	/* r55      */
+  REGISTER_NOT_PRESENT,  	/* r56      */
+  REGISTER_NOT_PRESENT,  	/* r57      */
+  REGISTER_NOT_PRESENT,  	/* r58      */
+  REGISTER_NOT_PRESENT,  	/* r59      */
+  4 * BYTES_IN_REGISTER,	/* lp_count */
+  REGISTER_NOT_PRESENT,  	/* reserved */
+  REGISTER_NOT_PRESENT,  	/* limm     */
+  REGISTER_NOT_PRESENT,  	/* pcl      */
+
+  39 * BYTES_IN_REGISTER,	/* stop_pc  */
   2 * BYTES_IN_REGISTER,	/* lp_start */
   3 * BYTES_IN_REGISTER,	/* lp_end   */
-  4 * BYTES_IN_REGISTER,	/* lp_count */
   5 * BYTES_IN_REGISTER,	/* status32 */
-  7 * BYTES_IN_REGISTER,	/* blink    */
-  8 * BYTES_IN_REGISTER,	/* fp       */
-  25 * BYTES_IN_REGISTER,	/* sp       */
-  REGISTER_NOT_PRESENT,		/* efa      */
+  REGISTER_NOT_PRESENT,  	/* st32_l1  */
+  REGISTER_NOT_PRESENT,  	/* st32_l2  */
+  REGISTER_NOT_PRESENT,  	/* irq_lv12 */
+  REGISTER_NOT_PRESENT,  	/* irq_lev  */
+  REGISTER_NOT_PRESENT,  	/* irq_hint */
   6 * BYTES_IN_REGISTER,	/* ret      */
-  24 * BYTES_IN_REGISTER,	/* orig_r8  */
-  40 * BYTES_IN_REGISTER,	/* stop_pc  */
+  REGISTER_NOT_PRESENT,  	/* erbta    */
+  REGISTER_NOT_PRESENT,  	/* erstatus */
+  REGISTER_NOT_PRESENT,  	/* ecr      */
+  38 * BYTES_IN_REGISTER,	/* efa      */
+  REGISTER_NOT_PRESENT,  	/* icause1  */
+  REGISTER_NOT_PRESENT,  	/* icause2  */
+  REGISTER_NOT_PRESENT,  	/* ienable  */
+  REGISTER_NOT_PRESENT,  	/* itrigger */
+  1 * BYTES_IN_REGISTER,	/* bta      */
+  REGISTER_NOT_PRESENT,  	/* bta_l1   */
+  REGISTER_NOT_PRESENT,  	/* bta_l2   */
+  REGISTER_NOT_PRESENT,  	/* irq pulse*/
+  REGISTER_NOT_PRESENT,  	/* irq pend */
+
+  /* 24 * BYTES_IN_REGISTER,	orig_r8  */
 };
 
 
