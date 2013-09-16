@@ -1940,8 +1940,12 @@ arc_frame_align (struct gdbarch *gdbarch, CORE_ADDR sp)
 static CORE_ADDR
 arc_skip_trampoline_code (struct frame_info *frame, CORE_ADDR pc)
 {
-  fprintf_unfiltered (gdb_stdlog, "Attempt to skip trampoline code at %s.\n",
-		      print_core_address (get_frame_arch (frame), pc));
+  if (arc_debug)
+    {
+      fprintf_unfiltered (gdb_stdlog,
+			  "Attempt to skip trampoline code at %s.\n",
+			  print_core_address (get_frame_arch (frame), pc));
+    }
   return pc;
 
 }	/* arc_skip_trampoline_code () */
