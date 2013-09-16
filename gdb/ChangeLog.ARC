@@ -1,3 +1,8 @@
+2013-09-16  Anton Kolesov <akolesov@synopsys.com>
+
+	* arc-tdep.c (arc_is_in_prologue, arc_scan_prologue): Resolve build
+	error introduced when adding support for ARC v2 prologue.
+
 2013-09-12  Anton Kolesov <akolesov@synopsys.com>
 
 	* arc-linux-tdep.c (arc_linux_core_reg_offsets,arc_linux_sc_reg_offset):
