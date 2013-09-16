@@ -800,12 +800,15 @@ arc_is_callee_saved (unsigned int reg, int offset,
 
     If it is, the information in the frame unwind cache may be updated.
 
-    @param[in] info  Frame cache for THIS frame
-    @param[in] instr Instruction to consider.
-    @result          Non-zero (TRUE) if instr is in prologue, zero (FALSE)
+    @param[in] gdbarch  Current architecture.
+    @param[in] info     Frame cache for THIS frame
+    @param[in] instr    Instruction to consider.
+    @result Non-zero (TRUE) if instr is in prologue, zero (FALSE)
                      otherwise. */
 static int
-arc_is_in_prologue (struct arc_unwind_cache * info, struct arcDisState *instr)
+arc_is_in_prologue (struct gdbarch *gdbarch,
+                    struct arc_unwind_cache * info,
+                    struct arcDisState *instr)
 {
   /* Might be a push or a pop */
   if (instr->_opcode == 0x3)
@@ -1091,7 +1094,7 @@ arc_scan_prologue (CORE_ADDR entrypoint,
       /* if this instruction is in the prologue, fields in the info will be
        * updated, and the saved registers mask may be updated
        */
-      if (!arc_is_in_prologue (info, &current_instr))
+      if (!arc_is_in_prologue (gdbarch, info, &current_instr))
 	{
 	  /* Found a instruction that is not in the prologue */
 	  if (arc_debug)
