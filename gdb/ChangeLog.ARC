@@ -1,3 +1,8 @@
+2013-09-16  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	* arc-tdep.c (arc_skip_trampoline_code): Only print message if
+	arc_debug is set.
+
 2013-09-16  Anton Kolesov <akolesov@synopsys.com>
 
 	* arc-tdep.c (arc_is_in_prologue, arc_scan_prologue): Resolve build
@@ -49,17 +54,29 @@
 	* arc-tdep.c (arc_frame_this_id): Return correct frame code address
 	without full debug symbols
 
-2013-05-22  Jeremy Bennett <jeremy.bennett@embecosm.com>
+2013-08-01  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
-	* arc-linux-tdep.c (arc_linux_is_sigtramp): Correct sizing of buf.
-	* ChangeLog.ARC: Fix errors in the record.
+	* arc-tdep.c (arc_print_frame_info): Pass gdbarch as argument and
+	use with print_core_address ().
+	(arc_is_callee_saved): Pass gdbarch as argument and use when
+	calling arc_print_frame_info ().
+	(arc_is_in_prologue): Pass gdbarch as argument and use when
+	calling arc_is_callee_saved ().
+	(arc_scan_prologue): Pass gdbarch to arc_is_in_prologue ().
+	(arc_skip_prologue): No need to call deprecated_pc_in_call_dummy,
+	since we are always called with a valid PC.
+	* Makefile.in (HFILES_NO_SRCDIR): Remove call-cmds.h,
+	gdb_string.h.
+
+2013-07-26  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	Merge to upstream GDB 7.6 branchpoint.
 
 2013-05-22  Vineet Gupta <vgupta@synopsys.com>
 
-	* arc-linux-tdep.c (arc_linux_is_sigtramp): Fix signature of
-	signal trampoline
+	* arc-linux-tdep.c: Fix signature of signal trampoline
 
-2013-04-26  Jeremy Bennett <jeremy.bennett@embecosm.com>
+2014-04-26  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* arc-elf-tdep.c: Make simulator header inclusion dependent on
 	WITH_SIM.
@@ -67,7 +84,7 @@
 	(arc_gdbarch_osabi_init): Only call arc_set_register_mapping if
 	WITH_SIM is defined.
 
-2013-04-18  Jeremy Bennett <jeremy.bennett@embecosm.com>
+2014-04-18  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* arc-elf-tdep.c (arc_push_memory_call): Do not change endianness
 	of args when pushing (already done), add more debug for arg
