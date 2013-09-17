@@ -3347,9 +3347,9 @@ elf32_arc_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
       return FALSE;
     case 236: /* sizeof(struct elf_prstatus) on Linux/arc.  */
       /* pr_cursig */
-      elf_tdata (abfd)->core->signal = bfd_get_16 (abfd, note->descdata + 12);
+      elf_tdata (abfd)->core_signal = bfd_get_16 (abfd, note->descdata + 12);
       /* pr_pid */
-      elf_tdata (abfd)->core->lwpid = bfd_get_32 (abfd, note->descdata + 24);
+      elf_tdata (abfd)->core_lwpid = bfd_get_32 (abfd, note->descdata + 24);
       /* pr_regs */
       offset = 72; 
       size = ( 40 * 4 ); /* There are 40 registers in user_regs_struct */

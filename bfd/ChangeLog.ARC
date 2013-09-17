@@ -1,3 +1,8 @@
+2013-09-17 Anton Kolesov <akolesov@synopsys.com>
+
+	* elf32-arc.c (elf32_arc_grok_prstatus): Fix compiler error intruduced in
+	previous change.
+
 2013-09-12 Anton Kolesov <akolesov@synopsys.com>
 
 	* elf32-arc.c (elf32_arc_grok_prstatus): New function to parse NOTE
