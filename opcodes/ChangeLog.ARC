@@ -1,3 +1,7 @@
+2013-08-05 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* arc-em.h: Remove seti [u6] and clri [u6] mnemonic variants.
+
 2013-08-23 Anton Kolesov <akolesov@synopsys.com>
 
 	* arcompact-dis.c, arc-dis-old.c (dsmOneArcInst): Field _addrWriteBack was
