@@ -4357,7 +4357,7 @@ arc_parse_cons_expression (expressionS *exp,
   int code_symbol_fix = 0;
 
   for (; ! is_end_of_line[(unsigned char) *p]; p++)
-    if (*p == '@' && !strncmp (p, "@h30", 4))
+    if (*p == '@' && !strncmp (p, "@h30", 4) && p != input_line_pointer)
       {
 	code_symbol_fix = 1;
 	strcpy (p, ";   ");
@@ -5744,35 +5744,15 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 
 	      {
 		/* Parse the operand.  */
-		/* Attempt to parse PIC related stuff */
+		/* If there is any PIC / small data / etc. related suffix
+		   (@gotpc / @gotoff / @plt / @h30 / @sda), after calling
+		   expression, input_line_pointer will point to that suffix.  */
 
-		/*
-		   Any identifier prefixed with '@' is treated as a
-		   symbol.  However there are a few expressions (or rather
-		   special cases to be handled) viz. ...@gotpc, ...@gotoff,
-		   ...@plt and ...@h30.  If it is any of these then we have
-		   to do some special "PIC related stuff".
-		 */
-
-		char *tmpbuf = NULL;
 		hold = input_line_pointer;
-		tmpbuf = strchr (str, '@');
-		if (tmpbuf
-		    && (!strncmp (tmpbuf + 1, "gotpc", 5)
-			|| !strncmp (tmpbuf + 1, "gotoff", 6)
-			|| !strncmp (tmpbuf + 1, "plt", 3)
-			|| !strncmp (tmpbuf + 1, "h30", 3)))
-		  *tmpbuf = 0;
 
 		input_line_pointer = str;
 		expression (&exp);
 
-		if (tmpbuf
-		    && (!strncmp (tmpbuf + 1, "gotpc", 5)
-			|| !strncmp (tmpbuf + 1, "gotoff", 6)
-			|| !strncmp (tmpbuf + 1, "plt", 3)
-			|| !strncmp (tmpbuf + 1, "h30", 3)))
-		  *tmpbuf = '@';
 		str = input_line_pointer;
 		input_line_pointer = hold;
 	      }
@@ -6309,7 +6289,7 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 			    }
 			  else
 			    {
-			      if (!strncmp (str, "@sda", 3))
+			      if (!strncmp (str, "@sda", 4))
 				{
 				  //	 	  fprintf (stderr, "sda seen\n");
 				  if (!(mods & ARC_MOD_SDASYM))
