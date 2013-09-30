@@ -1,3 +1,14 @@
+2013-09-30  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* config/tc-arc.c (arc_parse_cons_expression): Don't treat @h30 at
+	start of line specially.
+	(md_assemble): Remove code that misparses symbols that start like a
+	PIC/sda suffix.
+	Fix check for @sda to test for the 'a'.
+	* testsuite/gas/arc/arc700.exp: Run pltfun / h30fun tests.
+	* testsuite/gas/arc/pltfun.s, testsuite/gas/arc/pltfun.d: New test.
+	* testsuite/gas/arc/h30fun.s, testsuite/gas/arc/h30fun.d: New test.
+
 2013-08-05  Claudiu Zissulescu <claziss@synopsys.com>
 
         * config/tc-arc.c: Add parseEnterLeaveMnemonic procedure. It
