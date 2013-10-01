@@ -41,7 +41,7 @@ if { [istarget "aarch64*-*-*"] } then {
 } elseif { [istarget "alpha*-*-*"] } then {
     gdb_test "info float" "f0.*" "info float"
 } elseif [istarget "arc*-*-*"] then {
-    gdb_test "info float" "Software FPU" "info float"
+    gdb_test "info float" "soft FPU." "info float"
 } elseif { [istarget "arm*-*-*"] } then {
     gdb_test_multiple "info float" "info float" {
 	-re "Software FPU type.*mask:.*flags:.*$gdb_prompt $" {
