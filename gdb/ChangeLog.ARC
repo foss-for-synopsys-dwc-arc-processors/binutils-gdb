@@ -1,3 +1,9 @@
+2013-10-02  Anton Kolesov <akolesov@synopsys.com>
+
+	* arc-tdep.c (arc_skip_prologue): Use generic skip_prologue_using_sal
+	function instead of the homegrown code to skip prologue using symbol
+	information.
+
 2013-09-16  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* arc-tdep.c (arc_skip_trampoline_code): Only print message if
