@@ -1850,16 +1850,10 @@ arc_skip_prologue (struct gdbarch *gdbarch, CORE_ADDR pc)
   if (find_pc_partial_function (pc, &func_name, &func_addr, &func_end))
     {
       /* Found a function. */
-      struct symbol *sym = lookup_symbol (func_name, NULL, VAR_DOMAIN, NULL);
+      CORE_ADDR postprologue_pc = skip_prologue_using_sal(gdbarch, func_addr);
 
-      if ((sym != NULL) && SYMBOL_LANGUAGE (sym) != language_asm)
-	{
-	  /* Don't use this trick for assembly source files. */
-	  struct symtab_and_line sal = find_pc_line (func_addr, 0);
-
-	  if ((sal.line != 0) && (sal.end < func_end))
-	    return sal.end;
-	}
+      if (postprologue_pc)
+          return postprologue_pc;
     }
 
   /* Find the address of the first instruction after the prologue by scanning
