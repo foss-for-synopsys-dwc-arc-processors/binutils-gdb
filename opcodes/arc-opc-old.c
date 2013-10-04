@@ -1404,9 +1404,14 @@ insert_reg (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
 	}
       else if ((mods & ARC_MOD_SDASYM) && !ac_add_reg_sdasym_insn (insn))
 	{
+	  /* Check if this insn is a prefetch that needs a limm */
+	  if ((insn & 0xFFFFF9FF) == 0x1600703E)
+	    {
+	      limm_p = 1;
+	    }
 	  /* If it is an ld/ldw/st/stw insn without any .aa suffixes, then
 	     make it a scaled instruction, i.e. set .aa field to 3 */
-	  if (addrwb_p == 0)
+	  else if (addrwb_p == 0)
 	    {
 	      /* Check for ld with .aa=0 */
 	      if ((insn & 0xf8000000) == 0x10000000)
