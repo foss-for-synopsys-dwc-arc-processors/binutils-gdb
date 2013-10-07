@@ -52,6 +52,7 @@
 #include "dis-asm.h"
 #include "opcode/arc.h"
 #include "opcodes/arc-dis-old.h"
+#include "exceptions.h"
 
 /* ARC header files */
 #include "arc-tdep.h"
@@ -618,7 +619,14 @@ arc_linux_breakpoint_from_pc (struct gdbarch *gdbarch, CORE_ADDR * pcptr,
     conditional branch instruction, there will be a second instruction.
 
     We don't need to worry about removing the breakpoints - GDB will tidy them
-    up for us automatically.
+    up for us automatically. However if first breakpoint has been inserted but
+    the second one fails to insert (for example because of invalid address)
+    then we need to cleanup first breakpoint by ourselves. Otherwise it will be
+    left there and consequent call to insert_single_step_breakpoint will result
+    in a failed assertion in GDB due to inconsistent state. This might happen
+    in there is a code gen error (like bl.d 0), and GDB can do nothing about
+    it, however if first breakpoint is not cleaned up GDB might fail due to an
+    assertion which is not user friendly.
 
     @param[in] frame  The current frame (THIS frame).
     @return           Non-zero (TRUE) if the breakpoints are inserted
@@ -632,12 +640,27 @@ arc_linux_software_single_step (struct frame_info *frame)
   CORE_ADDR fall_thru, branch_target;
   int two_breakpoints = arc_linux_next_pc (pc, &fall_thru, &branch_target);
 
+  /* No need to check result. If it fails breakpoint hasn't been created and
+   * GDB's internal state will be consistent. */
   insert_single_step_breakpoint (gdbarch, aspace, fall_thru);
 
   if (two_breakpoints)
     {
       if ((pc != branch_target) && (fall_thru != branch_target))
-	insert_single_step_breakpoint (gdbarch, aspace, branch_target);
+        {
+          /* If second insert fails, first breakpoint has to be removed
+           * manually. */
+          volatile struct gdb_exception ex;
+          TRY_CATCH(ex, RETURN_MASK_ERROR)
+            {
+              insert_single_step_breakpoint (gdbarch, aspace, branch_target);
+            }
+
+          if (ex.reason < 0 && single_step_breakpoints_inserted())
+              remove_single_step_breakpoints();
+          /* There is nothing else we can do. Pass exception further. */
+          throw_exception(ex); 
+        }
     }
 
   return 1;			/* returns always true for now */

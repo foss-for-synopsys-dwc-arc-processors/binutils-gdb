@@ -1,3 +1,10 @@
+2013-10-07  Anton Kolesov <akolesov@synopsys.com>
+
+	* arc-tdep.c (arc_linux_software_single_step): Remove first breakpoint
+	in case second insertion fails. This resolves a GDB internal error and
+	crash. This usually indicates problem with code itself, GDB just has
+	to handle this gracefully.
+
 2013-10-02  Anton Kolesov <akolesov@synopsys.com>
 
 	* arc-tdep.c (arc_skip_prologue): Use generic skip_prologue_using_sal
