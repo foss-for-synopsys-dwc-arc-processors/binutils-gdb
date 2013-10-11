@@ -125,6 +125,91 @@
 /* -------------------------------------------------------------------------- */
 
 /* -------------------------------------------------------------------------- */
+/* Opella ARC700 register numbering.                                          */
+/* -------------------------------------------------------------------------- */
+
+#define OA7_R0                         0
+#define OA7_R25                       25
+#define OA7_GP                        26
+#define OA7_FP                        27
+#define OA7_SP                        28
+#define OA7_ILINK1                    29
+#define OA7_ILINK2                    30
+#define OA7_BLINK                     31
+#define OA7_LP_COUNT                  32
+#define OA7_PCL                       33
+#define OA7_PC                        34
+#define OA7_AUX_STATUS                35
+#define OA7_AUX_LP_START              36
+#define OA7_AUX_LP_END                37
+#define OA7_AUX_IDENTITY              38
+#define OA7_AUX_DEBUG                 39
+#define OA7_AUX_PC                    40
+#define OA7_AUX_STATUS32              41
+#define OA7_AUX_STATUS32_L1           42
+#define OA7_AUX_STATUS32_L2           43
+#define OA7_AUX_COUNT0                44
+#define OA7_AUX_CONTROL0              45
+#define OA7_AUX_LIMIT0                46
+#define OA7_AUX_INT_VECTOR_BASE       47
+#define OA7_AUX_AUX_MACMODE           48
+#define OA7_AUX_AUX_IRQ_LV12          49
+#define OA7_AUX_COUNT1                50
+#define OA7_AUX_CONTROL1              51
+#define OA7_AUX_LIMIT1                52
+#define OA7_AUX_AUX_IRQ_LEV           53
+#define OA7_AUX_AUX_IRQ_HINT          54
+#define OA7_AUX_ERET                  55
+#define OA7_AUX_ERBTA                 56
+#define OA7_AUX_ERSTATUS              57
+#define OA7_AUX_ECR                   58
+#define OA7_AUX_EFA                   59
+#define OA7_AUX_ICAUSE1               60
+#define OA7_AUX_ICAUSE2               61
+#define OA7_AUX_AUX_IENABLE           62
+#define OA7_AUX_AUX_ITRIGGER          63
+#define OA7_AUX_XPU                   64
+#define OA7_AUX_BTA                   65
+#define OA7_AUX_BTA_L1                66
+#define OA7_AUX_BTA_2L                67
+#define OA7_AUX_AUX_IRQ_PULSE_CANCEL  68
+#define OA7_AUX_AUX_IRQ_PENDING       69
+#define OA7_AUX_IC_IVIC               70
+#define OA7_AUX_IC_CTRL               71
+#define OA7_AUX_DC_IVDC               72
+#define OA7_AUX_DC_CTRL               73
+#define OA7_AUX_AMV0                  74
+#define OA7_AUX_AMM0                  75
+#define OA7_AUX_AC0                   76
+#define OA7_BCR_DCCM_BASE_BUILD       78
+#define OA7_BCR_CRC_BASE_BUILD        79
+#define OA7_BCR_BTA_LINK_BUILD        80
+#define OA7_BCR_DVBF_BUILD            81
+#define OA7_BCR_TEL_INSTR_BUILD       82
+#define OA7_BCR_MEMSUBSYS             84
+#define OA7_BCR_VECBASE_AC_BUILD      85
+#define OA7_BCR_P_BASE_ADDRESS        86
+#define OA7_BCR_MMU_BUILD             92
+#define OA7_BCR_ARCANGEL_BUILD        93
+#define OA7_BCR_DCACHE_BUILD          95
+#define OA7_BCR_MADI_BUILD            96
+#define OA7_BCR_DCCM_BUILD            97
+#define OA7_BCR_TIMER_BUILD           98
+#define OA7_BCR_AP_BUILD              99
+#define OA7_BCR_ICACHE_BUILD         100
+#define OA7_BCR_ICCM_BUILD           101
+#define OA7_BCR_DSPRAM_BUILD         102
+#define OA7_BCR_MAC_BUILD            103
+#define OA7_BCR_MULTIPLY_BUILD       104
+#define OA7_BCR_SWAP_BUILD           105
+#define OA7_BCR_NORM_BUILD           106
+#define OA7_BCR_MINMAX_BUILD         107
+#define OA7_BCR_BARREL_BUILD         108
+
+#define OA7_NUM_REGS         (OA7_BCR_BARREL_BUILD + 1)
+#define OA7_NUM_PSEUDO_REGS   0
+
+/* -------------------------------------------------------------------------- */
 /* Simulator aux reg numbers                                                  */
 /* -------------------------------------------------------------------------- */
 
@@ -291,6 +376,15 @@
 /* Globally visible datatypes                                                 */
 /* -------------------------------------------------------------------------- */
 
+
+/* Enumeration of possible Opella targets */
+enum arc_opella_target {
+  ARC600,
+  ARC700,
+  NONE,
+  INVALID
+};
+
 /*! Target dependencies.
 
     This structure holds target-dependent information.
@@ -303,15 +397,26 @@
           type and access its fields. */
 struct gdbarch_tdep
 {
-    /* Detect sigtramp.  */
-    int (*is_sigtramp) (struct frame_info*);
+  /* Detect sigtramp.  */
+  int (*is_sigtramp) (struct frame_info*);
   
-    /* Get address of sigcontext for sigtramp.  */
-    CORE_ADDR (*sigcontext_addr) (struct frame_info*);
+  /* Get address of sigcontext for sigtramp.  */
+  CORE_ADDR (*sigcontext_addr) (struct frame_info*);
+  
+  /* Offset of registers in `struct sigcontext'. */
+  const int*   sc_reg_offset;
+  unsigned int sc_num_regs;
+  
+  /* Opella JTAG target. */
+  enum arc_opella_target opella_target;
 
-    /* Offset of registers in `struct sigcontext'. */
-    const int*   sc_reg_offset;
-    unsigned int sc_num_regs;
+  /* Register mapping stuff (for Opella) */
+  int  num_regs;
+  int  num_pseudo_regs;
+  int  pc_regnum;
+  int  fp_regnum;
+  int  sp_regnum;
+  int  ps_regnum;
 };
 
 

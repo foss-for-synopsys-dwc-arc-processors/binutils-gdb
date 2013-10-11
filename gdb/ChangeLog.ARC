@@ -1,3 +1,16 @@
+2013-10-11  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	* arc-tdep.c (setarccmdlist, showarccmdlist, arc_opella_string):
+	Static data created.
+	(arc_gdbarch_init): Set register data in target dependencies,
+	based on opella setting. Use when initializing architecture.
+	(arc_dump_tdep): Implementation added.
+	(set_arc_command, show_arc_command, arc_set_opella): Created.
+	(initialize_arc_tdep): Add "set/show arc opella-target" command.
+	* arc-tdep.h: Add Opella ARC700 register numbering.
+	(arc_opella_target): New enumeration.
+	(gdbarch_tdep): Add opella target and register numbers.
+
 2013-10-07  Anton Kolesov <akolesov@synopsys.com>
 
 	* arc-tdep.c (arc_linux_software_single_step): Remove first breakpoint
