@@ -252,6 +252,18 @@ int arc_debug;
 
 
 /* -------------------------------------------------------------------------- */
+/* Static data used only here.                                                */
+/* -------------------------------------------------------------------------- */
+
+/* The list of available "set arc ..." and "show arc ..." commands.  */
+static struct cmd_list_element *setarccmdlist = NULL;
+static struct cmd_list_element *showarccmdlist = NULL;
+
+/*! Default string for "set arc opella-target" */
+static const char *arc_opella_string = "none";
+
+
+/* -------------------------------------------------------------------------- */
 /*                               local functions                              */
 /* -------------------------------------------------------------------------- */
 
@@ -2348,6 +2360,42 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 
   memset (tdep, 0, sizeof (*tdep));
 
+  /* Set the opella target and associated data. */
+  tdep->opella_target = strcmp ("none", arc_opella_string) == 0 ? NONE
+    : strcmp ("arc600", arc_opella_string) == 0 ? ARC600
+    : strcmp ("arc700", arc_opella_string) == 0 ? ARC700 : INVALID;
+  gdb_assert (tdep->opella_target != INVALID);
+
+  switch (tdep->opella_target)
+    {
+    case NONE:
+      tdep->num_regs = ARC_NUM_RAW_REGS;
+      tdep->num_pseudo_regs = ARC_NUM_PSEUDO_REGS;
+      tdep->pc_regnum = ARC_PC_REGNUM;
+      tdep->fp_regnum = ARC_FP_REGNUM;
+      tdep->sp_regnum = ARC_SP_REGNUM;
+      tdep->ps_regnum = ARC_AUX_STATUS32_REGNUM;
+      break;
+
+    case ARC600:
+      tdep->num_regs = OA7_NUM_REGS;
+      tdep->num_pseudo_regs = OA7_NUM_PSEUDO_REGS;
+      tdep->pc_regnum = OA7_PC;
+      tdep->fp_regnum = OA7_FP;
+      tdep->sp_regnum = OA7_SP;
+      tdep->ps_regnum = OA7_AUX_STATUS32;
+      break;
+
+    case ARC700:
+      tdep->num_regs = OA7_NUM_REGS;
+      tdep->num_pseudo_regs = OA7_NUM_PSEUDO_REGS;
+      tdep->pc_regnum = OA7_PC;
+      tdep->fp_regnum = OA7_FP;
+      tdep->sp_regnum = OA7_SP;
+      tdep->ps_regnum = OA7_AUX_STATUS32;
+      break;
+    }
+
   /* gdbarch setup. */
   /* Default gdbarch_bits_big_endian suffices. */
   set_gdbarch_short_bit (gdbarch, 16);
@@ -2368,8 +2416,8 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   /* No need for read_pc or write_pc, since PC is normal register */
   set_gdbarch_virtual_frame_pointer (gdbarch, arc_virtual_frame_pointer);
   /* No need for special pseudo register read/write. */
-  set_gdbarch_num_regs (gdbarch, ARC_NUM_RAW_REGS);
-  set_gdbarch_num_pseudo_regs (gdbarch, ARC_NUM_PSEUDO_REGS);
+  set_gdbarch_num_regs (gdbarch, tdep->num_regs);
+  set_gdbarch_num_pseudo_regs (gdbarch, 0);
   /* We don't use Agent Expressions here (only MIPS does it seems) */
   set_gdbarch_sp_regnum (gdbarch, ARC_SP_REGNUM);
   set_gdbarch_pc_regnum (gdbarch, ARC_PC_REGNUM);
@@ -2483,12 +2531,39 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 
 /*! Dump out the target specific information.
 
-  @todo. Why is this empty!
     @param[in] gdbarch  Current GDB architecture
  */
 static void
 arc_dump_tdep (struct gdbarch *gdbarch, struct ui_file *file)
 {
+  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+
+  fprintf_unfiltered (file, "arc_dump_tdep: is_sigtramp = %p\n", 
+		      tdep->is_sigtramp);
+  fprintf_unfiltered (file, "arc_dump_tdep: sigcontext_addr = %p\n", 
+		      tdep->sigcontext_addr);
+  fprintf_unfiltered (file, "arc_dump_tdep: sc_reg_offset = %p\n", 
+		      tdep->sc_reg_offset);
+  fprintf_unfiltered (file, "arc_dump_tdep: sc_num_regs = %d\n", 
+		      tdep->sc_num_regs);
+  fprintf_unfiltered (file, "arc_dump_tdep: opella_target = %s\n", 
+		      tdep->opella_target == NONE ? "none"
+		      : tdep->opella_target == ARC600 ? "ARC600"
+		      : tdep->opella_target == ARC700 ? "ARC700"
+		      : tdep->opella_target == INVALID ? "INVALID" : "Help!");
+  fprintf_unfiltered (file, "arc_dump_tdep: num_regs = %d\n", 
+		      tdep->num_regs);
+  fprintf_unfiltered (file, "arc_dump_tdep: num_pseudo_regs = %d\n", 
+		      tdep->num_pseudo_regs);
+  fprintf_unfiltered (file, "arc_dump_tdep: pc_regnum = %d\n", 
+		      tdep->pc_regnum);
+  fprintf_unfiltered (file, "arc_dump_tdep: fp_regnum = %d\n", 
+		      tdep->fp_regnum);
+  fprintf_unfiltered (file, "arc_dump_tdep: sp_regnum = %d\n", 
+		      tdep->sp_regnum);
+  fprintf_unfiltered (file, "arc_dump_tdep: ps_regnum = %d\n", 
+		      tdep->ps_regnum);
+  
 }	/* arc_dump_tdep () */
 
 
@@ -2513,6 +2588,45 @@ arc_initialize_disassembler (struct gdbarch *gdbarch,
 }
 
 
+/*! Warn about plain "set arc". */
+static void
+set_arc_command (char *args, int from_tty)
+{
+  printf_unfiltered (_("\
+\"set arc\" must be followed by an apporpriate subcommand.\n"));
+  help_list (setarccmdlist, "set arc ", all_commands, gdb_stdout);
+}
+
+
+/*! Warn about plain "show arc". */
+static void
+show_arc_command (char *args, int from_tty)
+{
+  cmd_show_list (showarccmdlist, from_tty, "");
+}
+
+
+/*! The possible opella targets  */
+static const char *const opella_strings[] =
+  {
+    "none",
+    "arc600",
+    "arc700",
+    NULL
+  };
+
+/*! Update the architecture after setting the target. */
+static void
+arc_set_opella (char *args, int from_tty,
+		struct cmd_list_element *c)
+{
+  struct gdbarch_info info;
+  gdbarch_info_init (&info);
+  gdbarch_update_p (info);
+
+}	/* arc_set_opella () */
+
+
 /* this function is called from gdb */
 void
 _initialize_arc_tdep (void)
@@ -2527,6 +2641,15 @@ _initialize_arc_tdep (void)
 
   /* register ARC-specific commands with gdb */
 
+  /* Add root prefix command for all "set arc"/"show arc" commands.  */
+  add_prefix_cmd ("arc", no_class, set_arc_command,
+		  _("Various ARC-specific commands."),
+		  &setarccmdlist, "set arc ", 0, &setlist);
+
+  add_prefix_cmd ("arc", no_class, show_arc_command,
+		  _("Various ARC-specific commands."),
+		  &showarccmdlist, "show arc ", 0, &showlist);
+
   /* Debug internals for ARC GDB.  */
   add_setshow_zinteger_cmd ("arc", class_maintenance,
 			    &arc_debug,
@@ -2537,5 +2660,14 @@ _initialize_arc_tdep (void)
 			    NULL,
 			    &setdebuglist,
 			    &showdebuglist);
+
+  /* Command to control Opella JTAG debugger */
+  add_setshow_enum_cmd ("opella-target", class_support,
+			opella_strings, &arc_opella_string,
+			_("Set the Opella JTAG ARC debug target."),
+			_("Show the Opella JTAG ARC debug target."),
+			NULL, arc_set_opella, NULL,
+			&setarccmdlist, &showarccmdlist);
+
 
 }	/* _initialize_arc_tdep () */
