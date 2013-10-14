@@ -1,3 +1,27 @@
+2013-10-14  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	* arc-elf-tdep.c (arc_elf_cannot_fetch_register)
+	(arc_elf_cannot_store_register): Make dependent on Opella target.
+	* arc-tdep.c (arc_print_frame_info, arc_frame_base_address)
+	(arc_find_this_sp, arc_is_callee_saved)
+	(arc_is_in_prologue, arc_scan_prologue, arc_virtual_frame_pointer)
+	(arc_push_dummy_call, arc_print_registers_info)
+	(arc_get_longjump_target, arc_skip_trampoline_code)
+	(arc_frame_this_id, arc_frame_prev_register)
+	(arc_dwarf2_frame_init_reg, arc_sigtramp_frame_this_id): Use
+	register numbers from target dependency structure.
+	(arc_register_name): Make result dependent on Opella target.
+	(arc_register_type): Make results dependent on Opella target, use
+	register numbers from target dependency structure.
+	(arc_gdbarch_init): Set up common target dependency fields, add
+	number of core regs to tdep.
+	(arc_dump_tdep): Extend for new fields.
+	* arc-tdep.h: Add Opella ARC600 definitions. Define target
+	specific number of core regs.
+	(ARC_TOTAL_REGS): Deleted.
+	(gdbarch_tdep): Add fields for number of core regs and first/last
+	arg and callee-saved regs.
+
 2013-10-11  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* arc-tdep.c (setarccmdlist, showarccmdlist, arc_opella_string):
