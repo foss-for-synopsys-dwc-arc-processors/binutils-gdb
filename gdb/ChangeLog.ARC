@@ -1,5 +1,14 @@
 2013-10-14  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
+	* arc-tdep.c (arc_find_this_sp): Set tdep after debug message.
+	(arc_scan_prologue): Set tdep after gdbarch is set.
+	(arc_register_name): Remove "pc" from oa6 and oa7 lists.
+	(arc_gdbarch_init): Use AUX_PC with OA6 and OA7 targets.
+	* arc-tdep.c (OA6_PC, OA7_PC): Remove and renumber remaining
+	registers.
+
+2013-10-14  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
 	* arc-elf-tdep.c (arc_elf_cannot_fetch_register)
 	(arc_elf_cannot_store_register): Make dependent on Opella target.
 	* arc-tdep.c (arc_print_frame_info, arc_frame_base_address)
