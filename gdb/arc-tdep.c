@@ -2847,8 +2847,8 @@ _initialize_arc_tdep (void)
   /* Command to control Opella JTAG debugger */
   add_setshow_enum_cmd ("opella-target", class_support,
 			opella_strings, &arc_opella_string,
-			_("Set the Opella JTAG ARC debug target."),
-			_("Show the Opella JTAG ARC debug target."),
+			_("Set the ARC debug target for the Opella-XD JTAG probe."),
+			_("Show the ARC debug target for the Opella-XD JTAG probe."),
 			NULL, arc_set_opella, NULL,
 			&setarccmdlist, &showarccmdlist);
 
