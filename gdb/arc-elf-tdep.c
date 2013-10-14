@@ -97,15 +97,47 @@ typedef struct
 static int
 arc_elf_cannot_fetch_register (struct gdbarch *gdbarch, int regnum)
 {
-  /* Default is to be able to read regs, pick out the others explicitly. */
-  switch (regnum)
+  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+
+  /* What we can read is target specific. */
+  switch (tdep->opella_target)
     {
-    case ARC_RESERVED_REGNUM:
-    case ARC_LIMM_REGNUM:
-      return 1;				/* Never readable. */
+    case ARC600:
+      switch (regnum)
+	{
+	case OA6_AUX_IC_IVIC:
+	case OA6_AUX_DC_IVDC:
+	  /* Write only registers. */
+	  return TRUE;
+
+	default:
+	  return FALSE;
+	}
+
+    case ARC700:
+      switch (regnum)
+	{
+	case OA7_AUX_AUX_IRQ_PULSE_CANCEL:
+	case OA7_AUX_IC_IVIC:
+	case OA7_AUX_DC_IVDC:
+	  /* Write only registers. */
+	  return TRUE;
+
+	default:
+	  return FALSE;
+	}
 
     default:
-      return 0;				/* Readable via JTAG. */
+      /* Default has a couple of invisible registers. */
+      switch (regnum)
+	{
+	case ARC_RESERVED_REGNUM:
+	case ARC_LIMM_REGNUM:
+	  return TRUE;				/* Never readable. */
+	  
+	default:
+	  return FALSE;				/* Readable via JTAG. */
+	}
     }
 }	/* arc_elf_cannot_fetch_register () */
 
@@ -124,16 +156,50 @@ arc_elf_cannot_fetch_register (struct gdbarch *gdbarch, int regnum)
 static int
 arc_elf_cannot_store_register (struct gdbarch *gdbarch, int regnum)
 {
-  /* Default is to be able to write regs, pick out the others explicitly. */
-  switch (regnum)
+  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+
+  /* What we can read is target specific. */
+  switch (tdep->opella_target)
     {
-    case ARC_RESERVED_REGNUM:
-    case ARC_LIMM_REGNUM:
-    case ARC_PCL_REGNUM:
-      return 1;				/* Never writable. */
+    case ARC600:
+      switch (regnum)
+	{
+	case OA6_AUX_STATUS:
+	case OA6_AUX_IDENTITY:
+	  /* Read only registers. */
+	  return TRUE;
+
+	default:
+	  return FALSE;
+	}
+
+    case ARC700:
+      switch (regnum)
+	{
+	case OA7_AUX_STATUS:
+	case OA7_AUX_IDENTITY:
+	case OA7_AUX_ICAUSE1:
+	case OA7_AUX_ICAUSE2:
+	case OA7_AUX_AUX_IRQ_PENDING:
+	  /* Read only registers. */
+	  return TRUE;
+
+	default:
+	  return FALSE;
+	}
 
     default:
-      return 0;				/* Writable via JTAG. */
+      /* Default has a couple of invisible registers. */
+      switch (regnum)
+	{
+	case ARC_RESERVED_REGNUM:
+	case ARC_LIMM_REGNUM:
+	case ARC_PCL_REGNUM:
+	  return TRUE;				/* Never readable. */
+	  
+	default:
+	  return FALSE;				/* Readable via JTAG. */
+	}
     }
 }	/* arc_elf_cannot_store_register () */
 
