@@ -1,5 +1,10 @@
 2013-10-14  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
+	* arc-tdep.c (_initialize_arc_tdep): Clearer help text for set arc
+	opella-target.
+
+2013-10-14  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
 	* arc-tdep.c (arc_find_this_sp): Set tdep after debug message.
 	(arc_scan_prologue): Set tdep after gdbarch is set.
 	(arc_register_name): Remove "pc" from oa6 and oa7 lists.
