@@ -623,11 +623,12 @@ arc_find_this_sp (struct arc_unwind_cache * info,
 		  struct frame_info *this_frame)
 {
   struct gdbarch *gdbarch;
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep;
 
   ARC_ENTRY_DEBUG ("this_frame = %p", this_frame)
 
   gdbarch = get_frame_arch (this_frame);
+  tdep = gdbarch_tdep (gdbarch);
 
   /* if the frame has a frame pointer */
   if (info->uses_fp)
@@ -1051,7 +1052,7 @@ arc_scan_prologue (CORE_ADDR entrypoint,
 		   struct frame_info *this_frame,
 		   struct arc_unwind_cache *info)
 {
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  struct gdbarch_tdep *tdep;
   CORE_ADDR prologue_ends_pc;
   CORE_ADDR final_pc;
   struct disassemble_info di;
@@ -1066,6 +1067,8 @@ arc_scan_prologue (CORE_ADDR entrypoint,
       gdb_assert (this_frame);
       gdbarch = get_frame_arch (this_frame);
     }
+
+  tdep = gdbarch_tdep (gdbarch);
 
   /* An arbitrary limit on the length of the prologue. If this_frame is NULL
      this means that there was no debug info and we are called from
@@ -1362,7 +1365,7 @@ arc_register_name (struct gdbarch *gdbarch, int regnum)
     "r20",             "r21",             "r22",             "r23",
     "r24",             "r25",             "gp",              "fp",
     "sp",              "ilink1",          "ilink2",          "blink",
-    "lp_count",        "pcl",             "pc",
+    "lp_count",        "pcl",
     /* Aux registers. */
     "status",          "semaphore",       "lp_start",        "lp_end",
     "identity",        "debug",           "pc",              "status32",
@@ -1394,7 +1397,7 @@ arc_register_name (struct gdbarch *gdbarch, int regnum)
     "r20",             "r21",             "r22",             "r23",
     "r24",             "r25",             "gp",              "fp",
     "sp",              "ilink1",          "ilink2",          "blink",
-    "lp_count",        "pcl",             "pc",
+    "lp_count",        "pcl",
     /* Aux registers. */
     "status",          "lp_start",        "lp_end",
     "identity",        "debug",           "pc",              "status32",
@@ -2549,7 +2552,7 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
       tdep->num_core_regs = OA6_NUM_CORE_REGS;
       tdep->num_regs = OA6_NUM_REGS;
       tdep->num_pseudo_regs = OA6_NUM_PSEUDO_REGS;
-      tdep->pc_regnum = OA6_PC;
+      tdep->pc_regnum = OA6_AUX_PC;
       tdep->fp_regnum = OA6_FP;
       tdep->sp_regnum = OA6_SP;
       tdep->ps_regnum = OA6_AUX_STATUS32;
@@ -2559,7 +2562,7 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
       tdep->num_core_regs = OA7_NUM_CORE_REGS;
       tdep->num_regs = OA7_NUM_REGS;
       tdep->num_pseudo_regs = OA7_NUM_PSEUDO_REGS;
-      tdep->pc_regnum = OA7_PC;
+      tdep->pc_regnum = OA7_AUX_PC;
       tdep->fp_regnum = OA7_FP;
       tdep->sp_regnum = OA7_SP;
       tdep->ps_regnum = OA7_AUX_STATUS32;
