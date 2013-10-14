@@ -125,6 +125,78 @@
 /* -------------------------------------------------------------------------- */
 
 /* -------------------------------------------------------------------------- */
+/* Opella ARC600 register numbering.                                          */
+/* -------------------------------------------------------------------------- */
+
+#define OA6_R0                         0
+#define OA6_R25                       25
+#define OA6_GP                        26
+#define OA6_FP                        27
+#define OA6_SP                        28
+#define OA6_ILINK1                    29
+#define OA6_ILINK2                    30
+#define OA6_BLINK                     31
+#define OA6_LP_COUNT                  32
+#define OA6_PCL                       33
+#define OA6_PC                        34
+#define OA6_AUX_STATUS                35
+#define OA6_AUX_SEMAPHORE             36
+#define OA6_AUX_LP_START              37
+#define OA6_AUX_LP_END                38
+#define OA6_AUX_IDENTITY              39
+#define OA6_AUX_DEBUG                 40
+#define OA6_AUX_PC                    41
+#define OA6_AUX_STATUS32              42
+#define OA6_AUX_STATUS32_L1           43
+#define OA6_AUX_STATUS32_L2           44
+#define OA6_AUX_COUNT0                45
+#define OA6_AUX_CONTROL0              46
+#define OA6_AUX_LIMIT0                47
+#define OA6_AUX_INT_VECTOR_BASE       48
+#define OA6_AUX_AUX_MACMODE           49
+#define OA6_AUX_AUX_IRQ_LV12          50
+#define OA6_AUX_COUNT1                51
+#define OA6_AUX_CONTROL1              52
+#define OA6_AUX_LIMIT1                53
+#define OA6_AUX_AUX_IRQ_LEV           54
+#define OA6_AUX_AUX_IRQ_HINT          55
+#define OA6_AUX_IC_IVIC               56
+#define OA6_AUX_IC_CTRL               57
+#define OA6_AUX_DC_IVDC               58
+#define OA6_AUX_DC_CTRL               59
+#define OA6_AUX_AMV0                  60
+#define OA6_AUX_AMM0                  61
+#define OA6_AUX_AC0                   62
+#define OA6_BCR_DCCM_BASE_BUILD       64
+#define OA6_BCR_CRC_BASE_BUILD        65
+#define OA6_BCR_DVBF_BUILD            66
+#define OA6_BCR_TEL_INSTR_BUILD       67
+#define OA6_BCR_MEMSUBSYS             69
+#define OA6_BCR_VECBASE_AC_BUILD      70
+#define OA6_BCR_P_BASE_ADDRESS        71
+#define OA6_BCR_RF_BUILD              76
+#define OA6_BCR_MMU_BUILD             77
+#define OA6_BCR_ARCANGEL_BUILD        78
+#define OA6_BCR_DCACHE_BUILD          80
+#define OA6_BCR_MADI_BUILD            81
+#define OA6_BCR_DCCM_BUILD            82
+#define OA6_BCR_TIMER_BUILD           83
+#define OA6_BCR_AP_BUILD              84
+#define OA6_BCR_ICACHE_BUILD          85
+#define OA6_BCR_ICCM_BUILD            86
+#define OA6_BCR_DSPRAM_BUILD          87
+#define OA6_BCR_MAC_BUILD             88
+#define OA6_BCR_MULTIPLY_BUILD        89
+#define OA6_BCR_SWAP_BUILD            90
+#define OA6_BCR_NORM_BUILD            91
+#define OA6_BCR_MINMAX_BUILD          92
+#define OA6_BCR_BARREL_BUILD          93
+
+#define OA6_NUM_CORE_REGS    (OA6_PCL + 1)
+#define OA6_NUM_REGS         (OA6_BCR_BARREL_BUILD + 1)
+#define OA6_NUM_PSEUDO_REGS   0
+
+/* -------------------------------------------------------------------------- */
 /* Opella ARC700 register numbering.                                          */
 /* -------------------------------------------------------------------------- */
 
@@ -171,7 +243,7 @@
 #define OA7_AUX_XPU                   64
 #define OA7_AUX_BTA                   65
 #define OA7_AUX_BTA_L1                66
-#define OA7_AUX_BTA_2L                67
+#define OA7_AUX_BTA_L2                67
 #define OA7_AUX_AUX_IRQ_PULSE_CANCEL  68
 #define OA7_AUX_AUX_IRQ_PENDING       69
 #define OA7_AUX_IC_IVIC               70
@@ -206,6 +278,7 @@
 #define OA7_BCR_MINMAX_BUILD         107
 #define OA7_BCR_BARREL_BUILD         108
 
+#define OA7_NUM_CORE_REGS    (OA7_PCL + 1)
 #define OA7_NUM_REGS         (OA7_BCR_BARREL_BUILD + 1)
 #define OA7_NUM_PSEUDO_REGS   0
 
@@ -321,10 +394,8 @@
 
 /*! Number of "raw" registers (i.e. core + aux). */
 #define ARC_NUM_RAW_REGS    (ARC_AUX_AUX_IRQ_PENDING_REGNUM + 1)
-/*! Total "raw" + pseudo registers. */
-#define ARC_TOTAL_REGS      (ARC_AUX_AUX_IRQ_PENDING_REGNUM + 1)
 /*! Number of pseudo registers. */
-#define ARC_NUM_PSEUDO_REGS (ARC_TOTAL_REGS - ARC_NUM_RAW_REGS)
+#define ARC_NUM_PSEUDO_REGS 0
 
 /* -------------------------------------------------------------------------- */
 /* ABI constants and macros                                                   */
@@ -411,8 +482,13 @@ struct gdbarch_tdep
   enum arc_opella_target opella_target;
 
   /* Register mapping stuff (for Opella) */
+  int  num_core_regs;
   int  num_regs;
   int  num_pseudo_regs;
+  int  first_arg_regnum;
+  int  last_arg_regnum;
+  int  first_callee_saved_regnum;
+  int  last_callee_saved_regnum;
   int  pc_regnum;
   int  fp_regnum;
   int  sp_regnum;
