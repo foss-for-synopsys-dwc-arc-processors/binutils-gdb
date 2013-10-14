@@ -436,14 +436,18 @@ arc_is_sub_sp_fi (struct arc_unwind_cache *info, struct arcDisState *state)
 
     Used for internal debugging only.
 
+    @param[in] gdbarch         GDB architecture to which this relates.
     @param[in] message         Text to include with the output
     @param[in] info            Frame info to dump
     @param[in] addresses_known Non-zero (TRUE) if have saved address, zero
                                (FALSE) if have saved offset. */  
 static void
-arc_print_frame_info (char *message, struct arc_unwind_cache *info,
+arc_print_frame_info (struct gdbarch *gdbarch,
+		      char *message,
+		      struct arc_unwind_cache *info,
 		      int addresses_known)
 {
+  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
   unsigned int i;
 
   fprintf_unfiltered (gdb_stdlog, "-------------------\n");
@@ -461,8 +465,8 @@ arc_print_frame_info (char *message, struct arc_unwind_cache *info,
   fprintf_unfiltered (gdb_stdlog, "is_leaf = %d, uses_fp = %d\n",
 		      info->is_leaf, info->uses_fp);
 
-  for (i = ARC_FIRST_CALLEE_SAVED_REGNUM;
-       i < ARC_LAST_CALLEE_SAVED_REGNUM; i++)
+  for (i = tdep->first_callee_saved_regnum;
+       i < tdep->last_callee_saved_regnum; i++)
     {
       if (info->saved_regs_mask & (1 << i))
 	fprintf_unfiltered (gdb_stdlog, "saved register R%02d %s %s\n",
@@ -597,7 +601,10 @@ static CORE_ADDR
 arc_frame_base_address (struct frame_info  *this_frame,
 			 void              **prologue_cache) 
 {
-  return  (CORE_ADDR) get_frame_register_unsigned (this_frame, ARC_FP_REGNUM);
+  struct gdbarch *gdbarch = get_frame_arch (this_frame);
+  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+
+  return  (CORE_ADDR) get_frame_register_unsigned (this_frame, tdep->fp_regnum);
 
 }	/* arc_frame_base_address() */
 
@@ -616,6 +623,7 @@ arc_find_this_sp (struct arc_unwind_cache * info,
 		  struct frame_info *this_frame)
 {
   struct gdbarch *gdbarch;
+  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
 
   ARC_ENTRY_DEBUG ("this_frame = %p", this_frame)
 
@@ -635,7 +643,7 @@ arc_find_this_sp (struct arc_unwind_cache * info,
        */
       this_base = arc_frame_base_address (this_frame, NULL);
       info->frame_base = (CORE_ADDR) this_base;
-      info->saved_regs[ARC_FP_REGNUM].addr = (long long) this_base;
+      info->saved_regs[tdep->fp_regnum].addr = (long long) this_base;
 
       /* The previous SP is the current frame base + the difference between
        * that frame base and the previous SP.
@@ -643,8 +651,8 @@ arc_find_this_sp (struct arc_unwind_cache * info,
       info->prev_sp =
 	info->frame_base + (CORE_ADDR) info->old_sp_offset_from_fp;
 
-      for (i = ARC_FIRST_CALLEE_SAVED_REGNUM;
-	   i < ARC_LAST_CALLEE_SAVED_REGNUM; i++)
+      for (i = tdep->first_callee_saved_regnum;
+	   i < tdep->last_callee_saved_regnum; i++)
 	{
 	  /* If this register has been saved, add the previous stack pointer
 	   * to the offset from the previous stack pointer at which the
@@ -723,18 +731,23 @@ arc_find_this_sp (struct arc_unwind_cache * info,
     callee-saved register.
 
     If it is, the information in the frame unwind cache is updated.
- 
-    @param[in] reg     Register to be considered
-    @param[in] offset  Offset where the register is saved.
-    @param[in] info    Frame info for THIS frame.
-    @return            Non-zero (TRUE) if callee-saved, zero (FALSE)
-                       otherwise. */
+
+    @param[in] gdbarch  GDB architecture
+    @param[in] reg      Register to be considered
+    @param[in] offset   Offset where the register is saved.
+    @param[in] info     Frame info for THIS frame.
+    @return             Non-zero (TRUE) if callee-saved, zero (FALSE)
+                        otherwise. */
 static int
-arc_is_callee_saved (unsigned int reg, int offset,
-		     struct arc_unwind_cache * info)
+arc_is_callee_saved (struct gdbarch *gdbarch,
+		     unsigned int reg,
+		     int offset,
+		     struct arc_unwind_cache *info)
 {
-  if (ARC_FIRST_CALLEE_SAVED_REGNUM <= reg
-      && reg <= ARC_LAST_CALLEE_SAVED_REGNUM)
+  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+
+  if (tdep->first_callee_saved_regnum <= reg
+      && reg <= tdep->last_callee_saved_regnum)
     {
       if (arc_debug)
 	{
@@ -793,7 +806,8 @@ arc_is_callee_saved (unsigned int reg, int offset,
 
 	  if (arc_debug)
 	    {
-	      arc_print_frame_info ("after callee register save", info, FALSE);
+	      arc_print_frame_info (gdbarch, "after callee register save",
+				    info, FALSE);
 	    }
 
 	  return TRUE;
@@ -822,13 +836,15 @@ arc_is_in_prologue (struct gdbarch *gdbarch,
                     struct arc_unwind_cache * info,
                     struct arcDisState *instr)
 {
+  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+
   /* Might be a push or a pop */
   if (instr->_opcode == 0x3)
     {
       if (instr->_addrWriteBack != (char) 0)
 	{
 	  /* This is a st.a  */
-	  if (instr->ea_reg1 == ARC_SP_REGNUM)
+	  if (instr->ea_reg1 == tdep->sp_regnum)
 	    {
 	      if (instr->_offset == -4)
 		{
@@ -851,9 +867,9 @@ arc_is_in_prologue (struct gdbarch *gdbarch,
 		    {
 		      /* st.a <reg>, [sp,<offset>] */
 
-		      if (arc_is_callee_saved
-			  (instr->source_operand.registerNum, instr->_offset,
-			   info))
+		      if (arc_is_callee_saved (gdbarch,
+			   instr->source_operand.registerNum,
+                           instr->_offset, info))
 			{
 			  /* this is a push onto the stack, so change
 			     delta_sp */
@@ -871,12 +887,12 @@ arc_is_in_prologue (struct gdbarch *gdbarch,
 	      /* Is this a store of some register onto the stack using the
 	       * stack pointer?
 	       */
-	      if (instr->ea_reg1 == ARC_SP_REGNUM)
+	      if (instr->ea_reg1 == tdep->sp_regnum)
 		{
 		  /* st <reg>, [sp,offset] */
 
-		  if (arc_is_callee_saved
-		      (instr->source_operand.registerNum, instr->_offset,
+		  if (arc_is_callee_saved (gdbarch,
+		       instr->source_operand.registerNum, instr->_offset,
 		       info))
 		    /* this is NOT a push onto the stack, so do not change
 		       delta_sp */
@@ -887,11 +903,11 @@ arc_is_in_prologue (struct gdbarch *gdbarch,
 	       * frame pointer? We check for argument registers getting saved
 	       * and restored.
 	       */
-	      if (instr->ea_reg1 == ARC_FP_REGNUM)
+	      if (instr->ea_reg1 == tdep->fp_regnum)
 		{
 		  int regnum = instr->source_operand.registerNum;
-		  if ((ARC_FIRST_ARG_REGNUM <= regnum)
-		      && (regnum <= ARC_LAST_ARG_REGNUM))
+		  if ((tdep->first_arg_regnum <= regnum)
+		      && (regnum <= tdep->last_arg_regnum))
 		    {
 		      /* Saving argument registers. Don't set the bits in the
 		       * saved mask, just skip.
@@ -950,7 +966,7 @@ arc_is_in_prologue (struct gdbarch *gdbarch,
 	    {
 	      /* st_s <reg>,[sp,<offset>] */
 
-	      if (arc_is_callee_saved (reg, offset, info))
+	      if (arc_is_callee_saved (gdbarch, reg, offset, info))
 		/* this is NOT a push onto the stack, so do not change
 		   delta_sp */
 		return TRUE;
@@ -1035,6 +1051,7 @@ arc_scan_prologue (CORE_ADDR entrypoint,
 		   struct frame_info *this_frame,
 		   struct arc_unwind_cache *info)
 {
+  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
   CORE_ADDR prologue_ends_pc;
   CORE_ADDR final_pc;
   struct disassemble_info di;
@@ -1066,8 +1083,8 @@ arc_scan_prologue (CORE_ADDR entrypoint,
   prologue_ends_pc = entrypoint;
   final_pc = (this_frame)
     ? get_frame_pc (this_frame)
-    : entrypoint + 4 * (6 + ARC_LAST_CALLEE_SAVED_REGNUM
-			- ARC_FIRST_CALLEE_SAVED_REGNUM + 1);
+    : entrypoint + 4 * (6 + tdep->last_callee_saved_regnum
+			- tdep->first_callee_saved_regnum + 1);
 
   if (info)
     {
@@ -1124,18 +1141,18 @@ arc_scan_prologue (CORE_ADDR entrypoint,
     {
       if (arc_debug)
 	{
-	  arc_print_frame_info ("after prologue", info, FALSE);
+	  arc_print_frame_info (gdbarch, "after prologue", info, FALSE);
 	}
 
       arc_find_this_sp (info, this_frame);
 
       /* The PC is found in blink (the actual register or located on the
 	 stack). */
-      info->saved_regs[ARC_PC_REGNUM] = info->saved_regs[ARC_BLINK_REGNUM];
+      info->saved_regs[tdep->pc_regnum] = info->saved_regs[ARC_BLINK_REGNUM];
 
       if (arc_debug)
 	{
-	  arc_print_frame_info ("after previous SP found", info, TRUE);
+	  arc_print_frame_info (gdbarch, "after previous SP found", info, TRUE);
 	}
     }
 
@@ -1304,7 +1321,8 @@ arc_virtual_frame_pointer (struct gdbarch *gdbarch,
 			    int            *reg_ptr,
 			    LONGEST        *offset_ptr)
 {
-  *reg_ptr    = ARC_SP_REGNUM;
+  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  *reg_ptr    = tdep->sp_regnum;
   *offset_ptr = 0;
 
 }	/* arc_virtual_frame_pointer () */
@@ -1332,7 +1350,77 @@ arc_virtual_frame_pointer (struct gdbarch *gdbarch,
 static const char *
 arc_register_name (struct gdbarch *gdbarch, int regnum)
 {
-  static const char *register_names[ARC_TOTAL_REGS] = {
+  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+
+  static const char *oa6_register_names[] = {
+    /* Core registers. */
+    "r0",              "r1",              "r2",              "r3",
+    "r4",              "r5",              "r6",              "r7",
+    "r8",              "r9",              "r10",             "r11",
+    "r12",             "r13",             "r14",             "r15",
+    "r16",             "r17",             "r18",             "r19",
+    "r20",             "r21",             "r22",             "r23",
+    "r24",             "r25",             "gp",              "fp",
+    "sp",              "ilink1",          "ilink2",          "blink",
+    "lp_count",        "pcl",             "pc",
+    /* Aux registers. */
+    "status",          "semaphore",       "lp_start",        "lp_end",
+    "identity",        "debug",           "pc",              "status32",
+    "status32_l1",     "status32_l2",     "count0",          "control0",
+    "limit0",          "int_vector_base", "aux_macmode",     "aux_irq_lv12",
+    "count1",          "control1",        "limit1",          "aux_irq_lev",
+    "aux_irq_hint",    "ic_ivic",         "ic_ctrl",         "dc_ivdc",
+    "dc_ctrl",
+    /* Action point 0 registers. */
+    "amv0",            "amm0",            "ac0",
+    /* Build configuration registers. */
+    "",                "dccm_base_build", "crc_base_build",  "dvbf_build",
+    "tel_instr_build", "",                "memsubsys",       "vecbase_ac_build",
+    "p_base_address",  "",                "",                "",
+    "",                "rf_build",        "mmu_build",       "arcangel_build",
+    "",                "dcache_build",    "madi_build",      "dccm_build",
+    "timer_build",     "ap_build",        "icache_build",    "iccm_build",
+    "dspram_build",    "mac_build",       "multiply_build",  "swap_build",
+    "norm_build",      "minmax_build",    "barrel_build"
+  };
+
+  static const char *oa7_register_names[] = {
+    /* Core registers. */
+    "r0",              "r1",              "r2",              "r3",
+    "r4",              "r5",              "r6",              "r7",
+    "r8",              "r9",              "r10",             "r11",
+    "r12",             "r13",             "r14",             "r15",
+    "r16",             "r17",             "r18",             "r19",
+    "r20",             "r21",             "r22",             "r23",
+    "r24",             "r25",             "gp",              "fp",
+    "sp",              "ilink1",          "ilink2",          "blink",
+    "lp_count",        "pcl",             "pc",
+    /* Aux registers. */
+    "status",          "lp_start",        "lp_end",
+    "identity",        "debug",           "pc",              "status32",
+    "status32_l1",     "status32_l2",     "count0",          "control0",
+    "limit0",          "int_vector_base", "aux_macmode",     "aux_irq_lv12",
+    "count1",          "control1",        "limit1",          "aux_irq_lev",
+    "aux_irq_hint",    "eret",            "erbta",           "erstatus",
+    "ecr",             "efa",             "icause1",         "icause2",
+    "aux_ienable",     "aux_itrigger",    "xpu",             "bta",
+    "bta_l1",          "bta_l2",          "aux_irq_pulse_cancel",
+    "aux_irq_pending", "ic_ivic",         "ic_ctrl",         "dc_ivdc",
+    "dc_ctrl",
+    /* Action point 0 registers. */
+    "amv0",            "amm0",            "ac0",
+    /* Build configuration registers. */
+    "",                "dccm_base_build", "crc_base_build",  "bta_link_build",
+    "dvbf_build",      "tel_instr_build", "",                "memsubsys",
+    "vecbase_ac_build", "p_base_address", "",                "",
+    "",                "",                "",              "mmu_build",
+    "arcangel_build",  "",                "dcache_build",    "madi_build",
+    "dccm_build",      "timer_build",     "ap_build",        "icache_build",
+    "iccm_build",      "dspram_build",    "mac_build",       "multiply_build",
+    "swap_build",      "norm_build",      "minmax_build",    "barrel_build"
+  };
+
+  static const char *default_register_names[] = {
     /* Core registers. */
     "r0",              "r1",              "r2",              "r3",
     "r4",              "r5",              "r6",              "r7",
@@ -1362,7 +1450,12 @@ arc_register_name (struct gdbarch *gdbarch, int regnum)
     "aux_irq_pulse_cancel",               "aux_irq_pending"
   };
 
-  gdb_assert ((0 <= regnum) && (regnum < ARC_TOTAL_REGS));
+  const char **register_names =
+    (tdep->opella_target) == ARC600 ? oa6_register_names
+    : (tdep->opella_target) == ARC700 ? oa7_register_names
+    : default_register_names;
+
+  gdb_assert ((0 <= regnum) && (regnum < tdep->num_regs));
   if (gdbarch_cannot_fetch_register (gdbarch, regnum)
       && gdbarch_cannot_store_register (gdbarch, regnum))
     {
@@ -1383,28 +1476,78 @@ arc_register_name (struct gdbarch *gdbarch, int regnum)
 static struct type *
 arc_register_type (struct gdbarch *gdbarch, int regnum)
 {
-  switch (regnum)
-    {
-    case ARC_GP_REGNUM:
-    case ARC_FP_REGNUM:
-    case ARC_SP_REGNUM:
-    case ARC_AUX_EFA_REGNUM:
-      return builtin_type (gdbarch)->builtin_data_ptr;
+  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
 
-    case ARC_ILINK1_REGNUM:
-    case ARC_ILINK2_REGNUM:
-    case ARC_BLINK_REGNUM:
-    case ARC_PCL_REGNUM:
-    case ARC_PC_REGNUM:
-    case ARC_AUX_ERET_REGNUM:
-    case ARC_AUX_ERBTA_REGNUM:
-    case ARC_AUX_BTA_REGNUM:
-    case ARC_AUX_BTA_L1_REGNUM:
-    case ARC_AUX_BTA_L2_REGNUM:
-      return builtin_type (gdbarch)->builtin_func_ptr;
+  /* Variable registers. */
+  if ((regnum == tdep->fp_regnum) || (regnum == tdep->sp_regnum))
+    return builtin_type (gdbarch)->builtin_data_ptr;
+  else if (regnum == tdep->pc_regnum)
+    return builtin_type (gdbarch)->builtin_func_ptr;
+  else if (regnum == tdep->ps_regnum)
+    return builtin_type (gdbarch)->builtin_uint32;
+
+  /* Fixed register numbers, depending on target. */
+  switch (tdep->opella_target)
+    {
+    case ARC600:
+      switch (regnum)
+	{
+	case OA6_GP:
+	  return builtin_type (gdbarch)->builtin_data_ptr;
+
+	case OA6_ILINK1:
+	case OA6_ILINK2:
+	case OA6_BLINK:
+	case OA6_PCL:
+	  return builtin_type (gdbarch)->builtin_func_ptr;
+
+	default:
+	  return builtin_type (gdbarch)->builtin_uint32;
+	}
+
+    case ARC700:
+      switch (regnum)
+	{
+	case OA7_GP:
+	case OA7_AUX_EFA:
+	  return builtin_type (gdbarch)->builtin_data_ptr;
+
+	case OA7_ILINK1:
+	case OA7_ILINK2:
+	case OA7_BLINK:
+	case OA7_PCL:
+	case OA7_AUX_ERET:
+	case OA7_AUX_ERBTA:
+	case OA7_AUX_BTA:
+	case OA7_AUX_BTA_L1:
+	case OA7_AUX_BTA_L2:
+	  return builtin_type (gdbarch)->builtin_func_ptr;
+
+	default:
+	  return builtin_type (gdbarch)->builtin_uint32;
+	}
 
     default:
-      return builtin_type (gdbarch)->builtin_uint32;
+      switch (regnum)
+	{
+	case ARC_GP_REGNUM:
+	case ARC_AUX_EFA_REGNUM:
+	  return builtin_type (gdbarch)->builtin_data_ptr;
+
+	case ARC_ILINK1_REGNUM:
+	case ARC_ILINK2_REGNUM:
+	case ARC_BLINK_REGNUM:
+	case ARC_PCL_REGNUM:
+	case ARC_AUX_ERET_REGNUM:
+	case ARC_AUX_ERBTA_REGNUM:
+	case ARC_AUX_BTA_REGNUM:
+	case ARC_AUX_BTA_L1_REGNUM:
+	case ARC_AUX_BTA_L2_REGNUM:
+	  return builtin_type (gdbarch)->builtin_func_ptr;
+
+	default:
+	  return builtin_type (gdbarch)->builtin_uint32;
+	}
     }
 }	/* arc_register_type () */
 
@@ -1455,7 +1598,8 @@ arc_push_dummy_call (struct gdbarch *gdbarch,
 		     struct value **args,
 		     CORE_ADDR sp, int struct_return, CORE_ADDR struct_addr)
 {
-  int arg_reg = ARC_FIRST_ARG_REGNUM;
+  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+  int arg_reg = tdep->first_arg_regnum;
 
   ARC_ENTRY_DEBUG ("nargs = %d", nargs)
 
@@ -1536,7 +1680,7 @@ arc_push_dummy_call (struct gdbarch *gdbarch,
 
       /* Now load as much as possible of the memory image into registers. */
       data = memory_image;
-      while (arg_reg <= ARC_LAST_ARG_REGNUM)
+      while (arg_reg <= tdep->last_arg_regnum)
 	{
 	  if (arc_debug)
 	    {
@@ -1577,7 +1721,7 @@ arc_push_dummy_call (struct gdbarch *gdbarch,
     }
 
   /* Finally, update the SP register. */
-  regcache_cooked_write_unsigned (regcache, ARC_SP_REGNUM, sp);
+  regcache_cooked_write_unsigned (regcache, tdep->sp_regnum, sp);
 
   return sp;
 
@@ -1649,6 +1793,8 @@ static void
 arc_print_registers_info (struct gdbarch *gdbarch, struct ui_file *file,
 			  struct frame_info *frame, int regnum, int all)
 {
+  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+
   if (regnum >= 0)
     {
       /* Print a single register */
@@ -1659,16 +1805,16 @@ arc_print_registers_info (struct gdbarch *gdbarch, struct ui_file *file,
       /* Print all the registers, as determined by the "all" parameter. */
       int r;
 
-      for (r = 0; r < ARC_MAX_CORE_REGS; r++)
+      for (r = 0; r < tdep->num_core_regs; r++)
 	{
 	  default_print_registers_info (gdbarch, file, frame, r, all);
 	}
-      default_print_registers_info (gdbarch, file, frame, ARC_PC_REGNUM, all);
+      default_print_registers_info (gdbarch, file, frame, tdep->pc_regnum, all);
 
       /* If "all" is non-zero (TRUE), also print out the aux regs. */
       if (all)
 	{
-	  for (r = ARC_MAX_CORE_REGS + 1; r < ARC_TOTAL_REGS; r++)
+	  for (r = tdep->num_core_regs; r < tdep->num_regs; r++)
 	    {
 	      default_print_registers_info (gdbarch, file, frame, r, all);
 	    }
@@ -1751,6 +1897,7 @@ arc_get_longjmp_target (struct frame_info *frame, CORE_ADDR *pc)
 {
   CORE_ADDR jb_addr;
   struct gdbarch *gdbarch = get_frame_arch (frame);
+  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
   enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
   int  element_size = gdbarch_ptr_bit (gdbarch) / TARGET_CHAR_BIT;
   void *buf = alloca (element_size);
@@ -1759,7 +1906,7 @@ arc_get_longjmp_target (struct frame_info *frame, CORE_ADDR *pc)
     ? ARC_UCLIBC_JB_PC * element_size
     : ARC_NEWLIB_JB_PC * element_size;
 
-  jb_addr = get_frame_register_unsigned (frame, ARC_FIRST_ARG_REGNUM);
+  jb_addr = get_frame_register_unsigned (frame, tdep->first_arg_regnum);
 
   if (target_read_memory (jb_addr + pc_offset, buf, element_size))
     {
@@ -1968,13 +2115,19 @@ arc_skip_trampoline_code (struct frame_info *frame, CORE_ADDR pc)
 static struct arc_unwind_cache *
 arc_frame_cache (struct frame_info *this_frame, void **this_cache)
 {
+  struct gdbarch *gdbarch;
+  struct gdbarch_tdep *tdep;
+
   ARC_ENTRY_DEBUG ("")
+
+  gdbarch = get_frame_arch (this_frame);
+  tdep = gdbarch_tdep (gdbarch);
 
   if ((*this_cache) == NULL)
     {
         CORE_ADDR  entrypoint =
 	  (CORE_ADDR) get_frame_register_unsigned (this_frame,
-						   ARC_PC_REGNUM);
+						   tdep->pc_regnum);
         struct arc_unwind_cache *cache = arc_create_cache (this_frame);
 
         /* return the newly-created cache */
@@ -2006,9 +2159,14 @@ static void
 arc_frame_this_id (struct frame_info *this_frame,
 		   void **this_cache, struct frame_id *this_id)
 {
+  struct gdbarch *gdbarch;
+  struct gdbarch_tdep *tdep;
   CORE_ADDR stack_addr;
   CORE_ADDR code_addr;
   ARC_ENTRY_DEBUG ("")
+
+  gdbarch = get_frame_arch (this_frame);
+  tdep = gdbarch_tdep (gdbarch);
 
   stack_addr = arc_frame_cache (this_frame, this_cache)->frame_base;
 
@@ -2030,7 +2188,7 @@ arc_frame_this_id (struct frame_info *this_frame,
    */
   code_addr = get_frame_func(this_frame);
   if (!code_addr)
-    code_addr = get_frame_register_unsigned(this_frame, ARC_PC_REGNUM);
+    code_addr = get_frame_register_unsigned(this_frame, tdep->pc_regnum);
 
   *this_id = frame_id_build (stack_addr, code_addr);
 
@@ -2057,6 +2215,8 @@ arc_frame_prev_register (struct frame_info *this_frame,
 			 void **this_cache,
 			 int regnum)
 {
+  struct gdbarch *gdbarch = get_frame_arch (this_frame);
+  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
   struct arc_unwind_cache *info = arc_frame_cache (this_frame, this_cache);
 
   ARC_ENTRY_DEBUG ("regnum %d", regnum)
@@ -2067,7 +2227,7 @@ arc_frame_prev_register (struct frame_info *this_frame,
            function's resume location.
 
            Is this still true? Do we need the following code. */
-  if (regnum == ARC_PC_REGNUM)
+  if (regnum == tdep->pc_regnum)
     {
       regnum = ARC_BLINK_REGNUM;
     }
@@ -2101,17 +2261,13 @@ arc_dwarf2_frame_init_reg (struct gdbarch *gdbarch,
 			   struct dwarf2_frame_state_reg *reg,
 			   struct frame_info *info)
 {
-  switch (regnum)
-    {
-    case ARC_PC_REGNUM:
-      /* The return address column. */
-      reg->how = DWARF2_FRAME_REG_RA;
-      break;
+  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
 
-    case ARC_SP_REGNUM:
-      /* The call frame address. */
-      reg->how = DWARF2_FRAME_REG_CFA;
-    }
+  if (regnum == tdep->pc_regnum)
+    reg->how = DWARF2_FRAME_REG_RA;	/* The return address column. */
+  else if (regnum == tdep->sp_regnum)
+    reg->how = DWARF2_FRAME_REG_CFA;	/* The call frame address. */
+
 }	/* arc_dwarf2_frame_init_reg () */
 
 
@@ -2178,13 +2334,17 @@ static void
 arc_sigtramp_frame_this_id (struct frame_info *this_frame,
 			    void **this_cache, struct frame_id *this_id)
 {
+  struct gdbarch *gdbarch;
+  struct gdbarch_tdep *tdep;
   CORE_ADDR stack_addr;
   CORE_ADDR code_addr;
   ARC_ENTRY_DEBUG ("")
 
+  gdbarch = get_frame_arch (this_frame);
+  tdep = gdbarch_tdep (gdbarch);
+
   stack_addr = arc_sigtramp_frame_cache (this_frame, this_cache)->frame_base;
-  code_addr = get_frame_register_unsigned (this_frame,
-					   ARC_PC_REGNUM);
+  code_addr = get_frame_register_unsigned (this_frame, tdep->pc_regnum);
   *this_id = frame_id_build (stack_addr, code_addr);
 
 }	/* arc_sigtramp_frame_this_id () */
@@ -2360,6 +2520,13 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 
   memset (tdep, 0, sizeof (*tdep));
 
+  /* Set tdep register data that (for now) is generic. This is here for future
+     expandability. The values will differ for reduced cores. */
+  tdep->first_arg_regnum = ARC_FIRST_ARG_REGNUM;
+  tdep->last_arg_regnum = ARC_LAST_ARG_REGNUM;
+  tdep->first_callee_saved_regnum = ARC_FIRST_CALLEE_SAVED_REGNUM;
+  tdep->last_callee_saved_regnum = ARC_LAST_CALLEE_SAVED_REGNUM;
+
   /* Set the opella target and associated data. */
   tdep->opella_target = strcmp ("none", arc_opella_string) == 0 ? NONE
     : strcmp ("arc600", arc_opella_string) == 0 ? ARC600
@@ -2369,6 +2536,7 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   switch (tdep->opella_target)
     {
     case NONE:
+      tdep->num_core_regs = ARC_MAX_CORE_REGS;
       tdep->num_regs = ARC_NUM_RAW_REGS;
       tdep->num_pseudo_regs = ARC_NUM_PSEUDO_REGS;
       tdep->pc_regnum = ARC_PC_REGNUM;
@@ -2378,15 +2546,17 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
       break;
 
     case ARC600:
-      tdep->num_regs = OA7_NUM_REGS;
-      tdep->num_pseudo_regs = OA7_NUM_PSEUDO_REGS;
-      tdep->pc_regnum = OA7_PC;
-      tdep->fp_regnum = OA7_FP;
-      tdep->sp_regnum = OA7_SP;
-      tdep->ps_regnum = OA7_AUX_STATUS32;
+      tdep->num_core_regs = OA6_NUM_CORE_REGS;
+      tdep->num_regs = OA6_NUM_REGS;
+      tdep->num_pseudo_regs = OA6_NUM_PSEUDO_REGS;
+      tdep->pc_regnum = OA6_PC;
+      tdep->fp_regnum = OA6_FP;
+      tdep->sp_regnum = OA6_SP;
+      tdep->ps_regnum = OA6_AUX_STATUS32;
       break;
 
     case ARC700:
+      tdep->num_core_regs = OA7_NUM_CORE_REGS;
       tdep->num_regs = OA7_NUM_REGS;
       tdep->num_pseudo_regs = OA7_NUM_PSEUDO_REGS;
       tdep->pc_regnum = OA7_PC;
@@ -2419,9 +2589,9 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   set_gdbarch_num_regs (gdbarch, tdep->num_regs);
   set_gdbarch_num_pseudo_regs (gdbarch, 0);
   /* We don't use Agent Expressions here (only MIPS does it seems) */
-  set_gdbarch_sp_regnum (gdbarch, ARC_SP_REGNUM);
-  set_gdbarch_pc_regnum (gdbarch, ARC_PC_REGNUM);
-  set_gdbarch_ps_regnum (gdbarch, ARC_AUX_STATUS32_REGNUM);
+  set_gdbarch_sp_regnum (gdbarch, tdep->sp_regnum);
+  set_gdbarch_pc_regnum (gdbarch, tdep->pc_regnum);
+  set_gdbarch_ps_regnum (gdbarch, tdep->ps_regnum);
   set_gdbarch_fp0_regnum (gdbarch, -1);		/* No FPU registers */
   /* Don't try to convert STAB, ECOFF or SDB regnums. We don't really support
      these debugging formats, and if used assume regnums are the same. */
@@ -2551,10 +2721,20 @@ arc_dump_tdep (struct gdbarch *gdbarch, struct ui_file *file)
 		      : tdep->opella_target == ARC600 ? "ARC600"
 		      : tdep->opella_target == ARC700 ? "ARC700"
 		      : tdep->opella_target == INVALID ? "INVALID" : "Help!");
+  fprintf_unfiltered (file, "arc_dump_tdep: num_core_regs = %d\n", 
+		      tdep->num_core_regs);
   fprintf_unfiltered (file, "arc_dump_tdep: num_regs = %d\n", 
 		      tdep->num_regs);
   fprintf_unfiltered (file, "arc_dump_tdep: num_pseudo_regs = %d\n", 
 		      tdep->num_pseudo_regs);
+  fprintf_unfiltered (file, "arc_dump_tdep: first_arg_regnum = %d\n", 
+		      tdep->first_arg_regnum);
+  fprintf_unfiltered (file, "arc_dump_tdep: last_arg_regnum = %d\n", 
+		      tdep->last_arg_regnum);
+  fprintf_unfiltered (file, "arc_dump_tdep: first_callee_saved_regnum = %d\n", 
+		      tdep->first_callee_saved_regnum);
+  fprintf_unfiltered (file, "arc_dump_tdep: last_callee_saved_regnum = %d\n", 
+		      tdep->last_callee_saved_regnum);
   fprintf_unfiltered (file, "arc_dump_tdep: pc_regnum = %d\n", 
 		      tdep->pc_regnum);
   fprintf_unfiltered (file, "arc_dump_tdep: fp_regnum = %d\n", 
