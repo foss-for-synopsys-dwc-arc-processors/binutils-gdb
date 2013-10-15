@@ -1,3 +1,9 @@
+2013-10-15  Anton Kolesov <Anton.Kolesov@synopsys.com>
+
+	* arc-linux-tdep.c (arc_linux_software_single_step): Fix my previous
+	change, that introduced regression, as throw_exception was invoked
+	unconditionally.
+
 2013-10-15  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* doc/gdb.texinfo (Synopsys ARC600, ARC700 and ARC v2 EM): Added
@@ -57,10 +63,10 @@
 
 2013-10-07  Anton Kolesov <akolesov@synopsys.com>
 
-	* arc-tdep.c (arc_linux_software_single_step): Remove first breakpoint
-	in case second insertion fails. This resolves a GDB internal error and
-	crash. This usually indicates problem with code itself, GDB just has
-	to handle this gracefully.
+	* arc-linux-tdep.c (arc_linux_software_single_step): Remove first
+	breakpoint in case second insertion fails. This resolves a GDB internal
+	error and crash. This usually indicates problem with code itself, GDB just
+	has to handle this gracefully.
 
 2013-10-02  Anton Kolesov <akolesov@synopsys.com>
 
