@@ -656,10 +656,11 @@ arc_linux_software_single_step (struct frame_info *frame)
               insert_single_step_breakpoint (gdbarch, aspace, branch_target);
             }
 
-          if (ex.reason < 0 && single_step_breakpoints_inserted())
+          if (ex.reason < 0 && single_step_breakpoints_inserted()) {
               remove_single_step_breakpoints();
-          /* There is nothing else we can do. Pass exception further. */
-          throw_exception(ex); 
+		      /* There is nothing else we can do. Pass exception further. */
+              throw_exception(ex);
+		  }
         }
     }
 
