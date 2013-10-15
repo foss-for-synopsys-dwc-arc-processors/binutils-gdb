@@ -1,3 +1,9 @@
+2013-10-15  Jeremy Bennett <jeremy.bennett@embecosm.com>
+
+	* doc/gdb.texinfo (Synopsys ARC600, ARC700 and ARC v2 EM): Added
+	details of set/show arc opella-target and the registers supported
+	by this.
+
 2013-10-14  Jeremy Bennett <jeremy.bennett@embecosm.com>
 
 	* arc-tdep.c (_initialize_arc_tdep): Clearer help text for set arc

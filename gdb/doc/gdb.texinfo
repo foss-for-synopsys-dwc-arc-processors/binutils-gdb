@@ -20858,10 +20858,25 @@ values offer no further messages.
 @kindex show debug arc
 Show the level of ARC specific debugging in operation.
 
+@item set arc opella-target (arc600|arc700|none)
+@kindex set arc opella-target
+The Opella XD-JTAG target sends its registers to the GDB client in a
+different order to other ARC targets.  This command should be used to
+specify which Opella target is connected @emph{before} connecting to
+the target.  The value @kbd{none} is the default and used for all other
+targets. It should be set explicitly after using an Opella target before
+connecting to a non-Opella target, such as the simulator.
+
+@item show arc opella-target
+@kindex show debug arc
+Show which Opella XD-JTAG target is selected, if any.
+
 @end table
 
 @value{GDBN} makes available a fixed set of the auxilliary registers
-in the full set of registers. In addition to the core register set and
+in the full set of registers.
+
+By default, in addition to the core register set and
 extension core register set, the command
 @example
 info register all
@@ -20890,6 +20905,150 @@ bta_l1_regnum
 bta_l2_regnum
 aux_irq_pulse_cancel_regnum
 aux_irq_pending_regnum
+@end example
+
+If the Opella ARC600 target is selected, in addition to the core
+register set (but not the extension core registers), the command
+@example
+info register all
+@end example
+will show the following auxiliary registers:
+@example
+status
+semaphore
+lp_start
+lp_end
+identity
+debug
+pc
+status32
+status32_l1
+status32_l2
+count0
+control0
+limit0
+int_vector_base
+aux_macmode
+aux_irq_lv12
+count1
+control1
+limit1
+aux_irq_lev
+aux_irq_hint
+ic_ivic
+ic_ctrl
+dc_ivdc
+dc_ctrl
+amv0
+amm0
+ac0
+@end example
+
+and the following build configuration registers:
+@example
+dccm_base_build
+crc_base_build
+dvbf_build
+tel_instr_build
+memsubsys
+vecbase_ac_build
+p_base_address
+rf_build
+mmu_build
+arcangel_build
+dcache_build
+madi_build
+dccm_build
+timer_build
+ap_build
+icache_build
+iccm_build
+dspram_build
+mac_build
+multiply_build
+swap_build
+norm_build
+minmax_build
+barrel_build
+@end example
+
+If the Opella ARC700 target is selected, in addition to the core
+register set (but not the extension core registers), the command
+@example
+info register all
+@end example
+will show the following auxiliary registers:
+@example
+status
+lp_start
+lp_end
+identity
+debug
+pc
+status32
+status32_l1
+status32_l2
+count0
+control0
+limit0
+int_vector_base
+aux_macmode
+aux_irq_lv12
+count1
+control1
+limit1
+aux_irq_lev
+aux_irq_hint
+eret
+erbta
+erstatus
+ecr
+efa
+icause1
+icause2
+aux_ienable
+aux_itrigger
+xpu
+bta
+bta_l1
+bta_l2
+aux_irq_pulse_cancel
+aux_irq_pending
+ic_ivic
+ic_ctrl
+dc_ivdc
+dc_ctrl
+amv0
+amm0
+ac0
+@end example
+
+and the following build configuration registers:
+@example
+dccm_base_build
+crc_base_build
+bta_link_build
+dvbf_build
+tel_instr_build
+memsubsys
+vecbase_ac_build
+p_base_address
+mmu_build
+arcangel_build
+dcache_build
+madi_build
+dccm_build
+timer_build
+ap_build
+icache_build
+iccm_build
+dspram_build
+mac_build
+multiply_build
+swap_build
+norm_build
+minmax_build
+barrel_build
 @end example
 
 @node ARM
