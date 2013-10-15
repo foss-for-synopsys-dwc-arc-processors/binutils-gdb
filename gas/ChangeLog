@@ -1,3 +1,16 @@
+2013-03-14  Nick Clifton  <nickc@redhat.com>
+
+	PR gas/15212
+	* doc/c-arc.texi (ARC Directives): Use @code instead of @bullte
+	for table format.
+	* doc/c-arm.texi (ARM-Instruction-Set): Likewise.  Also add text
+	to the @item directives.
+	(ARM-Neon-Alignment): Move to correct place in the document.
+	* doc/c-cr16.texi (CR16 Operand Qualifiers): Fix up table
+	formatting.
+	* doc/c-tic54x.texi (TIC54X-Subsyms): Correct use of
+	@smallexample.
+
 2013-03-05  Yufeng Zhang  <yufeng.zhang@arm.com>
 
 	* config/tc-aarch64.c (aarch64_imm_float_p): Rename 'e' to 'pattern';
