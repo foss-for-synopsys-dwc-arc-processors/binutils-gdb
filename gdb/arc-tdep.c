@@ -1423,6 +1423,44 @@ arc_register_name (struct gdbarch *gdbarch, int regnum)
     "swap_build",      "norm_build",      "minmax_build",    "barrel_build"
   };
 
+  static const char *oaem_register_names[] = {
+    /* Core registers. */
+    "r0",               "r1",               "r2",               "r3",
+    "r4",               "r5",               "r6",               "r7",
+    "r8",               "r9",               "r10",              "r11",
+    "r12",              "r13",              "r14",              "r15",
+    "r16",              "r17",              "r18",              "r19",
+    "r20",              "r21",              "r22",              "r23",
+    "r24",              "r25",              "gp",               "fp",
+    "sp",               "ilink",            "r30",              "blink",
+    "lp_count",         "pcl",
+    /* AUX regs */
+    "identity",         "pc",               "status32",         "bta",
+    "ecr",              "int_vector_base",  "eret",             "erbta",
+    "erstatus",         "lp_start",         "lp_end",           "jli_base",
+    "ldi_base",         "ei_base",          "debug",            "debugi",
+    "count0",           "control0",         "limit0",           "count1",
+    "control1",         "limit1",           "ic_ivic",          "ic_ctrl",
+    "ic_lil",           "ic_ivil",          "ic_ram_addr",      "ic_tag",
+    "ic_data",          "dc_ivdc",          "dc_ctrl",          "dc_flsh",
+    "cache_limit",      "dc_ldl",           "dc_ivdl",          "dc_fldl",
+    "dc_ram_addr",      "dc_tag",           "dc_data",          "aux_iccm",
+    "aux_dccm",         "smart_control",    "smart_data",       "irq_ctrl",
+    "irq_priority_pending", "aux_irq_act",  "irq_select",       "irq_priority",
+    "irq_enable",       "irq_trigger",      "irq_pending",      "irq_pulse_cancel",
+    "irq_status",       "aux_irq_hint",     "icause",           "aux_user_sp",
+
+    /* Action points */
+    "amv0",             "amm0",             "ac0",
+
+    /* BCRs */
+    "bcr_ver",          "bta_link_build",   "vecbase_ac_build", "rf_build",
+    "isa_config",       "dcache_build",     "dccm_build",       "smart_build",
+    "timer_build",      "ap_build",         "icache_build",     "iccm_build",
+    "multiply_build",   "swap_build",       "norm_build",       "minmax_build",
+    "barrel_build",     "irq_build"
+  };
+
   static const char *default_register_names[] = {
     /* Core registers. */
     "r0",              "r1",              "r2",              "r3",
@@ -1456,6 +1494,7 @@ arc_register_name (struct gdbarch *gdbarch, int regnum)
   const char **register_names =
     (tdep->opella_target) == ARC600 ? oa6_register_names
     : (tdep->opella_target) == ARC700 ? oa7_register_names
+    : (tdep->opella_target) == ARCEM ? oaem_register_names
     : default_register_names;
 
   gdb_assert ((0 <= regnum) && (regnum < tdep->num_regs));
@@ -1492,6 +1531,30 @@ arc_register_type (struct gdbarch *gdbarch, int regnum)
   /* Fixed register numbers, depending on target. */
   switch (tdep->opella_target)
     {
+    case ARCEM:
+      switch (regnum)
+        {
+        case OAEM_GP:
+        case OAEM_AUX_LDI_BASE:
+          return builtin_type(gdbarch)->builtin_data_ptr;
+
+        case OAEM_ILINK:
+        case OAEM_BLINK:
+        case OAEM_PCL:
+        case OAEM_AUX_BTA:
+        case OAEM_AUX_INT_VECTOR_BASE:
+        case OAEM_AUX_ERET:
+        case OAEM_AUX_ERBTA:
+        case OAEM_AUX_LP_START:
+        case OAEM_AUX_LP_END:
+        case OAEM_AUX_JLI_BASE:
+        case OAEM_AUX_EI_BASE:
+          return builtin_type (gdbarch)->builtin_func_ptr;
+
+        default:
+          return builtin_type (gdbarch)->builtin_uint32;
+        }
+
     case ARC600:
       switch (regnum)
 	{
@@ -2533,7 +2596,9 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   /* Set the opella target and associated data. */
   tdep->opella_target = strcmp ("none", arc_opella_string) == 0 ? NONE
     : strcmp ("arc600", arc_opella_string) == 0 ? ARC600
-    : strcmp ("arc700", arc_opella_string) == 0 ? ARC700 : INVALID;
+    : strcmp ("arc700", arc_opella_string) == 0 ? ARC700
+    : strcmp ("arcem", arc_opella_string) == 0 ? ARCEM
+    : INVALID;
   gdb_assert (tdep->opella_target != INVALID);
 
   switch (tdep->opella_target)
@@ -2566,6 +2631,16 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
       tdep->fp_regnum = OA7_FP;
       tdep->sp_regnum = OA7_SP;
       tdep->ps_regnum = OA7_AUX_STATUS32;
+      break;
+
+    case ARCEM:
+      tdep->num_core_regs = OAEM_NUM_CORE_REGS;
+      tdep->num_regs = OAEM_NUM_REGS;
+      tdep->num_pseudo_regs = OAEM_NUM_PSEUDO_REGS;
+      tdep->pc_regnum = OAEM_AUX_PC;
+      tdep->fp_regnum = OAEM_FP;
+      tdep->sp_regnum = OAEM_SP;
+      tdep->ps_regnum = OAEM_AUX_STATUS32;
       break;
     }
 
@@ -2723,6 +2798,7 @@ arc_dump_tdep (struct gdbarch *gdbarch, struct ui_file *file)
 		      tdep->opella_target == NONE ? "none"
 		      : tdep->opella_target == ARC600 ? "ARC600"
 		      : tdep->opella_target == ARC700 ? "ARC700"
+		      : tdep->opella_target == ARCEM ? "ARCEM"
 		      : tdep->opella_target == INVALID ? "INVALID" : "Help!");
   fprintf_unfiltered (file, "arc_dump_tdep: num_core_regs = %d\n", 
 		      tdep->num_core_regs);
@@ -2795,6 +2871,7 @@ static const char *const opella_strings[] =
     "none",
     "arc600",
     "arc700",
+    "arcem",
     NULL
   };
 
