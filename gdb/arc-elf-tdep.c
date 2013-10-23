@@ -127,6 +127,25 @@ arc_elf_cannot_fetch_register (struct gdbarch *gdbarch, int regnum)
 	  return FALSE;
 	}
 
+    case ARCEM:
+      switch (regnum)
+        {
+        case OAEM_AUX_IC_IVIC:
+        case OAEM_AUX_IC_LIL:
+        case OAEM_AUX_IC_IVIL:
+        case OAEM_AUX_DC_IVDC:
+        case OAEM_AUX_DC_FLSH:
+        case OAEM_AUX_DC_LDL:
+        case OAEM_AUX_DC_IVDL:
+        case OAEM_AUX_DC_FLDL:
+        case OAEM_AUX_IRQ_PULSE_CANCEL:
+            /* Write only registers. */
+            return TRUE;
+
+        default:
+            return FALSE;
+        }
+
     default:
       /* Default has a couple of invisible registers. */
       switch (regnum)
@@ -187,6 +206,21 @@ arc_elf_cannot_store_register (struct gdbarch *gdbarch, int regnum)
 	default:
 	  return FALSE;
 	}
+
+    case ARCEM:
+      switch (regnum)
+        {
+        case OAEM_AUX_IDENTITY:
+        case OAEM_AUX_SMART_DATA:
+        case OAEM_AUX_IRQ_PENDING:
+        case OAEM_AUX_IRQ_STATUS:
+        case OAEM_AUX_ICAUSE:
+            /* Read only registers */
+            return TRUE;
+
+        default:
+            return FALSE;
+        }
 
     default:
       /* Default has a couple of invisible registers. */

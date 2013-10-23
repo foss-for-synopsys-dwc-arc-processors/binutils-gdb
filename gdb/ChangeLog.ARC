@@ -1,3 +1,11 @@
+2013-10-28  Anton Kolesov  <Anton.Kolesov@synopsys.com>
+
+	* arc-tdep.c (arc_register_name, arc_regoster_type, arc_gdbarch_init,
+	arc_dump_tdep): Add EM as an Opella target.
+	* arc-tdep.h: Add EM registers for Opella target.
+	* arc-elf-tdep.c (arc_elf_cannot_fetch_register,
+	arc_elf_cannot_store_register): Add EM registers.
+
 2013-10-15  Anton Kolesov <Anton.Kolesov@synopsys.com>
 
 	* arc-linux-tdep.c (arc_linux_software_single_step): Fix my previous
