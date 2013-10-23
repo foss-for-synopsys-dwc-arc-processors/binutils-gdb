@@ -281,6 +281,101 @@
 #define OA7_NUM_PSEUDO_REGS   0
 
 /* -------------------------------------------------------------------------- */
+/* ARC v2 EM register numbering.                                              */
+/* -------------------------------------------------------------------------- */
+
+#define OAEM_R0                         0
+#define OAEM_R25                        25
+#define OAEM_GP                         26
+#define OAEM_FP                         27
+#define OAEM_SP                         28
+#define OAEM_ILINK                      29
+#define OAEM_R30                        30
+#define OAEM_BLINK                      31
+#define OAEM_LP_COUNT                   32
+#define OAEM_PCL                        33
+#define OAEM_AUX_IDENTITY               34
+#define OAEM_AUX_PC                     35
+#define OAEM_AUX_STATUS32               36
+#define OAEM_AUX_BTA                    37
+#define OAEM_AUX_ECR                    38
+#define OAEM_AUX_INT_VECTOR_BASE        39
+#define OAEM_AUX_ERET                   40
+#define OAEM_AUX_ERBTA                  41
+#define OAEM_AUX_ERSTATUS               42
+#define OAEM_AUX_LP_START               43
+#define OAEM_AUX_LP_END                 44
+#define OAEM_AUX_JLI_BASE               45
+#define OAEM_AUX_LDI_BASE               46
+#define OAEM_AUX_EI_BASE                47
+#define OAEM_AUX_DEBUG                  48
+#define OAEM_AUX_DEBUGI                 49
+#define OAEM_AUX_COUNT0                 50
+#define OAEM_AUX_CONTROL0               51
+#define OAEM_AUX_LIMIT0                 52
+#define OAEM_AUX_COUNT1                 53
+#define OAEM_AUX_CONTROL1               54
+#define OAEM_AUX_LIMIT1                 55
+#define OAEM_AUX_IC_IVIC                56
+#define OAEM_AUX_IC_CTRL                57
+#define OAEM_AUX_IC_LIL                 58
+#define OAEM_AUX_IC_IVIL                59
+#define OAEM_AUX_IC_RAM_ADDR            60
+#define OAEM_AUX_IC_TAG                 61
+#define OAEM_AUX_IC_DATA                62
+#define OAEM_AUX_DC_IVDC                63
+#define OAEM_AUX_DC_CTRL                64
+#define OAEM_AUX_DC_FLSH                65
+#define OAEM_AUX_CACHE_LIMIT            66
+#define OAEM_AUX_DC_LDL                 67
+#define OAEM_AUX_DC_IVDL                68
+#define OAEM_AUX_DC_FLDL                69
+#define OAEM_AUX_DC_RAM_ADDR            70
+#define OAEM_AUX_DC_TAG                 71
+#define OAEM_AUX_DC_DATA                72
+#define OAEM_AUX_ICCM                   73
+#define OAEM_AUX_DCCM                   74
+#define OAEM_AUX_SMART_CONTROL          75
+#define OAEM_AUX_SMART_DATA             76
+#define OAEM_AUX_IRQ_CTRL               77
+#define OAEM_AUX_IRQ_PRIORITY_PENDING   78
+#define OAEM_AUX_IRQ_ACT                79
+#define OAEM_AUX_IRQ_SELECT             80
+#define OAEM_AUX_IRQ_PRIORITY           81
+#define OAEM_AUX_IRQ_ENABLE             82
+#define OAEM_AUX_IRQ_TRIGGER            83
+#define OAEM_AUX_IRQ_PENDING            84
+#define OAEM_AUX_IRQ_PULSE_CANCEL       85
+#define OAEM_AUX_IRQ_STATUS             86
+#define OAEM_AUX_IRQ_HINT               87
+#define OAEM_AUX_ICAUSE                 88
+#define OAEM_AUX_USER_SP                89
+#define OAEM_AUX_AMV0                   90
+#define OAEM_AUX_AMM0                   91
+#define OAEM_AUX_AC0                    92
+#define OAEM_BCR_VER                    93
+#define OAEM_BCR_BTA_LINK_BUILD         94
+#define OAEM_BCR_VECBASE_AC_BUILD       95
+#define OAEM_BCR_RF_BUILD               96
+#define OAEM_BCR_ISA_CONFIG             97
+#define OAEM_BCR_DCACHE_BUILD           98
+#define OAEM_BCR_DCCM_BUILD             99
+#define OAEM_BCR_SMART_BUILD            100
+#define OAEM_BCR_TIMER_BUILD            101
+#define OAEM_BCR_AP_BUILD               102
+#define OAEM_BCR_ICACHE_BUILD           103
+#define OAEM_BCR_ICCM_BUILD             104
+#define OAEM_BCR_MULTIPLY_BUILD         105
+#define OAEM_BCR_SWAP_BUILD             106
+#define OAEM_BCR_NORM_BUILD             107
+#define OAEM_BCR_MINMAX_BUILD           108
+#define OAEM_BCR_BARREL_BUILD           109
+#define OAEM_BCR_IRQ_BUILD              110
+#define OAEM_NUM_CORE_REGS    (OAEM_PCL + 1)
+#define OAEM_NUM_REGS         (OAEM_BCR_IRQ_BUILD + 1)
+#define OAEM_NUM_PSEUDO_REGS   0
+
+/* -------------------------------------------------------------------------- */
 /* Simulator aux reg numbers                                                  */
 /* -------------------------------------------------------------------------- */
 
@@ -450,6 +545,7 @@
 enum arc_opella_target {
   ARC600,
   ARC700,
+  ARCEM,
   NONE,
   INVALID
 };
