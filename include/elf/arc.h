@@ -102,6 +102,13 @@ START_RELOC_NUMBERS (elf_arc_reloc_type)
     RELOC_NUMBER (R_ARC_GOTOFF, 0x39)
     RELOC_NUMBER (R_ARC_GOTPC, 0x3A)
     RELOC_NUMBER (R_ARC_GOT32, 0x3B)
+
+    RELOC_NUMBER (R_ARC_SPE_SECTOFF, 0x3E)
+    RELOC_NUMBER (R_ARC_JLI_SECTOFF, 0x3F)
+
+    RELOC_NUMBER (R_ARC_AOM_TOKEN_ME, 0x40)
+    RELOC_NUMBER (R_ARC_AOM_TOKEN, 0x41)
+
 END_RELOC_NUMBERS (R_ARC_max)
 
 /* Processor specific flags for the ELF header e_flags field.  */
