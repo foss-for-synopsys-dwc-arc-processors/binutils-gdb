@@ -1,3 +1,7 @@
+2013-10-31  Vineet Gupta <vgupta@synopsys.com>
+
+	* include/elf/arc.h: Add new relocations to syncup with Metaware tools
+
 2013-03-28  Vineet Gupta <vgupta@synopsys.com>
 
 	* include/elf/arc.h: E_ARC_OSABI_CURRENT bumped to v3 due to newer

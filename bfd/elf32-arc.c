@@ -484,6 +484,14 @@ short arc_signed_reloc_type[] =
   0, //  R_ARC_GOTOFF
   0, //  R_ARC_GOTPC             0x3a
   0, //  R_ARC_GOT32             0x3b
+
+  -1, // R_ARC_hole_base starts here 0x3c
+  -1, // 0x3d
+
+  0, //  R_ARC_SPE_SECTOFF	0x3e
+  0, //  R_ARC_JLI_SECTOFF	0x3f
+  0, //  R_ARC_AOM_TOKEN_ME	0x40
+  0, //  R_ARC_AOM_TOKEN	0x41
 };
 
 
