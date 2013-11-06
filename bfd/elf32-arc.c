@@ -3395,7 +3395,7 @@ elf32_arc_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
 #define elf_backend_grok_prstatus elf32_arc_grok_prstatus
 
 #define elf_backend_gc_sweep_hook	elf32_arc_gc_sweep_hook
-#define elf_backend_can_gc_sections    1
+#define elf_backend_can_gc_sections    0
 #define elf_backend_want_got_plt 1
 #define elf_backend_plt_readonly 1
 #define elf_backend_want_plt_sym 0
