@@ -13,6 +13,11 @@
 	*  elf32-arc.c (elf_arc_reloc_type): Add new relocations to syncup
 	with Metaware tools
 
+2013-11-06  Anton Kolesov  <anton.kolesov@synopsys.com>
+
+	* elf32-arc.c (elf_backend_can_gc_sections): Set to 0, because
+	--gc-sections causes known troubles for ARC.
+
 2013-09-17 Anton Kolesov <akolesov@synopsys.com>
 
 	* elf32-arc.c (elf32_arc_grok_prstatus): Fix compiler error intruduced in
