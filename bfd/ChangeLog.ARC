@@ -1,9 +1,12 @@
-2013-11-11 Claudiu Zissulescu <claziss@synopsys.com>
+2013-11-06  Anton Kolesov  <anton.kolesov@synopsys.com>
 
-	* cpu-arc.c: Add HS as a valid processor type.
-	* elf32-arc.c: Introduce arc_elf_set_private_flags() and
-          arc_elf_print_private_bfd_data(). Give warning if we link
-          two objects having different elf flags.
+	* elf32-arc.c (elf_backend_can_gc_sections): Set to 0, because
+	--gc-sections causes known troubles for ARC.
+
+2013-10-31  Vineet Gupta <vgupta@synopsys.com>
+
+	*  elf32-arc.c (elf_arc_reloc_type): Add new relocations to syncup
+	with Metaware tools
 
 2013-09-17 Anton Kolesov <akolesov@synopsys.com>
 
