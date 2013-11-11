@@ -1,4 +1,4 @@
-2013-07-31 Claudiu Zissulescu <claziss@synopsys.com>
+2013-11-11 Claudiu Zissulescu <claziss@synopsys.com>
 
 	* cpu-arc.c: Add HS as a valid processor type.
 	* elf32-arc.c: Introduce arc_elf_set_private_flags() and
