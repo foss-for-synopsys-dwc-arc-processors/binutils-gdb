@@ -1,3 +1,8 @@
+2013-11-11 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* arccompact-dis.c: Replace E_ARC_MACH_ARCV2 with
+          bfd_mach_arc_arcv2.
+
 2013-10-04 Claudiu Zissulescu <claziss@synopsys.com>
 
 	* arc-opc-old.c: Fixed limm_p flag for prefetch instructions
