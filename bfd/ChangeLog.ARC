@@ -13,6 +13,13 @@
 	*  elf32-arc.c (elf_arc_reloc_type): Add new relocations to syncup
 	with Metaware tools
 
+2013-07-31 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* cpu-arc.c: Add HS as a valid processor type.
+	* elf32-arc.c: Introduce arc_elf_set_private_flags() and
+          arc_elf_print_private_bfd_data(). Give warning if we link
+          two objects having different elf flags.
+
 2013-09-17 Anton Kolesov <akolesov@synopsys.com>
 
 	* elf32-arc.c (elf32_arc_grok_prstatus): Fix compiler error intruduced in
