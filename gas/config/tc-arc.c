@@ -216,6 +216,8 @@ enum options
   OPTION_ARC601,
   OPTION_ARC700,
   OPTION_ARCEM,
+  OPTION_ARCHS,
+  OPTION_MCPU,
   OPTION_USER_MODE,
   OPTION_LD_EXT_MASK,
   OPTION_SWAP,
@@ -255,27 +257,40 @@ struct option md_longopts[] =
   { "mARC700", no_argument, NULL, OPTION_ARC700 },
   { "mA7", no_argument, NULL, OPTION_ARC700 },
   { "mEM", no_argument, NULL, OPTION_ARCEM },
+  { "mHS", no_argument, NULL, OPTION_ARCHS },
   { "mav2em", no_argument, NULL, OPTION_ARCEM },
+  { "mav2hs", no_argument, NULL, OPTION_ARCHS },
+  { "mcpu", required_argument, NULL, OPTION_MCPU },
   { "muser-mode-only", no_argument, NULL, OPTION_USER_MODE },
   { "mld-extension-reg-mask", required_argument, NULL, OPTION_LD_EXT_MASK },
 
 /* ARC Extension library options.  */
   { "mswap", no_argument, NULL, OPTION_SWAP },
   { "mnorm", no_argument, NULL, OPTION_NORM },
+  { "mbarrel-shifter", no_argument, NULL, OPTION_BARREL_SHIFT },
   { "mbarrel_shifter", no_argument, NULL, OPTION_BARREL_SHIFT },
+  { "mmin-max", no_argument, NULL, OPTION_MIN_MAX },
   { "mmin_max", no_argument, NULL, OPTION_MIN_MAX },
   { "mno-mpy", no_argument, NULL, OPTION_NO_MPY },
+  { "mea", no_argument, NULL, OPTION_EA },
   { "mEA", no_argument, NULL, OPTION_EA },
   { "mmul64", no_argument, NULL, OPTION_MUL64 },
   { "msimd", no_argument, NULL, OPTION_SIMD},
   { "mspfp", no_argument, NULL, OPTION_SPFP},
+  { "mspfp-compact", no_argument, NULL, OPTION_SPFP},
   { "mspfp_compact", no_argument, NULL, OPTION_SPFP},
+  { "mspfp-fast", no_argument, NULL, OPTION_SPFP},
   { "mspfp_fast", no_argument, NULL, OPTION_SPFP},
   { "mdpfp", no_argument, NULL, OPTION_DPFP},
+  { "mdpfp-compact", no_argument, NULL, OPTION_DPFP},
   { "mdpfp_compact", no_argument, NULL, OPTION_DPFP},
+  { "mdpfp-fast", no_argument, NULL, OPTION_DPFP},
   { "mdpfp_fast", no_argument, NULL, OPTION_DPFP},
+  { "mmac-d16", no_argument, NULL, OPTION_XMAC_D16},
   { "mmac_d16", no_argument, NULL, OPTION_XMAC_D16},
+  { "mmac-24", no_argument, NULL, OPTION_XMAC_24},
   { "mmac_24", no_argument, NULL, OPTION_XMAC_24},
+  { "mdsp-packa", no_argument, NULL, OPTION_DSP_PACKA},
   { "mdsp_packa", no_argument, NULL, OPTION_DSP_PACKA},
   { "mcrc", no_argument, NULL, OPTION_CRC},
   { "mdvbf", no_argument, NULL, OPTION_DVBF},
@@ -360,6 +375,9 @@ static struct enriched_insn last_two_insns[2];
 /* This is an "insert at front" linked list per Metaware spec
    that new definitions override older ones.  */
 static struct arc_opcode *arc_ext_opcodes;
+
+/* Flags to set in the elf header. */
+static flagword arc_flags = 0x00;
 
 static void zero_overhead_checks (struct loop_target *);
 static void insert_last_insn (arc_insn insn,
@@ -541,39 +559,69 @@ arc_check_label (symbolS *labelsym)
  */
 
 int
-md_parse_option (int c, char *arg ATTRIBUTE_UNUSED)
+md_parse_option (int c, char *arg)
 {
+  int cpu_flags = EF_ARC_CPU_GENERIC;
+
   switch (c)
     {
     case OPTION_A4:
+      cpu_flags = E_ARC_MACH_A4;
       mach_type_specified_p = 1;
       arc_mach_type = bfd_mach_arc_a4;
       arc_mach_a4= 1;
       break;
     case OPTION_A5:
+      cpu_flags = E_ARC_MACH_A5;
       mach_type_specified_p = 1;
       arc_mach_type = bfd_mach_arc_a5;
       arc_mach_a4= 0;
       break;
     case OPTION_ARC600:
+      cpu_flags = E_ARC_MACH_ARC600;
       mach_type_specified_p = 1;
       arc_mach_type = bfd_mach_arc_arc600;
       arc_mach_a4= 0;
       break;
     case OPTION_ARC601:
+      cpu_flags = E_ARC_MACH_ARC601;
       mach_type_specified_p = 1;
       arc_mach_type = bfd_mach_arc_arc601;
       arc_mach_a4= 0;
       break;
     case OPTION_ARC700:
+      cpu_flags = E_ARC_MACH_ARC700;
       mach_type_specified_p = 1;
       arc_mach_type = bfd_mach_arc_arc700;
       arc_mach_a4= 0;
       break;
-    case OPTION_ARCEM:
+    case OPTION_ARCHS:
+      cpu_flags = EF_ARC_CPU_ARCV2HS;
       mach_type_specified_p = 1;
       arc_mach_type = bfd_mach_arc_arcv2;
       arc_mach_a4= 0;
+      break;
+    case OPTION_ARCEM:
+      cpu_flags = EF_ARC_CPU_ARCV2EM;
+      mach_type_specified_p = 1;
+      arc_mach_type = bfd_mach_arc_arcv2;
+      arc_mach_a4= 0;
+      break;
+    case OPTION_MCPU:
+      if (arg == NULL)
+	as_warn (_("No CPU identifier specified"));
+      else if (strcmp (arg, "ARC600") == 0)
+	return md_parse_option (OPTION_ARC600, NULL);
+      else if (strcmp (arg, "ARC601") == 0)
+	return md_parse_option (OPTION_ARC601, NULL);
+      else if (strcmp (arg, "ARC700") == 0)
+	return md_parse_option (OPTION_ARC700, NULL);
+      else if (strcmp (arg, "ARCv2EM") == 0)
+	return md_parse_option (OPTION_ARCEM, NULL);
+      else if (strcmp (arg, "ARCv2HS") == 0)
+	return md_parse_option (OPTION_ARCHS, NULL);
+      else
+	as_warn(_("Unknown CPU identifier `%s'"), arg);
       break;
     case OPTION_USER_MODE:
       arc_user_mode_only = 1;
@@ -655,6 +703,8 @@ md_parse_option (int c, char *arg ATTRIBUTE_UNUSED)
     default:
       return 0;
     }
+
+  arc_flags = (arc_flags & ~EF_ARC_MACH_MSK) | cpu_flags;
   return 1;
 }
 
@@ -666,6 +716,7 @@ ARC Options:\n\
   -mA[4|5]                select processor variant (default arc%d)\n\
   -mARC[600|700]          select processor variant\n\
   -mEM|-mav2em            select ARCv2 EM processor variant\n\
+  -mHS|-mav2hs            select ARCv2 HS processor variant\n\
   -EB                     assemble code for a big endian cpu\n\
   -EL                     assemble code for a little endian cpu\n", arc_mach_type + 5);
 }
@@ -928,6 +979,9 @@ md_begin (void)
 
   if (!bfd_set_arch_mach (stdoutput, bfd_arch_arc, arc_mach_type))
     as_warn ("could not set architecture and machine");
+
+  if (arc_flags)
+    bfd_set_private_flags (stdoutput, arc_flags);
 
   /* Assume the base cpu.  This call is necessary because we need to
      initialize `arc_operand_map' which may be needed before we see the

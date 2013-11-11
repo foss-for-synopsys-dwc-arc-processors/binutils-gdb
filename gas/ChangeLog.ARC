@@ -1,3 +1,9 @@
+2013-11-11  Claudiu Zissulescu <claziss@synopsys.com>
+
+        * config/tc-arc.c: Add HS as a valid processor choice. Fill
+          the elf flags field using bfd_set_private_flags() function
+          call.
+
 2013-09-30  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* config/tc-arc.c (arc_parse_cons_expression): Don't treat @h30 at
