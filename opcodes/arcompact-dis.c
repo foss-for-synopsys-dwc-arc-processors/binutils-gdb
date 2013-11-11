@@ -841,7 +841,7 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 	case 0: instrName  = "ld";  state->_load_len = 4; break;
 	case 1: instrName  = "ldb"; state->_load_len = 1; break;
 	case 2:
-	  if(info->mach == E_ARC_MACH_ARCV2)
+	  if(info->mach == bfd_mach_arc_arcv2)
 	    instrName = "ldh";
 	  else
 	    instrName  = "ldw";
@@ -862,7 +862,7 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 	case 0: instrName = "st";  break;
 	case 1: instrName = "stb"; break;
 	case 2:
-	  if(info->mach == E_ARC_MACH_ARCV2)
+	  if(info->mach == bfd_mach_arc_arcv2)
 	    instrName = "sth";
 	  else
 	    instrName = "stw";
@@ -921,13 +921,13 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 	case 25: instrName = "sub3"; break;
 	case 26: instrName = "mpy"; break;
 	case 27:
-	  if(info->mach == E_ARC_MACH_ARCV2)
+	  if(info->mach == bfd_mach_arc_arcv2)
 	    instrName = "mpym";
 	  else
 	    instrName = "mpyh";
 	  break;
 	case 28:
-	  if(info->mach == E_ARC_MACH_ARCV2)
+	  if(info->mach == bfd_mach_arc_arcv2)
 	    instrName = "mpymu";
 	  else
 	    instrName = "mpyhu";
@@ -988,14 +988,14 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 	    case 4: instrName = "rrc";  break;
 	    case 5: instrName = "sexb"; break;
 	    case 6:
-	      if(info->mach == E_ARC_MACH_ARCV2)
+	      if(info->mach == bfd_mach_arc_arcv2)
 		instrName = "sexh";
 	      else
 		instrName = "sexw";
 	      break;
 	    case 7: instrName = "extb"; break;
 	    case 8:
-	       if(info->mach == E_ARC_MACH_ARCV2)
+	       if(info->mach == bfd_mach_arc_arcv2)
 		 instrName = "exth";
 	       else
 		 instrName = "extw";
@@ -1081,7 +1081,7 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 	case 2: instrName = "asr"; break;
 	case 3: instrName = "ror"; break;
 	case 4:
-	  if(info->mach == E_ARC_MACH_ARCV2)
+	  if(info->mach == bfd_mach_arc_arcv2)
 	    {
 	      instrName = "div";
 	    }
@@ -1093,7 +1093,7 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 	    }
 	  break;
 	case 5:
-	  if((info->mach) == E_ARC_MACH_ARCV2)
+	  if((info->mach) == bfd_mach_arc_arcv2)
 	    {
 	      instrName = "divu";
 	    }
@@ -1110,7 +1110,7 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 	case 7: instrName = "subs"; break; /*Illegal for EM */
 
 	case 8:
-	  if((info->mach) == E_ARC_MACH_ARCV2)
+	  if((info->mach) == bfd_mach_arc_arcv2)
 	    {
 	      instrName = "rem";
 	    }
@@ -1140,7 +1140,7 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 	    case 7: instrName = "negs"; decodingClass = 1; break;
 
 	    case 8:
-	      if(info->mach == E_ARC_MACH_ARCV2)
+	      if(info->mach == bfd_mach_arc_arcv2)
 		instrName = "normh";
 	      else
 		instrName = "normw";
@@ -2220,7 +2220,7 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 	case 0: instrName = "ld_s"; break;
 	case 1: instrName = "ldb_s"; break;
 	case 2:
-	  if(info->mach == E_ARC_MACH_ARCV2)
+	  if(info->mach == bfd_mach_arc_arcv2)
 	    instrName = "ldh_s";
 	  else
 	    instrName = "ldw_s";
@@ -2280,7 +2280,7 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
   case op_ADD_MOV_CMP:
     /* One Dest/Source can be any of r0 - r63 */
       decodingClass = 17;  /* default for Major opcode 14 ... */
-      if(info->mach == E_ARC_MACH_ARCV2)
+      if(info->mach == bfd_mach_arc_arcv2)
 	switch(BITS(state->words[0],2,4))
 	  {
 	  case 0: instrName = "add_s"; break;
@@ -2392,7 +2392,7 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 	case 10 : instrName = "mpyuw_s"; break;
 	case 11: instrName = "tst_s"; decodingClass = 14; break;
 	case 12:
-	  if(info->mach == E_ARC_MACH_ARCV2)
+	  if(info->mach == bfd_mach_arc_arcv2)
 	    {
 	      instrName = "mpy_s";
 	      mul =1;
@@ -2406,21 +2406,21 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 	  break;
 	case 13: instrName = "sexb_s"; decodingClass = 14; break;
 	case 14:
-	  if(info->mach == E_ARC_MACH_ARCV2)
+	  if(info->mach == bfd_mach_arc_arcv2)
 	    instrName = "sexh_s";
 	  else
 	    instrName = "sexw_s";
 	  decodingClass = 14;
 	  break;
 	case 15:
-	  if(info->mach == E_ARC_MACH_ARCV2)
+	  if(info->mach == bfd_mach_arc_arcv2)
 	    instrName = "exth_s";
 	  else
 	    instrName = "extb_s";
 	  decodingClass = 14;
 	  break;
 	case 16:
-	  if(info->mach == E_ARC_MACH_ARCV2)
+	  if(info->mach == bfd_mach_arc_arcv2)
 	    instrName = "exth_s";
 	  else
 	    instrName = "extw_s";
@@ -2462,7 +2462,7 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 
     case op_LDW_S:
     /* ARCompact 16-bit Load with offset, Major Opcode 0x12 */
-      if(info->mach == E_ARC_MACH_ARCV2)
+      if(info->mach == bfd_mach_arc_arcv2)
 	instrName = "ldh_s";
       else
 	instrName = "ldw_s";
@@ -2471,7 +2471,7 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 
     case op_LDWX_S:
     /* ARCompact 16-bit Load with offset, Major Opcode 0x13 */
-      if(info->mach == E_ARC_MACH_ARCV2)
+      if(info->mach == bfd_mach_arc_arcv2)
 	instrName = "ldh_s.x";
       else
 	instrName = "ldw_s.x";
@@ -2492,7 +2492,7 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 
     case op_STW_S:
     /* ARCompact 16-bit Store with offset, Major Opcode 0x16 */
-      if(info->mach == E_ARC_MACH_ARCV2)
+      if(info->mach == bfd_mach_arc_arcv2)
 	instrName = "sth_s";
       else
 	instrName = "stw_s";
@@ -2532,7 +2532,7 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 	    instrName = "sub_s";
 	  break;
 	case 6:
-	  if (info->mach == E_ARC_MACH_ARCV2
+	  if (info->mach == bfd_mach_arc_arcv2
 	      && (!BIT(state->words[0],0)))
 	    {
 	      decodingClass = 57;
@@ -2545,7 +2545,7 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 	    }
 	  break;
 	case 7:
-	  if (info->mach == E_ARC_MACH_ARCV2
+	  if (info->mach == bfd_mach_arc_arcv2
 	      && (!BIT(state->words[0],0)))
 	    {
 	      decodingClass = 57;
@@ -2572,7 +2572,7 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 	case 0: instrName = "ld_s"; break;
 	case 1: instrName = "ldb_s"; break;
 	case 2:
-	  if(info->mach == E_ARC_MACH_ARCV2)
+	  if(info->mach == bfd_mach_arc_arcv2)
 	    instrName = "ldh_s";
 	  else
 	    instrName = "ldw_s";
@@ -3135,7 +3135,7 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
       CHECK_FIELD_C();
 
       /*ARCv2*/
-      if(info->mach == E_ARC_MACH_ARCV2
+      if(info->mach == bfd_mach_arc_arcv2
 	 && BIT(state->words[0],0))
 	{
 	  fieldCisReg = 0;
@@ -3473,7 +3473,7 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 
       /* add_s instruction, one Dest/Source can be any of r0 - r63 */
 
-      if(info->mach == E_ARC_MACH_ARCV2)
+      if(info->mach == bfd_mach_arc_arcv2)
 	{
 	  CHECK_FIELD_H_EM();
 	}
@@ -4523,7 +4523,7 @@ ARCompact_decodeInstr (bfd_vma           address,    /* Address of this instruct
     }
 
   if ((((buffer[lowbyte] & 0xf8) > 0x38) && ((buffer[lowbyte] & 0xf8) != 0x48))
-      || ((info->mach == E_ARC_MACH_ARCV2) && ((buffer[lowbyte] & 0xF8) == 0x48)))
+      || ((info->mach == bfd_mach_arc_arcv2) && ((buffer[lowbyte] & 0xF8) == 0x48)))
   {
     s.instructionLen = 2;
     s.words[0] = (buffer[lowbyte] << 8) | buffer[highbyte];
