@@ -2239,11 +2239,14 @@ get_machine_flags (unsigned e_flags, unsigned e_machine)
 	case EM_ARCV2:
 	  switch(e_flags & EF_ARC_MACH_MSK)
 	    {
-	    case E_ARC_MACH_ARCV2:
-	      strcat (buf, ", ARCv2");
+	    case EF_ARC_CPU_ARCV2EM:
+	      strcat (buf, ", ARCv2EM");
+	      break;
+	    case EF_ARC_CPU_ARCV2HS:
+	      strcat (buf, ", ARCv2HS");
 	      break;
 	    default:
-	      strcat (buf, ", Generic ARCv2");
+	      strcat (buf, ", unrecognized flag for ARCv2");
 	      break;
 	    }
 	  switch(e_flags & EF_ARC_OSABI_MSK)

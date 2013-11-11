@@ -1,3 +1,7 @@
+2013-11-11 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* readelf.c (get_machine_flags): print ARC-HS processor.
+
 2013-07-30 Vineet Gupta <vgupta@synopsys.com>
 
 	* readelf.c (get_machine_flags): print ABI v3 flag for EM_ARCOMPACT.
