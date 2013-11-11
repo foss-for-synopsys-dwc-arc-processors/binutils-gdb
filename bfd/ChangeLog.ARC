@@ -1,7 +1,9 @@
-2013-10-31  Vineet Gupta <vgupta@synopsys.com>
+2013-07-31 Claudiu Zissulescu <claziss@synopsys.com>
 
-	*  elf32-arc.c (elf_arc_reloc_type): Add new relocations to syncup
-	with Metaware tools
+	* cpu-arc.c: Add HS as a valid processor type.
+	* elf32-arc.c: Introduce arc_elf_set_private_flags() and
+          arc_elf_print_private_bfd_data(). Give warning if we link
+          two objects having different elf flags.
 
 2013-09-17 Anton Kolesov <akolesov@synopsys.com>
 
@@ -66,6 +68,13 @@
 	(elf_arc_relocate_section): Change R_ARC_32/R_ARC_32_ME/R_ARC_PC32 to use
 	_bfd_elf_section_offset.
 	(ELF_TARGET_ID): Define.
+
+2013-01-30 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* archures.c : defined bfd_mach_arc_arcv2
+	* elf32-arc.c: added ARCv2 machine number for an ARC elf file
+	* cpu-arc.c : added the new EM bfd definition.
+
 
 2013-01-16  Simon Cook  <simon.cook@embecosm.com>
 
