@@ -582,6 +582,7 @@ arc_elf_set_private_flags (bfd *abfd, flagword flags)
   return TRUE;
 }
 
+/* Print private flags. */
 static bfd_boolean
 arc_elf_print_private_bfd_data (bfd *abfd, void * ptr)
 {
@@ -620,6 +621,28 @@ arc_elf_print_private_bfd_data (bfd *abfd, void * ptr)
   fputc ('\n', file);
   return TRUE;
 }
+
+/* Copy backend specific data from one object module to another.  */
+
+static bfd_boolean
+arc_elf_copy_private_bfd_data (bfd *ibfd, bfd *obfd)
+{
+  if (bfd_get_flavour (ibfd) != bfd_target_elf_flavour
+      || bfd_get_flavour (obfd) != bfd_target_elf_flavour)
+    return TRUE;
+
+  BFD_ASSERT (!elf_flags_init (obfd)
+	      || elf_elfheader (obfd)->e_flags == elf_elfheader (ibfd)->e_flags);
+
+  elf_elfheader (obfd)->e_flags = elf_elfheader (ibfd)->e_flags;
+  elf_flags_init (obfd) = TRUE;
+
+  /* Copy object attributes.  */
+  _bfd_elf_copy_obj_attributes (ibfd, obfd);
+
+  return TRUE;
+}
+
 
 static reloc_howto_type *
 bfd_elf32_bfd_reloc_name_lookup (bfd *abfd ATTRIBUTE_UNUSED,
@@ -678,8 +701,20 @@ arc_elf_merge_private_bfd_data (bfd *ibfd, bfd *obfd)
   new_flags = elf_elfheader (ibfd)->e_flags & EF_ARC_MACH_MSK;
   old_flags = elf_elfheader (obfd)->e_flags & EF_ARC_MACH_MSK;
 
-  if (   bfd_get_flavour (ibfd) != bfd_target_elf_flavour
-	 || bfd_get_flavour (obfd) != bfd_target_elf_flavour)
+#if DEBUG
+  (*_bfd_error_handler) ("old_flags = 0x%.8lx, new_flags = 0x%.8lx, init = %s, filename = %s",
+			 old_flags, new_flags, elf_flags_init (obfd) ? "yes" : "no",
+			 bfd_get_filename (ibfd));
+#endif
+
+  if (!elf_flags_init (obfd))			/* First call, no flags set.  */
+    {
+      elf_flags_init (obfd) = TRUE;
+      old_flags = new_flags;
+    }
+
+  if (bfd_get_flavour (ibfd) != bfd_target_elf_flavour
+      || bfd_get_flavour (obfd) != bfd_target_elf_flavour)
     return TRUE;
 
   if (bfd_count_sections (ibfd) == 0)
@@ -716,11 +751,12 @@ with a binary %s of different architecture"),
 	  (*_bfd_error_handler)
 	    (_("%s: uses different e_flags (0x%lx) fields than previous modules (0x%lx)"),
 	     bfd_get_filename (ibfd), (long)new_flags, (long)old_flags);
-	  /* Update the flags. */
-	  elf_elfheader (obfd)->e_flags = new_flags;
 	}
 
     }
+
+  /* Update the flags. */
+  elf_elfheader (obfd)->e_flags = new_flags;
 
   if (bfd_get_mach (obfd) < bfd_get_mach (ibfd))
     {
@@ -3471,6 +3507,7 @@ elf32_arc_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
 #define bfd_elf32_bfd_reloc_type_lookup         arc_elf32_bfd_reloc_type_lookup
 #define bfd_elf32_bfd_set_private_flags	        arc_elf_set_private_flags
 #define bfd_elf32_bfd_print_private_bfd_data	arc_elf_print_private_bfd_data
+#define bfd_elf32_bfd_copy_private_bfd_data	arc_elf_copy_private_bfd_data
 
 
 #define elf_backend_object_p                 arc_elf_object_p

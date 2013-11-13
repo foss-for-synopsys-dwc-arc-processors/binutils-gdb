@@ -1,3 +1,8 @@
+2013-11-13 Claudiu Zissulescu <claziss@synopsys.com>
+
+       * arc-em.h: Add XBFU definition.
+       * arc-opc-old.c: Add HS support. 
+
 2013-11-11 Claudiu Zissulescu <claziss@synopsys.com>
 
 	* arccompact-dis.c: Replace E_ARC_MACH_ARCV2 with
