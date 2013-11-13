@@ -986,7 +986,7 @@ md_begin (void)
   /* Assume the base cpu.  This call is necessary because we need to
      initialize `arc_operand_map' which may be needed before we see the
      first insn.  */
-  arc_opcode_init_tables (arc_get_opcode_mach (arc_mach_type,
+  arc_opcode_init_tables (arc_get_opcode_mach (arc_flags ? arc_flags : arc_mach_type,
 					       target_big_endian));
 
   arc_process_extinstr_options ();
@@ -1009,7 +1009,8 @@ init_opcode_tables (int mach)
 
   /* This initializes a few things in arc-opc.c that we need.
      This must be called before the various arc_xxx_supported fns.  */
-  arc_opcode_init_tables (arc_get_opcode_mach (mach, target_big_endian));
+  arc_opcode_init_tables (arc_get_opcode_mach (arc_flags ? arc_flags : mach,
+					       target_big_endian));
 
   /* Only put the first entry of each equivalently named suffix in the
      table.  */
@@ -3950,7 +3951,6 @@ arc_common (int localScope)
 static void
 arc_option (int ignore ATTRIBUTE_UNUSED)
 {
-  extern int arc_get_mach (char *);
   int mach;
   char c;
   char *cpu;
@@ -3976,7 +3976,8 @@ arc_option (int ignore ATTRIBUTE_UNUSED)
     {
 	arc_mach_type = mach;
 	arc_mach_a4 = (mach == bfd_mach_arc_a4);
-	arc_opcode_init_tables (arc_get_opcode_mach (mach, target_big_endian));
+	arc_opcode_init_tables (arc_get_opcode_mach (arc_flags ? arc_flags : mach,
+						     target_big_endian));
 
       if (!bfd_set_arch_mach (stdoutput, bfd_arch_arc, mach))
 	as_fatal ("could not set architecture and machine");

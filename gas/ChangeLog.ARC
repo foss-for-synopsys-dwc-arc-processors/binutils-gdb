@@ -1,3 +1,8 @@
+2013-11-13 Claudiu Zissulescu <claziss@synopsys.com>
+
+        * config/tc-arc.c: The arguments passed to
+          arc_get_opcode_mach() function are the ELF e_flags.
+
 2013-11-11  Claudiu Zissulescu <claziss@synopsys.com>
 
         * config/tc-arc.c: Add HS as a valid processor choice. Fill
