@@ -1,3 +1,7 @@
+2013-11-13 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* arc.h (ARC_MACH_ARCV2HS): Define.
+
 2011-05-17  Brendan Kehoe  <brendan@zen.org>
 
 	* arc.h (AC_SUFFIX_DIRECT): Define.

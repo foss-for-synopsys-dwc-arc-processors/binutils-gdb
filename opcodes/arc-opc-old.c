@@ -2120,7 +2120,7 @@ insert_ld_syntax (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
 	      *errmsg = _("ld operand error: Privilege Violation exception");
 	    }
 	}
-      if (cpu_type == ARC_MACH_ARCV2 && arc_user_mode_only && ac_reg_num == 29)
+      if ((cpu_type & ARC_MACH_ARCV2) && arc_user_mode_only && (ac_reg_num == 29))
 	{
 	  *errmsg = _("ld operand error: Privilege Violation exception");
 	}
@@ -2202,7 +2202,7 @@ insert_ex_syntax (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
 	  && !((arc_ld_ext_mask >> (ac_reg_num - 32)) & 1))
 	*errmsg = _("ld operand error: Instruction Error exception");
     }
-  else if (cpu_type == ARC_MACH_ARCV2)
+  else if (cpu_type & ARC_MACH_ARCV2)
     {
       if (arc_user_mode_only && ac_reg_num == 29)
 	{
@@ -4844,7 +4844,8 @@ arc_get_opcode_mach (int bfd_mach, int big_p)
       ARC_MACH_ARC6,
       ARC_MACH_ARC7,
       ARC_MACH_ARC601,
-      ARC_MACH_ARCV2
+      ARC_MACH_ARCV2,
+      ARC_MACH_ARCV2 | ARC_MACH_ARCV2HS
     };
 
   return mach_type_map[bfd_mach] | (big_p ? ARC_MACH_BIG : 0);
