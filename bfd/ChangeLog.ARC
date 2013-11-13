@@ -3,6 +3,10 @@
 	* elf32-arc.c (elf_arc_check_relocs): Add error when relocs appear that
 	shouldn't in read-only memory for shared libraries.
 
+2013-11-13 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* elf32-arc.c: Add arc_elf_copy_private_bfd_data() function.
+
 2013-11-11 Claudiu Zissulescu <claziss@synopsys.com>
 
 	* cpu-arc.c: Add HS as a valid processor type.
