@@ -4947,7 +4947,7 @@ arc_opcode_init_tables (int flags)
 	      arc_reg_names       = arc_reg_names_a700;
 	      arc_reg_names_count = ELEMENTS_IN(arc_reg_names_a700);
 	    }
-	  else if (ARC_OPCODE_CPU(flags) == ARC_MACH_ARCV2)
+	  else if (ARC_OPCODE_CPU(flags) & ARC_MACH_ARCV2)
 	    {
 	      arc_reg_names       = arc_reg_names_em;
 	      arc_reg_names_count = ELEMENTS_IN(arc_reg_names_em);
