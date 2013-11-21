@@ -1,3 +1,8 @@
+2013-11-21 Claudiu Zissulescu <claziss@synopsys.com>
+
+       * arc-opc-old.c: Choose the right set of register names for
+         ARCv2HS.
+
 2013-11-14 Claudiu Zissulescu <claziss@synopsys.com>
 
        * arc-em.h: Add LDD, STD definitions.
