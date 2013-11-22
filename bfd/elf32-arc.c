@@ -751,6 +751,7 @@ with a binary %s of different architecture"),
 	  (*_bfd_error_handler)
 	    (_("%s: uses different e_flags (0x%lx) fields than previous modules (0x%lx)"),
 	     bfd_get_filename (ibfd), (long)new_flags, (long)old_flags);
+	  return FALSE;
 	}
 
     }
@@ -762,7 +763,6 @@ with a binary %s of different architecture"),
     {
       return bfd_set_arch_mach (obfd, bfd_arch_arc, bfd_get_mach(ibfd));
     }
-
 
   return TRUE;
 }
