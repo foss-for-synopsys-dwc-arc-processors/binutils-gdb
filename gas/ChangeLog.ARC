@@ -1,3 +1,8 @@
+2013-11-22 Claudiu Zissulescu <claziss@synopsys.com>
+
+        * config/tc-arc.c: Introduce check_last_ZOL_insn function,
+          used for checking the last two instructions of a HS ZOL.
+
 2013-11-13 Claudiu Zissulescu <claziss@synopsys.com>
 
         * config/tc-arc.c: The arguments passed to
