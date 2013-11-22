@@ -3,6 +3,11 @@
 	* elf32-arc.c (elf_arc_check_relocs): Add error when relocs appear that
 	shouldn't in read-only memory for shared libraries.
 
+2013-11-22 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* elf32-arc.c (arc_elf_merge_private_bfd_data): Hard error if
+          we mix ARCv2EM with ARCv2HS objects.
+
 2013-11-13 Claudiu Zissulescu <claziss@synopsys.com>
 
 	* elf32-arc.c: Add arc_elf_copy_private_bfd_data() function.
