@@ -1,3 +1,8 @@
+2013-11-26 Claudiu Zissulescu <claziss@synopsys.com>
+
+        * config/tc-arc.c: Overwrite the arc_flags only when a cpu
+          option is used.
+
 2013-11-22 Claudiu Zissulescu <claziss@synopsys.com>
 
         * config/tc-arc.c: Introduce check_last_ZOL_insn function,

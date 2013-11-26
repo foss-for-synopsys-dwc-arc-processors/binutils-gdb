@@ -949,7 +949,9 @@ md_parse_option (int c, char *arg)
       return 0;
     }
 
-  arc_flags = (arc_flags & ~EF_ARC_MACH_MSK) | cpu_flags;
+  if (cpu_flags != EF_ARC_CPU_GENERIC)
+    arc_flags = (arc_flags & ~EF_ARC_MACH_MSK) | cpu_flags;
+
   return 1;
 }
 
