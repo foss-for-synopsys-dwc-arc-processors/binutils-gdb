@@ -1,3 +1,8 @@
+2013-11-27 Claudiu Zissulescu <claziss@synopsys.com>
+
+       * arc-em.h: Add DMACH, DMACHU, DMPY, DMPYHU, MAC, MACU,
+         VADDSUB2H, VSUB2H, and VSUBADD2H instructions.
+
 2013-11-21 Claudiu Zissulescu <claziss@synopsys.com>
 
        * arc-opc-old.c: Choose the right set of register names for
