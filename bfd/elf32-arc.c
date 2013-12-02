@@ -1503,6 +1503,7 @@ elf_arc_check_relocs (bfd *abfd,
   asection *sgot;
   asection *srelgot;
   asection *sreloc;
+  Elf_Internal_Sym *isym;
 
   if (info->relocatable)
     return TRUE;
@@ -1527,9 +1528,17 @@ elf_arc_check_relocs (bfd *abfd,
       r_symndx = ELF32_R_SYM (rel->r_info);
 
       if (r_symndx < symtab_hdr->sh_info)
-	h = NULL;
+	{
+	  h = NULL;
+	  isym = bfd_sym_from_r_symndx(
+	       &elf_ARC_hash_table (info)->sym_cache,
+	       abfd, r_symndx);
+	}
       else
-	h = sym_hashes[r_symndx - symtab_hdr->sh_info];
+	{
+	  h = sym_hashes[r_symndx - symtab_hdr->sh_info];
+	  isym = NULL;
+	}
 
       /* Some relocs require a global offset table.  */
       if (dynobj == NULL)
@@ -1669,6 +1678,26 @@ elf_arc_check_relocs (bfd *abfd,
 
 	case R_ARC_32:
 	case R_ARC_32_ME:
+	  /* During shared library creation, these relocs should not appear in
+	     a shared library (as memory will be read only and the dynamic
+	     linker can not resolve these. However the error should not occur
+	     for e.g. debugging or non-readonly sections. */
+	  if (info->shared && (sec->flags & SEC_ALLOC) != 0
+	      && (sec->flags & SEC_READONLY) != 0)
+	    {
+	      const char *name;
+	      if (h)
+		name = h->root.root.string;
+	      else
+		name = bfd_elf_sym_name (abfd, symtab_hdr, isym, NULL);
+	      (*_bfd_error_handler)
+		(_("%B: relocation %s against `%s' can not be used when making a shared object; recompile with -fPIC"),
+		 abfd, arc_elf_calculate_howto_index(
+		   ELF32_R_TYPE (rel->r_info))->name, name);
+	      bfd_set_error (bfd_error_bad_value);
+	      return FALSE;
+	    }
+	  /* FALLTHROUGH */
 	case R_ARC_PC32:
 	  /* If we are creating a shared library, and this is a reloc
              against a global symbol, or a non PC relative reloc
@@ -1725,7 +1754,6 @@ elf_arc_check_relocs (bfd *abfd,
 		    {
 		      asection *s;
 		      void *vpp;
-		      Elf_Internal_Sym *isym;
 
 		      isym = bfd_sym_from_r_symndx(
 		      	   &elf_ARC_hash_table (info)->sym_cache,
