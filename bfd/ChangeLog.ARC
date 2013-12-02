@@ -1,3 +1,8 @@
+2013-12-02  Simon Cook  <simon.cook@embecosm.com>
+
+	* elf32-arc.c (elf_arc_check_relocs): Add error when relocs appear that
+	shouldn't in read-only memory for shared libraries.
+
 2013-11-06  Anton Kolesov  <anton.kolesov@synopsys.com>
 
 	* elf32-arc.c (elf_backend_can_gc_sections): Set to 0, because
