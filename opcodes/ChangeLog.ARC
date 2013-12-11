@@ -1,3 +1,11 @@
+2013-12-11 Claudiu Zissulescu <claziss@synopsys.com>
+
+       * arc-opc-old.c: Add modifiers for 64 bit operands.
+       * arc-em.h: Add DMACWH, DMACWHU, DMPYWH, DMPYWHU, MACD, MACDU,
+         MPYD, MPYDU, QMACH, QMACHU, QMPYH, QMPYHU, VADD2, VADD4H,
+         VADDSUB, VADDSUB4H,VMPY2H, VMPY2HU, VSUB2, VSUB4H, VSUBADD,
+         VSUBADD4H HS instructions.
+
 2013-11-27 Claudiu Zissulescu <claziss@synopsys.com>
 
        * arc-em.h: Add DMACH, DMACHU, DMPY, DMPYHU, MAC, MACU,

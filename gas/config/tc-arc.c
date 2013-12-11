@@ -6465,7 +6465,7 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 			 occurance of the operand's format 'B'(or 'b') in the
 			 instruction's syntax being matched */
 		      /* Added # as destination version of B */
-		      if ((*syn == 'B') || (*syn == 'b') || (*syn == '#'))
+		      if ((*syn == 'B') || (*syn == 'b') || (*syn == '#') || (*syn == ';'))
 			{
 			  if (regb_p && regb != reg)
 			    {

@@ -1,3 +1,8 @@
+2013-12-11 Claudiu Zissulescu <claziss@synopsys.com>
+
+        * config/tc-arc.c: Mods to handle 64-bit regs when are used in
+          op b,b,x format.
+
 2013-11-26 Claudiu Zissulescu <claziss@synopsys.com>
 
         * config/tc-arc.c: Overwrite the arc_flags only when a cpu
