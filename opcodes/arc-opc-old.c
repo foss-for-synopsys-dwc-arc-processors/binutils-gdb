@@ -949,11 +949,15 @@ static const struct arc_operand arc_operands_ac[] =
 
   /* register A for 64 bit ops. */
 #define ARCV2_REGA_64 (ARCV2_TFLAGFINBR+1)
-  { '=', 6, ARC_SHIFT_REGA_AC, ARC_OPERAND_SIGNED | ARC_OPERAND_ERROR, insert_reg, extract_reg },
+  { '=', 6, ARC_SHIFT_REGA_AC, ARC_OPERAND_SIGNED | ARC_OPERAND_ERROR, insert_reg, 0 },
 
-/* register C used for ARCompact 64-bit ST insns */
-#define ARCV2_REGC_64 (REGB_DEST_AC + 1)
-  { '_', 6, ARC_SHIFT_REGC_AC, ARC_OPERAND_SIGNED | ARC_OPERAND_ERROR, insert_reg, extract_reg },
+  /* register B used for 64-bit ops */
+#define ARCV2_REGB_64 (ARCV2_REGA_64 + 1)
+  { ';', 6, ARC_SHIFT_REGB_LOW_AC, ARC_OPERAND_SIGNED | ARC_OPERAND_ERROR, insert_reg, 0 },
+
+  /* register C used for 64-bit ops */
+#define ARCV2_REGC_64 (ARCV2_REGB_64 + 1)
+  { '_', 6, ARC_SHIFT_REGC_AC, ARC_OPERAND_SIGNED | ARC_OPERAND_ERROR, insert_reg, 0 },
 
 /* end of list place holder */
   { 0, 0, 0, 0, 0, 0 }
@@ -1585,6 +1589,20 @@ insert_reg (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
 		{
 		  /* A (64 bit) class*/
 		  insn |= (reg->value & 0x3E) << operand->shift;
+		}
+	    }
+	  else if (!arc_mach_a4 && (operand->fmt == ';'))
+	    {
+	      if ((reg->value % 2) == 1 )
+		{
+		  sprintf (buf, _("invalid register number `%d'"), reg->value);
+		  *errmsg = buf;
+		}
+	      else
+		{
+		  /* A (64 bit) class*/
+		  insn |= (reg->value & 0x6) << operand->shift;
+		  insn |= (reg->value >> 3) << ARC_SHIFT_REGB_HIGH_AC;
 		}
 	    }
 	  else
@@ -5481,6 +5499,7 @@ ac_register_operand (const struct arc_operand *op)
       case 140: /* G5 */
       case '=': /* A 64 */
       case '_': /* A 64 */
+      case ';': /* A 64 */
         return 1;
     }
     return 0;
