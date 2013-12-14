@@ -1,3 +1,9 @@
+2013-12-14  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* config/tc-arc.h: Remove commented out md_optimize_expr #define /
+	arc_optimize_expr declaration.
+	* config/tc-arc.c (arc_optimize_expr): Delete.
+
 2013-12-13  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* doc/c-arc.texi (@pcl): Document.
