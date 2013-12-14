@@ -4372,7 +4372,7 @@ arc_cons_fix_new (fragS *frag,
   if (nbytes == 4)
     {
       int reloc_type
-	= get_arc_exp_reloc_type (BFD_RELOC_32, BFD_RELOC_ARC_PC32, exp);
+	= get_arc_exp_reloc_type (BFD_RELOC_32, BFD_RELOC_32_PCREL, exp);
       fix_new_exp (frag, where, nbytes, exp, 0, reloc_type);
     }
   else
@@ -4455,7 +4455,7 @@ arc_get_sda_reloc (arc_insn insn, int compact_insn_16)
    that, we determine the correct reloc code and put it back in the fixup.  */
 
 void
-md_apply_fix (fixS *fixP, valueT *valueP, segT seg)
+md_apply_fix (fixS *fixP, valueT *valueP, segT seg ATTRIBUTE_UNUSED)
 {
   char *buf = fixP->fx_where + fixP->fx_frag->fr_literal;
   valueT value;
@@ -4634,7 +4634,6 @@ md_apply_fix (fixS *fixP, valueT *valueP, segT seg)
 
 	case BFD_RELOC_32:
 	case BFD_RELOC_32_PCREL:
-	case BFD_RELOC_ARC_PC32: /* FIXME: shouldn't this one use ME ? */
 	  md_number_to_chars (fixP->fx_frag->fr_literal + fixP->fx_where,
 			      value, 4);
 	  break;
@@ -4642,6 +4641,7 @@ md_apply_fix (fixS *fixP, valueT *valueP, segT seg)
 	case BFD_RELOC_ARC_GOTPC32:
 	case BFD_RELOC_ARC_GOTOFF:
 	case BFD_RELOC_ARC_32_ME:
+	case BFD_RELOC_ARC_PC32:
 	  md_number_to_chars (fixP->fx_frag->fr_literal + fixP->fx_where,
 			      value, -4);
 
@@ -4708,9 +4708,6 @@ tc_gen_reloc (asection *section ATTRIBUTE_UNUSED,
 	 the address of the instruction, not to the address of the LIMM.
 	 The linker will just know where to put the relocated value, so
 	 make it relative to that address.  */
-      /* ??? There might have been more of an addend that has been munged
-	 into value, and then cleared in md_apply_fix.  How do we recover
-	 that?  Or is it already in fx_offset?  */
       fixP->fx_offset
 	+= fixP->fx_frag->fr_address + fixP->fx_where - fixP->fx_dot_value;
     }
@@ -6681,7 +6678,6 @@ fprintf (stdout, "Matched syntax %s\n", opcode->syntax);
 				 the fixup occurs. */
 	      int size = 4;   /* size of the fixup; mostly used for error
 				 checking */
-	      expressionS exptmp;
 	      const struct arc_operand *operand2;
 
 	      /* Create a fixup for this operand.
@@ -6735,9 +6731,22 @@ fprintf (stdout, "Matched syntax %s\n", opcode->syntax);
 		reloc_type = BFD_RELOC_ARC_GOTOFF;
 		break;
 	      case PCL_TYPE:
-		reloc_type = BFD_RELOC_ARC_32_ME;
-		/* This is later translated to BFD_RELOC_ARC_PC32 with the
-		   insn start (rather than limm loc) as reference address  */
+		reloc_type = BFD_RELOC_ARC_PC32;
+		/* The hardware calculates relative to the start of the insn
+		   (actually, pcl, but that part is sorted out later),
+		   but this relocation is relative to the location of the LIMM.
+		   When tc_gen_reloc translates BFD_RELOC_ARC_32_ME to
+		   BFD_RELOC_ARC_PC32, to can use the full addresses, but
+		   we can't use these here.  Setting the reloc type here
+		   to BFD_RELOC_ARC_32_ME doesn't have the desired effect,
+		   since tc_gen_reloc won't see fixups that have been
+		   resolved locally.
+		   Expressions with . have in principle the same problem,
+		   but they don't force a LIMM - except for add.
+		   FIXME: should probably remove the add special case and
+		   make gcc use -. instead of @pcl in cases that don't need
+		   a LIMM.  */
+		fixups[i].exp.X_add_number += 4;
 		break;
 	      default:
 		break;

@@ -1,5 +1,15 @@
 2013-12-14  Joern Rennecke  <joern.rennecke@embecosm.com>
 
+	* config/tc-arc.c (arc_cons_fix_new): Use BFD_RELOC_32_PCREL.
+	(md_apply_fix): Mark unused argument.
+	BFD_RELOC_ARC_PC32 uses middle-endian insertion.
+	(tc_gen_reloc): Remove comment on non-existent issue.
+	(md_assemble): Remove unused variable.
+	For PCL_TYPE, use BFD_RELOC_ARC_PC32 and make limm adjustment
+	to addend.
+
+2013-12-14  Joern Rennecke  <joern.rennecke@embecosm.com>
+
 	* config/tc-arc.c (md_pcrel_from_section): Use generic_force_reloc.
 
 2013-12-10  Joern Rennecke  <joern.rennecke@embecosm.com>

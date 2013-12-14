@@ -1,3 +1,8 @@
+2013-12-14  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* gas/arc/pcl.s, gas/arc/pcl.d: New test.
+	* gas/arc/arc700.exp: Run it.
+
 2015-02-18  Andrew Burgess  <andrew.burgess@embecosm.com>
 
 	* gas/arc/warn.s: Update error message to reflect change in
