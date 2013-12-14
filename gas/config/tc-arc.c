@@ -305,6 +305,7 @@ typedef enum
     PLT_TYPE,
     GOTOFF_TYPE,
     SDA_REF_TYPE,
+    PCL_TYPE,
     NO_TYPE
   } arc700_special_symtype;
 
@@ -1387,31 +1388,21 @@ struct arc_fixup
 
 #define MAX_SUFFIXES 5
 
-/* Compute the reloc type of an expression.
-   The possibly modified expression is stored in EXPNEW.
+/* Compute the reloc type of an expression EXP.
 
-   DEFAULT_TYPE is the type to use if no special processing is required.
-
-   DATA_P is non-zero for data or limm values, zero for insn operands.
-   Remember that the opcode "insertion fns" cannot be used on data, they're
-   only for inserting operands into insns.  They also can't be used for limm
-   values as the insertion routines don't handle limm values.  When called for
-   insns we return fudged reloc types (real_value - BFD_RELOC_UNUSED).  When
-   called for data or limm values we use real reloc types.  */
+   DEFAULT_TYPE is the type to use if no special processing is required,
+   and PCREL_TYPE the one for pc-relative relocations.  */
 
 static int
-get_arc_exp_reloc_type (int data_p ATTRIBUTE_UNUSED,
-			int default_type,
-			expressionS *exp,
-			expressionS *expnew)
+get_arc_exp_reloc_type (int default_type,
+			int pcrel_type,
+			expressionS *exp)
 {
   if (default_type == BFD_RELOC_32
       && exp->X_op == O_subtract
       && exp->X_op_symbol != NULL
       && exp->X_op_symbol->bsym->section == now_seg)
-    default_type = BFD_RELOC_ARC_PC32;
-
-  *expnew = *exp;
+    return pcrel_type;
   return default_type;
 }
 
@@ -4380,12 +4371,9 @@ arc_cons_fix_new (fragS *frag,
 {
   if (nbytes == 4)
     {
-      int reloc_type;
-      expressionS exptmp;
-
-      /* This may be a special ARC reloc (eg: %st()).  */
-      reloc_type = get_arc_exp_reloc_type (1, BFD_RELOC_32 , exp, &exptmp);
-      fix_new_exp (frag, where, nbytes, &exptmp, 0, reloc_type);
+      int reloc_type
+	= get_arc_exp_reloc_type (BFD_RELOC_32, BFD_RELOC_ARC_PC32, exp);
+      fix_new_exp (frag, where, nbytes, exp, 0, reloc_type);
     }
   else
     {
@@ -4402,10 +4390,13 @@ arc_cons_fix_new (fragS *frag,
    given a PC relative reloc.  */
 
 long
-md_pcrel_from (fixS *fixP)
+md_pcrel_from_section (fixS *fixP, segT sec)
 {
   if (fixP->fx_addsy != (symbolS *) NULL
-      && ! S_IS_DEFINED (fixP->fx_addsy))
+      && (!S_IS_DEFINED (fixP->fx_addsy)
+	  || (S_GET_SEGMENT (fixP->fx_addsy) != sec)
+	  || S_IS_EXTERNAL (fixP->fx_addsy)
+	  || S_IS_WEAK (fixP->fx_addsy)))
     {
       /* The symbol is undefined.  Let the linker figure it out.  */
       return 0;
@@ -4490,14 +4481,6 @@ md_apply_fix (fixS *fixP, valueT *valueP, segT seg)
   else if (fixP->fx_pcrel)
     {
       value = *valueP;
-      /* ELF relocations are against symbols.
-	 If this symbol is in a different section then we need to leave it for
-	 the linker to deal with.  Unfortunately, md_pcrel_from can't tell,
-	 so we have to undo it's effects here.  */
-      if ( (S_IS_DEFINED (fixP->fx_addsy) &&
-	    S_GET_SEGMENT (fixP->fx_addsy) != seg) ||
-	   S_IS_WEAK(fixP->fx_addsy))
-	value += md_pcrel_from (fixP);
     }
   else
     {
@@ -4652,7 +4635,8 @@ md_apply_fix (fixS *fixP, valueT *valueP, segT seg)
 	  break;
 
 	case BFD_RELOC_32:
-	case BFD_RELOC_ARC_PC32:
+	case BFD_RELOC_32_PCREL:
+	case BFD_RELOC_ARC_PC32: /* FIXME: shouldn't this one use ME ? */
 	  md_number_to_chars (fixP->fx_frag->fr_literal + fixP->fx_where,
 			      value, 4);
 	  break;
@@ -6245,6 +6229,29 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 				str += 7;
 				needGOTSymbol = 1;
 			    }
+			  else if (!strncmp (str, "@pcl", 4))
+			    {
+			      current_special_sym_flag = PCL_TYPE;
+
+			      /* Now check for identifier@pcl+constant */
+			      if (*(str + 4) == '-' || *(str + 4) == '+')
+				{
+				  char *orig_line = input_line_pointer;
+				  expressionS new_exp;
+
+				  input_line_pointer = str + 4;
+				  expression (&new_exp);
+				  if (new_exp.X_op == O_constant)
+				    {
+				      exp.X_add_number += new_exp.X_add_number;
+				      str = input_line_pointer;
+				    }
+				  if (input_line_pointer != str)
+				    input_line_pointer = orig_line;
+				}
+			      else
+				str += 4;
+			    }
 			  else
 			    {
 			      if (!strncmp (str, "@sda", 4))
@@ -6291,9 +6298,11 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 
 			/* Force GOT symbols to be limm in case of ld (@gotpc & @gotoff) instruction: 	workaround*/
 
-			if (arc_cond_p ==0 &&
-			current_special_sym_flag != SDA_REF_TYPE &&
-			 needGOTSymbol == 1 &&
+			if (arc_cond_p ==0
+			    && current_special_sym_flag != SDA_REF_TYPE
+			    && (needGOTSymbol == 1
+				|| current_special_sym_flag == PCL_TYPE)
+			    &&
 			(insn_name[0] == 'l' || insn_name[0] == 'L') &&
 			 (insn_name[1] == 'd' || insn_name[1] == 'D') &&
 			 (!(insn_name[2] == '_')) ) {
@@ -6701,15 +6710,16 @@ fprintf (stdout, "Matched syntax %s\n", opcode->syntax);
 		  }
 		  else
 		      abort ();
-		  reloc_type = get_arc_exp_reloc_type (1, reloc_type,
-						       &fixups[i].exp,
-						       &exptmp);
+		  reloc_type = get_arc_exp_reloc_type (reloc_type,
+						       BFD_RELOC_ARC_PC32,
+						       &fixups[i].exp);
 		  GAS_DEBUG_PIC (reloc_type);
 	      }
 	      else
 		{
-		  op_type = get_arc_exp_reloc_type (0, fixups[i].opindex,
-						    &fixups[i].exp, &exptmp);
+		  op_type = get_arc_exp_reloc_type (fixups[i].opindex,
+						    BFD_RELOC_ARC_PC32,
+						    &fixups[i].exp);
 		  reloc_type = op_type + (int) BFD_RELOC_UNUSED;
 		}
 	      switch (current_special_sym_flag)
@@ -6725,6 +6735,11 @@ fprintf (stdout, "Matched syntax %s\n", opcode->syntax);
 		break;
 	      case GOTOFF_TYPE:
 		reloc_type = BFD_RELOC_ARC_GOTOFF;
+		break;
+	      case PCL_TYPE:
+		reloc_type = BFD_RELOC_ARC_32_ME;
+		/* This is later translated to BFD_RELOC_ARC_PC32 with the
+		   insn start (rather than limm loc) as reference address  */
 		break;
 	      default:
 		break;
@@ -6757,9 +6772,10 @@ fprintf (stdout, "Matched syntax %s\n", opcode->syntax);
 			   ((f - frag_now->fr_literal) + offset),
 			   /* + (operand2->flags & ARC_OPERAND_LIMM ? 4 : 0)),*/
 			   size,
-			   &exptmp,
+			   &fixups[i].exp,
 			   (current_special_sym_flag == PLT_TYPE)?0:
-			   (operand2->flags & ARC_OPERAND_RELATIVE_BRANCH) != 0,
+			   (operand2->flags & ARC_OPERAND_RELATIVE_BRANCH) != 0
+			   || current_special_sym_flag == PCL_TYPE,
 			   (bfd_reloc_code_real_type) reloc_type);
 	    }
 	  assembling_instruction = 0;

@@ -153,6 +153,8 @@ extern void arc_handle_align (fragS* fragP);
 #define md_optimize_expr(l,o,r) arc_optimize_expr (l, o, r)
 extern int arc_optimize_expr (expressionS *, operatorT, expressionS *);
 
+extern long md_pcrel_from_section (struct fix *, segT);
+#define MD_PCREL_FROM_SECTION(FIXP, SEC) md_pcrel_from_section (FIXP,SEC)
 
 /* register class field size in extension section */
 #define RCLASS_SET_SIZE 4

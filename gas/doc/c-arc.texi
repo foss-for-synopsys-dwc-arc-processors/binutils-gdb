@@ -741,6 +741,11 @@ the ARC 700 processor and generate relocation entries, which are
 interpreted by the linker as follows:
 
 @table @code
+@item @@pcl(@var{symbol})
+@cindex @@pcl(@var{symbol}), ARC modifier
+Relative distance of @var{symbol}'s from the
+current program counter location.
+
 @item @@gotpc(@var{symbol})
 @cindex @@gotpc(@var{symbol}), ARC modifier
 Relative distance of @var{symbol}'s Global Offset Table entry from the
@@ -755,6 +760,8 @@ Distance of @var{symbol} from the base of the Global Offset Table.
 Distance of @var{symbol}'s Procedure Linkage Table entry from the
 current program counter.  This is valid only with branch and link
 instructions and PC-relative calls.
+
+FIXME: TLS
 
 @end table
 

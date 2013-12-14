@@ -373,9 +373,18 @@ static reloc_howto_type elf_arc_howto_table[] =
   ARC_UNSUPPORTED_HOWTO (R_ARC_SECTOFF_ME_2,"R_ARC_SECTOFF_ME_2"),
   ARC_UNSUPPORTED_HOWTO (R_ARC_SECTOFF_1,"R_ARC_SECTOFF_1"),
   ARC_UNSUPPORTED_HOWTO (R_ARC_SECTOFF_2,"R_ARC_SECTOFF_2"),
-  /* There is a gap here of 5.  */
   #define R_ARC_hole_base 0x2d
+#if 0 /* not yet.  */
+  /* There is a gap here of 4.  */
+  #define R_ARC_reloc_hole_gap 4
+
+  /* A standard 32 bit pc-relative (data) relocation.  */
+  ARC_RELA_HOWTO (R_ARC_32_PCREL, 0, 2, 32, TRUE, 0, bfd_elf_generic_reloc,
+                  "R_ARC_32_PCREL",-1),
+#else
+  /* There is a gap here of 5.  */
   #define R_ARC_reloc_hole_gap 5
+#endif
 
   ARC_RELA_HOWTO (R_ARC_PC32, 0, 2, 32, TRUE, 0, arcompact_elf_me_reloc,
 		  "R_ARC_PC32",-1),
@@ -406,7 +415,7 @@ static reloc_howto_type elf_arc_howto_table[] =
 };
 
 /*Indicates whether the value contained in
-  the relocation type is signed, usnigned
+  the relocation type is signed, unsigned
   or the reclocation type is unsupported.
   0 -> unsigned reloc type
   1 -> signed reloc type
@@ -471,8 +480,8 @@ short arc_signed_reloc_type[] =
   -1, // R_ARC_hole_base starts here 0x2d
   -1, // 0x2e
   -1, // 0x2f
-  -1, // 0x30
-  -1, // ends here               0x31
+  -1, // ends here               0x30
+  0, //  R_ARC_32_PCREL		 0x31
 
   0, //  R_ARC_PC32              0x32
   0, //  R_ARC_GOTPC32
@@ -492,6 +501,14 @@ short arc_signed_reloc_type[] =
   0, //  R_ARC_JLI_SECTOFF	0x3f
   0, //  R_ARC_AOM_TOKEN_ME	0x40
   0, //  R_ARC_AOM_TOKEN	0x41
+
+  0, //  R_ARC_TLS_DTPMOD	0x42
+  0, //  R_ARC_TLS_DTPOFF	0x43
+  0, //  R_ARC_TLS_TPOFF	0x44
+  0, //  R_ARC_TLS_GD_GOT	0x45
+  0, //  R_ARC_TLS_IE_GOT	0x46
+  1, //  R_ARC_TLS_LE_S9	0x47
+  1, //  R_ARC_TLS_LE_32	0x48
 };
 
 
@@ -534,6 +551,9 @@ static const struct arc_reloc_map arc_reloc_map[] =
   { BFD_RELOC_ARC_S25W_PCREL, R_ARC_S25W_PCREL },
   { BFD_RELOC_ARC_S13_PCREL, R_ARC_S13_PCREL },
   { BFD_RELOC_ARC_32_ME, R_ARC_32_ME },
+#if 0
+  { BFD_RELOC_32_PCREL, R_ARC_32_PCREL },
+#endif
   { BFD_RELOC_ARC_PC32, R_ARC_PC32 },
   { BFD_RELOC_ARC_GOTPC32, R_ARC_GOTPC32 },
   { BFD_RELOC_ARC_COPY , R_ARC_COPY },
@@ -1494,6 +1514,7 @@ arc_plugin_one_reloc (unsigned long insn, Elf_Internal_Rela *rel,
       break;
 
   case R_ARC_32:
+  case R_ARC_32_PCREL:
   case R_ARC_GOTPC:
   case R_ARC_GOTOFF:
   case R_ARC_GOTPC32:
@@ -1792,6 +1813,7 @@ elf_arc_check_relocs (bfd *abfd,
 	    }
 	  /* FALLTHROUGH */
 	case R_ARC_PC32:
+	case R_ARC_32_PCREL:
 	  /* If we are creating a shared library, and this is a reloc
 	     against a global symbol, or a non PC relative reloc
 	     against a local symbol, then we need to copy the reloc
@@ -1805,7 +1827,8 @@ elf_arc_check_relocs (bfd *abfd,
 	     possibility below by storing information in the
 	     pcrel_relocs_copied field of the hash table entry.  */
 	  if (info->shared
-	      && (ELF32_R_TYPE (rel->r_info) != R_ARC_PC32
+	      && ((ELF32_R_TYPE (rel->r_info) != R_ARC_PC32
+		   && ELF32_R_TYPE (rel->r_info) != R_ARC_32_PCREL)
 		  || (h != NULL
 		      && (!info->symbolic || !h->def_regular))))
 	    {
@@ -1832,7 +1855,8 @@ elf_arc_check_relocs (bfd *abfd,
 		 hash table, which means that h is really a pointer to an
 		 an elf_ARC_link_hash_entry.  */
 
-	      if (ELF32_R_TYPE (rel->r_info) == R_ARC_PC32)
+	      if (ELF32_R_TYPE (rel->r_info) == R_ARC_PC32
+		  || ELF32_R_TYPE (rel->r_info) == R_ARC_32_PCREL)
 		{
 		  struct elf_ARC_pcrel_relocs_copied *p;
 		  struct elf_ARC_pcrel_relocs_copied **head;
@@ -2072,7 +2096,8 @@ elf_arc_relocate_section (bfd *output_bfd,
 		      && ((! info->symbolic && h->dynindx != -1)
 			  || !h->def_regular)
 		      && (r_type == R_ARC_32
-			  || r_type == R_ARC_PC32)
+			  || r_type == R_ARC_PC32
+			  || r_type == R_ARC_32_PCREL)
 		      && (input_section->flags & SEC_ALLOC) != 0))
 		{
 		  /* In these cases, we don't need the relocation
@@ -2292,6 +2317,7 @@ elf_arc_relocate_section (bfd *output_bfd,
 	case R_ARC_32:
 	case R_ARC_32_ME:
 	case R_ARC_PC32:
+	case R_ARC_32_PCREL:
 	  if (info->shared
 	      && (r_type != R_ARC_PC32
 		  || (h != NULL
@@ -2332,14 +2358,15 @@ elf_arc_relocate_section (bfd *output_bfd,
 		  memset (&outrel, 0, sizeof outrel);
 		  relocate = FALSE;
 		}
-	      else if (r_type == R_ARC_PC32)
+	      else if (r_type == R_ARC_PC32
+		       || r_type == R_ARC_32_PCREL)
 		{
 		  BFD_ASSERT (h != NULL && h->dynindx != -1);
 		  if ((input_section->flags & SEC_ALLOC) != 0)
 		    relocate = FALSE;
 		  else
 		    relocate = TRUE;
-		  outrel.r_info = ELF32_R_INFO (h->dynindx, R_ARC_PC32);
+		  outrel.r_info = ELF32_R_INFO (h->dynindx, r_type);
 		}
 	      else
 		{
@@ -2437,7 +2464,8 @@ elf_arc_relocate_section (bfd *output_bfd,
       if(elf_elfheader(input_bfd)->e_machine == EM_ARC)
 	insn = bfd_get_32 (input_bfd, contents + rel->r_offset);
       else
-	if(input_section && (input_section->flags & SEC_CODE))
+	if (input_section && (input_section->flags & SEC_CODE)
+	    && r_type != R_ARC_32_PCREL)
 	  insn = bfd_get_32_me (input_bfd, contents + rel->r_offset);
 	else
 	  insn = bfd_get_32 (input_bfd, contents + rel->r_offset);
@@ -2447,7 +2475,9 @@ elf_arc_relocate_section (bfd *output_bfd,
 
       BFD_DEBUG_PIC(fprintf(stderr,"addend = 0x%x\n",rel->r_addend));
 
-      if (r_type==R_ARC_PLT32 || r_type==R_ARC_GOTPC || r_type==R_ARC_GOTPC32)
+      if (r_type == R_ARC_32_PCREL)
+	relocation -= ((input_section->output_section->vma + input_section->output_offset + rel->r_offset) - offset_in_insn );
+      else if (r_type==R_ARC_PLT32 || r_type==R_ARC_GOTPC || r_type==R_ARC_GOTPC32)
 	{
 	  /* For branches we need to find the offset from pcl rounded
 	     down to 4 byte boundary.Hence the (& ~3) */
@@ -2509,7 +2539,8 @@ elf_arc_relocate_section (bfd *output_bfd,
       if(elf_elfheader(input_bfd)->e_machine == EM_ARC)
 	bfd_put_32 (input_bfd, insn, contents + rel->r_offset);
       else
-	if (input_section && (input_section->flags & SEC_CODE))
+	if (input_section && (input_section->flags & SEC_CODE)
+	    && r_type != R_ARC_32_PCREL)
 	  bfd_put_32_me (input_bfd, insn, contents + rel->r_offset);
 	else
 	  bfd_put_32 (input_bfd, insn, contents + rel->r_offset);
