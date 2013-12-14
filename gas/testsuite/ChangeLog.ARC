@@ -1,3 +1,8 @@
+2013-12-14  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* gas/arc/pcl.s, gas/arc/pcl.d: New test.
+	* gas/arc/arc700.exp: Run it.
+
 2013-06-14  Claudiu Zissulescu <claziss@synopsys.com>
 
 	* gas/arc/warn.exp: Extend script for errors and warnings
