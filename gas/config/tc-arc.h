@@ -148,20 +148,6 @@ extern int arc_frob_symbol (struct symbol *);
 #define HANDLE_ALIGN(FRAGP)	 arc_handle_align(FRAGP)
 extern void arc_handle_align (fragS* fragP);
 
-#if 0
-/* The operation for &2/&-4 is rather fragile, and this doesn't work in
-   general: we only get fragment offsets.
-   We got now sym@pcl to express pcl-relative.  sym-. did the same
-   all along, but I'm not sure if to call that a bug or a feature.
-   Well, ld[pcl,sym-.] leads to an error, but ld[pcl,sym@pcl] works now.
-   ??? To make debugging really miserable, the entire assembler seems to
-   go into random mode when generating a listing.  */
-/* To handle the variability of the pcl value, we need to be able
-   to express things like (.&2) .  */
-#define md_optimize_expr(l,o,r) arc_optimize_expr (l, o, r)
-extern int arc_optimize_expr (expressionS *, operatorT, expressionS *);
-#endif
-
 extern long md_pcrel_from_section (struct fix *, segT);
 #define MD_PCREL_FROM_SECTION(FIXP, SEC) md_pcrel_from_section (FIXP,SEC)
 
