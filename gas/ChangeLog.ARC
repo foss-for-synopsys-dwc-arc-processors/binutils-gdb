@@ -1,5 +1,10 @@
 2013-12-14  Joern Rennecke  <joern.rennecke@embecosm.com>
 
+	* config/tc-arc.c (tc_gen_reloc): Translate BFD_RELOC_32_PCREL
+	to BFD_RELOC_ARC_PC32.
+
+2013-12-14  Joern Rennecke  <joern.rennecke@embecosm.com>
+
 	* config/tc-arc.c (arc_cons_fix_new): Use BFD_RELOC_32_PCREL.
 	(md_apply_fix): Mark unused argument.
 	BFD_RELOC_ARC_PC32 uses middle-endian insertion.
