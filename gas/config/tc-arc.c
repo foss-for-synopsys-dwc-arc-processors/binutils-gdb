@@ -4679,6 +4679,11 @@ tc_gen_reloc (asection *section ATTRIBUTE_UNUSED,
   bfd_reloc_code_real_type code;
   code = fixP->fx_r_type;
 
+  /* FIXME: This should really be BFD_RELOC_32_PCREL, but the linker crashes
+     on that.  */
+  if (code == BFD_RELOC_32_PCREL)
+    code = BFD_RELOC_ARC_PC32;
+
   if (code == BFD_RELOC_ARC_GOTPC32
       && GOT_symbol
       && fixP->fx_addsy == GOT_symbol)
