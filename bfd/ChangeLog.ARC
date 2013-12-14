@@ -1,3 +1,10 @@
+2013-12-10  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* elf32-arc.c (arc_signed_reloc_type): Add entries for TLS relocs
+	and for R_ARC_32_PCREL.
+	(arc_plugin_one_reloc): Handle R_ARC_PCREL (WiP).
+	(elf_arc_check_relocs, elf_arc_relocate_section): Likewise.
+
 2014-12-05 Claudiu Zissulescu <claziss@synopsys.com>
 
 	* elf32-arc.c (elf_arc_relocate_section): Fix relocation for weak
