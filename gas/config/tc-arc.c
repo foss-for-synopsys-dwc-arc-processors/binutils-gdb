@@ -4393,10 +4393,8 @@ long
 md_pcrel_from_section (fixS *fixP, segT sec)
 {
   if (fixP->fx_addsy != (symbolS *) NULL
-      && (!S_IS_DEFINED (fixP->fx_addsy)
-	  || (S_GET_SEGMENT (fixP->fx_addsy) != sec)
-	  || S_IS_EXTERNAL (fixP->fx_addsy)
-	  || S_IS_WEAK (fixP->fx_addsy)))
+      && (generic_force_reloc (fixP)
+	  || (S_GET_SEGMENT (fixP->fx_addsy) != sec)))
     {
       /* The symbol is undefined.  Let the linker figure it out.  */
       return 0;

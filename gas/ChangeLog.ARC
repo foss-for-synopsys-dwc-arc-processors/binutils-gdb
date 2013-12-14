@@ -1,4 +1,8 @@
-2014-12-10  Joern Rennecke  <joern.rennecke@embecosm.com>
+2013-12-14  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* config/tc-arc.c (md_pcrel_from_section): Use generic_force_reloc.
+
+2013-12-10  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* doc/c-arc.texi (@pcl): Document.
 	* config/tc-arc.c (arc700_special_symtype): Add PCL_TYPE tag.
