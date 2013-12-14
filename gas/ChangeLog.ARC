@@ -1,3 +1,22 @@
+2013-12-13  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* doc/c-arc.texi (@pcl): Document.
+	* config/tc-arc.c (arc700_special_symtype): Add PCL_TYPE tag.
+	(md_assemble): Add code to handle @pcl.
+	(arc_optimize_expr): Add debug printfs.
+	* config/tc-arc.h (md_optimize_expr): Don't define.
+	(arc_optimize_expr): Don't declare.
+
+	* config/tc-arc.c (get_arc_exp_reloc_type): Trim Arctangent-A4 code.
+	Changed all callers.
+	(md_pcrel_from): Replace with ..
+	(md_pcrel_from_section): .. this.
+	(md_apply_fix): Remove code obsoleted by md_pcrel_from_section.
+	* config/tc-arc.h
+	(md_apply_fix): Handle BFD_RELOC_32_PCREL.
+	* config/tc-arc.h (md_pcrel_from_section): Declare.
+	(MD_PCREL_FROM_SECTION): Define.
+
 2013-09-30  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* config/tc-arc.c (arc_parse_cons_expression): Don't treat @h30 at
