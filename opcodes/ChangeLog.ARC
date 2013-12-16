@@ -1,3 +1,7 @@
+2013-12-16 Claudiu Zissulescu <claziss@synopsys.com>
+
+       * arc-em.h: Add VADD2H instruction.
+
 2013-12-11 Claudiu Zissulescu <claziss@synopsys.com>
 
        * arc-opc-old.c: Add modifiers for 64 bit operands.
