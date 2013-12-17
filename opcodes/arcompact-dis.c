@@ -847,6 +847,7 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 	    instrName  = "ldw";
 	  state->_load_len = 2;
 	  break;
+	case 3: instrName  = "ldd";  state->_load_len = 4; break;
 	default:
 	  instrName = "??? (0[3])";
 	  state->flow = invalid_instr;
@@ -867,6 +868,7 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 	  else
 	    instrName = "stw";
 	  break;
+	case 3: instrName = "std";  break;
 	default:
 	  instrName = "??? (2[3])";
 	  state->flow = invalid_instr;
@@ -977,6 +979,7 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 	case 42: instrName = "lr"; decodingClass = 10;  break;
 	case 43: instrName = "sr"; decodingClass =  8;  break;
 	case 44: instrName = "bmskn"; break;
+	case 0x2D: instrName = "xbfu"; break;
 	case 47:
 	  decodingClass = 1;
 	  switch (BITS(state->words[0],0,5)) /* Checking based on Subopcode2 */
@@ -1062,6 +1065,7 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 	  case 24: instrName  = "ld";   state->_load_len = 4; break;
 	  case 25: instrName  = "ldb";  state->_load_len = 1; break;
 	  case 26: instrName  = "ldw";  state->_load_len = 2; break;
+	  case 27: instrName  = "ldd";   state->_load_len = 4; break;
 	  default:
 	    instrName = "??? (0[3])";
 	    state->flow = invalid_instr;
@@ -1122,10 +1126,30 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 	case 9: instrName = "remu"; break;
 	case 0xA: instrName = "asls"; break; /*Illegal for EM */
 	case 0xB: instrName = "asrs"; break; /*Illegal for EM */
+
+	  /* HS */
+	case 0x0E: instrName = "mac"; break;
+	case 0x0F: instrName = "macu"; break;
+	case 0x10: instrName = "dmpyh"; break;
+	case 0x11: instrName = "dmpyhu"; break;
+	case 0x12: instrName = "dmach"; break;
+	case 0x13: instrName = "dmachu"; break;
+	case 0x14: instrName = "vadd2h"; break;
+	case 0x15: instrName = "vsub2h"; break;
+	case 0x16: instrName = "vaddsub2h"; break;
+	case 0x17: instrName = "vsubadd2h"; break;
+	case 0x18: instrName = "mpyd"; break;
+	case 0x19: instrName = "mpydu"; break;
+	case 0x1A: instrName = "macd"; break;
+	case 0x1B: instrName = "macdu"; break;
+	case 0x1C: instrName = "vmpy2h"; break;
+	case 0x1D: instrName = "vmpy2hu"; break;
+
+	  /* A700's */
 	case 0x28: instrName = "addsdw";break;
 	case 0x29: instrName = "subsdw"; break;
 
-	case 47:
+	case 0x2F:
 	  decodingClass = 1;
 	  switch(BITS(state->words[0],0,5))
 	    {
@@ -1167,6 +1191,25 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 	      break;
 	    }
 	  break;
+
+	  /* HS */
+	case 0x30: instrName = "qmpyh"; break;
+	case 0x31: instrName = "qmpyhu"; break;
+	case 0x32: instrName = "qmpywh"; break;
+	case 0x33: instrName = "qmpywhu"; break;
+	case 0x34: instrName = "qmach"; break;
+	case 0x35: instrName = "qmachu"; break;
+	case 0x36: instrName = "dmacwh"; break;
+	case 0x37: instrName = "dmacwhu"; break;
+	case 0x38: instrName = "vadd4h"; break;
+	case 0x39: instrName = "vsub4h"; break;
+	case 0x3A: instrName = "vaddsub4h"; break;
+	case 0x3B: instrName = "vsubadd4h"; break;
+	case 0x3C: instrName = "vadd2"; break;
+	case 0x3D: instrName = "vsub2"; break;
+	case 0x3E: instrName = "vaddsub"; break;
+	case 0x3F: instrName = "vsubadd"; break;
+
 	default:
 	  instrName = "??? (2[3])";
 	  state->flow = invalid_instr;
