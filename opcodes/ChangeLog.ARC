@@ -1,3 +1,7 @@
+2013-12-17 Claudiu Zissulescu <claziss@synopsys.com>
+
+       * arcompact-dis.c: Add HS instructions.
+
 2013-12-16 Claudiu Zissulescu <claziss@synopsys.com>
 
        * arc-em.h: Add VADD2H instruction.
