@@ -1,3 +1,7 @@
+2013-12-18 Claudiu Zissulescu <claziss@synopsys.com>
+
+       * arc-em.h: Fix AEX pattern to accept auxiliary registers.
+
 2013-10-04 Claudiu Zissulescu <claziss@synopsys.com>
 
 	* arc-opc-old.c: Fixed limm_p flag for prefetch instructions

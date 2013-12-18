@@ -684,10 +684,11 @@
 /*AEX */
 { (unsigned char *) "aex %B,[%C]",                           0xF8FF803F, 0x20270000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "aex %B,[%u]",                           0xF8FF803F, 0x20670000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "aex %B,[%GC]",                          0xF8FF8000, 0x20A70000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "aex %B,[%K]",                           0xF8FF8000, 0x20A70000, ARC_MACH_ARCV2, 0, 0, 0, 0},
-{ (unsigned char *) "aex %B,[%CG]",                          0xF8FF8000, 0x20A70000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "aex%Q %B,[%L]",                         0xF8FF8FFF, 0x20270F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "aex%.q %B,[%C]",                        0xF8FF8020, 0x20E70000, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "aex%.q %B,[%GC]",                       0xF8FF8020, 0x20E70020, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "aex%.q %B,[%u]",                        0xF8FF8020, 0x20E70020, ARC_MACH_ARCV2, 0, 0, 0, 0},
 { (unsigned char *) "aex%.q%Q %B,[%L]",                      0xF8FF8FE0, 0x20E70F80, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /*CLRI */
