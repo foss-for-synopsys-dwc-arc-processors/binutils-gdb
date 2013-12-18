@@ -1,3 +1,7 @@
+2013-12-18 Claudiu Zissulescu <claziss@synopsys.com>
+
+       * arc-em.h: Fix AEX pattern to accept auxiliary registers.
+
 2013-12-17 Claudiu Zissulescu <claziss@synopsys.com>
 
        * arcompact-dis.c: Add HS instructions.
