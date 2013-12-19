@@ -690,16 +690,15 @@ arc_linux_skip_solib_resolver (struct gdbarch *gdbarch, CORE_ADDR pc)
      the function.
    
      So we look for the symbol `_dl_linux_resolver', and if we are there, gdb
-     sets a breakpoint at the return address, and continues.
+     sets a breakpoint at the return address, and continues. */
+  struct minimal_symbol *resolver = lookup_minimal_symbol("_dl_linux_resolver",
+          NULL, NULL);
 
-     lookup_minimal_symbol didn't work, for some reason.  */
-  struct symbol *resolver = lookup_symbol_global ("_dl_linux_resolver", NULL,
-						  VAR_DOMAIN);
   if (arc_debug)
     {
       if (resolver)
 	{
-	  CORE_ADDR res_addr = BLOCK_START (SYMBOL_BLOCK_VALUE (resolver));
+	  CORE_ADDR res_addr = SYMBOL_VALUE_ADDRESS(resolver);
 	  fprintf_unfiltered (gdb_stdlog, "--- %s : pc = %s, resolver at %s\n",
 			      __FUNCTION__, print_core_address (gdbarch, pc),
 			      print_core_address (gdbarch, res_addr));
@@ -711,7 +710,7 @@ arc_linux_skip_solib_resolver (struct gdbarch *gdbarch, CORE_ADDR pc)
 	}
     }
 
-  if (resolver && ((BLOCK_START (SYMBOL_BLOCK_VALUE (resolver))) == pc))
+  if (resolver && SYMBOL_VALUE_ADDRESS(resolver) == pc)
     {
       /* find the return address */
       return  gdbarch_unwind_pc (gdbarch, get_current_frame());
