@@ -1,3 +1,9 @@
+2013-12-19  Anton Kolesov  <anton.kolesov@synopsys.com>
+
+	* arc-linux-tdep.c (arc_linux_skip_solib_resolver): Fix broken solib
+	resolver. Use lookup_minimal_symbol function to retrieve resolver
+	address.
+
 2013-10-28  Anton Kolesov  <Anton.Kolesov@synopsys.com>
 
 	* arc-tdep.c (arc_register_name, arc_regoster_type, arc_gdbarch_init,
