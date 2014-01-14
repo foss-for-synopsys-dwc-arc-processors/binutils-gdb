@@ -1,5 +1,10 @@
 2014-01-14  Joern Rennecke  <joern.rennecke@embecosm.com>
 
+	* config/tc-arc.c (assert_arc_pic_support): New function.
+	(md_assemble): Clean up some of the operand processing.
+
+2014-01-14  Joern Rennecke  <joern.rennecke@embecosm.com>
+
 	* config/tc-arc.c (arc_parse_cons_expression): Add FIXME
         comment.
         (md_assemble): Add two FIXME comments.

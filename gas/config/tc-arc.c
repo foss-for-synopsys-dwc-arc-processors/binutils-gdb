@@ -4943,6 +4943,18 @@ parseEnterLeaveMnemonic(char **str,
 
 }
 
+/* Verify that we may use pic; warn if we may not.  */
+
+static bfd_boolean
+assert_arc_pic_support (void)
+{
+  if (arc_mach_type == bfd_mach_arc_arc700
+      || arc_mach_type == bfd_mach_arc_arcv2)
+    return TRUE;
+  as_warn (_("PIC not supported for processors prior to ARC 700\n"));
+  return FALSE;
+}
+
 /* This routine is called for each instruction to be assembled.  */
 
 void
@@ -5589,6 +5601,7 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 	      char *hold;
 	      const struct arc_operand_value *reg = NULL;
 	      int match_failed = 0;
+	      const char *match_str;
 	      long value = 0;
 	      expressionS exp;
 	      exp.X_op = O_illegal;
@@ -5602,93 +5615,33 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		break;
 
 	      /* Verify the input for the special operands for ARCompact ISA */
-		  switch (operand->fmt)
-		    {
-		    case '4':
-		      if (*str == '%')
-			str++;
-		      if (strncmp (str, "r0", 2))
-			match_failed = 1;
-		      else if (ISALNUM (*(str + 2)))
-			match_failed = 1;
-		      break;
-		    case '5':
-		      if (*str == '%')
-			str++;
-		      if (strncmp (str, "gp", 2))
-			match_failed = 1;
-		      else if (ISALNUM (*(str + 2)))
-			match_failed = 1;
-		      break;
-		    case '6':
-		      if (*str == '%')
-			str++;
-		      if (strncmp (str, "sp", 2))
-			match_failed = 1;
-		      else if (ISALNUM (*(str + 2)))
-			match_failed = 1;
-		      break;
-		    case '7':
-		      if (*str == '%')
-			str++;
-		      if (strncmp (str, "ilink1", 6))
-			match_failed = 1;
-		      else if (ISALNUM (*(str + 6)))
-			match_failed = 1;
-		      break;
-		    case '8':
-		      if (*str == '%')
-			str++;
-		      if (strncmp (str, "ilink2", 6))
-			match_failed = 1;
-		      else if (ISALNUM (*(str + 6)))
-			match_failed = 1;
-		      break;
-		    case '9':
-		      if (*str == '%')
-			str++;
-		      if (strncmp (str, "blink", 5))
-			match_failed = 1;
-		      else if (ISALNUM (*(str + 5)))
-			match_failed = 1;
-		      break;
-		    case '!':
-		      if (*str == '%')
-			str++;
-		      if (strncmp (str, "pcl", 3))
-			match_failed = 1;
-		      else if (ISALNUM (*(str + 3)))
-			match_failed = 1;
-		      break;
-		      /*ARCv2 special registers*/
-		    case 129: /* R1*/
-		      if (*str == '%')
-			str++;
-		      if (strncmp(str, "r1", 2))
-			match_failed = 1;
-		      else if (ISALNUM (*(str + 2)))
-			match_failed = 1;
-		      break;
-		    case 130: /* R2 */
-		      if (*str == '%')
-			str++;
-		      if (strncmp(str, "r2", 2))
-			match_failed = 1;
-		      else if (ISALNUM (*(str + 2)))
-			match_failed = 1;
-		      break;
-		    case 131: /* R3 */
-		      if (*str == '%')
-			str++;
-		      if (strncmp(str, "r3", 2))
-			match_failed = 1;
-		      else if (ISALNUM (*(str + 2)))
-			match_failed = 1;
-		      break;
-		    } /* end switch(operand->fmt) */
+	      switch (operand->fmt)
+		{
+		case '4': match_str = "r0"; break;
+		case '5': match_str = "gp"; break;
+		case '6': match_str = "sp"; break;
+		case '7': match_str = "ilink1"; break;
+		case '8': match_str = "ilink2"; break;
+		case '9': match_str = "blink"; break;
+		case '!': match_str = "pcl"; break;
+		/*ARCv2 special registers*/
+		case 129: match_str = "r1"; break;
+		case 130: match_str = "r2"; break;
+		case 131: match_str = "r3"; break;
+		default: match_str = NULL; break;
+		}
+	      if (match_str)
+		{
+		  int len = strlen (match_str);
+		  if (*str == '%')
+		    str++;
+		  if (strncmp (str, match_str, len))
+		    match_failed = 1;
+		  else if (ISALNUM (*(str + len)))
+		    match_failed = 1;
 		  if (match_failed)
 		    break;
-
+		}
 	      {
 		/* Parse the operand.  */
 		/* If there is any PIC / small data / etc. related suffix
@@ -6188,124 +6141,70 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		    }
 		  else
 		    {
-		      int needGOTSymbol = 0;
+		      bfd_boolean needGOTSymbol = FALSE;
+		      bfd_boolean try_addend = FALSE;
 		      if (strchr (str, '@'))
 			{
-			  if (!strncmp (str, "@gotpc", 6))
+		      if (!strncmp (str, "@gotpc", 6))
+			{
+			  str += 6;
+			  if (assert_arc_pic_support ())
+			    current_special_sym_flag = GOT_TYPE;
+			  needGOTSymbol = TRUE;
+			}
+		      else if (!strncmp (str, "@plt", 4))
+			{
+			  str += 4;
+			  if (assert_arc_pic_support ())
+			    current_special_sym_flag = PLT_TYPE;
+			  needGOTSymbol = TRUE;
+			}
+		      else if (!strncmp (str, "@gotoff", 7))
+			{
+			  str += 7;
+			  if (assert_arc_pic_support ())
+			    current_special_sym_flag = GOTOFF_TYPE;
+			  try_addend = TRUE;
+			  needGOTSymbol = TRUE;
+			}
+		      else if (!strncmp (str, "@pcl", 4))
+			{
+			  str += 4;
+			  current_special_sym_flag = PCL_TYPE;
+			  try_addend = TRUE;
+			}
+		      else if (!strncmp (str, "@sda", 4))
+			{
+			  if (!(mods & ARC_MOD_SDASYM))
 			    {
-			      str += 6;
-			      if ((arc_mach_type != bfd_mach_arc_arc700) &&
-				  (arc_mach_type != bfd_mach_arc_arcv2))
-				as_warn ("PIC not supported for processors prior to ARC 700\n");
-			      else
-				current_special_sym_flag = GOT_TYPE;
-
-				  needGOTSymbol = 1;
+			      //  fprintf (stderr, "Error: failed to match\n");
+			      break;
 			    }
-			  else if (!strncmp (str, "@plt", 4))
-			    {
-			      str += 4;
-			      if ((arc_mach_type != bfd_mach_arc_arc700) &&
-				  (arc_mach_type != bfd_mach_arc_arcv2))
-				as_warn ("PIC not supported for processors prior to ARC 700\n");
-			      else
-				current_special_sym_flag = PLT_TYPE;
-				  needGOTSymbol = 1;
-			    }
-			  else if (!strncmp (str, "@gotoff", 7))
-			    {
-			      if ((arc_mach_type != bfd_mach_arc_arc700) &&
-				  (arc_mach_type != bfd_mach_arc_arcv2))
-				as_warn ("PIC not supported for processors prior to ARC 700\n");
-			      else
-				current_special_sym_flag = GOTOFF_TYPE;
 
-			      /* Now check for identifier@gotoff+constant */
-			      if (*(str + 7) == '-' || *(str + 7) == '+')
+			  str += 4;
+			  current_special_sym_flag = SDA_REF_TYPE;
+			  try_addend = TRUE;
+			  needGOTSymbol = TRUE;
+			}
+
+		      if (try_addend)
+			{
+			  /* Now check for identifier@XXX+constant */
+			  if (*(str) == '-' || *(str) == '+')
+			    {
+			      char *orig_line = input_line_pointer;
+			      expressionS new_exp;
+
+			      input_line_pointer = str;
+			      expression (&new_exp);
+			      if (new_exp.X_op == O_constant)
 				{
-				  char *orig_line = input_line_pointer;
-				  expressionS new_exp;
-
-				  input_line_pointer = str + 7;
-				  expression (&new_exp);
-				  if (new_exp.X_op == O_constant)
-				    {
-				      exp.X_add_number += new_exp.X_add_number;
-				      str = input_line_pointer;
-				    }
-				  if (input_line_pointer != str)
-				    input_line_pointer = orig_line;
+				  exp.X_add_number += new_exp.X_add_number;
+				  str = input_line_pointer;
 				}
-			      else
-				str += 7;
-				needGOTSymbol = 1;
+			      input_line_pointer = orig_line;
 			    }
-			  else if (!strncmp (str, "@pcl", 4))
-			    {
-			      current_special_sym_flag = PCL_TYPE;
-
-			      /* Now check for identifier@pcl+constant */
-			      if (*(str + 4) == '-' || *(str + 4) == '+')
-				{
-				  char *orig_line = input_line_pointer;
-				  expressionS new_exp;
-
-				  input_line_pointer = str + 4;
-				  expression (&new_exp);
-				  if (new_exp.X_op == O_constant)
-				    {
-				      exp.X_add_number += new_exp.X_add_number;
-				      str = input_line_pointer;
-				    }
-				  if (input_line_pointer != str)
-				    input_line_pointer = orig_line;
-				}
-			      else
-				str += 4;
-			    }
-			  else
-			    {
-			      if (!strncmp (str, "@sda", 4))
-				{
-				  //	 	  fprintf (stderr, "sda seen\n");
-				  if (!(mods & ARC_MOD_SDASYM))
-				    {
-				      //  fprintf (stderr, "Error: failed to match\n");
-				      break;
-				    }
-
-				  /* sda_seen_p = 1; */
-				  current_special_sym_flag = SDA_REF_TYPE;
-				  str += 4;
-
-				  /* Now check for identifier@sda+constant */
-				  if (*(str) == '-' || *(str) == '+')
-				    {
-				      char *orig_line = input_line_pointer;
-				      expressionS new_exp;
-
-/* START ARC LOCAL */
-/*				      input_line_pointer = str + (*(str) == '+'); */
-				      char savedchar;
-
-				      savedchar = *(str - 1);
-				      *(str - 1) = '0';
-				      input_line_pointer = str - 1;
-				      expression (&new_exp);
-				      *(str - 1) = savedchar;
-/* END ARC LOCAL */
-				      if (new_exp.X_op == O_constant)
-					{
-					  exp.X_add_number
-					      += (new_exp.X_add_number);
-					  str = input_line_pointer;
-					}
-				      //     if (input_line_pointer != str)
-				      input_line_pointer = orig_line;
-				    }
-					needGOTSymbol = 1;
-				}
-			    }
+			}
 
 			/* Force GOT symbols to be limm in case of ld (@gotpc & @gotoff) instruction: 	workaround*/
 
