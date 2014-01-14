@@ -1,3 +1,9 @@
+2014-01-14  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* config/tc-arc.c (arc_parse_cons_expression): Add FIXME
+        comment.
+        (md_assemble): Add two FIXME comments.
+
 2013-12-14  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* config/tc-arc.c (tc_gen_reloc): Translate BFD_RELOC_32_PCREL

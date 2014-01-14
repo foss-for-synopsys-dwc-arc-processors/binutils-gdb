@@ -4346,6 +4346,11 @@ arc_parse_cons_expression (expressionS *exp,
   char *p = input_line_pointer;
   int code_symbol_fix = 0;
 
+  /* FIXME: Is this function still needed?  Was/Is the @h30 construct
+     something that was left over from the Arctangent-A4 days?  Should it
+     be removed?  If it is, then how does this function differ from the
+     default TC_CONS_EXPRESSION function?  */
+
   for (; ! is_end_of_line[(unsigned char) *p]; p++)
     if (*p == '@' && !strncmp (p, "@h30", 4) && p != input_line_pointer)
       {
@@ -6006,9 +6011,15 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 
 	      /* For ARCompact ISA, try next insn syntax if "%st" operand is
 		 not being matched with long-immediate operand */
+	      /* FIXME: just as bad (and essentially the same) as the next
+		 hack, even though triggered less often.  */
 	      else if ((exp.X_op == O_right_shift)
 		       && (operand->fmt != 'L'))
 		break;
+	      /* FIXME: This is an atrocious hack.
+		 We reject add insn variants for forward references if they
+		 can't accomodate a LIMM.  We should instead use a variable
+		 size fragment and relax this insn.  */
 	      else if ((exp.X_op != O_register)
 		       && (operand->fmt != 'L')
 		       && ( (insn_name[0] == 'a' || insn_name[0] == 'A') &&
