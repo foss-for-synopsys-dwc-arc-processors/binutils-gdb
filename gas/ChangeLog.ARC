@@ -1,5 +1,10 @@
 2014-01-14  Joern Rennecke  <joern.rennecke@embecosm.com>
 
+	* config/tc-arc.c (assert_arc_pic_support): New function.
+	(md_assemble): Clean up some of the operand processing.
+
+2014-01-14  Joern Rennecke  <joern.rennecke@embecosm.com>
+
 	* config/tc-arc.c, config/tc-arc.h: Remove Arctangent-A4 code.
 
 2013-12-14  Joern Rennecke  <joern.rennecke@embecosm.com>
