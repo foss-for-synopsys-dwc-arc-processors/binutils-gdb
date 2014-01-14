@@ -1,3 +1,8 @@
+2014-01-14  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* gas/arc/warn.s: Adjust for change of default from Arctangent-A4 to
+	Arctangent-A5.
+
 2013-12-14  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* gas/arc/pcl.s, gas/arc/pcl.d: New test.

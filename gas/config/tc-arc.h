@@ -91,7 +91,7 @@ extern int arc_parse_name (const char *, struct expressionS *);
  * the @ character.  */
 /* #define ENFORCE_AT_PREFIX */
 
-#define DWARF2_LINE_MIN_INSN_LENGTH (arc_mach_a4 ? 4 : 2)
+#define DWARF2_LINE_MIN_INSN_LENGTH (2)
 
 /* Values passed to md_apply_fix don't include the symbol value.  */
 #define MD_APPLY_SYM_VALUE(FIX) 0
@@ -141,7 +141,7 @@ extern int arc_frob_symbol (struct symbol *);
 /* To handle alignment.  */
 /* Used to restrict the amount of memory allocated for representing
    the alignment code.  */
-#define MAX_MEM_FOR_RS_ALIGN_CODE (arc_mach_a4 ? 3+4 : 1+2)
+#define MAX_MEM_FOR_RS_ALIGN_CODE (1+2)
 /* HANDLE_ALIGN called after all the assembly has been done,
    so we can fill in all the rs_align_code type frags with
    nop instructions.  */
