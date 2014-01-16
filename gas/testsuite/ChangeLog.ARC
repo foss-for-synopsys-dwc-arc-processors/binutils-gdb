@@ -1,3 +1,8 @@
+2014-01-16  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* gas/arc/tls.s, gas/arc/tls.d: New test.
+	* gas/arc/arc700.exp: Run it.
+
 2014-01-14  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* gas/arc/warn.s: Adjust for change of default from Arctangent-A4 to

@@ -304,6 +304,10 @@ typedef enum
     GOTOFF_TYPE,
     SDA_REF_TYPE,
     PCL_TYPE,
+    TLSGD_TYPE,
+    TLSIE_TYPE,
+    TPOFF_TYPE,
+    TPOFF9_TYPE,
     NO_TYPE
   } arc700_special_symtype;
 
@@ -4129,7 +4133,6 @@ md_apply_fix (fixS *fixP, valueT *valueP, segT seg ATTRIBUTE_UNUSED)
     {
       int opindex;
       const struct arc_operand *operand;
-      char *where;
       arc_insn insn = 0;
 
       opindex = (int) fixP->fx_r_type - (int) BFD_RELOC_UNUSED;
@@ -4143,7 +4146,6 @@ md_apply_fix (fixS *fixP, valueT *valueP, segT seg ATTRIBUTE_UNUSED)
 
 	  /* Fetch the instruction, insert the fully resolved operand
 	     value, and stuff the instruction back again.  */
-	  where = fixP->fx_frag->fr_literal + fixP->fx_where;
 	  switch (fixP->fx_size)
 	    {
 	    case 2:
@@ -4271,9 +4273,18 @@ md_apply_fix (fixS *fixP, valueT *valueP, segT seg ATTRIBUTE_UNUSED)
 	case BFD_RELOC_ARC_GOTOFF:
 	case BFD_RELOC_ARC_32_ME:
 	case BFD_RELOC_ARC_PC32:
+	case BFD_RELOC_ARC_TLS_GD_GOT:
+	case BFD_RELOC_ARC_TLS_IE_GOT:
+	case BFD_RELOC_ARC_TLS_LE_32:
 	  md_number_to_chars (fixP->fx_frag->fr_literal + fixP->fx_where,
 			      value, -4);
 
+	  break;
+
+	case BFD_RELOC_ARC_TLS_LE_S9:
+	  /* The offset - and scale, if any - will be installed by the
+	     linker.  */
+	  gas_assert (!fixP->fx_done);
 	  break;
 
 	case BFD_RELOC_ARC_B26:
@@ -5761,6 +5772,7 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		    {
 		      bfd_boolean needGOTSymbol = FALSE;
 		      bfd_boolean try_addend = FALSE;
+		      bfd_boolean force_ld_limm = TRUE;
 
 		      if (!strncmp (str, "@gotpc", 6))
 			{
@@ -5802,7 +5814,32 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 			  current_special_sym_flag = SDA_REF_TYPE;
 			  try_addend = TRUE;
 			  needGOTSymbol = TRUE;
+			  force_ld_limm = FALSE;
 			}
+		      else if (!strncmp (str, "@tlsgd", 6))
+			{
+			  str += 6;
+			  current_special_sym_flag = TLSGD_TYPE;
+			}
+		      else if (!strncmp (str, "@tlsie", 6))
+			{
+			  str += 6;
+			  current_special_sym_flag = TLSIE_TYPE;
+			}
+		      else if (!strncmp (str, "@tpoff", 6))
+			{
+			  str += 6;
+			  current_special_sym_flag = TPOFF_TYPE;
+			  if (*str == '9')
+			    {
+			      str++;
+			      current_special_sym_flag = TPOFF9_TYPE;
+			      force_ld_limm = FALSE;
+			    }
+			  try_addend = TRUE;
+			}
+		      else
+			force_ld_limm = FALSE;
 
 		      if (try_addend)
 			{
@@ -5823,31 +5860,28 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 			    }
 			}
 
-			/* Force GOT symbols to be limm in case of ld (@gotpc & @gotoff) instruction: 	workaround*/
+		      /* Force GOT symbols to be limm in case of pcl-relative
+			 and large offset tpoff ld instructions.
+			 If we had link-time relaxation, we'd want to defer
+			 the decision till then - at least for tpoff.  */
+		      if (arc_cond_p ==0
+			  && force_ld_limm
+			  && (insn_name[0] == 'l' || insn_name[0] == 'L')
+			  && (insn_name[1] == 'd' || insn_name[1] == 'D')
+			  && (!(insn_name[2] == '_')) )
+			break;
 
-			if (arc_cond_p ==0
-			    && current_special_sym_flag != SDA_REF_TYPE
-			    && (needGOTSymbol == 1
-				|| current_special_sym_flag == PCL_TYPE)
-			    &&
-			(insn_name[0] == 'l' || insn_name[0] == 'L') &&
-			 (insn_name[1] == 'd' || insn_name[1] == 'D') &&
-			 (!(insn_name[2] == '_')) ) {
-				break;
-			}
-			  /*
-			     In any of the above PIC related cases we would
-			     have to make a GOT symbol if it is NULL
-			   */
-			  if (needGOTSymbol && (GOT_symbol == NULL) )
-			    GOT_symbol
-			      = symbol_find_or_make (GLOBAL_OFFSET_TABLE_NAME);
-			}
-		      else if (mods & ARC_MOD_SDASYM)
-			{
-			  //			  fprintf (stderr, "Not the sda syntax string. Trying next ********\n");
-			  break;
-			}
+		      /* In any of the above PIC related cases we would
+			 have to make a GOT symbol if it is NULL.  */
+		      if (needGOTSymbol && GOT_symbol == NULL)
+			GOT_symbol
+			  = symbol_find_or_make (GLOBAL_OFFSET_TABLE_NAME);
+		    } /* End of '@' processing.  */
+		  else if (mods & ARC_MOD_SDASYM)
+		    {
+		      //			  fprintf (stderr, "Not the sda syntax string. Trying next ********\n");
+		      break;
+		    }
 
 		  /* Check the st/ld mnemonic:It should be able to
 		     accomodate an immediate. Hence, no register
@@ -6248,40 +6282,52 @@ fprintf (stdout, "Matched syntax %s\n", opcode->syntax);
 		  reloc_type = op_type + (int) BFD_RELOC_UNUSED;
 		}
 	      switch (current_special_sym_flag)
-	      {
-	      case SDA_REF_TYPE:
-		reloc_type = arc_get_sda_reloc (insn, compact_insn_16);
-		break;
-	      case GOT_TYPE:
-		reloc_type = BFD_RELOC_ARC_GOTPC32;
-		break;
-	      case PLT_TYPE:
-		reloc_type = BFD_RELOC_ARC_PLT32;
-		break;
-	      case GOTOFF_TYPE:
-		reloc_type = BFD_RELOC_ARC_GOTOFF;
-		break;
-	      case PCL_TYPE:
-		reloc_type = BFD_RELOC_ARC_PC32;
-		/* The hardware calculates relative to the start of the insn
-		   (actually, pcl, but that part is sorted out later),
-		   but this relocation is relative to the location of the LIMM.
-		   When tc_gen_reloc translates BFD_RELOC_ARC_32_ME to
-		   BFD_RELOC_ARC_PC32, to can use the full addresses, but
-		   we can't use these here.  Setting the reloc type here
-		   to BFD_RELOC_ARC_32_ME doesn't have the desired effect,
-		   since tc_gen_reloc won't see fixups that have been
-		   resolved locally.
-		   Expressions with . have in principle the same problem,
-		   but they don't force a LIMM - except for add.
-		   FIXME: should probably remove the add special case and
-		   make gcc use -. instead of @pcl in cases that don't need
-		   a LIMM.  */
-		fixups[i].exp.X_add_number += 4;
-		break;
-	      default:
-		break;
-	      }
+		{
+		case SDA_REF_TYPE:
+		  reloc_type = arc_get_sda_reloc (insn, compact_insn_16);
+		  break;
+		case GOT_TYPE:
+		  reloc_type = BFD_RELOC_ARC_GOTPC32;
+		  break;
+		case PLT_TYPE:
+		  reloc_type = BFD_RELOC_ARC_PLT32;
+		  break;
+		case GOTOFF_TYPE:
+		  reloc_type = BFD_RELOC_ARC_GOTOFF;
+		  break;
+		case PCL_TYPE:
+		  reloc_type = BFD_RELOC_ARC_PC32;
+		  /* The hardware calculates relative to the start of the insn
+		     (actually, pcl, but that part is sorted out later), but
+		     this relocation is relative to the location of the LIMM.
+		     When tc_gen_reloc translates BFD_RELOC_ARC_32_ME to
+		     BFD_RELOC_ARC_PC32, to can use the full addresses, but
+		     we can't use these here.  Setting the reloc type here
+		     to BFD_RELOC_ARC_32_ME doesn't have the desired effect,
+		     since tc_gen_reloc won't see fixups that have been
+		     resolved locally.
+		     Expressions with . have in principle the same problem,
+		     but they don't force a LIMM - except for add.
+		     FIXME: should probably remove the add special case and
+		     make gcc use -. instead of @pcl in cases that don't need
+		     a LIMM.  */
+		  fixups[i].exp.X_add_number += 4;
+		  break;
+		case TLSGD_TYPE:
+		  reloc_type = BFD_RELOC_ARC_TLS_GD_GOT;
+		  break;
+		case TLSIE_TYPE:
+		  reloc_type = BFD_RELOC_ARC_TLS_IE_GOT;
+		  break;
+		case TPOFF_TYPE:
+		  reloc_type = BFD_RELOC_ARC_TLS_LE_32;
+		  break;
+		case TPOFF9_TYPE:
+		  reloc_type = BFD_RELOC_ARC_TLS_LE_S9;
+		  break;
+		default:
+		  break;
+		}
 	      operand2 = &arc_operands[op_type];
 
 	      /* Calculate appropriate offset and size for the fixup */

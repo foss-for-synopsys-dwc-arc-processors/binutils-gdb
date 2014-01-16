@@ -1,3 +1,12 @@
+2014-01-16  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* config/tc-arc.c (arc700_special_symtype): Add TLSGD_TYPE,
+	TLSIE_TYPE, TPOFF_TYPE and TPOFF9_TYPE.
+	(md_apply_fix): Handle TLS relocations.
+	(md_assemble): Handle tls suffixes.
+
+	* config/tc-arc.c (md_apply_fix): Remove unused variable.
+
 2014-01-14  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* config/tc-arc.c (assert_arc_pic_support): New function.
