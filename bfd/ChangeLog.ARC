@@ -1,3 +1,12 @@
+2014-01-16  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* reloc.c (BFD_RELOC_ARC_TLS_GD_GOT): New relocation.
+	(BFD_RELOC_ARC_TLS_IE_GOT, BFD_RELOC_ARC_TLS_LE_S9): Likewise.
+	(BFD_RELOC_ARC_TLS_LE_32): Likewise.
+	* bfd-in2.h, libbfd.h: Regenerate.
+	* elf32-arc.c (elf_arc_howto_table): Add HOWTOs for TLS relocations.
+	(arc_reloc_map): Add mappings for TLS relocations.
+
 2013-12-10  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* elf32-arc.c (arc_signed_reloc_type): Add entries for TLS relocs
