@@ -3,7 +3,7 @@
    Free Software Foundation, Inc.
    Contributed by Doug Evans (dje@cygnus.com).
 
-   Copyright 2008-2012 Synopsys Inc.
+   Copyright 2008-2014 Synopsys Inc.
 
    This file is part of BFD, the Binary File Descriptor library.
 
@@ -42,6 +42,17 @@
    used to account for the PC having been incremented before the PC
    relative address is calculated. mlm */
 #define USE_RELA
+
+/* The size of the thread control block.  */
+#define TCB_SIZE 8
+/* Offset from thread pointer to thread control block.  We use a negative
+   offset to make use of the negative part of the 9-bit signed offset range.
+   The unscaled range is -256..255.  The data in the thread control block
+   can be accessed with scaled addresses, thus we can place it in front.
+   ??? We could actually make better use of the offset range if we could
+   arrange data items that need 8/16 bit access closer to the thread pointer,
+   and use scaled offsets to address other thread local data further out.  */
+#define TCB_BASE_OFFSET (-256-TCB_SIZE)
 
 /* Handle PC relative relocation */
 static bfd_reloc_status_type
@@ -426,7 +437,7 @@ static reloc_howto_type elf_arc_howto_table[] =
 		  "R_ARC_TLS_GD_GOT",-1),
   ARC_RELA_HOWTO (R_ARC_TLS_IE_GOT, 0, 2, 32, FALSE, 0, arcompact_elf_me_reloc,
 		  "R_ARC_TLS_IE_GOT",-1),
-  ARC_RELA_HOWTO (R_ARC_TLS_LE_S9, 0, 2, 32, FALSE, 0, arcompact_elf_me_reloc,
+  ARC_RELA_HOWTO (R_ARC_TLS_LE_S9, 0, 2, 9, FALSE, 0, arcompact_elf_me_reloc,
 		  "R_ARC_TLS_LE_S9",-1),
   ARC_RELA_HOWTO (R_ARC_TLS_LE_32, 0, 2, 32, FALSE, 0, arcompact_elf_me_reloc,
 		  "R_ARC_TLS_LE_32",-1),
@@ -1286,11 +1297,52 @@ arc_plugin_one_reloc (unsigned long insn, Elf_Internal_Rela *rel,
 
   r_type           = ELF32_R_TYPE (rel->r_info);
   howto            = arc_elf_calculate_howto_index(r_type);
+  int scale = 0;
 
   if (arc_signed_reloc_type [howto->type] == 1)
     {
       check_overfl_pos = (long long)1 << (howto->bitsize-1);
-      check_overfl_neg = -check_overfl_pos;
+      check_overfl_neg = -check_overfl_pos - 1;
+
+      if (r_type == R_ARC_PLT32)
+	{
+	  /* BLcc and Bcc */
+	  /* Relocations of the type R_ARC_PLT32 are for the BLcc and Bcc
+	     instructions. However the BL/B instruction takes a 25-bit relative
+	     displacement while the BLcc/Bcc instruction takes a 21-bit relative
+	     displacement. We are using bit-17 to distinguish between these two
+	     cases and handle them differently.  */
+	  if (! (insn & ((insn & 0x08000000) ? 0x00020000 : 0x00010000)))
+	    {
+	      check_overfl_pos = 0xffffcLL;
+	      check_overfl_neg = -check_overfl_pos - 4;
+	    }
+	}
+      else if (r_type == R_ARC_TLS_LE_S9)
+	{
+	  /* Extract size field.  */
+	  int zz;
+	  if (insn & 0x80000000) /* ld_s */
+	    zz = insn >> 25;
+	  else if (insn & 0x08000000) /* st */
+	    zz = insn >> 1;
+	  else /* ld */
+	    zz = insn >> 7;
+	  zz &= 3;
+	  if (zz == 0)
+	    scale = 2;
+	  else if (zz == 2)
+	    scale = 1;
+	  if (value & ((1 << scale) - 1))
+	    {
+	      if (insn & 0x80000000) /* ld_s */
+		*overflow_detected = 1;
+	      scale = 0;
+	    }
+	  else
+	    value >>= scale;
+	}
+
       if ((value >= check_overfl_pos) || (check_overfl_neg > value))
 	*overflow_detected = 1;
     }
@@ -1301,28 +1353,6 @@ arc_plugin_one_reloc (unsigned long insn, Elf_Internal_Rela *rel,
       if ((unsigned int) value >= check_overfl_pos)
 	*overflow_detected = 1;
     }
-
-  /* START ARC LOCAL */
-  if (r_type == R_ARC_PLT32)
-    {
-	/* BLcc and Bcc */
-	/*
-	  Relocations of the type R_ARC_PLT32 are for the BLcc and Bcc
-	  instructions. However the BL/B instruction takes a 25-bit relative
-	  displacement while the BLcc/Bcc instruction takes a 21-bit relative
-	  displacement. We are using bit-17 to distinguish between these two
-	  cases and handle them differently.
-	*/
-	if (! (insn
-		& ((insn & 0x08000000) ? 0x00020000 : 0x00010000)))
-	{
-	  check_overfl_pos = (long long) 1024000;
-	  check_overfl_neg = -check_overfl_pos;
-	  if ((value >= check_overfl_pos) || (check_overfl_neg > value))
-	    *overflow_detected = 1;
-	}
-    }
-    /* END ARC LOCAL */
 
     if (*overflow_detected
       && symbol_defined == TRUE)
@@ -1542,6 +1572,7 @@ arc_plugin_one_reloc (unsigned long insn, Elf_Internal_Rela *rel,
   case R_ARC_GOTPC32:
   case R_ARC_32_ME:
   case R_ARC_PC32:
+  case R_ARC_TLS_LE_32:
       insn = value;
 
   case R_ARC_8:
@@ -1600,8 +1631,19 @@ arc_plugin_one_reloc (unsigned long insn, Elf_Internal_Rela *rel,
       }
     break;
 
-
-
+  case R_ARC_TLS_LE_S9:
+    /* Check for ld{,b,w}_s r0,gp,s{11,10,9}; since the reloc is for 32 bit,
+       the actual insn will be the upper 16 bit in that case.  */
+    if (insn & 0x80000000)
+      insn |= (value & 0x1ff) << 16;
+    else
+      {
+	/* Add .as (scaling) modifier.  */
+	if (scale)
+	  insn |= (insn & 0x08000000) /* st */ ? 0x18 : /* ld */ 0x600;
+	insn |= (value & 0xff) << 16 | (value & 0x100) << 7;
+      }
+    break;
 
   default:
     /* FIXME:: This should go away once the HOWTO Array
@@ -2475,6 +2517,16 @@ elf_arc_relocate_section (bfd *output_bfd,
 	    //	    fprintf (stderr, "relocation AFTER = 0x%x SDATA_BEGIN = 0x%x\n", relocation, h2->root.u.def.value);
 	    break;
 	  }
+	case R_ARC_TLS_LE_32:
+	case R_ARC_TLS_LE_S9:
+	  /* The value we have is inside the .tbss section; we want
+	     it to be relative to the thread pointer.  */
+
+	  relocation -= elf_hash_table (info)->tls_sec->output_section->vma;
+	  relocation += TCB_BASE_OFFSET + TCB_SIZE;
+
+	  break;
+
 	default:
 	  /* FIXME: Putting in a random dummy relocation value for the time being */
 	  //	  fprintf (stderr, "In %s, relocation = 0x%x,  r_type = %d\n", __PRETTY_FUNCTION__, relocation, r_type);
