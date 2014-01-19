@@ -1,3 +1,10 @@
+2014-01-19  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* elf32-arc.c (TCB_SIZE, TCB_BASE_OFFSET): Define.
+	(elf_arc_howto_table) <R_ARC_TLS_LE_S9>: Change bitsize to 9.
+	(arc_plugin_one_reloc): Handle R_ARC_TLS_LE_S9 and R_ARC_TLS_LE_32.
+	(elf_arc_relocate_section): Likewise.
+
 2014-01-16  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* reloc.c (BFD_RELOC_ARC_TLS_GD_GOT): New relocation.
