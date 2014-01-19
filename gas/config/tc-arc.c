@@ -6204,11 +6204,13 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 			{
 			  str += 6;
 			  current_special_sym_flag = TLSGD_TYPE;
+			  needGOTSymbol = TRUE;
 			}
 		      else if (!strncmp (str, "@tlsie", 6))
 			{
 			  str += 6;
 			  current_special_sym_flag = TLSIE_TYPE;
+			  needGOTSymbol = TRUE;
 			}
 		      else if (!strncmp (str, "@tpoff", 6))
 			{

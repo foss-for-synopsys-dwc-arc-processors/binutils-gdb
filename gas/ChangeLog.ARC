@@ -1,3 +1,7 @@
+2014-01-19  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* config/tc-arc.c (md_assemble) <@tlsgd,@tlsie>: Set needGOTSymbol.
+
 2014-01-16  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* config/tc-arc.c (arc700_special_symtype): Add TLSGD_TYPE,
