@@ -1,5 +1,10 @@
 2014-01-21  Joern Rennecke  <joern.rennecke@embecosm.com>
 
+	* elf32-arc.c (elf_arc_relocate_section) <R_ARC_TLS_LE_{32,S9}>:
+	Don't add TCB_SIZE.
+
+2014-01-21  Joern Rennecke  <joern.rennecke@embecosm.com>
+
 	* elf32-arc.c (arc_elf_ignore_reloc, arc_elf_mkobject): New function.
 	(tls_type_e): New enum.
 	(elf_arc_obj_tdata): New struct.
