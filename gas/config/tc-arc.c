@@ -75,6 +75,7 @@ static int  arc_get_sda_reloc (arc_insn, int);
 
 static void init_opcode_tables (int);
 static void arc_ac_extinst (int);
+static void arc_extra_reloc (int);
 
 /* fields for extended instruction format in extmap section */
 static int use_extended_instruction_format=0;
@@ -4281,6 +4282,11 @@ md_apply_fix (fixS *fixP, valueT *valueP, segT seg ATTRIBUTE_UNUSED)
 
 	  break;
 
+	case BFD_RELOC_ARC_TLS_GD_LD:
+	case BFD_RELOC_ARC_TLS_GD_CALL:
+	  /* These two relocs are there just to allow ld to change the tls
+	     model for this symbol, by patching the code.  */
+	  /* Fall through.  */
 	case BFD_RELOC_ARC_TLS_LE_S9:
 	  /* The offset - and scale, if any - will be installed by the
 	     linker.  */
@@ -4402,6 +4408,8 @@ const pseudo_typeS md_pseudo_table[] =
   { "extcoreregister", arc_extoper, 1 },
   { "extauxregister", arc_extoper, 2 },
   { "extinstruction", arc_ac_extinst, 0 },
+  { "tls_gd_ld",   arc_extra_reloc, BFD_RELOC_ARC_TLS_GD_LD },
+  { "tls_gd_call", arc_extra_reloc, BFD_RELOC_ARC_TLS_GD_CALL },
   { NULL, 0, 0 },
 };
 
@@ -6447,4 +6455,25 @@ arc_handle_align (fragS* fragP)
 	}
       md_number_to_chars (dest, 0x78e0, 2);  /*writing nop_s */
     }
+}
+
+static void
+arc_extra_reloc (int r_type)
+{
+  char *sym_name, c;
+  symbolS *sym;
+
+  if (*input_line_pointer == '@')
+    input_line_pointer++;
+  sym_name = input_line_pointer;
+  c = get_symbol_end ();
+  sym = symbol_find_or_make (sym_name);
+  *input_line_pointer = c;
+  fix_new (frag_now,		/* Which frag?  */
+	   frag_now_fix (),	/* Where in that frag?  */
+           2,			/* size: 1, 2, or 4 usually.  */
+	   sym,			/* X_add_symbol.  */
+	   0,			/* X_add_number.  */
+	   FALSE,		/* TRUE if PC-relative relocation.  */
+	   r_type		/* Relocation type.  */);
 }

@@ -1,3 +1,17 @@
+2014-01-21  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* elf32-arc.c (arc_elf_ignore_reloc, arc_elf_mkobject): New function.
+	(tls_type_e): New enum.
+	(elf_arc_obj_tdata): New struct.
+	(elf_arc_tdata, elf_arc_local_got_tls_type): New macro.
+	(ARC_IGNORE_HOWTO): Likewise.
+	(elf_arc_howto_table): Add entries for R_ARC_TLS_GD_LD and
+	R_ARC_TLS_GD_CALL.
+	(arc_signed_reloc_type, arc_reloc_map): Likewise.
+	(elf_arc_check_relocs): TLS support (WiP).
+	* reloc.c: Add BFD_RELOC_ARC_TLS_GD_LD and BFD_RELOC_ARC_TLS_GD_CALL.
+	* bfd-in2.h, libbfd.h: Regenerate.
+
 2014-01-19  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* elf32-arc.c (TCB_SIZE, TCB_BASE_OFFSET): Define.
