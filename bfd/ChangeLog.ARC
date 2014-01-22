@@ -1,4 +1,4 @@
-2014-01-21  Joern Rennecke  <joern.rennecke@embecosm.com>
+2014-01-22  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* elf32-arc.c (elf_arc_relocate_section) <R_ARC_TLS_LE_{32,S9}>:
 	Don't add TCB_SIZE.
