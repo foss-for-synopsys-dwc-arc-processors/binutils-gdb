@@ -1,3 +1,8 @@
+2014-01-22 Claudiu Zissulescu <claziss@synopsys.com>
+
+       * arc-em.h : Fix order DIV/DIVU, add HS floating point instructions.
+       * arcompact-dis.c: Decode HS floating point instructions.
+
 2013-12-18 Claudiu Zissulescu <claziss@synopsys.com>
 
        * arc-em.h: Fix AEX pattern to accept auxiliary registers.
