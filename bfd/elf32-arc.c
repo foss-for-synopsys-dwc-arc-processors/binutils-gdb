@@ -2620,7 +2620,7 @@ elf_arc_relocate_section (bfd *output_bfd,
 	     it to be relative to the thread pointer.  */
 
 	  relocation -= elf_hash_table (info)->tls_sec->output_section->vma;
-	  relocation += TCB_BASE_OFFSET + TCB_SIZE;
+	  relocation += TCB_BASE_OFFSET;
 
 	  break;
 
