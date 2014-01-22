@@ -1,3 +1,9 @@
+2014-01-21  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* arc.h (elf_arc_reloc_type): Add R_ARC_TLS_GD_LD and
+	R_ARC_TLS_GD_CALL.  Move up R_ARC_TLS_IE_GOT, R_ARC_TLS_LE_S9
+	and R_ARC_TLS_LE_32.
+
 2013-12-13  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* arc.h (elf_arc_reloc_type): Add R_ARC_32_PCREL,
