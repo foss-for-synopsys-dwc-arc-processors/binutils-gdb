@@ -4270,13 +4270,15 @@ md_apply_fix (fixS *fixP, valueT *valueP, segT seg ATTRIBUTE_UNUSED)
 			      value, 4);
 	  break;
 
+	case BFD_RELOC_ARC_TLS_GD_GOT:
+	case BFD_RELOC_ARC_TLS_IE_GOT:
+	case BFD_RELOC_ARC_TLS_LE_32:
+	  S_SET_THREAD_LOCAL (fixP->fx_addsy);
+	  /* Fall through.  */
 	case BFD_RELOC_ARC_GOTPC32:
 	case BFD_RELOC_ARC_GOTOFF:
 	case BFD_RELOC_ARC_32_ME:
 	case BFD_RELOC_ARC_PC32:
-	case BFD_RELOC_ARC_TLS_GD_GOT:
-	case BFD_RELOC_ARC_TLS_IE_GOT:
-	case BFD_RELOC_ARC_TLS_LE_32:
 	  md_number_to_chars (fixP->fx_frag->fr_literal + fixP->fx_where,
 			      value, -4);
 
@@ -4291,6 +4293,7 @@ md_apply_fix (fixS *fixP, valueT *valueP, segT seg ATTRIBUTE_UNUSED)
 	  /* The offset - and scale, if any - will be installed by the
 	     linker.  */
 	  gas_assert (!fixP->fx_done);
+	  S_SET_THREAD_LOCAL (fixP->fx_addsy);
 	  break;
 
 	case BFD_RELOC_ARC_B26:
