@@ -88,6 +88,8 @@ static bfd_reloc_status_type arcompact_elf_me_reloc
   (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
 static bfd_reloc_status_type arc_unsupported_reloc
   (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
+static bfd_reloc_status_type arc_elf_ignore_reloc
+  (bfd *, arelent *, asymbol *, void *, asection *, bfd *, char **);
 static bfd_boolean arc_elf_merge_private_bfd_data (bfd *ibfd, bfd *obfd);
 static reloc_howto_type * arc_elf_calculate_howto_index
   (enum elf_arc_reloc_type r_type);
@@ -121,6 +123,8 @@ struct elf_ARC_pcrel_relocs_copied
   bfd_size_type count;
 };
 
+enum tls_type_e { GOT_UNKNOWN, GOT_NORMAL, GOT_TLS_GD, GOT_TLS_IE };
+
 /* ARC ELF linker hash entry.  */
 
 struct elf_ARC_link_hash_entry
@@ -129,6 +133,7 @@ struct elf_ARC_link_hash_entry
 
   /* Number of PC relative relocs copied for this symbol.  */
   struct elf_ARC_pcrel_relocs_copied *pcrel_relocs_copied;
+  enum tls_type_e tls_type;
 };
 
 /* ARC ELF linker hash table.  */
@@ -158,6 +163,27 @@ static bfd_boolean elf_ARC_discard_copies
 
 #define elf_ARC_hash_table(p) \
   ((struct elf_ARC_link_hash_table *) ((p)->hash))
+
+struct elf_arc_obj_tdata
+{
+  struct elf_obj_tdata root;
+
+  /* tls_type for each local got entry.  */
+  char *local_got_tls_type;
+};
+
+#define elf_arc_tdata(abfd) \
+  ((struct elf_arc_obj_tdata *) (abfd)->tdata.any)
+
+#define elf_arc_local_got_tls_type(abfd) \
+  (elf_arc_tdata (abfd)->local_got_tls_type)
+
+static bfd_boolean
+arc_elf_mkobject (bfd *abfd)
+{
+  return bfd_elf_allocate_object (abfd, sizeof (struct elf_arc_obj_tdata),
+                                  ARC_ELF_DATA);
+}
 
 /* Create an entry in an ARC ELF linker hash table.  */
 
@@ -294,6 +320,8 @@ function,name,dstmask) \
 #define ARC_UNSUPPORTED_HOWTO(type,name)  \
  ARC_RELA_HOWTO (type ,0 ,2 ,32,FALSE,0,arc_unsupported_reloc,name,0)
 
+#define ARC_IGNORE_HOWTO(type,name)  \
+ ARC_RELA_HOWTO (type, 0, 2, 32, FALSE, 0, arc_elf_ignore_reloc, name, 0)
 
 static reloc_howto_type elf_arc_howto_table[] =
 {
@@ -435,6 +463,8 @@ static reloc_howto_type elf_arc_howto_table[] =
   ARC_UNSUPPORTED_HOWTO (R_ARC_TLS_TPOFF,"R_ARC_TLS_TPOFF"),
   ARC_RELA_HOWTO (R_ARC_TLS_GD_GOT, 0, 2, 32, FALSE, 0, arcompact_elf_me_reloc,
 		  "R_ARC_TLS_GD_GOT",-1),
+  ARC_IGNORE_HOWTO (R_ARC_TLS_GD_LD,"R_ARC_TLS_GD_LD"),
+  ARC_IGNORE_HOWTO (R_ARC_TLS_GD_CALL,"R_ARC_TLS_GD_CALL"),
   ARC_RELA_HOWTO (R_ARC_TLS_IE_GOT, 0, 2, 32, FALSE, 0, arcompact_elf_me_reloc,
 		  "R_ARC_TLS_IE_GOT",-1),
   ARC_RELA_HOWTO (R_ARC_TLS_LE_S9, 0, 2, 9, FALSE, 0, arcompact_elf_me_reloc,
@@ -535,9 +565,11 @@ short arc_signed_reloc_type[] =
   0, //  R_ARC_TLS_DTPOFF	0x43
   0, //  R_ARC_TLS_TPOFF	0x44
   0, //  R_ARC_TLS_GD_GOT	0x45
-  0, //  R_ARC_TLS_IE_GOT	0x46
-  1, //  R_ARC_TLS_LE_S9	0x47
-  1, //  R_ARC_TLS_LE_32	0x48
+  0, //  R_ARC_TLS_GD_LD	0x46
+  0, //  R_ARC_TLS_GD_CALL	0x47
+  0, //  R_ARC_TLS_IE_GOT	0x48
+  1, //  R_ARC_TLS_LE_S9	0x49
+  1, //  R_ARC_TLS_LE_32	0x4a
 };
 
 
@@ -602,6 +634,8 @@ static const struct arc_reloc_map arc_reloc_map[] =
   { BFD_RELOC_ARC_SDA16_LD1, R_ARC_SDA16_LD1 },
   { BFD_RELOC_ARC_SDA16_LD2, R_ARC_SDA16_LD2 },
   { BFD_RELOC_ARC_TLS_GD_GOT, R_ARC_TLS_GD_GOT },
+  { BFD_RELOC_ARC_TLS_GD_LD,  R_ARC_TLS_GD_LD },
+  { BFD_RELOC_ARC_TLS_GD_CALL,R_ARC_TLS_GD_CALL },
   { BFD_RELOC_ARC_TLS_IE_GOT, R_ARC_TLS_IE_GOT },
   { BFD_RELOC_ARC_TLS_LE_S9,  R_ARC_TLS_LE_S9 },
   { BFD_RELOC_ARC_TLS_LE_32,  R_ARC_TLS_LE_32 },
@@ -1100,6 +1134,22 @@ arcompact_elf_me_reloc (bfd *abfd ,
 
   return bfd_reloc_ok;
 }
+
+/* This function is used for relocs which are only used for (tls model)
+   relaxing, which the linker should otherwise ignore.  */
+
+static bfd_reloc_status_type
+arc_elf_ignore_reloc (bfd *abfd ATTRIBUTE_UNUSED, arelent *reloc_entry,
+		     asymbol *symbol ATTRIBUTE_UNUSED,
+		     void *data ATTRIBUTE_UNUSED, asection *input_section,
+		     bfd *output_bfd,
+		     char **error_message ATTRIBUTE_UNUSED)
+{
+  if (output_bfd != NULL)
+    reloc_entry->address += input_section->output_offset;
+  return bfd_reloc_ok;
+}
+
 
 static bfd_vma
 bfd_get_32_me (bfd * abfd,const unsigned char * data)
@@ -1735,9 +1785,22 @@ elf_arc_check_relocs (bfd *abfd,
 	    }
 	}
 
-      switch (ELF32_R_TYPE (rel->r_info))
+      enum tls_type_e tls_type = GOT_NORMAL;
+      unsigned int r_type = ELF32_R_TYPE (rel->r_info);
+      switch (r_type)
 	{
+	case R_ARC_TLS_IE_GOT:
+	  if (info->shared)
+	    info->flags |= DF_STATIC_TLS;
+	  tls_type = GOT_TLS_IE;
+	  goto create_got;
+
+	case R_ARC_TLS_GD_GOT:
+	  tls_type = GOT_TLS_GD;
+	  goto create_got;
+
 	case R_ARC_GOTPC32:
+	create_got:
 	  /* This symbol requires a global offset table entry.  */
 
 	  if (sgot == NULL)
@@ -1768,6 +1831,22 @@ elf_arc_check_relocs (bfd *abfd,
 
 	  if (h != NULL)
 	    {
+	      struct elf_ARC_link_hash_entry *ah
+		= (struct elf_ARC_link_hash_entry *) h;
+	      if (ah->tls_type != tls_type && ah->tls_type != GOT_UNKNOWN)
+		{
+		  if (tls_type == GOT_TLS_IE && ah->tls_type == GOT_TLS_GD)
+		    /* No change - this is ok.  */;
+		  else if (tls_type == GOT_TLS_GD && ah->tls_type == GOT_TLS_IE)
+		    /* Transition GD->IE.  */
+		    tls_type = GOT_TLS_IE;
+		  else
+		    (*_bfd_error_handler)
+		      (_("%B: %s' accessed both as normal and thread local symbol"),
+		       abfd, h->root.root.string);
+		}
+
+	      ah->tls_type = tls_type;
 	      if (h->got.offset != (bfd_vma) -1)
 		{
 		  BFD_DEBUG_PIC(fprintf(stderr, "got entry stab entry already done%d\n",r_symndx));
@@ -1790,6 +1869,10 @@ elf_arc_check_relocs (bfd *abfd,
 
 	      BFD_DEBUG_PIC(fprintf (stderr, "Got raw size increased\n"));
 	      srelgot->size += sizeof (Elf32_External_Rela);
+#if 0 /* Fixme: check.  */
+	      if (r_type == R_ARC_TLS_GD_GOT)
+		srelgot->size += sizeof (Elf32_External_Rela);
+#endif
 	    }
 	  else
 	    {
@@ -1800,11 +1883,15 @@ elf_arc_check_relocs (bfd *abfd,
 		  size_t size;
 		  register unsigned int i;
 
-		  size = symtab_hdr->sh_info * sizeof (bfd_vma);
+		  size
+		    = symtab_hdr->sh_info * (sizeof (bfd_vma) + sizeof (char));
 		  local_got_offsets = (bfd_vma *) bfd_alloc (abfd, size);
 		  if (local_got_offsets == NULL)
 		    return FALSE;
 		  elf_local_got_offsets (abfd) = local_got_offsets;
+		  elf_arc_local_got_tls_type (abfd)
+		    = (char *) (local_got_offsets + symtab_hdr->sh_info);
+
 		  for (i = 0; i < symtab_hdr->sh_info; i++)
 		    local_got_offsets[i] = (bfd_vma) -1;
 		}
@@ -1827,12 +1914,22 @@ elf_arc_check_relocs (bfd *abfd,
 		     output a R_ARC_RELATIVE reloc so that the dynamic
 		     linker can adjust this GOT entry.  */
 		  srelgot->size += sizeof (Elf32_External_Rela);
+#if 0 /* Fixme: check.
+		  if (r_type == R_ARC_TLS_GD_GOT)
+		    /* And a R_ARC_TLS_DTPOFF reloc as well.  */
+		    srelgot->size += sizeof (Elf32_External_Rela);
+#endif
 		}
+	      elf_arc_local_got_tls_type (abfd) [r_symndx] = tls_type;
 	    }
 
 	  BFD_DEBUG_PIC(fprintf (stderr, "Got raw size increased\n"));
 
 	  sgot->size += 4;
+	  if (r_type == R_ARC_TLS_GD_GOT)
+	    sgot->size += 4;
+	  if (r_type == R_ARC_TLS_GD_GOT || r_type == R_ARC_TLS_IE_GOT)
+	    goto need_shared_reloc;
 
 	  break;
 
@@ -1878,6 +1975,7 @@ elf_arc_check_relocs (bfd *abfd,
 	  /* FALLTHROUGH */
 	case R_ARC_PC32:
 	case R_ARC_32_PCREL:
+	need_shared_reloc:
 	  /* If we are creating a shared library, and this is a reloc
 	     against a global symbol, or a non PC relative reloc
 	     against a local symbol, then we need to copy the reloc
@@ -1891,8 +1989,7 @@ elf_arc_check_relocs (bfd *abfd,
 	     possibility below by storing information in the
 	     pcrel_relocs_copied field of the hash table entry.  */
 	  if (info->shared
-	      && ((ELF32_R_TYPE (rel->r_info) != R_ARC_PC32
-		   && ELF32_R_TYPE (rel->r_info) != R_ARC_32_PCREL)
+	      && ((r_type != R_ARC_PC32 && r_type != R_ARC_32_PCREL)
 		  || (h != NULL
 		      && (!info->symbolic || !h->def_regular))))
 	    {
@@ -1919,8 +2016,8 @@ elf_arc_check_relocs (bfd *abfd,
 		 hash table, which means that h is really a pointer to an
 		 an elf_ARC_link_hash_entry.  */
 
-	      if (ELF32_R_TYPE (rel->r_info) == R_ARC_PC32
-		  || ELF32_R_TYPE (rel->r_info) == R_ARC_32_PCREL)
+	      if (r_type == R_ARC_PC32
+		  || r_type == R_ARC_32_PCREL)
 		{
 		  struct elf_ARC_pcrel_relocs_copied *p;
 		  struct elf_ARC_pcrel_relocs_copied **head;
@@ -3636,7 +3733,7 @@ elf32_arc_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
 #define bfd_elf32_bfd_set_private_flags	        arc_elf_set_private_flags
 #define bfd_elf32_bfd_print_private_bfd_data	arc_elf_print_private_bfd_data
 #define bfd_elf32_bfd_copy_private_bfd_data	arc_elf_copy_private_bfd_data
-
+#define bfd_elf32_mkobject                      arc_elf_mkobject
 
 #define elf_backend_object_p                 arc_elf_object_p
 #define elf_backend_final_write_processing   arc_elf_final_write_processing
