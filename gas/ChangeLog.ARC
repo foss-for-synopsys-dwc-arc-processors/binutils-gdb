@@ -1,3 +1,8 @@
+2014-01-22  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* config/tc-arc.c (md_apply_fix): Use S_SET_THREAD_LOCAL on symbols
+	that are subject to TLS relocations.
+
 2014-01-21  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* config/tc-arc.c (arc_extra_reloc): New function.
