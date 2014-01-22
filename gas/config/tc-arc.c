@@ -6719,11 +6719,13 @@ fprintf (stdout, "Matched syntax %s\n", opcode->syntax);
 		case TLSIE_TYPE:
 		  reloc_type = BFD_RELOC_ARC_TLS_IE_GOT;
 		  break;
-		case TPOFF_TYPE:
-		  reloc_type = BFD_RELOC_ARC_TLS_LE_32;
-		  break;
 		case TPOFF9_TYPE:
 		  reloc_type = BFD_RELOC_ARC_TLS_LE_S9;
+		  if (!arc_cond_p)
+		    break;
+		  /* Fall through.  */
+		case TPOFF_TYPE:
+		  reloc_type = BFD_RELOC_ARC_TLS_LE_32;
 		  break;
 		default:
 		  break;
