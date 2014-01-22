@@ -1,5 +1,10 @@
 2014-01-22  Joern Rennecke  <joern.rennecke@embecosm.com>
 
+	* config/tc-arc.c (md_assemble) <TPOFF9_TYPE>:
+	Use BFD_RELOC_ARC_TLS_LE_32 if insn requires a LIMM.
+
+2014-01-22  Joern Rennecke  <joern.rennecke@embecosm.com>
+
 	* config/tc-arc.c (md_apply_fix): Use S_SET_THREAD_LOCAL on symbols
 	that are subject to TLS relocations.
 
