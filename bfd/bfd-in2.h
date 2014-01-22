@@ -3738,6 +3738,8 @@ of the GOT to the symbol's global offset table entry.  */
 
 /* ARC tls relocations.  */
   BFD_RELOC_ARC_TLS_GD_GOT,
+  BFD_RELOC_ARC_TLS_GD_LD,
+  BFD_RELOC_ARC_TLS_GD_CALL,
   BFD_RELOC_ARC_TLS_IE_GOT,
   BFD_RELOC_ARC_TLS_LE_S9,
   BFD_RELOC_ARC_TLS_LE_32,
