@@ -1,3 +1,10 @@
+2014-01-21  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* config/tc-arc.c (arc_extra_reloc): New function.
+	(md_apply_fix): Handle BFD_RELOC_ARC_TLS_GD_LD and
+	BFD_RELOC_ARC_TLS_GD_CALL.
+	(md_pseudo_table): Add tls_gd_ld and tls_gd_call.
+
 2014-01-19  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* config/tc-arc.c (md_assemble) <@tlsgd,@tlsie>: Set needGOTSymbol.
