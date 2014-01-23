@@ -1,3 +1,11 @@
+2014-01-23  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* elf32-arc.c (arcompact_elf_me_reloc): Handle R_ARC_TLS_GD_GOT /
+	R_ARC_TLS_IE_GOT / R_ARC_TLS_LE_32.
+	(arc_plugin_one_reloc): Handle R_ARC_TLS_GD_GOT / R_ARC_TLS_IE_GOT.
+	(elf_arc_relocate_section): Likewise.
+	(elf_arc_finish_dynamic_symbol): Handle R_ARC_TLS_IE_GOT.
+
 2014-01-22  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* elf32-arc.c (elf_arc_relocate_section) <R_ARC_TLS_LE_{32,S9}>:
