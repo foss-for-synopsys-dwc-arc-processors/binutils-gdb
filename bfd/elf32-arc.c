@@ -1117,6 +1117,9 @@ arcompact_elf_me_reloc (bfd *abfd ,
       break;
   case R_ARC_GOTPC32:
   case R_ARC_32_ME:
+  case R_ARC_TLS_GD_GOT:
+  case R_ARC_TLS_IE_GOT:
+  case R_ARC_TLS_LE_32:
       insn = sym_value;
       break;
   default:
@@ -1628,6 +1631,8 @@ arc_plugin_one_reloc (unsigned long insn, Elf_Internal_Rela *rel,
   case R_ARC_GOTPC32:
   case R_ARC_32_ME:
   case R_ARC_PC32:
+  case R_ARC_TLS_GD_GOT:
+  case R_ARC_TLS_IE_GOT:
   case R_ARC_TLS_LE_32:
       insn = value;
 
@@ -1920,7 +1925,7 @@ elf_arc_check_relocs (bfd *abfd,
 		     output a R_ARC_RELATIVE reloc so that the dynamic
 		     linker can adjust this GOT entry.  */
 		  srelgot->size += sizeof (Elf32_External_Rela);
-#if 0 /* Fixme: check.
+#if 0 /* Fixme: check.  */
 		  if (r_type == R_ARC_TLS_GD_GOT)
 		    /* And a R_ARC_TLS_DTPOFF reloc as well.  */
 		    srelgot->size += sizeof (Elf32_External_Rela);
@@ -2318,6 +2323,11 @@ elf_arc_relocate_section (bfd *output_bfd,
 
       switch (r_type)
 	{
+	case R_ARC_TLS_IE_GOT:
+	  relocation -= elf_hash_table (info)->tls_sec->output_section->vma;
+	  /* Fall through.  */
+	case R_ARC_TLS_GD_GOT:
+	  /* Fall through.  */
 	case R_ARC_GOTPC32:
 	  /* Relocation is to the entry for this symbol in the global
 	     offset table.  */
@@ -2620,6 +2630,7 @@ elf_arc_relocate_section (bfd *output_bfd,
 	    //	    fprintf (stderr, "relocation AFTER = 0x%x SDATA_BEGIN = 0x%x\n", relocation, h2->root.u.def.value);
 	    break;
 	  }
+
 	case R_ARC_TLS_LE_32:
 	case R_ARC_TLS_LE_S9:
 	  /* The value we have is inside the .tbss section; we want
@@ -2919,12 +2930,33 @@ elf_arc_finish_dynamic_symbol (bfd *output_bfd,
 		      + sgot->output_offset
 		      + (h->got.offset &~ 1));
 
+      struct elf_ARC_link_hash_entry *ah = (struct elf_ARC_link_hash_entry *) h;
+      if (ah->tls_type > GOT_NORMAL) switch (ah->tls_type)
+	{
+	case GOT_TLS_GD:
+	  /* Unimplemented.  */
+	  abort();
+	case GOT_TLS_IE:
+	  /* We originally stored the addend in the GOT, but at this
+	     point, we want to move it to the reloc instead as that's
+	     where the dynamic linker wants it.  */
+	  rel.r_addend
+	    = bfd_get_32 (output_bfd, sgot->contents + h->got.offset);
+	  bfd_put_32 (output_bfd, (bfd_vma) 0, sgot->contents + h->got.offset);
+	  if (h->dynindx == -1)
+	    rel.r_info = ELF32_R_INFO (0, R_ARC_TLS_TPOFF);
+	  else
+	    rel.r_info = ELF32_R_INFO (h->dynindx, R_ARC_TLS_TPOFF);
+	  break;
+	default:
+	  abort();
+	}
       /* If this is a -Bsymbolic link, and the symbol is defined
 	 locally, we just want to emit a RELATIVE reloc.  Likewise if
 	 the symbol was forced to be local because of a version file.
 	 The entry in the global offset table will already have been
 	 initialized in the relocate_section function.  */
-      if (info->shared
+      else if (info->shared
 	  && (info->symbolic || h->dynindx == -1)
 	  && h->def_regular)
 	{
