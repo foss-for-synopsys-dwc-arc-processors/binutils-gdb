@@ -211,6 +211,7 @@ elf_ARC_link_hash_newfunc (struct bfd_hash_entry *entry,
   if (ret != (struct elf_ARC_link_hash_entry *) NULL)
     {
       ret->pcrel_relocs_copied = NULL;
+      ret->tls_type = GOT_UNKNOWN;
     }
 
   return (struct bfd_hash_entry *) ret;
