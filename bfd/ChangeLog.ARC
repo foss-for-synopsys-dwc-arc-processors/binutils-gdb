@@ -1,3 +1,7 @@
+2014-01-24  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* elf32-arc.c (elf_ARC_link_hash_newfunc): Initialize ret->tls_type.
+
 2014-01-23  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* elf32-arc.c (arcompact_elf_me_reloc): Handle R_ARC_TLS_GD_GOT /
