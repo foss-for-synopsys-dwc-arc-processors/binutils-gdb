@@ -1,3 +1,11 @@
+2014-01-25  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* elf32-arc.c (elf_arc_relocate_section): Don't complain about
+	R_ARC_TLS_{IE,GD}_GOT relocations against undefined symbols.
+	For R_ARC_TLS_IE, don't try to subtract
+	elf_hash_table (info)->tls_sec->output_section->vma if there is no
+	elf_hash_table (info)->tls_sec.
+
 2014-01-24  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* elf32-arc.c (elf_ARC_link_hash_newfunc): Initialize ret->tls_type.
