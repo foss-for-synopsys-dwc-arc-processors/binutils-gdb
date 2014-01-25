@@ -2254,7 +2254,9 @@ elf_arc_relocate_section (bfd *output_bfd,
 	      if (r_type == R_ARC_GOTPC
 		  || (r_type == R_ARC_PLT32
 		      && h->plt.offset != (bfd_vma) -1)
-		  || (r_type == R_ARC_GOTPC32
+		  || ((r_type == R_ARC_GOTPC32
+		       || r_type == R_ARC_TLS_IE_GOT
+		       || r_type == R_ARC_TLS_GD_GOT)
 		      && elf_hash_table (info)->dynamic_sections_created
 		      && (! info->shared
 			  || (! info->symbolic && h->dynindx != -1)
@@ -2319,7 +2321,8 @@ elf_arc_relocate_section (bfd *output_bfd,
       switch (r_type)
 	{
 	case R_ARC_TLS_IE_GOT:
-	  relocation -= elf_hash_table (info)->tls_sec->output_section->vma;
+	  if (elf_hash_table (info)->tls_sec)
+	    relocation -= elf_hash_table (info)->tls_sec->output_section->vma;
 	  /* Fall through.  */
 	case R_ARC_TLS_GD_GOT:
 	  /* Fall through.  */
