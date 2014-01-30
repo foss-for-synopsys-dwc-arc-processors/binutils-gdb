@@ -5,6 +5,9 @@
 	(elf_arc_relocate_section): Also adjust address for
 	R_ARC_TLS_{IE,GD}_GOT.
 
+	* elf32-arc.c (elf_arc_check_relocs): Remove R_ARC_TLS_{GD,IE}_GOT
+	need_shared_reloc code.
+
 2014-01-27  Joern Rennecke  <joern.rennecke@embecosm.com>
 	Back out this change:
 	2014-01-22  Joern Rennecke  <joern.rennecke@embecosm.com>
