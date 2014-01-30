@@ -1787,6 +1787,8 @@ elf_arc_check_relocs (bfd *abfd,
 	    case R_ARC_GOTPC32:
 	    case R_ARC_GOTOFF:
 	    case R_ARC_GOTPC:
+	    case R_ARC_TLS_IE_GOT:
+	    case R_ARC_TLS_GD_GOT:
 	      elf_hash_table (info)->dynobj = dynobj = abfd;
 	      if (! _bfd_elf_create_got_section (dynobj, info))
 		return FALSE;
@@ -2669,7 +2671,8 @@ elf_arc_relocate_section (bfd *output_bfd,
 
       if (r_type == R_ARC_32_PCREL)
 	relocation -= ((input_section->output_section->vma + input_section->output_offset + rel->r_offset) - offset_in_insn );
-      else if (r_type==R_ARC_PLT32 || r_type==R_ARC_GOTPC || r_type==R_ARC_GOTPC32)
+      else if (r_type==R_ARC_PLT32 || r_type==R_ARC_GOTPC || r_type==R_ARC_GOTPC32
+	       || r_type == R_ARC_TLS_IE_GOT || r_type == R_ARC_TLS_GD_GOT)
 	{
 	  /* For branches we need to find the offset from pcl rounded
 	     down to 4 byte boundary.Hence the (& ~3) */
