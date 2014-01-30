@@ -1,3 +1,10 @@
+2014-01-30  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* elf32-arc.c (elf_arc_check_relocs): Also create got section
+	in static link for R_ARC_TLS_{IE,GD}_GOT.
+	(elf_arc_relocate_section): Also adjust address for
+	R_ARC_TLS_{IE,GD}_GOT.
+
 2014-01-27  Joern Rennecke  <joern.rennecke@embecosm.com>
 	Back out this change:
 	2014-01-22  Joern Rennecke  <joern.rennecke@embecosm.com>
