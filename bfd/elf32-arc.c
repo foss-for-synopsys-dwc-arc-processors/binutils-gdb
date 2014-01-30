@@ -1942,8 +1942,6 @@ elf_arc_check_relocs (bfd *abfd,
 	  sgot->size += 4;
 	  if (r_type == R_ARC_TLS_GD_GOT)
 	    sgot->size += 4;
-	  if (r_type == R_ARC_TLS_GD_GOT || r_type == R_ARC_TLS_IE_GOT)
-	    goto need_shared_reloc;
 
 	  break;
 
@@ -1989,7 +1987,6 @@ elf_arc_check_relocs (bfd *abfd,
 	  /* FALLTHROUGH */
 	case R_ARC_PC32:
 	case R_ARC_32_PCREL:
-	need_shared_reloc:
 	  /* If we are creating a shared library, and this is a reloc
 	     against a global symbol, or a non PC relative reloc
 	     against a local symbol, then we need to copy the reloc
