@@ -2932,8 +2932,30 @@ elf_arc_finish_dynamic_symbol (bfd *output_bfd,
       if (ah->tls_type > GOT_NORMAL) switch (ah->tls_type)
 	{
 	case GOT_TLS_GD:
-	  /* Unimplemented.  */
-	  abort();
+	  /* With the obsolete GD design, DTPMOD is the dtv index.
+	     With the descriptor design, it is the address of a function
+	     that knows the dtv index of the symbol, or a lazy resolver
+	     function that finds and stores the address of the former
+	     kind of function.  The runtime can also further optimize
+	     de-facto initial-exec access by storing adding the module
+	     base to the FTPOFF slot and put the address of a function that
+	     merely fetches that and returns.
+	     So, the actual differences are not in the static linker, but
+	     in gcc and the runtime.  */
+	  bfd_put_32 (output_bfd, (bfd_vma) 0, sgot->contents + h->got.offset);
+	  bfd_put_32 (output_bfd, (bfd_vma) 0,
+		      sgot->contents + h->got.offset + 4);
+	  rel.r_info = ELF32_R_INFO (h->dynindx, R_ARC_TLS_DTPMOD);
+	  rel.r_addend = 0;
+	  bfd_elf32_swap_reloca_out
+	    (output_bfd, & rel,
+	     (bfd_byte *) ((Elf32_External_Rela *) srel->contents
+			   + srel->reloc_count));
+	  ++ srel->reloc_count;
+	  rel.r_info = ELF32_R_INFO (h->dynindx, R_ARC_TLS_DTPOFF);
+	  rel.r_offset += 4;
+	  rel.r_addend = 0;
+	  break;
 	case GOT_TLS_IE:
 	  /* We originally stored the addend in the GOT, but at this
 	     point, we want to move it to the reloc instead as that's

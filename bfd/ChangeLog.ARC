@@ -8,6 +8,8 @@
 	* elf32-arc.c (elf_arc_check_relocs): Remove R_ARC_TLS_{GD,IE}_GOT
 	need_shared_reloc code.
 
+	* elf32-arc.c (elf_arc_finish_dynamic_symbol): Handle GOT_TLS_GD.
+
 2014-01-27  Joern Rennecke  <joern.rennecke@embecosm.com>
 	Back out this change:
 	2014-01-22  Joern Rennecke  <joern.rennecke@embecosm.com>
