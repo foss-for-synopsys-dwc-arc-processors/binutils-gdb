@@ -1,3 +1,8 @@
+2014-02-01  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* elf32-arc.c (TCB_BASE_OFFSET): #if 0 previous definition,
+	define as zero for now.
+
 2014-01-30  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* elf32-arc.c (elf_arc_check_relocs): Also create got section
