@@ -44,6 +44,7 @@
 
 /* The size of the thread control block.  */
 #define TCB_SIZE 8
+#if 0 /* Get the rest of tls support working first.  */
 /* Offset from thread pointer to thread control block.  We use a negative
    offset to make use of the negative part of the 9-bit signed offset range.
    The unscaled range is -256..255.  The data in the thread control block
@@ -52,6 +53,9 @@
    arrange data items that need 8/16 bit access closer to the thread pointer,
    and use scaled offsets to address other thread local data further out.  */
 #define TCB_BASE_OFFSET (-256-TCB_SIZE)
+#else
+#define TCB_BASE_OFFSET 0
+#endif
 
 /* Handle PC relative relocation */
 static bfd_reloc_status_type
