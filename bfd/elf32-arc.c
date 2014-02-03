@@ -1887,7 +1887,7 @@ elf_arc_check_relocs (bfd *abfd,
 
 	      BFD_DEBUG_PIC(fprintf (stderr, "Got raw size increased\n"));
 	      srelgot->size += sizeof (Elf32_External_Rela);
-#if 0 /* Fixme: check.  */
+#if 1 /* Fixme: could do with a single reloc if that was more intelligent.  */
 	      if (r_type == R_ARC_TLS_GD_GOT)
 		srelgot->size += sizeof (Elf32_External_Rela);
 #endif
@@ -2354,8 +2354,7 @@ elf_arc_relocate_section (bfd *output_bfd,
 
 	      if (! elf_hash_table (info)->dynamic_sections_created
 		  || (info->shared
-		      && (info->symbolic || h->dynindx == -1)
-		      && h->def_regular))
+		      && SYMBOL_REFERENCES_LOCAL (info, h)))
 		{
 		  /* This is actually a static link, or it is a
 		     -Bsymbolic link and the symbol is defined
@@ -2926,6 +2925,7 @@ elf_arc_finish_dynamic_symbol (bfd *output_bfd,
       asection *srel;
       Elf_Internal_Rela rel;
       bfd_byte *loc;
+      bfd_vma h_got_offset = h->got.offset & ~1;
 
       /* This symbol has an entry in the global offset table.  Set it
 	 up.  */
@@ -2936,7 +2936,7 @@ elf_arc_finish_dynamic_symbol (bfd *output_bfd,
 
       rel.r_offset = (sgot->output_section->vma
 		      + sgot->output_offset
-		      + (h->got.offset &~ 1));
+		      + h_got_offset);
 
       struct elf_ARC_link_hash_entry *ah = (struct elf_ARC_link_hash_entry *) h;
       if (ah->tls_type > GOT_NORMAL) switch (ah->tls_type)
@@ -2952,9 +2952,9 @@ elf_arc_finish_dynamic_symbol (bfd *output_bfd,
 	     merely fetches that and returns.
 	     So, the actual differences are not in the static linker, but
 	     in gcc and the runtime.  */
-	  bfd_put_32 (output_bfd, (bfd_vma) 0, sgot->contents + h->got.offset);
+	  bfd_put_32 (output_bfd, (bfd_vma) 0, sgot->contents + h_got_offset);
 	  bfd_put_32 (output_bfd, (bfd_vma) 0,
-		      sgot->contents + h->got.offset + 4);
+		      sgot->contents + h_got_offset + 4);
 	  rel.r_info = ELF32_R_INFO (h->dynindx, R_ARC_TLS_DTPMOD);
 	  rel.r_addend = 0;
 	  bfd_elf32_swap_reloca_out
@@ -2971,8 +2971,8 @@ elf_arc_finish_dynamic_symbol (bfd *output_bfd,
 	     point, we want to move it to the reloc instead as that's
 	     where the dynamic linker wants it.  */
 	  rel.r_addend
-	    = bfd_get_32 (output_bfd, sgot->contents + h->got.offset);
-	  bfd_put_32 (output_bfd, (bfd_vma) 0, sgot->contents + h->got.offset);
+	    = bfd_get_32 (output_bfd, sgot->contents + h_got_offset);
+	  bfd_put_32 (output_bfd, (bfd_vma) 0, sgot->contents + h_got_offset);
 	  if (h->dynindx == -1)
 	    rel.r_info = ELF32_R_INFO (0, R_ARC_TLS_TPOFF);
 	  else
