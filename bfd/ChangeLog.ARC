@@ -1,5 +1,14 @@
 2014-02-03  Joern Rennecke  <joern.rennecke@embecosm.com>
 
+	* elf32-arc.c (tls_type_e): Add GOT_TLS_LE.
+	(arc_plugin_one_reloc) <PLT32>: Don't scribble over add or nop.
+	(arc_tls_transition): New function.
+	(elf_arc_check_relocs): Find tls type of global symbols first.
+	Use arc_tls_transition.
+	(elf_arc_relocate_section): Use arc_tls_transition.
+
+2014-02-03  Joern Rennecke  <joern.rennecke@embecosm.com>
+
 	* elf32-arc.c (elf_arc_check_relocs): Adjust R_ARC_TLS_GD_GOT reloc
 	size for shared case too.
 
