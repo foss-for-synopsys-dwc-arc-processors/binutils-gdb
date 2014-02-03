@@ -1926,7 +1926,7 @@ elf_arc_check_relocs (bfd *abfd,
 		     output a R_ARC_RELATIVE reloc so that the dynamic
 		     linker can adjust this GOT entry.  */
 		  srelgot->size += sizeof (Elf32_External_Rela);
-#if 0 /* Fixme: check.  */
+#if 1 /* Fixme: could do with a single reloc if that was more intelligent.  */
 		  if (r_type == R_ARC_TLS_GD_GOT)
 		    /* And a R_ARC_TLS_DTPOFF reloc as well.  */
 		    srelgot->size += sizeof (Elf32_External_Rela);
