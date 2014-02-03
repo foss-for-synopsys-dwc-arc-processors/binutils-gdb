@@ -126,7 +126,7 @@ struct elf_ARC_pcrel_relocs_copied
   bfd_size_type count;
 };
 
-enum tls_type_e { GOT_UNKNOWN, GOT_NORMAL, GOT_TLS_GD, GOT_TLS_IE };
+enum tls_type_e { GOT_UNKNOWN, GOT_NORMAL, GOT_TLS_GD, GOT_TLS_IE, GOT_TLS_LE };
 
 /* ARC ELF linker hash entry.  */
 
@@ -1568,13 +1568,24 @@ arc_plugin_one_reloc (unsigned long insn, Elf_Internal_Rela *rel,
       cases and handle them differently.
     */
 
+/* Insns for valid relocs:
+   bcc  00000ssssssssss0SSSSSSSSSSNQQQQQ
+   b    00000ssssssssss1SSSSSSSSSSNRtttt
+   blcc 00001sssssssss00SSSSSSSSSSNQQQQQ
+   bl   00001sssssssss10SSSSSSSSSSNRtttt
+   Insns for vestigal relocs for __tls_get_addr
+   add  00100bbb00000000FBBBCCCCCCAAAAAA A=0 B=0 C=rtp, IE transition
+   nop  00100110010010100111000000000000                LE transition.  */
     if (insn
 	& ((insn & 0x08000000) ? 0x00020000 : 0x00010000)) /* Non-conditional */
       {
 	insn = insn & 0xf8030030;
 	insn |= (((value >> 2) & 0x780000) >> 19);
       }
-    else /* Conditional */
+    else if (insn & 0x20000000)
+      /* add or nop, leave it alone.  */
+      break;
+    else
       {
 	insn = insn & 0xf803003f;
       }
@@ -1722,6 +1733,89 @@ arc_plugin_one_reloc (unsigned long insn, Elf_Internal_Rela *rel,
   return insn;
 }
 
+/* Return the reloc type of REL, taking into account tls type information
+   for the symbol described by H.
+   If CONTENTS is non-null, adjust the code if we change the reloc type.  */
+static enum elf_arc_reloc_type
+arc_tls_transition (const Elf_Internal_Rela *rel, struct elf_link_hash_entry *h,
+		    bfd *abfd, bfd_byte *contents)
+{
+  int rtp = 25; /* FIXME: should be able to set rtp by option.  */
+
+  struct elf_ARC_link_hash_entry *ah = (struct elf_ARC_link_hash_entry *) h;
+  unsigned int r_type = ELF32_R_TYPE (rel->r_info);
+  if (ah) switch (r_type)
+    {
+    case R_ARC_TLS_IE_GOT:
+      if (ah->tls_type == GOT_TLS_LE)
+	{
+	  if (contents)
+	    {
+	      /* ld rn,[pcl,symbol@tlsie] -> mov rn,symbol@tpoff */
+	      long insn = bfd_get_32_me (abfd, contents + rel->r_offset - 4);
+	      insn &= 0x3f;
+	      insn = (insn & 7) << 24 | (insn & 56) << 9 | 0x200A0F80;
+	      bfd_put_32_me (abfd, insn, contents + rel->r_offset - 4);
+	    }
+	  return R_ARC_TLS_LE_32;
+	}
+      break;
+    case R_ARC_TLS_GD_GOT:
+      if (ah->tls_type == GOT_TLS_LE)
+	{
+	  if (contents)
+	    {
+	      /* add r0,pcl,symbol@tlsgd -> add r0,rtp,symbol@tpoff */
+	      long insn = 0x20000F80 | (rtp & 7) << 24 | (rtp & 56) << (12-3);
+	      bfd_put_32_me (abfd, insn, contents + rel->r_offset - 4);
+	    }
+	  return R_ARC_TLS_LE_32;
+	}
+      if (ah->tls_type == GOT_TLS_IE)
+	{
+	  if (contents)
+	    {
+	      /* add r0,pcl,symbol@tlsgd -> ld r0,[pcl,symbol@tlsie] */
+	      bfd_put_32_me (abfd, 0x27307F80, contents + rel->r_offset - 4);
+	    }
+	  return R_ARC_TLS_IE_GOT;
+	}
+      break;
+    case R_ARC_TLS_GD_LD:
+      if (contents && ah->tls_type == GOT_TLS_IE)
+	{
+	  /* ... -> add r0,r0,rtp ; need long add in case rtp is r30 on v2.  */
+	  if (rtp == 30
+	      || (bfd_get_16 (abfd, contents + rel->r_offset) & 0xf800)
+		 <= 0x2000)
+	    /* Existing insn must be either long, or short load followed by
+	       short call, without R_ARC_TLS_GD_CALL reloc.  */
+	    bfd_put_32_me (abfd, 0x20000000 | rtp << 6,
+			   contents + rel->r_offset);
+	  else
+	    bfd_put_16 (abfd, 0x7000 | (rtp & 7) << 5 | (rtp >> 3 & 24),
+			contents + rel->r_offset);
+	  return R_ARC_NONE;
+	}
+      /* Fall through.  */
+    case R_ARC_TLS_GD_CALL:
+      if (contents && ah->tls_type != GOT_TLS_GD)
+	{
+	  /* R_ARC_TLS_GD_LD (obsolete): bl __tls_get_addr@plt -> nop */
+	  /* R_ARC_TLS_GD_LD:   ld(_s)... -> nop(_s) */
+	  /* R_ARC_TLS_GD_CALL: jl(_s)(.d)-> nop(_s) */
+	  if ((bfd_get_16 (abfd, contents + rel->r_offset) & 0xf800) <= 0x2000)
+	    bfd_put_32_me (abfd, 0x264A7000, contents + rel->r_offset);
+	  else
+	    bfd_put_16 (abfd, 0x78E0, contents + rel->r_offset);
+	}
+      return R_ARC_NONE;
+    default:
+      break;
+    }
+  return r_type;
+}
+
 /* Function : elf_arc_check_relocs
  * Brief    : Check the relocation entries and take any special
  *           actions, depending on the relocation type if needed.
@@ -1761,6 +1855,39 @@ elf_arc_check_relocs (bfd *abfd,
   sreloc = NULL;
 
   rel_end = relocs + sec->reloc_count;
+  for (rel = relocs; rel < rel_end; rel++)
+    {
+      unsigned int r_type = ELF32_R_TYPE (rel->r_info);
+      enum tls_type_e tls_type;
+      switch (r_type)
+	{
+	case R_ARC_TLS_LE_32:
+	case R_ARC_TLS_LE_S9:
+	  tls_type = GOT_TLS_LE;
+	  break;
+	case R_ARC_TLS_IE_GOT:
+	  tls_type = GOT_TLS_IE;
+	  break;
+	case R_ARC_TLS_GD_GOT:
+	  tls_type = GOT_TLS_GD;
+	  break;
+	default:
+	  continue;
+	}
+      unsigned long r_symndx = ELF32_R_SYM (rel->r_info);
+      if (r_symndx < symtab_hdr->sh_info)
+	continue;
+      struct elf_link_hash_entry *h
+	= sym_hashes[r_symndx - symtab_hdr->sh_info];
+      struct elf_ARC_link_hash_entry *ah
+	= (struct elf_ARC_link_hash_entry *) h;
+      if (ah->tls_type == GOT_UNKNOWN
+	  || (ah->tls_type == GOT_TLS_GD
+	      && (tls_type == GOT_TLS_IE || tls_type == GOT_TLS_LE))
+	  || (ah->tls_type == GOT_TLS_IE && tls_type == GOT_TLS_LE))
+	ah->tls_type = tls_type;
+    }
+
   for (rel = relocs; rel < rel_end; rel++)
     {
       unsigned long r_symndx;
@@ -1804,7 +1931,7 @@ elf_arc_check_relocs (bfd *abfd,
 	}
 
       enum tls_type_e tls_type = GOT_NORMAL;
-      unsigned int r_type = ELF32_R_TYPE (rel->r_info);
+      enum elf_arc_reloc_type r_type = arc_tls_transition (rel, h, NULL, NULL);
       switch (r_type)
 	{
 	case R_ARC_TLS_IE_GOT:
@@ -2168,7 +2295,7 @@ elf_arc_relocate_section (bfd *output_bfd,
       unsigned long insn;
 
 
-      r_type = ELF32_R_TYPE (rel->r_info);
+      r_type = arc_tls_transition (rel, h, input_bfd, contents);
 
       if (r_type >= (int) R_ARC_max)
 	{
