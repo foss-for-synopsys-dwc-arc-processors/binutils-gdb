@@ -1,3 +1,13 @@
+2014-02-03  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* elf32-arc.c (elf_arc_finish_dynamic_symbol): Mask out bit 0
+	(the 'initialized flag) of got offset in order to read got.
+
+	* elf32-arc.c (elf_arc_relocate_section): Use SYMBOL_REFERENCES_LOCAL.
+
+	* elf32-arc.c (elf_arc_check_relocs): Global dynamic needs two
+	relocs for now.
+
 2014-02-01  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* elf32-arc.c (TCB_BASE_OFFSET): #if 0 previous definition,
