@@ -1,5 +1,10 @@
 2014-02-03  Joern Rennecke  <joern.rennecke@embecosm.com>
 
+	* elf32-arc.c (elf_arc_check_relocs): Adjust R_ARC_TLS_GD_GOT reloc
+	size for shared case too.
+
+2014-02-03  Joern Rennecke  <joern.rennecke@embecosm.com>
+
 	* elf32-arc.c (elf_arc_finish_dynamic_symbol): Mask out bit 0
 	(the 'initialized flag) of got offset in order to read got.
 
