@@ -2220,7 +2220,7 @@ elf_arc_relocate_section (bfd *output_bfd,
       unsigned long insn;
 
 
-      r_type = arc_tls_transition (rel, h, input_bfd, contents);
+      r_type = ELF32_R_TYPE (rel->r_info);
       
       if (r_type >= (int) R_ARC_max)
 	{
@@ -2377,6 +2377,7 @@ elf_arc_relocate_section (bfd *output_bfd,
       BFD_DEBUG_PIC ( fprintf (stderr, "Relocation = %d (%x)\n", relocation, relocation));
 
 
+      r_type = arc_tls_transition (rel, h, input_bfd, contents);
       switch (r_type)
 	{
 	case R_ARC_TLS_IE_GOT:

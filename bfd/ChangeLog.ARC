@@ -4,6 +4,9 @@
 	Handle addend.
 	(elf_arc_check_relocs): Remove unfulfillable check.
 
+	* elf32-arc.c (elf_arc_relocate_section): Call arc_tls_transition
+	only after we got the hash entry for the symbol.
+
 2014-02-04  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* elf32-arc.c (struct elf_ARC_link_hash_entry): New member
