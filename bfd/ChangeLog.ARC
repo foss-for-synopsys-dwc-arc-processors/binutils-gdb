@@ -1,3 +1,20 @@
+2014-02-04  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* elf32-arc.c (struct elf_ARC_link_hash_entry): New member
+	alloc_deferred.
+	(elf_ARC_link_hash_newfunc): Initialize it.
+	(arc_plugin_one_reloc): Change second argument to
+	enum elf_arc_reloc_type r_type.  Changed caller.
+	Ignore R_ARC_NONE.
+	(elf_arc_check_relocs): Remove code that tries to find out
+	tls type first (which was pointless as it looked only at one
+	module).  Add code to set tls_type tp GOT_TLS_LE in the normal
+	switch.
+	Defer allocation of R_ARC_TLS_GD_GOT.
+	(arc_allocate_gd_got): New function.
+	(elf_arc_size_dynamic_sections): Call traverse has table using
+	arc_allocate_gd_got.
+
 2014-02-03  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* elf32-arc.c (tls_type_e): Add GOT_TLS_LE.
