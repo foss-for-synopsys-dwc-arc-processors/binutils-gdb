@@ -137,6 +137,7 @@ struct elf_ARC_link_hash_entry
   /* Number of PC relative relocs copied for this symbol.  */
   struct elf_ARC_pcrel_relocs_copied *pcrel_relocs_copied;
   enum tls_type_e tls_type;
+  unsigned alloc_deferred: 1;
 };
 
 /* ARC ELF linker hash table.  */
@@ -215,6 +216,7 @@ elf_ARC_link_hash_newfunc (struct bfd_hash_entry *entry,
     {
       ret->pcrel_relocs_copied = NULL;
       ret->tls_type = GOT_UNKNOWN;
+      ret->alloc_deferred = 0;
     }
 
   return (struct bfd_hash_entry *) ret;
@@ -1340,7 +1342,7 @@ static const insn_hword elf_arcV2_pic_pltn_entry [PLT_ENTRY_SIZE_V2/2] =
  *           assumed to have been read in the correct format (ME / LE/ BE)
  * Args    : 1. insn              : the original insn into which the relocated
  *                                  value has to be filled in.
- *           2. rel               : the relocation entry.
+             2. r_type            : relocation type after tls transition.
  *           3. value             : the value to be plugged in the insn.
  *           4. overflow_detected : Pointer to short to indicate relocation
  *                                  overflows.
@@ -1349,17 +1351,15 @@ static const insn_hword elf_arcV2_pic_pltn_entry [PLT_ENTRY_SIZE_V2/2] =
  * Returns : the insn with the relocated value plugged in.
  */
 static unsigned long
-arc_plugin_one_reloc (unsigned long insn, Elf_Internal_Rela *rel,
-		      int value,
-		      short *overflow_detected, bfd_boolean symbol_defined
+arc_plugin_one_reloc (unsigned long insn, enum elf_arc_reloc_type r_type,
+                      int value,
+                      short *overflow_detected, bfd_boolean symbol_defined
 		      )
 {
   unsigned long offset;
   long long check_overfl_pos,check_overfl_neg;
   reloc_howto_type *howto;
-  enum elf_arc_reloc_type r_type;
 
-  r_type           = ELF32_R_TYPE (rel->r_info);
   howto            = arc_elf_calculate_howto_index(r_type);
   int scale = 0;
 
@@ -1722,6 +1722,9 @@ arc_plugin_one_reloc (unsigned long insn, Elf_Internal_Rela *rel,
       }
     break;
 
+  case R_ARC_NONE:
+    break;
+
   default:
     /* FIXME:: This should go away once the HOWTO Array
        is used for this purpose.
@@ -1857,39 +1860,6 @@ elf_arc_check_relocs (bfd *abfd,
   rel_end = relocs + sec->reloc_count;
   for (rel = relocs; rel < rel_end; rel++)
     {
-      unsigned int r_type = ELF32_R_TYPE (rel->r_info);
-      enum tls_type_e tls_type;
-      switch (r_type)
-	{
-	case R_ARC_TLS_LE_32:
-	case R_ARC_TLS_LE_S9:
-	  tls_type = GOT_TLS_LE;
-	  break;
-	case R_ARC_TLS_IE_GOT:
-	  tls_type = GOT_TLS_IE;
-	  break;
-	case R_ARC_TLS_GD_GOT:
-	  tls_type = GOT_TLS_GD;
-	  break;
-	default:
-	  continue;
-	}
-      unsigned long r_symndx = ELF32_R_SYM (rel->r_info);
-      if (r_symndx < symtab_hdr->sh_info)
-	continue;
-      struct elf_link_hash_entry *h
-	= sym_hashes[r_symndx - symtab_hdr->sh_info];
-      struct elf_ARC_link_hash_entry *ah
-	= (struct elf_ARC_link_hash_entry *) h;
-      if (ah->tls_type == GOT_UNKNOWN
-	  || (ah->tls_type == GOT_TLS_GD
-	      && (tls_type == GOT_TLS_IE || tls_type == GOT_TLS_LE))
-	  || (ah->tls_type == GOT_TLS_IE && tls_type == GOT_TLS_LE))
-	ah->tls_type = tls_type;
-    }
-
-  for (rel = relocs; rel < rel_end; rel++)
-    {
       unsigned long r_symndx;
       struct elf_link_hash_entry *h;
       BFD_DEBUG_PIC (fprintf(stderr,"Processing reloc #%d in %s\n",
@@ -1934,6 +1904,20 @@ elf_arc_check_relocs (bfd *abfd,
       enum elf_arc_reloc_type r_type = arc_tls_transition (rel, h, NULL, NULL);
       switch (r_type)
 	{
+	case R_ARC_TLS_LE_32:
+	case R_ARC_TLS_LE_S9:
+	  {
+	    struct elf_ARC_link_hash_entry *ah
+	      = (struct elf_ARC_link_hash_entry *) h;
+	    tls_type = GOT_TLS_LE;
+	    if (ah->tls_type == GOT_NORMAL)
+	      (*_bfd_error_handler)
+		(_("%B: %s' accessed both as normal and thread local symbol"),
+		 abfd, h->root.root.string);
+	    ah->tls_type = tls_type;
+	    break;
+	  }
+
 	case R_ARC_TLS_IE_GOT:
 	  if (info->shared)
 	    info->flags |= DF_STATIC_TLS;
@@ -1999,25 +1983,30 @@ elf_arc_check_relocs (bfd *abfd,
 		  /* We have already allocated space in the .got.  */
 		  break;
 		}
-
-
-	      h->got.offset = sgot->size;
-	      BFD_DEBUG_PIC(fprintf(stderr, "got entry stab entry %d got offset=0x%x\n",r_symndx,
-				    h->got.offset));
-
+	      if (ah->alloc_deferred)
+		{
+		  if (r_type == R_ARC_TLS_GD_GOT)
+		    break;
+		  ah->alloc_deferred = 0;
+		}
 	      /* Make sure this symbol is output as a dynamic symbol.  */
-	      if (h->dynindx == -1 && !h->forced_local)
+	      else if (h->dynindx == -1 && !h->forced_local)
 		{
 		  if (! bfd_elf_link_record_dynamic_symbol (info, h))
 		    return FALSE;
 		}
 
+	      if (r_type == R_ARC_TLS_GD_GOT)
+		{
+		  ah->alloc_deferred = 1;
+		  break;
+		}
+	      h->got.offset = sgot->size;
+	      BFD_DEBUG_PIC(fprintf(stderr, "got entry stab entry %d got offset=0x%x\n",r_symndx,
+				    h->got.offset));
+
 	      BFD_DEBUG_PIC(fprintf (stderr, "Got raw size increased\n"));
 	      srelgot->size += sizeof (Elf32_External_Rela);
-#if 1 /* Fixme: could do with a single reloc if that was more intelligent.  */
-	      if (r_type == R_ARC_TLS_GD_GOT)
-		srelgot->size += sizeof (Elf32_External_Rela);
-#endif
 	    }
 	  else
 	    {
@@ -2836,7 +2825,7 @@ elf_arc_relocate_section (bfd *output_bfd,
       BFD_DEBUG_PIC(fprintf(stderr, "relocation AFTER the pc relative handling = %d[0x%x]\n", relocation, relocation));
 
       /* What does the modified insn look like */
-      insn = arc_plugin_one_reloc (insn, rel, relocation,
+      insn = arc_plugin_one_reloc (insn, r_type, relocation,
 				   &overflow_detected, symbol_defined);
 
       if (overflow_detected)
@@ -3592,6 +3581,36 @@ elf_arc_adjust_dynamic_symbol (struct bfd_link_info *info,
   return TRUE;
 }
 
+/* This function is called via elf_link_hash_traverse if we are
+   creating a shared object.  We defer allocating GOT space for
+   global-dynamic tls symbols because they could be changed by merging
+   with symbols from other input bfds into initial-exec or local-exec,
+   which need less space.  */
+
+static bfd_boolean
+arc_allocate_gd_got (struct elf_link_hash_entry *h, void * inf)
+{
+  struct bfd_link_info *info = (struct bfd_link_info *) inf;
+  struct elf_ARC_link_hash_entry *ah = (struct elf_ARC_link_hash_entry *) h;
+  bfd *dynobj;
+  asection *sgot;
+  asection *srelgot;
+
+  if (ah->tls_type != GOT_TLS_GD || !ah->alloc_deferred)
+    return TRUE;
+  dynobj = elf_hash_table (info)->dynobj;
+  sgot = bfd_get_section_by_name (dynobj, ".got");
+  BFD_ASSERT (sgot != NULL);
+  srelgot = bfd_get_section_by_name (dynobj, ".rela.got");
+  BFD_ASSERT (srelgot != NULL);
+  /* Fixme: could do with a single reloc if that was more intelligent.  */
+  srelgot->size += 2 * sizeof (Elf32_External_Rela);
+  BFD_ASSERT (h->got.offset == (bfd_vma) -1);
+  h->got.offset = sgot->size;
+  sgot->size += 8;
+  return TRUE;
+}
+
 /* Set the sizes of the dynamic sections.  */
 
 static bfd_boolean
@@ -3606,6 +3625,10 @@ elf_arc_size_dynamic_sections (bfd *output_bfd,
 
   dynobj = elf_hash_table (info)->dynobj;
   BFD_ASSERT (dynobj != NULL);
+
+  if (info->shared)
+    elf_link_hash_traverse (elf_hash_table (info),
+			    arc_allocate_gd_got, info);
 
   if (elf_hash_table (info)->dynamic_sections_created)
     {
