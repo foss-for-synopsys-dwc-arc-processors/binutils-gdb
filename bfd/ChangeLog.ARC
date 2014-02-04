@@ -1,5 +1,11 @@
 2014-02-04  Joern Rennecke  <joern.rennecke@embecosm.com>
 
+	* elf32-arc.c (arc_tls_transition) <R_ARC_TLS_GD_LD>:
+	Handle addend.
+	(elf_arc_check_relocs): Remove unfulfillable check.
+
+2014-02-04  Joern Rennecke  <joern.rennecke@embecosm.com>
+
 	* elf32-arc.c (struct elf_ARC_link_hash_entry): New member
 	alloc_deferred.
 	(elf_ARC_link_hash_newfunc): Initialize it.
