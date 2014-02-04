@@ -1785,20 +1785,57 @@ arc_tls_transition (const Elf_Internal_Rela *rel, struct elf_link_hash_entry *h,
 	}
       break;
     case R_ARC_TLS_GD_LD:
-      if (contents && ah->tls_type == GOT_TLS_IE)
+      if (contents && ah->tls_type != GOT_TLS_GD)
 	{
-	  /* ... -> add r0,r0,rtp ; need long add in case rtp is r30 on v2.  */
-	  if (rtp == 30
-	      || (bfd_get_16 (abfd, contents + rel->r_offset) & 0xf800)
-		 <= 0x2000)
-	    /* Existing insn must be either long, or short load followed by
-	       short call, without R_ARC_TLS_GD_CALL reloc.  */
-	    bfd_put_32_me (abfd, 0x20000000 | rtp << 6,
-			   contents + rel->r_offset);
-	  else
-	    bfd_put_16 (abfd, 0x7000 | (rtp & 7) << 5 | (rtp >> 3 & 24),
-			contents + rel->r_offset);
-	  return R_ARC_NONE;
+	  bfd_byte *loc = contents + rel->r_offset;
+	  bfd_boolean insn_long = (bfd_get_16 (abfd, loc) & 0xf800) <= 0x2000;
+	  /* Where the compiler finds to can/(wants to) arrange the
+	     dispatch to be movable to be adjacent to the load, it
+	     should omit the R_ARC_TLS_GD_CALL reloc on the dispatch
+	     and instead put an addend into the R_ARC_TLS_GD_LD reloc
+	     to describe the offset to the dispatch.  */
+	  BFD_ASSERT ((rel->r_addend & 1) == 0);
+	  BFD_ASSERT (!insn_long || rel->r_addend == 0);
+	  bfd_boolean short_dispatch
+	    = rel->r_addend && (bfd_get_16 (abfd, loc + rel->r_addend) & 0x400);
+	  bfd_boolean need_long
+	    = (ah->tls_type == GOT_TLS_IE
+	       && bfd_get_mach (abfd) == bfd_mach_arc_arcv2
+	       && rtp == 30);
+	  /* If the dispatch is long - that could be for scheduling reasons -
+	     make its second half into a nop_s.  */
+	  if (need_long && rel->r_addend && !short_dispatch)
+	    bfd_put_16 (abfd, 0x78E0, loc + rel->r_addend + 2);
+	  /* If we don't use the dispatch, nop it out.  */
+	  else if (!need_long && rel->r_addend > 2)
+	    {
+	      if (short_dispatch)
+		bfd_put_16 (abfd, 0x78E0, loc + rel->r_addend);
+	      else
+		bfd_put_32_me (abfd, 0x264A7000, loc + rel->r_addend);
+	    }
+	  if (need_long || short_dispatch)
+	    {
+	      bfd_vma off;
+	      /* If necessary, move the intervening code.  */
+	      for (off = rel->r_addend; off > 2; off -= 2)
+		bfd_put_16 (abfd, bfd_get_16 (abfd, loc + off - 2), loc + off);
+	      BFD_ASSERT (insn_long || rel->r_addend);
+	      /* Write a long nop.  */
+	      bfd_put_32_me (abfd, 0x264A7000, loc);
+	      insn_long = TRUE;
+	    }
+	  if (ah->tls_type == GOT_TLS_IE)
+	    {
+	      /* ... -> add r0,r0,rtp ; need long add in case rtp is r30 on v2.  */
+	      if (insn_long)
+		bfd_put_32_me (abfd, 0x20000000 | rtp << 6,
+			       contents + rel->r_offset);
+	      else
+		bfd_put_16 (abfd, 0x7000 | (rtp & 7) << 5 | (rtp >> 3 & 24),
+			    contents + rel->r_offset);
+	      return R_ARC_NONE;
+	    }
 	}
       /* Fall through.  */
     case R_ARC_TLS_GD_CALL:
@@ -1966,9 +2003,6 @@ elf_arc_check_relocs (bfd *abfd,
 		{
 		  if (tls_type == GOT_TLS_IE && ah->tls_type == GOT_TLS_GD)
 		    /* No change - this is ok.  */;
-		  else if (tls_type == GOT_TLS_GD && ah->tls_type == GOT_TLS_IE)
-		    /* Transition GD->IE.  */
-		    tls_type = GOT_TLS_IE;
 		  else
 		    (*_bfd_error_handler)
 		      (_("%B: %s' accessed both as normal and thread local symbol"),
