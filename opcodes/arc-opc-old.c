@@ -4609,6 +4609,7 @@ static const struct arc_operand_value arc_reg_names_em[] =
   { "gp", 26, REG_AC, 0 }, { "fp", 27, REG_AC, 0 }, { "sp", 28, REG_AC, 0 },
   { "ilink", 29, REG_AC, 0 },
   { "blink", 31, REG_AC, 0 },
+  { "r58", 58, REG_AC, 0 }, { "r59", 59, REG_AC, 0 },
   { "lp_count", 60, REG_AC, 0 }, { "r60", 60, REG_AC, 0 },
   { "pcl", 63, REG_AC, ARC_REGISTER_READONLY },
   { "r63", 63, REG_AC, ARC_REGISTER_READONLY },
