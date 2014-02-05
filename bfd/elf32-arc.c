@@ -3110,6 +3110,13 @@ elf_arc_finish_dynamic_symbol (bfd *output_bfd,
 	  rel.r_offset += 4;
 	  rel.r_addend = 0;
 	  break;
+	case GOT_TLS_LE:
+	  /* FIXME: we can get here because we allocate the got slot for
+	     GOT_TLS_IE before we know if we really need it, see comment
+	     above arc_allocate_gd_got.  */
+	  BFD_ASSERT (info->executable);
+	  BFD_ASSERT (SYMBOL_REFERENCES_LOCAL (info, h));
+	  /* Fall through.  */
 	case GOT_TLS_IE:
 	  /* We originally stored the addend in the GOT, but at this
 	     point, we want to move it to the reloc instead as that's
