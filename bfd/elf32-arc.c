@@ -2398,6 +2398,7 @@ elf_arc_relocate_section (bfd *output_bfd,
 	    h = (struct elf_link_hash_entry *) h->root.u.i.link;
 
 	  BFD_ASSERT ((h->dynindx == -1) >= (h->forced_local != 0));
+	  r_type = arc_tls_transition (rel, h, input_bfd, contents);
 	  /* if we have encountered a definition for this symbol */
 	  if (h->root.type == bfd_link_hash_defined
 	      || h->root.type == bfd_link_hash_defweak)
@@ -2470,7 +2471,6 @@ elf_arc_relocate_section (bfd *output_bfd,
       BFD_DEBUG_PIC ( fprintf (stderr, "Relocation = %d (%x)\n", relocation, relocation));
 
 
-      r_type = arc_tls_transition (rel, h, input_bfd, contents);
       switch (r_type)
 	{
 	case R_ARC_TLS_IE_GOT:
@@ -3609,6 +3609,13 @@ elf_arc_adjust_dynamic_symbol (struct bfd_link_info *info,
   return TRUE;
 }
 
+/* FIXME: we would likely get better locality for GOT access in the executable
+   if we used a linked list to preserve ordering within GD GOT entries;
+   moreover, we could sometimes avoid creating IE GOT entires if we deferred
+   creating these too until elf_arc_size_dynamic_sections, when we know if
+   these syms are referenced locally.
+   Also, doing this as processing a list would allow us to avoid lots of
+   bfd_get_section_by_name calls to find sgot / srelgot.  */
 /* This function is called via elf_link_hash_traverse if we are
    creating a shared object.  We defer allocating GOT space for
    global-dynamic tls symbols because they could be changed by merging
@@ -3624,6 +3631,10 @@ arc_allocate_gd_got (struct elf_link_hash_entry *h, void * inf)
   asection *sgot;
   asection *srelgot;
 
+  if (info->executable
+      && h && (ah->tls_type == GOT_TLS_IE || ah->tls_type == GOT_TLS_GD)
+      && SYMBOL_REFERENCES_LOCAL (info, h))
+    ah->tls_type = GOT_TLS_LE;
   if (ah->tls_type != GOT_TLS_GD || !ah->alloc_deferred)
     return TRUE;
   dynobj = elf_hash_table (info)->dynobj;
@@ -3654,7 +3665,7 @@ elf_arc_size_dynamic_sections (bfd *output_bfd,
   dynobj = elf_hash_table (info)->dynobj;
   BFD_ASSERT (dynobj != NULL);
 
-  if (info->shared)
+  if (elf_hash_table (info)->dynamic_sections_created)
     elf_link_hash_traverse (elf_hash_table (info),
 			    arc_allocate_gd_got, info);
 
