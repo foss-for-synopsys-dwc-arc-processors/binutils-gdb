@@ -11,6 +11,9 @@
 
 	* elf32-arc.c (elf_arc_finish_dynamic_symbol): Handle GOT_TLS_LE.
 
+	* elf32-arc.c (elf_arc_finish_dynamic_symbol): Only use addend from
+	GOT in the h->dynindx == -1 case.
+
 2014-02-04  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* elf32-arc.c (arc_tls_transition) <R_ARC_TLS_GD_LD>:
