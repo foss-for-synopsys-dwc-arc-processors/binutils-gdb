@@ -3124,16 +3124,21 @@ elf_arc_finish_dynamic_symbol (bfd *output_bfd,
 	  BFD_ASSERT (SYMBOL_REFERENCES_LOCAL (info, h));
 	  /* Fall through.  */
 	case GOT_TLS_IE:
-	  /* We originally stored the addend in the GOT, but at this
-	     point, we want to move it to the reloc instead as that's
-	     where the dynamic linker wants it.  */
-	  rel.r_addend
-	    = bfd_get_32 (output_bfd, sgot->contents + h_got_offset);
-	  bfd_put_32 (output_bfd, (bfd_vma) 0, sgot->contents + h_got_offset);
 	  if (h->dynindx == -1)
-	    rel.r_info = ELF32_R_INFO (0, R_ARC_TLS_TPOFF);
+	    {
+	      /* We originally stored the addend in the GOT, but at this
+		 point, we want to move it to the reloc instead as that's
+		 where the dynamic linker wants it.  */
+	      rel.r_addend
+		= bfd_get_32 (output_bfd, sgot->contents + h_got_offset);
+	      rel.r_info = ELF32_R_INFO (0, R_ARC_TLS_TPOFF);
+	    }
 	  else
-	    rel.r_info = ELF32_R_INFO (h->dynindx, R_ARC_TLS_TPOFF);
+	    {
+	      rel.r_addend = 0;
+	      rel.r_info = ELF32_R_INFO (h->dynindx, R_ARC_TLS_TPOFF);
+	    }
+	  bfd_put_32 (output_bfd, (bfd_vma) 0, sgot->contents + h_got_offset);
 	  break;
 	default:
 	  abort();
