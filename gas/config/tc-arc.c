@@ -4493,7 +4493,8 @@ md_apply_fix (fixS *fixP, valueT *valueP, segT seg ATTRIBUTE_UNUSED)
   else
     {
       value = fixP->fx_offset;
-      if (fixP->fx_subsy != (symbolS *) NULL)
+      if (fixP->fx_subsy != (symbolS *) NULL
+	  && fixP->fx_r_type != BFD_RELOC_ARC_TLS_GD_LD)
 	{
 	  if (S_GET_SEGMENT (fixP->fx_subsy) == absolute_section)
 	    value -= S_GET_VALUE (fixP->fx_subsy);
@@ -4661,6 +4662,13 @@ md_apply_fix (fixS *fixP, valueT *valueP, segT seg ATTRIBUTE_UNUSED)
 	  break;
 
 	case BFD_RELOC_ARC_TLS_GD_LD:
+	  gas_assert (!fixP->fx_offset);
+	  if (fixP->fx_subsy)
+	    fixP->fx_offset
+	      = (S_GET_VALUE (fixP->fx_subsy)
+		 - fixP->fx_frag->fr_address- fixP->fx_where);
+	  fixP->fx_subsy = NULL;
+	  /* Fall through.  */
 	case BFD_RELOC_ARC_TLS_GD_CALL:
 	  /* These two relocs are there just to allow ld to change the tls
 	     model for this symbol, by patching the code.  */
@@ -6854,7 +6862,7 @@ static void
 arc_extra_reloc (int r_type)
 {
   char *sym_name, c;
-  symbolS *sym;
+  symbolS *sym, *lab = NULL;
 
   if (*input_line_pointer == '@')
     input_line_pointer++;
@@ -6862,13 +6870,22 @@ arc_extra_reloc (int r_type)
   c = get_symbol_end ();
   sym = symbol_find_or_make (sym_name);
   *input_line_pointer = c;
-  fix_new (frag_now,		/* Which frag?  */
-	   frag_now_fix (),	/* Where in that frag?  */
-           2,			/* size: 1, 2, or 4 usually.  */
-	   sym,			/* X_add_symbol.  */
-	   0,			/* X_add_number.  */
-	   FALSE,		/* TRUE if PC-relative relocation.  */
-	   r_type		/* Relocation type.  */);
+  if (c == ',' && r_type == BFD_RELOC_ARC_TLS_GD_LD)
+    {
+      char *lab_name = ++input_line_pointer;
+      c = get_symbol_end ();
+      lab = symbol_find_or_make (lab_name);
+      *input_line_pointer = c;
+    }
+  fixS *fixP
+    = fix_new (frag_now,	/* Which frag?  */
+	       frag_now_fix (),	/* Where in that frag?  */
+               2,		/* size: 1, 2, or 4 usually.  */
+	       sym,		/* X_add_symbol.  */
+	       0,		/* X_add_number.  */
+	       FALSE,		/* TRUE if PC-relative relocation.  */
+	       r_type		/* Relocation type.  */);
+  fixP->fx_subsy = lab;
 }
 
 int
