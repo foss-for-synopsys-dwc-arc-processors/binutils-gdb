@@ -1,3 +1,13 @@
+2014-02-05  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* config/tc-arc.c (md_apply_fix): Leave fx_subsy alones
+	for BFD_RELOC_ARC_TLS_GD_LD in general processing.
+	<BFD_RELOC_ARC_TLS_GD_LD>: Process fx_subsy.
+	(rc_extra_reloc): For BFD_RELOC_ARC_TLS_GD_LD, process an optional
+	second argument.
+	* config/tc-arc.h (TC_FORCE_RELOCATION_SUB_LOCAL): Define.
+	(TC_VALIDATE_FIX_SUB): Likewise.
+
 2014-01-22  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* config/tc-arc.c (md_assemble) <TPOFF9_TYPE>:
