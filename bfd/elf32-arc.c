@@ -1807,6 +1807,8 @@ arc_tls_transition (const Elf_Internal_Rela *rel, struct elf_link_hash_entry *h,
 	  if (need_long && rel->r_addend && !short_dispatch)
 	    bfd_put_16 (abfd, 0x78E0, loc + rel->r_addend + 2);
 	  /* If we don't use the dispatch, nop it out.  */
+	  /* FIXME: If we have a long dispatch, we could use an add with
+	     a LIMM to use up all 6 bytes, potentially saving one cycle.  */
 	  else if (!need_long && rel->r_addend > 2)
 	    {
 	      if (short_dispatch)
@@ -1817,9 +1819,12 @@ arc_tls_transition (const Elf_Internal_Rela *rel, struct elf_link_hash_entry *h,
 	  if (need_long || short_dispatch)
 	    {
 	      bfd_vma off;
-	      /* If necessary, move the intervening code.  */
-	      for (off = rel->r_addend; off > 2; off -= 2)
-		bfd_put_16 (abfd, bfd_get_16 (abfd, loc + off - 2), loc + off);
+	      /* If necessary, move the intervening code.  Move the intervening
+		 code backward and the location where we'll place the add
+		 forward, so that we have a better chance of hiding the
+		 load latency.  */
+	      for (off = rel->r_addend; off > 2; loc += 2, off -= 2)
+		bfd_put_16 (abfd, bfd_get_16 (abfd, loc), loc + 2);
 	      BFD_ASSERT (insn_long || rel->r_addend);
 	      /* Write a long nop.  */
 	      bfd_put_32_me (abfd, 0x264A7000, loc);
