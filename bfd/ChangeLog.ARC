@@ -1,3 +1,14 @@
+2014-02-05  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* elf32-arc.c (elf_arc_relocate_section): Move call of
+	arc_tls_transition into the global symbol processing before
+	the calculation of the relocation value.
+	(arc_allocate_gd_got): If we are creating an executable, and
+	a GOT_TLS_{IE,GD} symbol is accessed locally, change it to GOT_TLS_LE.
+	(elf_arc_size_dynamic_sections): Change condition for hash table
+	traversal with arc_allocate_gd_got to
+	elf_hash_table (info)->dynamic_sections_created.
+
 2014-02-04  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* elf32-arc.c (arc_tls_transition) <R_ARC_TLS_GD_LD>:
