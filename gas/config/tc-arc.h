@@ -100,6 +100,17 @@ extern int arc_parse_name (const char *, struct expressionS *);
    visible symbols can be overridden.  */
 #define EXTERN_FORCE_RELOC 0
 
+/* BFD_RELOC_ARC_TLS_GD_LD may use fx_subsy to store a label that is
+   later turned into fx_offset.  */
+#define TC_FORCE_RELOCATION_SUB_LOCAL(FIX, SEG) \
+  ((FIX)->fx_r_type == BFD_RELOC_ARC_TLS_GD_LD)
+
+#define TC_VALIDATE_FIX_SUB(FIX, SEG) \
+  ((md_register_arithmetic || (SEG) != reg_section) \
+   && ((FIX)->fx_r_type == BFD_RELOC_GPREL32 \
+       || (FIX)->fx_r_type == BFD_RELOC_GPREL16 \
+       || TC_FORCE_RELOCATION_SUB_LOCAL (FIX, SEG)))
+
 #include "opcode/arc.h" /* for arc_insn */
 
 struct enriched_insn
