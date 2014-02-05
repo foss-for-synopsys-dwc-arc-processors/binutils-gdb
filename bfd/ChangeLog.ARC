@@ -1,5 +1,10 @@
 2014-02-05  Joern Rennecke  <joern.rennecke@embecosm.com>
 
+	* elf32-arc.c (arc_tls_transition) <R_ARC_TLS_GD_LD>:
+	Change direction of code mode to better hide load latency.
+
+2014-02-05  Joern Rennecke  <joern.rennecke@embecosm.com>
+
 	* elf32-arc.c (elf_arc_relocate_section): Move call of
 	arc_tls_transition into the global symbol processing before
 	the calculation of the relocation value.
