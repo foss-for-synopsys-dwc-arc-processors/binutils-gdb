@@ -9,6 +9,8 @@
 	traversal with arc_allocate_gd_got to
 	elf_hash_table (info)->dynamic_sections_created.
 
+	* elf32-arc.c (elf_arc_finish_dynamic_symbol): Handle GOT_TLS_LE.
+
 2014-02-04  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* elf32-arc.c (arc_tls_transition) <R_ARC_TLS_GD_LD>:
