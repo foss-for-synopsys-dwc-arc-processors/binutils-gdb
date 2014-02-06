@@ -24,6 +24,16 @@
 	(elf_arc_size_dynamic_sections): Call arc_allocate_tls_got instead of
 	traversing the hash table with arc_allocate_gd_got.
 
+	* elf32-arc.c (struct elf_ARC_link_hash_table): Replace member
+	deferred_tls_got with first_deferred_tls_got and last_deferred_tls_got.
+	(elf_arc_deferred_tls_got): Delete define.
+	(elf_arc_first_deferred_tls_got): New define.
+	(elf_arc_last_deferred_tls_got): Likewise.
+	(elf_ARC_link_hash_table_create): Set up new members.
+	(elf_arc_check_relocs): Read / write back last_deferred_tls_got
+	from/to elf_arc_last_deferred_tls_got (info).
+	(arc_allocate_tls_got): Read elf_arc_first_deferred_tls_got (info).
+
 2014-02-06  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* elf32-arc.c (elf_arc_check_relocs) <R_ARC_TLS_LE_{32,S9}>:
