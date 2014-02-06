@@ -134,10 +134,13 @@ struct elf_ARC_link_hash_entry
 {
   struct elf_link_hash_entry root;
 
-  /* Number of PC relative relocs copied for this symbol.  */
-  struct elf_ARC_pcrel_relocs_copied *pcrel_relocs_copied;
-  enum tls_type_e tls_type;
-  unsigned alloc_deferred: 1;
+  unsigned char tls_type;
+  union
+    {
+      /* Number of PC relative relocs copied for this symbol.  */
+      struct elf_ARC_pcrel_relocs_copied *pcrel_relocs_copied;
+      struct elf_ARC_link_hash_entry *next_deferred;
+    } u;
 };
 
 /* ARC ELF linker hash table.  */
@@ -148,6 +151,7 @@ struct elf_ARC_link_hash_table
 
   /* Small local sym to section mapping cache.  */
   struct sym_cache sym_cache;
+  struct elf_ARC_link_hash_entry *deferred_tls_got;
 };
 
 /* Declare this now that the above structures are defined.  */
@@ -168,12 +172,15 @@ static bfd_boolean elf_ARC_discard_copies
 #define elf_ARC_hash_table(p) \
   ((struct elf_ARC_link_hash_table *) ((p)->hash))
 
+#define elf_arc_deferred_tls_got(INFO) \
+  elf_ARC_hash_table (INFO)->deferred_tls_got
+
 struct elf_arc_obj_tdata
 {
   struct elf_obj_tdata root;
 
   /* tls_type for each local got entry.  */
-  char *local_got_tls_type;
+  unsigned char *local_got_tls_type;
 };
 
 #define elf_arc_tdata(abfd) \
@@ -214,9 +221,8 @@ elf_ARC_link_hash_newfunc (struct bfd_hash_entry *entry,
 				     table, string));
   if (ret != (struct elf_ARC_link_hash_entry *) NULL)
     {
-      ret->pcrel_relocs_copied = NULL;
+      ret->u.pcrel_relocs_copied = NULL;
       ret->tls_type = GOT_UNKNOWN;
-      ret->alloc_deferred = 0;
     }
 
   return (struct bfd_hash_entry *) ret;
@@ -244,6 +250,7 @@ elf_ARC_link_hash_table_create (bfd * abfd)
     }
 
   ret->sym_cache.abfd = NULL;
+  ret->deferred_tls_got = NULL;
 
   return &ret->root.root;
 }
@@ -270,6 +277,9 @@ elf_ARC_discard_copies (struct elf_ARC_link_hash_entry * h, void *inf)
 
       return TRUE;
     }
+
+  if (h->tls_type != GOT_UNKNOWN && h->tls_type != GOT_NORMAL)
+    return TRUE;
 
   for (s = h->pcrel_relocs_copied; s != NULL; s = s->next)
     s->section->size -=
@@ -1740,17 +1750,17 @@ arc_plugin_one_reloc (unsigned long insn, enum elf_arc_reloc_type r_type,
    for the symbol described by H.
    If CONTENTS is non-null, adjust the code if we change the reloc type.  */
 static enum elf_arc_reloc_type
-arc_tls_transition (const Elf_Internal_Rela *rel, struct elf_link_hash_entry *h,
+arc_tls_transition (const Elf_Internal_Rela *rel,
+		    /* enum tls_type_e */ unsigned char *ttp,
 		    bfd *abfd, bfd_byte *contents)
 {
   int rtp = 25; /* FIXME: should be able to set rtp by option.  */
 
-  struct elf_ARC_link_hash_entry *ah = (struct elf_ARC_link_hash_entry *) h;
   unsigned int r_type = ELF32_R_TYPE (rel->r_info);
-  if (ah) switch (r_type)
+  if (ttp) switch (r_type)
     {
     case R_ARC_TLS_IE_GOT:
-      if (ah->tls_type == GOT_TLS_LE)
+      if (*ttp == GOT_TLS_LE)
 	{
 	  if (contents)
 	    {
@@ -1764,7 +1774,7 @@ arc_tls_transition (const Elf_Internal_Rela *rel, struct elf_link_hash_entry *h,
 	}
       break;
     case R_ARC_TLS_GD_GOT:
-      if (ah->tls_type == GOT_TLS_LE)
+      if (*ttp == GOT_TLS_LE)
 	{
 	  if (contents)
 	    {
@@ -1774,7 +1784,7 @@ arc_tls_transition (const Elf_Internal_Rela *rel, struct elf_link_hash_entry *h,
 	    }
 	  return R_ARC_TLS_LE_32;
 	}
-      if (ah->tls_type == GOT_TLS_IE)
+      if (*ttp == GOT_TLS_IE)
 	{
 	  if (contents)
 	    {
@@ -1785,7 +1795,7 @@ arc_tls_transition (const Elf_Internal_Rela *rel, struct elf_link_hash_entry *h,
 	}
       break;
     case R_ARC_TLS_GD_LD:
-      if (contents && ah->tls_type != GOT_TLS_GD)
+      if (contents && *ttp != GOT_TLS_GD)
 	{
 	  bfd_byte *loc = contents + rel->r_offset;
 	  bfd_boolean insn_long = (bfd_get_16 (abfd, loc) & 0xf800) <= 0x2000;
@@ -1799,7 +1809,7 @@ arc_tls_transition (const Elf_Internal_Rela *rel, struct elf_link_hash_entry *h,
 	  bfd_boolean short_dispatch
 	    = rel->r_addend && (bfd_get_16 (abfd, loc + rel->r_addend) & 0x400);
 	  bfd_boolean need_long
-	    = (ah->tls_type == GOT_TLS_IE
+	    = (*ttp == GOT_TLS_IE
 	       && bfd_get_mach (abfd) == bfd_mach_arc_arcv2
 	       && rtp == 30);
 	  /* If the dispatch is long - that could be for scheduling reasons -
@@ -1830,7 +1840,7 @@ arc_tls_transition (const Elf_Internal_Rela *rel, struct elf_link_hash_entry *h,
 	      bfd_put_32_me (abfd, 0x264A7000, loc);
 	      insn_long = TRUE;
 	    }
-	  if (ah->tls_type == GOT_TLS_IE)
+	  if (*ttp == GOT_TLS_IE)
 	    {
 	      /* ... -> add r0,r0,rtp ; need long add in case rtp is r30 on v2.  */
 	      if (insn_long)
@@ -1844,7 +1854,7 @@ arc_tls_transition (const Elf_Internal_Rela *rel, struct elf_link_hash_entry *h,
 	}
       /* Fall through.  */
     case R_ARC_TLS_GD_CALL:
-      if (contents && ah->tls_type != GOT_TLS_GD)
+      if (contents && *ttp != GOT_TLS_GD)
 	{
 	  /* R_ARC_TLS_GD_LD (obsolete): bl __tls_get_addr@plt -> nop */
 	  /* R_ARC_TLS_GD_LD:   ld(_s)... -> nop(_s) */
@@ -1880,6 +1890,7 @@ elf_arc_check_relocs (bfd *abfd,
   Elf_Internal_Shdr *symtab_hdr;
   struct elf_link_hash_entry **sym_hashes;
   bfd_vma *local_got_offsets;
+  struct elf_ARC_link_hash_entry *last_deferred_tls_got;
   const Elf_Internal_Rela *rel;
   const Elf_Internal_Rela *rel_end;
   asection *sgot;
@@ -1891,9 +1902,13 @@ elf_arc_check_relocs (bfd *abfd,
     return TRUE;
 
   dynobj = elf_hash_table (info)->dynobj;
+  bfd_boolean got_setup = FALSE;
   symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
   sym_hashes = elf_sym_hashes (abfd);
-  local_got_offsets = elf_local_got_offsets (abfd);
+  last_deferred_tls_got
+    = (struct elf_ARC_link_hash_entry *)
+	((char *) &elf_arc_deferred_tls_got (info)
+	 - offsetof (struct elf_ARC_link_hash_entry, u.next_deferred));
 
   sgot = NULL;
   srelgot = NULL;
@@ -1923,7 +1938,7 @@ elf_arc_check_relocs (bfd *abfd,
 	}
 
       /* Some relocs require a global offset table.  */
-      if (dynobj == NULL)
+      if (got_setup == FALSE)
 	{
 	  switch (ELF32_R_TYPE (rel->r_info))
 	    {
@@ -1932,9 +1947,32 @@ elf_arc_check_relocs (bfd *abfd,
 	    case R_ARC_GOTPC:
 	    case R_ARC_TLS_IE_GOT:
 	    case R_ARC_TLS_GD_GOT:
-	      elf_hash_table (info)->dynobj = dynobj = abfd;
-	      if (! _bfd_elf_create_got_section (dynobj, info))
-		return FALSE;
+	      local_got_offsets = elf_local_got_offsets (abfd);
+	      if (symtab_hdr->sh_info && local_got_offsets == NULL)
+		{
+		  size_t size;
+		  register unsigned int i;
+
+		  size
+		    = symtab_hdr->sh_info * (sizeof (bfd_vma) + sizeof (char));
+		  local_got_offsets = (bfd_vma *) bfd_alloc (abfd, size);
+		  if (local_got_offsets == NULL)
+		    return FALSE;
+		  elf_local_got_offsets (abfd) = local_got_offsets;
+		  elf_arc_local_got_tls_type (abfd)
+		    = (unsigned char *)
+			(local_got_offsets + symtab_hdr->sh_info);
+
+		  for (i = 0; i < symtab_hdr->sh_info; i++)
+		    local_got_offsets[i] = (bfd_vma) -1;
+		}
+	      if (dynobj == NULL)
+		{
+		  elf_hash_table (info)->dynobj = dynobj = abfd;
+		  if (! _bfd_elf_create_got_section (dynobj, info))
+		    return FALSE;
+		}
+	      got_setup = TRUE;
 	      break;
 
 	    default:
@@ -1943,22 +1981,23 @@ elf_arc_check_relocs (bfd *abfd,
 	}
 
       enum tls_type_e tls_type = GOT_NORMAL;
-      enum elf_arc_reloc_type r_type = arc_tls_transition (rel, h, NULL, NULL);
+      struct elf_ARC_link_hash_entry *ah = (struct elf_ARC_link_hash_entry *) h;
+      /* enum tls_type_e */ unsigned char *ttp
+	= h ? &ah->tls_type : &elf_arc_local_got_tls_type (abfd) [r_symndx];
+      enum elf_arc_reloc_type r_type
+	= arc_tls_transition (rel, ttp, NULL, NULL);
       switch (r_type)
 	{
 	case R_ARC_TLS_LE_32:
 	case R_ARC_TLS_LE_S9:
-	  if (h)
-	    {
-	      struct elf_ARC_link_hash_entry *ah
-		= (struct elf_ARC_link_hash_entry *) h;
-	      tls_type = GOT_TLS_LE;
-	      if (h && ah->tls_type == GOT_NORMAL)
-		(*_bfd_error_handler)
-		  (_("%B: %s' accessed both as normal and thread local symbol"),
-		   abfd, h->root.root.string);
-	      ah->tls_type = tls_type;
-	    }
+	  tls_type = GOT_TLS_LE;
+	  if (*ttp == GOT_NORMAL)
+	    (*_bfd_error_handler)
+	      (_("%B: %s' accessed both as normal and thread local symbol"),
+		abfd,
+		h ? h->root.root.string
+		: bfd_elf_sym_name (abfd, symtab_hdr, isym, NULL));
+	  *ttp = tls_type;
 	  break;
 
 	case R_ARC_TLS_IE_GOT:
@@ -2003,11 +2042,9 @@ elf_arc_check_relocs (bfd *abfd,
 
 	  if (h != NULL)
 	    {
-	      struct elf_ARC_link_hash_entry *ah
-		= (struct elf_ARC_link_hash_entry *) h;
-	      if (ah->tls_type != tls_type && ah->tls_type != GOT_UNKNOWN)
+	      if (*ttp != tls_type && *ttp != GOT_UNKNOWN)
 		{
-		  if (tls_type == GOT_TLS_IE && ah->tls_type == GOT_TLS_GD)
+		  if (tls_type == GOT_TLS_IE && *ttp == GOT_TLS_GD)
 		    /* No change - this is ok.  */;
 		  else
 		    (*_bfd_error_handler)
@@ -2015,7 +2052,7 @@ elf_arc_check_relocs (bfd *abfd,
 		       abfd, h->root.root.string);
 		}
 
-	      ah->tls_type = tls_type;
+	      *ttp = tls_type;
 	      if (h->got.offset != (bfd_vma) -1)
 		{
 		  BFD_DEBUG_PIC(fprintf(stderr, "got entry stab entry already done%d\n",r_symndx));
@@ -2023,12 +2060,8 @@ elf_arc_check_relocs (bfd *abfd,
 		  /* We have already allocated space in the .got.  */
 		  break;
 		}
-	      if (ah->alloc_deferred)
-		{
-		  if (r_type == R_ARC_TLS_GD_GOT)
-		    break;
-		  ah->alloc_deferred = 0;
-		}
+	      if (ah->u.next_deferred)
+		break;
 	      /* Make sure this symbol is output as a dynamic symbol.  */
 	      else if (h->dynindx == -1 && !h->forced_local)
 		{
@@ -2036,9 +2069,11 @@ elf_arc_check_relocs (bfd *abfd,
 		    return FALSE;
 		}
 
-	      if (r_type == R_ARC_TLS_GD_GOT)
+	      if (r_type == R_ARC_TLS_GD_GOT || r_type == R_ARC_TLS_IE_GOT)
 		{
-		  ah->alloc_deferred = 1;
+		  ah->u.next_deferred = (struct elf_ARC_link_hash_entry *) -1;
+		  last_deferred_tls_got->u.next_deferred = ah;
+		  last_deferred_tls_got = ah;
 		  break;
 		}
 	      h->got.offset = sgot->size;
@@ -2052,23 +2087,6 @@ elf_arc_check_relocs (bfd *abfd,
 	    {
 	      /* This is a global offset table entry for a local
 		 symbol.  */
-	      if (local_got_offsets == NULL)
-		{
-		  size_t size;
-		  register unsigned int i;
-
-		  size
-		    = symtab_hdr->sh_info * (sizeof (bfd_vma) + sizeof (char));
-		  local_got_offsets = (bfd_vma *) bfd_alloc (abfd, size);
-		  if (local_got_offsets == NULL)
-		    return FALSE;
-		  elf_local_got_offsets (abfd) = local_got_offsets;
-		  elf_arc_local_got_tls_type (abfd)
-		    = (char *) (local_got_offsets + symtab_hdr->sh_info);
-
-		  for (i = 0; i < symtab_hdr->sh_info; i++)
-		    local_got_offsets[i] = (bfd_vma) -1;
-		}
 	      if (local_got_offsets[r_symndx] != (bfd_vma) -1)
 		{
 		  BFD_DEBUG_PIC(fprintf(stderr, "got entry stab entry already done%d\n",r_symndx));
@@ -2088,13 +2106,8 @@ elf_arc_check_relocs (bfd *abfd,
 		     output a R_ARC_RELATIVE reloc so that the dynamic
 		     linker can adjust this GOT entry.  */
 		  srelgot->size += sizeof (Elf32_External_Rela);
-#if 1 /* Fixme: could do with a single reloc if that was more intelligent.  */
-		  if (r_type == R_ARC_TLS_GD_GOT)
-		    /* And a R_ARC_TLS_DTPOFF reloc as well.  */
-		    srelgot->size += sizeof (Elf32_External_Rela);
-#endif
 		}
-	      elf_arc_local_got_tls_type (abfd) [r_symndx] = tls_type;
+	      *ttp = tls_type;
 	    }
 
 	  BFD_DEBUG_PIC(fprintf (stderr, "Got raw size increased\n"));
@@ -2197,7 +2210,7 @@ elf_arc_check_relocs (bfd *abfd,
 		    {
 		      struct elf_ARC_link_hash_entry *eh
 			= (struct elf_ARC_link_hash_entry *) h;
-		      head = &eh->pcrel_relocs_copied;
+		      head = &eh->u.pcrel_relocs_copied;
 		    }
 		  else
 		    {
@@ -2397,6 +2410,9 @@ elf_arc_relocate_section (bfd *output_bfd,
 	    }
 
 	  relocation += rel->r_addend;
+	  r_type = arc_tls_transition
+		    (rel, &elf_arc_local_got_tls_type (input_bfd) [r_symndx],
+		     output_bfd, contents);
 	}
       else
 	{
@@ -2410,7 +2426,10 @@ elf_arc_relocate_section (bfd *output_bfd,
 	    h = (struct elf_link_hash_entry *) h->root.u.i.link;
 
 	  BFD_ASSERT ((h->dynindx == -1) >= (h->forced_local != 0));
-	  r_type = arc_tls_transition (rel, h, input_bfd, contents);
+	  struct elf_ARC_link_hash_entry *ah
+	    = (struct elf_ARC_link_hash_entry *) h;
+	  r_type
+	    = arc_tls_transition (rel, &ah->tls_type, output_bfd, contents);
 	  /* if we have encountered a definition for this symbol */
 	  if (h->root.type == bfd_link_hash_defined
 	      || h->root.type == bfd_link_hash_defweak)
@@ -2486,11 +2505,7 @@ elf_arc_relocate_section (bfd *output_bfd,
       switch (r_type)
 	{
 	case R_ARC_TLS_IE_GOT:
-	  if (elf_hash_table (info)->tls_sec)
-	    relocation -= elf_hash_table (info)->tls_sec->output_section->vma;
-	  /* Fall through.  */
 	case R_ARC_TLS_GD_GOT:
-	  /* Fall through.  */
 	case R_ARC_GOTPC32:
 	  /* Relocation is to the entry for this symbol in the global
 	     offset table.  */
@@ -3122,13 +3137,6 @@ elf_arc_finish_dynamic_symbol (bfd *output_bfd,
 	  rel.r_offset += 4;
 	  rel.r_addend = 0;
 	  break;
-	case GOT_TLS_LE:
-	  /* FIXME: we can get here because we allocate the got slot for
-	     GOT_TLS_IE before we know if we really need it, see comment
-	     above arc_allocate_gd_got.  */
-	  BFD_ASSERT (info->executable);
-	  BFD_ASSERT (SYMBOL_REFERENCES_LOCAL (info, h));
-	  /* Fall through.  */
 	case GOT_TLS_IE:
 	  if (h->dynindx == -1)
 	    {
@@ -3633,45 +3641,55 @@ elf_arc_adjust_dynamic_symbol (struct bfd_link_info *info,
   return TRUE;
 }
 
-/* FIXME: we would likely get better locality for GOT access in the executable
-   if we used a linked list to preserve ordering within GD GOT entries;
-   moreover, we could sometimes avoid creating IE GOT entires if we deferred
-   creating these too until elf_arc_size_dynamic_sections, when we know if
-   these syms are referenced locally.
-   Also, doing this as processing a list would allow us to avoid lots of
-   bfd_get_section_by_name calls to find sgot / srelgot.  */
-/* This function is called via elf_link_hash_traverse if we are
+/* This function is called from elf_arc_size_dynamic_sections if we are
    creating a shared object.  We defer allocating GOT space for
-   global-dynamic tls symbols because they could be changed by merging
-   with symbols from other input bfds into initial-exec or local-exec,
-   which need less space.  */
+   global-dynamic / initial-exec tls symbols because they could be changed
+   by merging with symbols from other input bfds into initial-exec or
+   local-exec, which need less space.  */
 
-static bfd_boolean
-arc_allocate_gd_got (struct elf_link_hash_entry *h, void * inf)
+static void
+arc_allocate_tls_got (struct bfd_link_info *info)
 {
-  struct bfd_link_info *info = (struct bfd_link_info *) inf;
-  struct elf_ARC_link_hash_entry *ah = (struct elf_ARC_link_hash_entry *) h;
   bfd *dynobj;
   asection *sgot;
   asection *srelgot;
+  struct elf_ARC_link_hash_entry *ah = elf_arc_deferred_tls_got (info);
 
-  if (info->executable
-      && h && (ah->tls_type == GOT_TLS_IE || ah->tls_type == GOT_TLS_GD)
-      && SYMBOL_REFERENCES_LOCAL (info, h))
-    ah->tls_type = GOT_TLS_LE;
-  if (ah->tls_type != GOT_TLS_GD || !ah->alloc_deferred)
-    return TRUE;
+  if (!ah)
+    return;
+
   dynobj = elf_hash_table (info)->dynobj;
   sgot = bfd_get_section_by_name (dynobj, ".got");
   BFD_ASSERT (sgot != NULL);
   srelgot = bfd_get_section_by_name (dynobj, ".rela.got");
   BFD_ASSERT (srelgot != NULL);
-  /* Fixme: could do with a single reloc if that was more intelligent.  */
-  srelgot->size += 2 * sizeof (Elf32_External_Rela);
-  BFD_ASSERT (h->got.offset == (bfd_vma) -1);
-  h->got.offset = sgot->size;
-  sgot->size += 8;
-  return TRUE;
+
+  for (; ah != (struct elf_ARC_link_hash_entry *) -1; ah = ah->u.next_deferred)
+    {
+      if (info->executable
+	  && (ah->tls_type == GOT_TLS_IE || ah->tls_type == GOT_TLS_GD)
+	  && SYMBOL_REFERENCES_LOCAL (info, &ah->root))
+	ah->tls_type = GOT_TLS_LE;
+      switch (ah->tls_type)
+	{
+	case GOT_TLS_IE:
+	  srelgot->size += sizeof (Elf32_External_Rela);
+	  BFD_ASSERT (ah->root.got.offset == (bfd_vma) -1);
+	  ah->root.got.offset = sgot->size;
+	  sgot->size += 4;
+	  break;
+	case GOT_TLS_GD:
+	  /* Fixme: could do with a single reloc if that was more intelligent.
+	   */
+	  srelgot->size += 2 * sizeof (Elf32_External_Rela);
+	  BFD_ASSERT (ah->root.got.offset == (bfd_vma) -1);
+	  ah->root.got.offset = sgot->size;
+	  sgot->size += 8;
+	  break;
+	default:
+	  break;
+	}
+    }
 }
 
 /* Set the sizes of the dynamic sections.  */
@@ -3690,8 +3708,7 @@ elf_arc_size_dynamic_sections (bfd *output_bfd,
   BFD_ASSERT (dynobj != NULL);
 
   if (elf_hash_table (info)->dynamic_sections_created)
-    elf_link_hash_traverse (elf_hash_table (info),
-			    arc_allocate_gd_got, info);
+    arc_allocate_tls_got (info);
 
   if (elf_hash_table (info)->dynamic_sections_created)
     {
