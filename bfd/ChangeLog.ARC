@@ -1,5 +1,11 @@
 2014-02-06  Joern Rennecke  <joern.rennecke@embecosm.com>
 
+	* elf32-arc.c (elf_arc_check_relocs): When creating an executable,
+	for local symbols, change R_ARC_TLS_IE_GOT: and R_ARC_TLS_GD_GOT
+	into R_ARC_TLS_LE_32.
+
+2014-02-06  Joern Rennecke  <joern.rennecke@embecosm.com>
+
 	* elf32-arc.c (struct elf_ARC_link_hash_entry): Change type of
 	tls_type to unsigned char.  Move pcrel_relocs_copied into
 	new anonymous union u.  Remove member alloc_deferred.
