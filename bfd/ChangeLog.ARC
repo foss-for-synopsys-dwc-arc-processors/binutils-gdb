@@ -37,6 +37,9 @@
 	* elf32-arc.c (elf_arc_check_relocs): Allocate local_got_offsets /
 	elf_arc_local_got_tls_type indepdendent of got section.
 
+	* elf32-arc.c (elf_arc_size_dynamic_sections): Unconditionally call
+	arc_allocate_tls_got.
+
 2014-02-06  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* elf32-arc.c (elf_arc_check_relocs) <R_ARC_TLS_LE_{32,S9}>:

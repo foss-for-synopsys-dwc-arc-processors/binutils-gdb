@@ -3704,8 +3704,7 @@ elf_arc_size_dynamic_sections (bfd *output_bfd,
   dynobj = elf_hash_table (info)->dynobj;
   BFD_ASSERT (dynobj != NULL);
 
-  if (elf_hash_table (info)->dynamic_sections_created)
-    arc_allocate_tls_got (info);
+  arc_allocate_tls_got (info);
 
   if (elf_hash_table (info)->dynamic_sections_created)
     {
