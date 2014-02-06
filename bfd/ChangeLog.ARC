@@ -1,7 +1,12 @@
+2014-02-06  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* elf32-arc.c (elf_arc_check_relocs) <R_ARC_TLS_LE_{32,S9}>:
+	Check hash entry pointer is non-NULL before using it.
+
 2014-02-05  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* elf32-arc.c (arc_tls_transition) <R_ARC_TLS_GD_LD>:
-	Change direction of code mode to better hide load latency.
+	Change direction of code move to better hide load latency.
 
 2014-02-05  Joern Rennecke  <joern.rennecke@embecosm.com>
 
