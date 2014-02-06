@@ -34,6 +34,9 @@
 	from/to elf_arc_last_deferred_tls_got (info).
 	(arc_allocate_tls_got): Read elf_arc_first_deferred_tls_got (info).
 
+	* elf32-arc.c (elf_arc_check_relocs): Allocate local_got_offsets /
+	elf_arc_local_got_tls_type indepdendent of got section.
+
 2014-02-06  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* elf32-arc.c (elf_arc_check_relocs) <R_ARC_TLS_LE_{32,S9}>:
