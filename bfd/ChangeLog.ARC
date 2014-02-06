@@ -1,5 +1,31 @@
 2014-02-06  Joern Rennecke  <joern.rennecke@embecosm.com>
 
+	* elf32-arc.c (struct elf_ARC_link_hash_entry): Change type of
+	tls_type to unsigned char.  Move pcrel_relocs_copied into
+	new anonymous union u.  Remove member alloc_deferred.
+	Changed all users.
+	(struct elf_ARC_link_hash_table): New member deferred_tls_got.
+	(elf_arc_deferred_tls_got): New define.
+	(struct elf_arc_obj_tdata) <local_got_tls_type>:
+	Change type to unsigned char.
+	(elf_ARC_link_hash_table_create): Initialize deferred_tls_got member.
+	(arc_tls_transition): Change type of second argument to
+	"unsigned char *" - pointing to the tls_type.  Changed all callers.
+	(elf_arc_check_relocs): Also enable tls transitions for static
+	symbols, and defer GOT allocations for global symbols in
+	R_ARC_TLS_IE_GOT relocs.
+	Remove extra srelgot allocation for static GOT_TLS_GD variables.
+	(elf_arc_relocate_section):  Also enable tls transitions for static
+	symbols.
+	<R_ARC_TLS_IE_GOT>: Remove dead relocation adjustment.
+	(elf_arc_finish_dynamic_symbol): Remove GOT_TLS_LE handling.
+	(arc_allocate_gd_got): Delete.
+	(arc_allocate_tls_got): New function.
+	(elf_arc_size_dynamic_sections): Call arc_allocate_tls_got instead of
+	traversing the hash table with arc_allocate_gd_got.
+
+2014-02-06  Joern Rennecke  <joern.rennecke@embecosm.com>
+
 	* elf32-arc.c (elf_arc_check_relocs) <R_ARC_TLS_LE_{32,S9}>:
 	Check hash entry pointer is non-NULL before using it.
 
