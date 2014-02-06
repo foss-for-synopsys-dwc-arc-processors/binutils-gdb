@@ -1991,6 +1991,7 @@ elf_arc_check_relocs (bfd *abfd,
 	{
 	case R_ARC_TLS_LE_32:
 	case R_ARC_TLS_LE_S9:
+	local_exec:
 	  tls_type = GOT_TLS_LE;
 	  if (*ttp == GOT_NORMAL)
 	    (*_bfd_error_handler)
@@ -2005,10 +2006,13 @@ elf_arc_check_relocs (bfd *abfd,
 	  if (info->shared)
 	    info->flags |= DF_STATIC_TLS;
 	  tls_type = GOT_TLS_IE;
-	  goto create_got;
+	  goto tls_create_got;
 
 	case R_ARC_TLS_GD_GOT:
 	  tls_type = GOT_TLS_GD;
+	tls_create_got:
+	  if (!h && info->executable)
+	    goto local_exec;
 	  goto create_got;
 
 	case R_ARC_GOTPC32:
