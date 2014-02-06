@@ -1948,17 +1948,18 @@ elf_arc_check_relocs (bfd *abfd,
 	{
 	case R_ARC_TLS_LE_32:
 	case R_ARC_TLS_LE_S9:
-	  {
-	    struct elf_ARC_link_hash_entry *ah
-	      = (struct elf_ARC_link_hash_entry *) h;
-	    tls_type = GOT_TLS_LE;
-	    if (ah->tls_type == GOT_NORMAL)
-	      (*_bfd_error_handler)
-		(_("%B: %s' accessed both as normal and thread local symbol"),
-		 abfd, h->root.root.string);
-	    ah->tls_type = tls_type;
-	    break;
-	  }
+	  if (h)
+	    {
+	      struct elf_ARC_link_hash_entry *ah
+		= (struct elf_ARC_link_hash_entry *) h;
+	      tls_type = GOT_TLS_LE;
+	      if (h && ah->tls_type == GOT_NORMAL)
+		(*_bfd_error_handler)
+		  (_("%B: %s' accessed both as normal and thread local symbol"),
+		   abfd, h->root.root.string);
+	      ah->tls_type = tls_type;
+	    }
+	  break;
 
 	case R_ARC_TLS_IE_GOT:
 	  if (info->shared)
