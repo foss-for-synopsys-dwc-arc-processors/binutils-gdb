@@ -152,7 +152,8 @@ struct elf_ARC_link_hash_table
 
   /* Small local sym to section mapping cache.  */
   struct sym_cache sym_cache;
-  struct elf_ARC_link_hash_entry *deferred_tls_got;
+  struct elf_ARC_link_hash_entry *first_deferred_tls_got;
+  struct elf_ARC_link_hash_entry *last_deferred_tls_got;
 };
 
 /* Declare this now that the above structures are defined.  */
@@ -173,8 +174,10 @@ static bfd_boolean elf_ARC_discard_copies
 #define elf_ARC_hash_table(p) \
   ((struct elf_ARC_link_hash_table *) ((p)->hash))
 
-#define elf_arc_deferred_tls_got(INFO) \
-  elf_ARC_hash_table (INFO)->deferred_tls_got
+#define elf_arc_first_deferred_tls_got(INFO) \
+  elf_ARC_hash_table (INFO)->first_deferred_tls_got
+#define elf_arc_last_deferred_tls_got(INFO) \
+  elf_ARC_hash_table (INFO)->last_deferred_tls_got
 
 struct elf_arc_obj_tdata
 {
@@ -251,7 +254,11 @@ elf_ARC_link_hash_table_create (bfd * abfd)
     }
 
   ret->sym_cache.abfd = NULL;
-  ret->deferred_tls_got = NULL;
+  ret->first_deferred_tls_got = NULL;
+  ret->last_deferred_tls_got
+    = (struct elf_ARC_link_hash_entry *)
+	((char *) &ret->first_deferred_tls_got
+	 - offsetof (struct elf_ARC_link_hash_entry, u.next_deferred));
 
   return &ret->root.root;
 }
@@ -1899,10 +1906,7 @@ elf_arc_check_relocs (bfd *abfd,
   bfd_boolean got_setup = FALSE;
   symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
   sym_hashes = elf_sym_hashes (abfd);
-  last_deferred_tls_got
-    = (struct elf_ARC_link_hash_entry *)
-	((char *) &elf_arc_deferred_tls_got (info)
-	 - offsetof (struct elf_ARC_link_hash_entry, u.next_deferred));
+  last_deferred_tls_got = elf_arc_last_deferred_tls_got (info);
 
   sgot = NULL;
   srelgot = NULL;
@@ -2258,6 +2262,8 @@ elf_arc_check_relocs (bfd *abfd,
 	}
 
     }
+
+  elf_arc_last_deferred_tls_got (info) = last_deferred_tls_got;
 
   return TRUE;
 }
@@ -3647,7 +3653,7 @@ arc_allocate_tls_got (struct bfd_link_info *info)
   bfd *dynobj;
   asection *sgot;
   asection *srelgot;
-  struct elf_ARC_link_hash_entry *ah = elf_arc_deferred_tls_got (info);
+  struct elf_ARC_link_hash_entry *ah = elf_arc_first_deferred_tls_got (info);
 
   if (!ah)
     return;
