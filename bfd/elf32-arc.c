@@ -1909,7 +1909,6 @@ elf_arc_check_relocs (bfd *abfd,
     return TRUE;
 
   dynobj = elf_hash_table (info)->dynobj;
-  bfd_boolean got_setup = FALSE;
   symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
   sym_hashes = elf_sym_hashes (abfd);
   last_deferred_tls_got = elf_arc_last_deferred_tls_got (info);
@@ -1917,6 +1916,24 @@ elf_arc_check_relocs (bfd *abfd,
   sgot = NULL;
   srelgot = NULL;
   sreloc = NULL;
+
+  local_got_offsets = elf_local_got_offsets (abfd);
+  if (symtab_hdr->sh_info && local_got_offsets == NULL)
+    {
+      size_t size;
+      register unsigned int i;
+
+      size = symtab_hdr->sh_info * (sizeof (bfd_vma) + sizeof (char));
+      local_got_offsets = (bfd_vma *) bfd_alloc (abfd, size);
+      if (local_got_offsets == NULL)
+	return FALSE;
+      elf_local_got_offsets (abfd) = local_got_offsets;
+      elf_arc_local_got_tls_type (abfd)
+	= (unsigned char *) (local_got_offsets + symtab_hdr->sh_info);
+
+      for (i = 0; i < symtab_hdr->sh_info; i++)
+	local_got_offsets[i] = (bfd_vma) -1;
+    }
 
   rel_end = relocs + sec->reloc_count;
   for (rel = relocs; rel < rel_end; rel++)
@@ -1942,7 +1959,7 @@ elf_arc_check_relocs (bfd *abfd,
 	}
 
       /* Some relocs require a global offset table.  */
-      if (got_setup == FALSE)
+      if (dynobj == NULL)
 	{
 	  switch (ELF32_R_TYPE (rel->r_info))
 	    {
@@ -1951,32 +1968,12 @@ elf_arc_check_relocs (bfd *abfd,
 	    case R_ARC_GOTPC:
 	    case R_ARC_TLS_IE_GOT:
 	    case R_ARC_TLS_GD_GOT:
-	      local_got_offsets = elf_local_got_offsets (abfd);
-	      if (symtab_hdr->sh_info && local_got_offsets == NULL)
-		{
-		  size_t size;
-		  register unsigned int i;
-
-		  size
-		    = symtab_hdr->sh_info * (sizeof (bfd_vma) + sizeof (char));
-		  local_got_offsets = (bfd_vma *) bfd_alloc (abfd, size);
-		  if (local_got_offsets == NULL)
-		    return FALSE;
-		  elf_local_got_offsets (abfd) = local_got_offsets;
-		  elf_arc_local_got_tls_type (abfd)
-		    = (unsigned char *)
-			(local_got_offsets + symtab_hdr->sh_info);
-
-		  for (i = 0; i < symtab_hdr->sh_info; i++)
-		    local_got_offsets[i] = (bfd_vma) -1;
-		}
 	      if (dynobj == NULL)
 		{
 		  elf_hash_table (info)->dynobj = dynobj = abfd;
 		  if (! _bfd_elf_create_got_section (dynobj, info))
 		    return FALSE;
 		}
-	      got_setup = TRUE;
 	      break;
 
 	    default:
