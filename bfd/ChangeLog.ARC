@@ -3,6 +3,9 @@
 	* elf32-arc.c (elf_arc_relocate_section): Don't complain about
 	R_ARC_NONE relocations against undefined symbols.
 
+	* elf32-arc.c (elf_arc_relocate_section): For R_ARC_TLS_IE_GOT relocs
+	against local symbols, output a R_ARC_TLS_TPOFF reloc into output dso.
+
 2014-02-10  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* elf32-arc.c (elf_arc_relocate_section) <R_ARC_TLS_IE_GOT>:
