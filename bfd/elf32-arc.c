@@ -2584,9 +2584,6 @@ elf_arc_relocate_section (bfd *output_bfd,
 		off &= ~1;
 	      else
 		{
-		  bfd_put_32 (output_bfd, relocation,
-			      sgot->contents + off);
-
 		  if (info->shared)
 		    {
 		      asection *srelgot;
@@ -2600,13 +2597,33 @@ elf_arc_relocate_section (bfd *output_bfd,
 					 + sgot->output_offset
 					 + off);
 		      /* RELA relocs */
-		      outrel.r_addend = 0; //PBB??
+		      switch (r_type)
+			{
+			case R_ARC_TLS_IE_GOT:
+			  outrel.r_addend =  relocation;
+			  outrel.r_info = ELF32_R_INFO (0, R_ARC_TLS_TPOFF);
+			  relocation = 0;
+			  break;
+			case R_ARC_GOTPC32:
+			  outrel.r_addend = 0; //PBB??
+			  outrel.r_info = ELF32_R_INFO (0, R_ARC_RELATIVE);
+			  break;
+			case R_ARC_TLS_GD_GOT:
+			  /* FIXME:
+			     Should have been converted into local dynamic.  */
+			default:
+			  (*_bfd_error_handler)
+			    (_("Error: unsupported GOT relocation against local symbol"));
+			  outrel.r_info = ELF32_R_INFO (0, R_ARC_NONE);
+			  outrel.r_addend =  relocation = 0;
+			}
 
-		      outrel.r_info = ELF32_R_INFO (0, R_ARC_RELATIVE);
 		      loc = srelgot->contents;
 		      loc += srelgot->reloc_count++ * sizeof (Elf32_External_Rela); /* relA */
 		      bfd_elf32_swap_reloca_out (output_bfd, &outrel, loc);
 		    }
+
+		  bfd_put_32 (output_bfd, relocation, sgot->contents + off);
 
 		  local_got_offsets[r_symndx] |= 1;
 		}
