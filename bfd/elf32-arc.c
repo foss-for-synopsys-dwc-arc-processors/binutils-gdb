@@ -2441,7 +2441,9 @@ elf_arc_relocate_section (bfd *output_bfd,
 		      && h->plt.offset != (bfd_vma) -1)
 		  || ((r_type == R_ARC_GOTPC32
 		       || r_type == R_ARC_TLS_IE_GOT
-		       || r_type == R_ARC_TLS_GD_GOT)
+		       || r_type == R_ARC_TLS_GD_GOT
+		       /* R_ARC_TLS_GD_{LD,CALL} -> R_ARC_NONE */
+		       || r_type == R_ARC_NONE)
 		      && elf_hash_table (info)->dynamic_sections_created
 		      && (! info->shared
 			  || (! info->symbolic && h->dynindx != -1)
