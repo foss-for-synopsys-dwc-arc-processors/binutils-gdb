@@ -2506,6 +2506,13 @@ elf_arc_relocate_section (bfd *output_bfd,
       switch (r_type)
 	{
 	case R_ARC_TLS_IE_GOT:
+	  /* We don't care about the value of RELOCATION here in the non-local
+	     case, as it'll be replaced just below, but
+	     for local IE variables, the offset of the tls var from this
+	     module's tls block start will get put in the GOT.  */
+	  if (elf_hash_table (info)->tls_sec)
+	    relocation -= elf_hash_table (info)->tls_sec->output_section->vma;
+	  /* Fall through.  */
 	case R_ARC_TLS_GD_GOT:
 	case R_ARC_GOTPC32:
 	  /* Relocation is to the entry for this symbol in the global
