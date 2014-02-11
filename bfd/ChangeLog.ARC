@@ -1,5 +1,22 @@
 2014-02-11  Joern Rennecke  <joern.rennecke@embecosm.com>
 
+	* reloc.c (BFD_RELOC_ARC_TLS_LE_32, BFD_RELOC_ARC_TLS_DTPOFF_S9):
+	New values.
+	* elf32-arc.c (elf_arc_howto_table): Update entry for
+	R_ARC_TLS_DTPOFF.  Add entry for R_ARC_TLS_DTPOFF_S9.
+	(arc_signed_reloc_type): Likewise.
+	(arc_reloc_map): Add entries for R_ARC_TLS_DTPOFF and
+	R_ARC_TLS_DTPOFF_S9.
+	(arcompact_elf_me_reloc, arc_plugin_one_reloc): Handle
+	R_ARC_TLS_DTPOFF and R_ARC_TLS_DTPOFF_S9.
+	(elf_arc_check_relocs, elf_arc_relocate_section): Likewise.
+	* bfd-in2.h, libbfd.h: Regenerate.
+
+	* elf32-arc.c (elf_arc_check_relocs): When creating an executable,
+	don't create GOT entries on behalf of R_ARC_TLS_IE_GOT relocs.
+
+2014-02-11  Joern Rennecke  <joern.rennecke@embecosm.com>
+
 	* elf32-arc.c (elf_arc_relocate_section): For R_ARC_TLS_GD_GOT relocs
 	against local symbols, output a R_ARC_TLS_DTPMOD reloc with zero
 	symindex into output dso.
