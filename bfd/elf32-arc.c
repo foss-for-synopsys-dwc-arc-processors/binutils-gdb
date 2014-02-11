@@ -2612,8 +2612,12 @@ elf_arc_relocate_section (bfd *output_bfd,
 			  /* FIXME:
 			     Should have been converted into local dynamic.  */
 			default:
+;
 			  (*_bfd_error_handler)
-			    (_("Error: unsupported GOT relocation against local symbol"));
+			    (_("%B: Error: unsupported GOT relocation against local symbol \"%s\""),
+			     input_bfd,
+			     bfd_elf_sym_name (input_bfd, symtab_hdr, sym,
+					       sec));
 			  outrel.r_info = ELF32_R_INFO (0, R_ARC_NONE);
 			  outrel.r_addend =  relocation = 0;
 			}
