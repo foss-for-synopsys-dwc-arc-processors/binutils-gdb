@@ -2593,18 +2593,24 @@ elf_arc_relocate_section (bfd *output_bfd,
 		      /* RELA relocs */
 		      switch (r_type)
 			{
+			case R_ARC_GOTPC32:
+			  outrel.r_addend = 0; //PBB??
+			  outrel.r_info = ELF32_R_INFO (0, R_ARC_RELATIVE);
+			  break;
 			case R_ARC_TLS_IE_GOT:
 			  outrel.r_addend =  relocation;
 			  outrel.r_info = ELF32_R_INFO (0, R_ARC_TLS_TPOFF);
 			  relocation = 0;
 			  break;
-			case R_ARC_GOTPC32:
-			  outrel.r_addend = 0; //PBB??
-			  outrel.r_info = ELF32_R_INFO (0, R_ARC_RELATIVE);
-			  break;
 			case R_ARC_TLS_GD_GOT:
-			  /* FIXME:
-			     Should have been converted into local dynamic.  */
+			  /* We use a symbol index of 0 to mean current
+			     module's dtv index / descriptor.  */
+			  outrel.r_info = ELF32_R_INFO (0, R_ARC_TLS_DTPMOD);
+			  outrel.r_addend = 0;
+			  bfd_put_32 (output_bfd, relocation,
+				      sgot->contents + off + 4);
+			  relocation = 0;
+			  break;
 			default:
 ;
 			  (*_bfd_error_handler)
