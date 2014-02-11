@@ -1,3 +1,8 @@
+2014-02-11  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* elf32-arc.c (elf_arc_relocate_section): Improve error message for
+	unsupported GOT relocs against local symbols.
+
 2014-02-10  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* elf32-arc.c (elf_arc_relocate_section): Don't complain about
