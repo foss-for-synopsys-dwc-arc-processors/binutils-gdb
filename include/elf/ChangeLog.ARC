@@ -1,3 +1,8 @@
+2014-02-11  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* arc.h (elf_arc_reloc_type): Add R_ARC_TLS_DTPOFF_S9 at 0x49,
+	move following allocations.
+
 2014-01-21  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* arc.h (elf_arc_reloc_type): Add R_ARC_TLS_GD_LD and

@@ -1683,6 +1683,8 @@ static const char *const bfd_reloc_code_real_names[] = { "@@uninitialized@@",
   "BFD_RELOC_ARC_TLS_IE_GOT",
   "BFD_RELOC_ARC_TLS_LE_S9",
   "BFD_RELOC_ARC_TLS_LE_32",
+  "BFD_RELOC_ARC_TLS_DTPOFF_S9",
+  "BFD_RELOC_ARC_TLS_DTPOFF",
 
   "BFD_RELOC_BFIN_16_IMM",
   "BFD_RELOC_BFIN_16_HIGH",
