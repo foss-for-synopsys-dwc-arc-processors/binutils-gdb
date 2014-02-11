@@ -1,5 +1,11 @@
 2014-02-11  Joern Rennecke  <joern.rennecke@embecosm.com>
 
+	* elf32-arc.c (elf_arc_relocate_section): For R_ARC_TLS_GD_GOT relocs
+	against local symbols, output a R_ARC_TLS_DTPMOD reloc with zero
+	symindex into output dso.
+
+2014-02-11  Joern Rennecke  <joern.rennecke@embecosm.com>
+
 	* elf32-arc.c (elf_arc_relocate_section): Improve error message for
 	unsupported GOT relocs against local symbols.
 
