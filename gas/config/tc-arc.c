@@ -311,6 +311,8 @@ typedef enum
     TLSIE_TYPE,
     TPOFF_TYPE,
     TPOFF9_TYPE,
+    DTPOFF_TYPE,
+    DTPOFF9_TYPE,
     NO_TYPE
   } arc700_special_symtype;
 
@@ -4650,6 +4652,7 @@ md_apply_fix (fixS *fixP, valueT *valueP, segT seg ATTRIBUTE_UNUSED)
 	case BFD_RELOC_ARC_TLS_GD_GOT:
 	case BFD_RELOC_ARC_TLS_IE_GOT:
 	case BFD_RELOC_ARC_TLS_LE_32:
+	case BFD_RELOC_ARC_TLS_DTPOFF:
 	  S_SET_THREAD_LOCAL (fixP->fx_addsy);
 	  /* Fall through.  */
 	case BFD_RELOC_ARC_GOTPC32:
@@ -4674,6 +4677,7 @@ md_apply_fix (fixS *fixP, valueT *valueP, segT seg ATTRIBUTE_UNUSED)
 	     model for this symbol, by patching the code.  */
 	  /* Fall through.  */
 	case BFD_RELOC_ARC_TLS_LE_S9:
+	case BFD_RELOC_ARC_TLS_DTPOFF_S9:
 	  /* The offset - and scale, if any - will be installed by the
 	     linker.  */
 	  gas_assert (!fixP->fx_done);
@@ -6243,6 +6247,18 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 			    }
 			  try_addend = TRUE;
 			}
+		      else if (!strncmp (str, "@dtpoff", 7))
+			{
+			  str += 7;
+			  current_special_sym_flag = DTPOFF_TYPE;
+			  if (*str == '9')
+			    {
+			      str++;
+			      current_special_sym_flag = DTPOFF9_TYPE;
+			      force_ld_limm = FALSE;
+			    }
+			  try_addend = TRUE;
+			}
 		      else
 			force_ld_limm = FALSE;
 
@@ -6734,6 +6750,14 @@ fprintf (stdout, "Matched syntax %s\n", opcode->syntax);
 		  /* Fall through.  */
 		case TPOFF_TYPE:
 		  reloc_type = BFD_RELOC_ARC_TLS_LE_32;
+		  break;
+		case DTPOFF9_TYPE:
+		  reloc_type = BFD_RELOC_ARC_TLS_DTPOFF_S9;
+		  if (!arc_cond_p)
+		    break;
+		  /* Fall through.  */
+		case DTPOFF_TYPE:
+		  reloc_type = BFD_RELOC_ARC_TLS_DTPOFF;
 		  break;
 		default:
 		  break;

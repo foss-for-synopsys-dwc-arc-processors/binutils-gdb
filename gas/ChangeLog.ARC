@@ -1,3 +1,12 @@
+2014-02-11  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* config/arc/tc-arc.c (arc700_special_symtype): Add DTPOFF_TYPE and
+	DTPOFF9_TYPE.
+	(md_apply_fix): Handle BFD_RELOC_ARC_TLS_DTPOFF and
+	BFD_RELOC_ARC_TLS_DTPOFF_S9.
+	(md_assemble): Handle @dtpoff{,9}.  Handle DTPOFF9_TYPE and
+	DTPOFF_TYPE.
+
 2014-02-05  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* config/tc-arc.c (md_apply_fix): Leave fx_subsy alones

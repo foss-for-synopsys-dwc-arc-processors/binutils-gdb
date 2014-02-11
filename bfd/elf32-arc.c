@@ -483,7 +483,8 @@ static reloc_howto_type elf_arc_howto_table[] =
   ARC_UNSUPPORTED_HOWTO (R_ARC_AOM_TOKEN_ME,"R_ARC_AOM_TOKEN_ME"),
   ARC_UNSUPPORTED_HOWTO (R_ARC_AOM_TOKEN,"R_ARC_AOM_TOKEN"),
   ARC_UNSUPPORTED_HOWTO (R_ARC_TLS_DTPMOD,"R_ARC_TLS_DTPMOD"),
-  ARC_UNSUPPORTED_HOWTO (R_ARC_TLS_DTPOFF,"R_ARC_TLS_DTPOFF"),
+  ARC_RELA_HOWTO (R_ARC_TLS_DTPOFF, 0, 2, 32, FALSE, 0, arcompact_elf_me_reloc,
+		  "R_ARC_TLS_DTPOFF",-1),
   ARC_UNSUPPORTED_HOWTO (R_ARC_TLS_TPOFF,"R_ARC_TLS_TPOFF"),
   ARC_RELA_HOWTO (R_ARC_TLS_GD_GOT, 0, 2, 32, FALSE, 0, arcompact_elf_me_reloc,
 		  "R_ARC_TLS_GD_GOT",-1),
@@ -491,6 +492,8 @@ static reloc_howto_type elf_arc_howto_table[] =
   ARC_IGNORE_HOWTO (R_ARC_TLS_GD_CALL,"R_ARC_TLS_GD_CALL"),
   ARC_RELA_HOWTO (R_ARC_TLS_IE_GOT, 0, 2, 32, FALSE, 0, arcompact_elf_me_reloc,
 		  "R_ARC_TLS_IE_GOT",-1),
+  ARC_RELA_HOWTO (R_ARC_TLS_DTPOFF_S9, 0, 2, 32, FALSE, 0,
+		  arcompact_elf_me_reloc, "R_ARC_TLS_DTPOFF_S9",-1),
   ARC_RELA_HOWTO (R_ARC_TLS_LE_S9, 0, 2, 9, FALSE, 0, arcompact_elf_me_reloc,
 		  "R_ARC_TLS_LE_S9",-1),
   ARC_RELA_HOWTO (R_ARC_TLS_LE_32, 0, 2, 32, FALSE, 0, arcompact_elf_me_reloc,
@@ -586,14 +589,15 @@ short arc_signed_reloc_type[] =
   0, //  R_ARC_AOM_TOKEN	0x41
 
   0, //  R_ARC_TLS_DTPMOD	0x42
-  0, //  R_ARC_TLS_DTPOFF	0x43
+  1, //  R_ARC_TLS_DTPOFF	0x43
   0, //  R_ARC_TLS_TPOFF	0x44
   0, //  R_ARC_TLS_GD_GOT	0x45
   0, //  R_ARC_TLS_GD_LD	0x46
   0, //  R_ARC_TLS_GD_CALL	0x47
   0, //  R_ARC_TLS_IE_GOT	0x48
-  1, //  R_ARC_TLS_LE_S9	0x49
-  1, //  R_ARC_TLS_LE_32	0x4a
+  1, //  R_ARC_TLS_DTPOFF_S9	0x49
+  1, //  R_ARC_TLS_LE_S9	0x4a
+  1, //  R_ARC_TLS_LE_32	0x4b
 };
 
 
@@ -657,10 +661,12 @@ static const struct arc_reloc_map arc_reloc_map[] =
   { BFD_RELOC_ARC_SDA16_LD, R_ARC_SDA16_LD },
   { BFD_RELOC_ARC_SDA16_LD1, R_ARC_SDA16_LD1 },
   { BFD_RELOC_ARC_SDA16_LD2, R_ARC_SDA16_LD2 },
+  { BFD_RELOC_ARC_TLS_DTPOFF, R_ARC_TLS_DTPOFF },
   { BFD_RELOC_ARC_TLS_GD_GOT, R_ARC_TLS_GD_GOT },
   { BFD_RELOC_ARC_TLS_GD_LD,  R_ARC_TLS_GD_LD },
   { BFD_RELOC_ARC_TLS_GD_CALL,R_ARC_TLS_GD_CALL },
   { BFD_RELOC_ARC_TLS_IE_GOT, R_ARC_TLS_IE_GOT },
+  { BFD_RELOC_ARC_TLS_DTPOFF_S9, R_ARC_TLS_DTPOFF_S9 },
   { BFD_RELOC_ARC_TLS_LE_S9,  R_ARC_TLS_LE_S9 },
   { BFD_RELOC_ARC_TLS_LE_32,  R_ARC_TLS_LE_32 },
 };
@@ -1145,6 +1151,7 @@ arcompact_elf_me_reloc (bfd *abfd ,
   case R_ARC_TLS_GD_GOT:
   case R_ARC_TLS_IE_GOT:
   case R_ARC_TLS_LE_32:
+  case R_ARC_TLS_DTPOFF:
       insn = sym_value;
       break;
   default:
@@ -1393,7 +1400,7 @@ arc_plugin_one_reloc (unsigned long insn, enum elf_arc_reloc_type r_type,
 	      check_overfl_neg = -check_overfl_pos - 4;
 	    }
 	}
-      else if (r_type == R_ARC_TLS_LE_S9)
+      else if (r_type == R_ARC_TLS_LE_S9 || r_type == R_ARC_TLS_DTPOFF_S9)
 	{
 	  /* Extract size field.  */
 	  int zz;
@@ -1661,6 +1668,7 @@ arc_plugin_one_reloc (unsigned long insn, enum elf_arc_reloc_type r_type,
   case R_ARC_TLS_GD_GOT:
   case R_ARC_TLS_IE_GOT:
   case R_ARC_TLS_LE_32:
+  case R_ARC_TLS_DTPOFF:
       insn = value;
 
   case R_ARC_8:
@@ -1720,6 +1728,7 @@ arc_plugin_one_reloc (unsigned long insn, enum elf_arc_reloc_type r_type,
     break;
 
   case R_ARC_TLS_LE_S9:
+  case R_ARC_TLS_DTPOFF_S9:
     /* Check for ld{,b,w}_s r0,gp,s{11,10,9}; since the reloc is for 32 bit,
        the actual insn will be the upper 16 bit in that case.  */
     if (insn & 0x80000000)
@@ -1750,6 +1759,9 @@ arc_plugin_one_reloc (unsigned long insn, enum elf_arc_reloc_type r_type,
 /* Return the reloc type of REL, taking into account tls type information
    for the symbol described by H.
    If CONTENTS is non-null, adjust the code if we change the reloc type.  */
+/* We leave R_ARC_TLS_DTPOFF{,_S9} alone here; if the symbol transitions to
+   LE, we'll load the address of .tbss into r0, and then the original *DTPOFF*
+   relocs will work just fine (as long as the offset fits).  */
 static enum elf_arc_reloc_type
 arc_tls_transition (const Elf_Internal_Rela *rel,
 		    /* enum tls_type_e */ unsigned char *ttp,
@@ -1987,6 +1999,7 @@ elf_arc_check_relocs (bfd *abfd,
 	case R_ARC_TLS_LE_S9:
 	local_exec:
 	  tls_type = GOT_TLS_LE;
+	local_tls:
 	  if (*ttp == GOT_NORMAL)
 	    (*_bfd_error_handler)
 	      (_("%B: %s' accessed both as normal and thread local symbol"),
@@ -1996,9 +2009,18 @@ elf_arc_check_relocs (bfd *abfd,
 	  *ttp = tls_type;
 	  break;
 
+	case R_ARC_TLS_DTPOFF:
+	case R_ARC_TLS_DTPOFF_S9:
+	  tls_type = GOT_TLS_GD;
+	  if (*ttp == GOT_UNKNOWN || *ttp == GOT_NORMAL)
+	    goto local_tls;
+	  break;
+
 	case R_ARC_TLS_IE_GOT:
 	  if (info->shared)
 	    info->flags |= DF_STATIC_TLS;
+	  else if (!h && info->executable)
+	    goto local_exec;
 	  tls_type = GOT_TLS_IE;
 	  goto tls_create_got;
 
@@ -2849,9 +2871,14 @@ elf_arc_relocate_section (bfd *output_bfd,
 	case R_ARC_TLS_LE_S9:
 	  /* The value we have is inside the .tbss section; we want
 	     it to be relative to the thread pointer.  */
-
-	  relocation -= elf_hash_table (info)->tls_sec->output_section->vma;
 	  relocation += TCB_BASE_OFFSET + TCB_SIZE;
+	  /* Fall through.  */
+
+	case R_ARC_TLS_DTPOFF:
+	case R_ARC_TLS_DTPOFF_S9:
+	  /* The value we have is inside the .tbss section; we want
+	     it to be relative to the .tbss start.  */
+	  relocation -= elf_hash_table (info)->tls_sec->output_section->vma;
 
 	  break;
 
