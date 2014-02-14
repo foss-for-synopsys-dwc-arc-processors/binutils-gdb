@@ -1,0 +1,183 @@
+#include "defs.h"
+#include "gdb_string.h"
+#include "frame.h"
+#include "inferior.h"
+#include "gdbcore.h"
+#include "regcache.h"
+#include "gdb_assert.h"
+#include "target.h"
+#include "linux-nat.h"
+
+#include <stdint.h>
+#include <sys/types.h>
+#include <sys/param.h>
+#include <signal.h>
+#include <sys/user.h>
+#include <sys/ioctl.h>
+#include "gdb_wait.h"
+#include <fcntl.h>
+#include <sys/procfs.h>
+#include <sys/ptrace.h>
+#include <linux/elf.h>
+
+#include "gregset.h"
+#include "arc-tdep.h"
+#include "arc-linux-tdep.h"
+
+/* Fetch greg-register(s) from process/thread TID and store value(s) in GDB's
+ * register array.  */
+static void fetch_gregs (struct regcache *regcache, int regnum);
+static void store_gregs (struct regcache *regcache, int regnum);
+static void arc_linux_prepare_to_resume (struct lwp_info *lwp);
+
+/* On GNU/Linux, threads are implemented as pseudo-processes, in which
+   case we may be tracing more than one process at a time.  In that
+   case, inferior_ptid will contain the main process ID and the
+   individual thread (process) ID.  get_thread_id () is used to get
+   the thread id if it's available, and the process id otherwise.  */
+static int
+get_thread_id (ptid_t ptid)
+{
+  int tid = TIDGET (ptid);
+  if (0 == tid)
+    tid = PIDGET (ptid);
+  return tid;
+}
+
+/* Read register from target process via ptrace() into regcache. */
+static void
+fetch_gregs (struct regcache *regcache, int regnum)
+{
+  const gdb_gregset_t regs;
+  struct iovec iov;
+  int tid = get_thread_id (inferior_ptid);
+
+  iov.iov_base = &regs;
+  iov.iov_len = sizeof(gdb_gregset_t);
+
+  if (ptrace (PTRACE_GETREGSET, tid, NT_PRSTATUS, (void*)&iov) < 0)
+    {
+      perror_with_name (_("Couldn't get registers"));
+      return;
+    }
+
+  supply_gregset (regcache, &regs);
+}
+
+/* Store greg-register(s) in GDB's register array into the process/thread
+ * specified by TID.  */
+static void
+store_gregs (struct regcache *regcache, int regnum)
+{
+  gdb_gregset_t regs;
+  struct iovec iov;
+  int tid = get_thread_id (inferior_ptid);
+
+  iov.iov_base = &regs;
+  iov.iov_len = sizeof(gdb_gregset_t);
+
+  if (ptrace (PTRACE_GETREGSET, tid, NT_PRSTATUS, (void*)&iov) < 0)
+    {
+      perror_with_name (_("Couldn't get registers"));
+      return;
+    }
+
+  fill_gregset (regcache, &regs, regnum);
+
+  if (ptrace (PTRACE_SETREGSET, tid, NT_PRSTATUS, (void*)&iov) < 0)
+    {
+      perror_with_name (_("Couldn't write registers"));
+      return;
+    }
+}
+
+/* Function exported to target ops. */
+static void
+arc_linux_fetch_inferior_registers (struct target_ops *ops,
+				    struct regcache *regcache, int regnum)
+{
+  fetch_gregs (regcache, regnum);
+}
+
+/* Function exported to target ops. */
+static void
+arc_linux_store_inferior_registers (struct target_ops *ops,
+				    struct regcache *regcache, int regnum)
+{
+  store_gregs (regcache, regnum);
+}
+
+void
+fill_gregset (const struct regcache *regcache,
+	      gdb_gregset_t *gregsetp, int regno)
+{
+    arc_linux_collect_gregset (NULL, regcache, regno, gregsetp, 0);
+}
+
+void
+supply_gregset (struct regcache *regcache, const gdb_gregset_t *gregsetp)
+{
+    arc_linux_supply_gregset (NULL, regcache, -1, gregsetp, 0);
+}
+
+void
+fill_fpregset (const struct regcache *regcache,
+	       gdb_fpregset_t *fpregsetp, int regnum)
+{
+    /* No FP registers on ARC. */
+    if (arc_debug)
+      fprintf_unfiltered (gdb_stdlog, "%s() called.", __func__);
+    return;
+}
+
+void
+supply_fpregset (struct regcache *regcache,
+		 const gdb_fpregset_t *fpregsetp)
+{
+    /* No FP registers on ARC. */
+    if (arc_debug)
+      fprintf_unfiltered (gdb_stdlog, "%s() called.", __func__);
+    return;
+}
+
+/* As described in arc_linux_collect_gregset(), we need to write resume-PC to
+   ERET. However by default GDB for native targets doesn't write registers if
+   they haven't been changed. This is a callback called by generic GDB, and in
+   this callback we have to rewrite PC value so it would force rewrite of
+   register on target. It seems that the only other arch that utilizes this
+   hook is x86/x86-64 for HW breakpoint support. But then, AFAIK no other arch
+   has this stop_pc/eret complexity.
+
+   I haven't found any other way to force GDB to write register to target,
+   other than this fake write of register value. Maybe there is some better
+   way? */
+static void
+arc_linux_prepare_to_resume (struct lwp_info *lwp) {
+    ULONGEST new_pc;
+    struct regcache *regcache = get_thread_regcache (lwp->ptid);
+    struct gdbarch *gdbarch = get_regcache_arch (regcache);
+
+    /* Read current PC value, then write it back. It is required to call
+       invalidate() otherwise GDB will note that new value is equal to old
+       value and will skip write. */
+    regcache_cooked_read_unsigned(regcache, gdbarch_pc_regnum(gdbarch),
+        &new_pc);
+    regcache_invalidate(regcache, gdbarch_pc_regnum (gdbarch));
+    regcache_cooked_write_unsigned(regcache, gdbarch_pc_regnum(gdbarch),
+	new_pc);
+}
+
+void _initialize_arc_linux_nat (void);
+
+void
+_initialize_arc_linux_nat (void)
+{
+  struct target_ops *t;
+  /* Fill in the generic GNU/Linux methods.  */
+  t = linux_target ();
+  t->to_fetch_registers = arc_linux_fetch_inferior_registers;
+  t->to_store_registers = arc_linux_store_inferior_registers;
+  linux_nat_add_target (t);
+  linux_nat_set_prepare_to_resume(t, arc_linux_prepare_to_resume);
+}
+

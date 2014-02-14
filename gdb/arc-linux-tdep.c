@@ -1,7 +1,7 @@
 /* Target dependent code for ARC processor family, for GDB, the GNU debugger.
 
    Copyright 2005 Free Software Foundation, Inc.
-   Copyright 2009-2013 Synopsys Inc.
+   Copyright 2009-2014 Synopsys Inc.
 
    Contributor Jeremy Bennett <jeremy.bennett@embecosm.com> on behalf of
    Synopsys Inc.
@@ -13,6 +13,7 @@
       Soam Vasani          <soam.vasani@codito.com>
       Ramana Radhakrishnan <ramana.radhakrishnan@codito.com> 
       Richard Stuckey      <richard.stuckey@arc.com>
+      Anton Kolesov        <Anton.Kolesov@synopsys.com>
 
    This file is part of GDB.
    
@@ -56,6 +57,7 @@
 
 /* ARC header files */
 #include "arc-tdep.h"
+#include "arc-linux-tdep.h"
 
 
 /* -------------------------------------------------------------------------- */
@@ -726,7 +728,7 @@ arc_linux_skip_solib_resolver (struct gdbarch *gdbarch, CORE_ADDR pc)
 /*! Call the right architecture variant's supply_gregset function.
 
     For now, we have only ARCompact. */
-static void
+void
 arc_linux_supply_gregset (const struct regset *regset,
 			  struct regcache *regcache,
 			  int regnum, const void *gregs, size_t size)
@@ -742,6 +744,44 @@ arc_linux_supply_gregset (const struct regset *regset,
 			     buf + arc_linux_core_reg_offsets[reg]);
     }
 }	/* arc_linux_supply_gregset () */
+
+
+/* Writes registers from regcache into the NT_PRSTATUS data array. */
+void
+arc_linux_collect_gregset ( const struct regset *regset,
+                            const struct regcache *regcache,
+                            int regnum,
+                            void *gregs,
+                            size_t size)
+{
+  gdb_byte *buf = gregs;
+  int reg;
+
+  for (reg = 0; reg < ARC_NUM_RAW_REGS; reg++)
+    {
+      /* Skip unexisting registers. regnum == -1 means writing all regs. */
+      if ((arc_linux_core_reg_offsets[reg] != REGISTER_NOT_PRESENT) &&
+          (regnum == reg || regnum == -1) )
+        {
+          struct gdbarch *gdbarch = get_regcache_arch (regcache);
+          struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+          /* This is a cludge for ARC 700: address where execution has stopped
+           * is in pseudo-register STOP_PC, however when continuing execution
+           * kernel uses value from ERET register. And because TRAP_S commits,
+           * we have that ERET != STOP_PC, so ERET must be overwritten by the
+           * GDB, otherwise program will continue at address after the current
+           * instruction, which might not be a valid instruction at all. In
+           * GDBserver this handled internally, invisible to the GDB client. */
+          if (tdep->pc_regnum == reg)
+            regcache_raw_collect (regcache, reg,
+                buf + arc_linux_core_reg_offsets[ARC_AUX_ERET_REGNUM]);
+          else if (reg != ARC_AUX_ERET_REGNUM)
+            regcache_raw_collect (regcache, reg,
+                buf + arc_linux_core_reg_offsets[reg]);
+          /* reg == ARC_AUX_ERET_REGNUM is ignored. */
+        }
+    }
+} /* arc_linux_collect_gregset () */
 
 
 /*! Identify functions for handling core files.
@@ -826,3 +866,6 @@ arc_gdbarch_osabi_init (struct gdbarch *gdbarch)
 					 svr4_ilp32_fetch_link_map_offsets);
 
 }	/* arc_gdbarch_osabi_init () */
+
+/* vim: set expandtab: */
+
