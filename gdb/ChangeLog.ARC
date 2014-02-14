@@ -1,3 +1,10 @@
+2014-06-03  Anton Kolesov  <Anton.Kolesov@synopsys.com>
+
+	* config: Add ARC as a valid native target.
+	* arc-linux-tdep.h: New file.
+	* arc-linux-tdep.c (arc_linux_collect_gregset): New function.
+	* arc-linux-nat.c: New file.
+
 2014-04-10  Anton Kolesov  <Anton.Kolesov@synopsys.com>
 
 	* arc-elf-tdep.c (arc_elf_write_pc): Use gdbarch_[pc|ps]_regnum
