@@ -4469,6 +4469,9 @@ arc_get_sda_reloc (arc_insn insn, int compact_insn_16)
 void
 md_apply_fix (fixS *fixP, valueT *valueP, segT seg ATTRIBUTE_UNUSED)
 {
+  /* In bfd/elf32-arc.c .  */
+  extern unsigned long arc_plugin_one_reloc
+    (unsigned long, enum elf_arc_reloc_type, int, short *, bfd_boolean);
   char *buf = fixP->fx_where + fixP->fx_frag->fr_literal;
   valueT value;
 
@@ -4496,6 +4499,8 @@ md_apply_fix (fixS *fixP, valueT *valueP, segT seg ATTRIBUTE_UNUSED)
     {
       value = fixP->fx_offset;
       if (fixP->fx_subsy != (symbolS *) NULL
+	  && fixP->fx_r_type != BFD_RELOC_ARC_TLS_DTPOFF
+	  && fixP->fx_r_type != BFD_RELOC_ARC_TLS_DTPOFF_S9
 	  && fixP->fx_r_type != BFD_RELOC_ARC_TLS_GD_LD)
 	{
 	  if (S_GET_SEGMENT (fixP->fx_subsy) == absolute_section)
@@ -4649,12 +4654,21 @@ md_apply_fix (fixS *fixP, valueT *valueP, segT seg ATTRIBUTE_UNUSED)
 			      value, 4);
 	  break;
 
+	case BFD_RELOC_ARC_TLS_DTPOFF:
+	  if (fixP->fx_done)
+	    {
+	      gas_assert (!fixP->fx_addsy);
+	      gas_assert (!fixP->fx_subsy);
+	      goto apply32_me;
+	    }
+	  value = fixP->fx_offset;
+	  fixP->fx_offset = 0;
 	case BFD_RELOC_ARC_TLS_GD_GOT:
 	case BFD_RELOC_ARC_TLS_IE_GOT:
 	case BFD_RELOC_ARC_TLS_LE_32:
-	case BFD_RELOC_ARC_TLS_DTPOFF:
 	  S_SET_THREAD_LOCAL (fixP->fx_addsy);
 	  /* Fall through.  */
+	apply32_me:
 	case BFD_RELOC_ARC_GOTPC32:
 	case BFD_RELOC_ARC_GOTOFF:
 	case BFD_RELOC_ARC_32_ME:
@@ -4677,12 +4691,30 @@ md_apply_fix (fixS *fixP, valueT *valueP, segT seg ATTRIBUTE_UNUSED)
 	     model for this symbol, by patching the code.  */
 	  /* Fall through.  */
 	case BFD_RELOC_ARC_TLS_LE_S9:
-	case BFD_RELOC_ARC_TLS_DTPOFF_S9:
 	  /* The offset - and scale, if any - will be installed by the
 	     linker.  */
 	  gas_assert (!fixP->fx_done);
 	  S_SET_THREAD_LOCAL (fixP->fx_addsy);
 	  break;
+	case BFD_RELOC_ARC_TLS_DTPOFF_S9:
+	  if (!fixP->fx_done)
+	    S_SET_THREAD_LOCAL (fixP->fx_addsy);
+	  else
+	    {
+	      gas_assert (!fixP->fx_addsy);
+	      gas_assert (!fixP->fx_subsy);
+	      fixP->fx_offset = value;
+	    }
+	  short overflow_detected = 0;
+	  char *contents = fixP->fx_frag->fr_literal + fixP->fx_where;
+	  value
+	    = md_chars_to_number (fixP->fx_frag->fr_literal + fixP->fx_where,
+				  -4);
+	  value
+	    = arc_plugin_one_reloc (value, R_ARC_TLS_LE_S9, fixP->fx_offset,
+				    &overflow_detected, TRUE);
+          fixP->fx_offset = 0;
+	  goto apply32_me;
 
 	case BFD_RELOC_ARC_B26:
 	  /* If !fixP->fx_done then `value' is an implicit addend.
@@ -4774,7 +4806,27 @@ tc_gen_reloc (asection *section ATTRIBUTE_UNUSED,
 
   gas_assert (!fixP->fx_pcrel == !reloc->howto->pc_relative);
 
-  reloc->addend = fixP->fx_offset;
+  if (fixP->fx_r_type == BFD_RELOC_ARC_TLS_DTPOFF
+      || fixP->fx_r_type == BFD_RELOC_ARC_TLS_DTPOFF_S9)
+    {
+      asymbol *sym
+	= fixP->fx_subsy ? symbol_get_bfdsym (fixP->fx_subsy) : NULL;
+      /* We just want to store a 24 bit index, but we have to wait till
+	 after write_contents has been called via bfd_map_over_sections
+	 before we can get the index from _bfd_elf_symbol_from_bfd_symbol.
+	 Thus, the write_relocs function is elf32-arc.c has to pick up
+	 the slack.  Unfortunately, this leads to problems with hosts
+	 that have pointers wider than long (bfd_vma).  There would
+	 be various ways to handle this, all error-prone :-(  */
+      reloc->addend = (bfd_vma) sym;
+      if ((asymbol *) reloc->addend != sym)
+	{
+	  as_bad ("Can't store pointer\n");
+	  return NULL;
+	}
+    }
+  else
+    reloc->addend = fixP->fx_offset;
 
   return reloc;
 }
@@ -6257,6 +6309,22 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 			      current_special_sym_flag = DTPOFF9_TYPE;
 			      force_ld_limm = FALSE;
 			    }
+			  gas_assert (exp.X_op == O_symbol);
+			  gas_assert (exp.X_op_symbol == NULL);
+			  if (*str == '@')
+			    {
+			      char *orig_line = input_line_pointer;
+			      char c;
+			      symbolS *base;
+			      input_line_pointer = ++str;
+			      c = get_symbol_end ();
+			      base = symbol_find_or_make (str);
+			      exp.X_op = O_subtract;
+			      exp.X_op_symbol = base;
+			      str = input_line_pointer;
+			      *str = c;
+			      input_line_pointer = orig_line;
+			    }
 			  try_addend = TRUE;
 			}
 		      else
@@ -6368,7 +6436,9 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		}
 
 	      /* The sda modifier is allowed only with symbols */
-	      if ((mods & ARC_MOD_SDASYM) && exp.X_op != O_symbol)
+	      if ((mods & ARC_MOD_SDASYM) && exp.X_op != O_symbol
+		  /* ??? But it appears also for ordinary load?  */
+		  && current_special_sym_flag != DTPOFF9_TYPE)
 		break;
 
 	      /* Insert the register or expression into the instruction.  */

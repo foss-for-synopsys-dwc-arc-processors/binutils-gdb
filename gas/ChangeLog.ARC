@@ -1,3 +1,13 @@
+2014-02-14  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* tc-arc.c (md_apply_fix) <BFD_RELOC_ARC_TLS_DTPOFF{,_S9}>:
+	Install addend in code segment.  Allow relocation to be done.
+	(tc_gen_reloc) <BFD_RELOC_ARC_TLS_DTPOFF{,_S9}>: Store fx_subsy
+	in addend.
+	(md_assemble) <@dtpoff{,9}>: Parse optional base symbol.
+	* config/tc-arc.h (TC_VALIDATE_FIX_SUB): Allow
+	BFD_RELOC_ARC_TLS_DTPOFF{,_S9}.
+
 2014-02-11  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* config/arc/tc-arc.c (arc700_special_symtype): Add DTPOFF_TYPE and
