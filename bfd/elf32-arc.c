@@ -1374,7 +1374,11 @@ static const insn_hword elf_arcV2_pic_pltn_entry [PLT_ENTRY_SIZE_V2/2] =
  *                                  definition is present.
  * Returns : the insn with the relocated value plugged in.
  */
-static unsigned long
+unsigned long
+arc_plugin_one_reloc (unsigned long insn, enum elf_arc_reloc_type r_type,
+                      int value,
+                      short *overflow_detected, bfd_boolean symbol_defined);
+unsigned long
 arc_plugin_one_reloc (unsigned long insn, enum elf_arc_reloc_type r_type,
                       int value,
                       short *overflow_detected, bfd_boolean symbol_defined
@@ -1390,7 +1394,7 @@ arc_plugin_one_reloc (unsigned long insn, enum elf_arc_reloc_type r_type,
   if (arc_signed_reloc_type [howto->type] == 1)
     {
       check_overfl_pos = (long long)1 << (howto->bitsize-1);
-      check_overfl_neg = -check_overfl_pos - 1;
+      check_overfl_neg = -check_overfl_pos;
 
       if (r_type == R_ARC_PLT32)
 	{
@@ -1402,21 +1406,40 @@ arc_plugin_one_reloc (unsigned long insn, enum elf_arc_reloc_type r_type,
 	     cases and handle them differently.  */
 	  if (! (insn & ((insn & 0x08000000) ? 0x00020000 : 0x00010000)))
 	    {
-	      check_overfl_pos = 0xffffcLL;
-	      check_overfl_neg = -check_overfl_pos - 4;
+	      check_overfl_pos = 0x100000LL;
+	      check_overfl_neg = -check_overfl_pos;
 	    }
 	}
       else if (r_type == R_ARC_TLS_LE_S9 || r_type == R_ARC_TLS_DTPOFF_S9)
 	{
-	  /* Extract size field.  */
-	  int zz;
+	  /* Extract scale, size and offset fields.  */
+	  int aa, zz, addend;
 	  if (insn & 0x80000000) /* ld_s */
-	    zz = insn >> 25;
+	    {
+	      zz = aa = insn >> 25;
+	      addend = (insn >> 16) & 0x1ff;
+	    }
 	  else if (insn & 0x08000000) /* st */
-	    zz = insn >> 1;
+	    {
+	      aa = insn >> 3;
+	      zz = insn >> 1;
+	      addend = (insn >> 16 & 0xff) | (insn >> 7 & 0x100);
+	    }
 	  else /* ld */
-	    zz = insn >> 7;
+	    {
+	      aa = insn >> 9;
+	      zz = insn >> 7;
+	      addend = (insn >> 16 & 0xff) | (insn >> 7 & 0x100);
+	    }
 	  zz &= 3;
+	  aa &= 3;
+	  if (aa == 0)
+	    addend <<= 2;
+	  else if (aa == 2)
+	    addend <<= 1;
+	  if (r_type == R_ARC_TLS_DTPOFF_S9)
+	    value += addend;
+	  /* Find new scale factor / shift count.  */
 	  if (zz == 0)
 	    scale = 2;
 	  else if (zz == 2)
@@ -1664,6 +1687,10 @@ arc_plugin_one_reloc (unsigned long insn, enum elf_arc_reloc_type r_type,
       insn |= ((value >> 2) & 0x7ff) << 16;
       break;
 
+  case R_ARC_TLS_DTPOFF:
+    insn += value;
+    break;
+
   case R_ARC_32:
   case R_ARC_32_PCREL:
   case R_ARC_GOTPC:
@@ -1674,7 +1701,6 @@ arc_plugin_one_reloc (unsigned long insn, enum elf_arc_reloc_type r_type,
   case R_ARC_TLS_GD_GOT:
   case R_ARC_TLS_IE_GOT:
   case R_ARC_TLS_LE_32:
-  case R_ARC_TLS_DTPOFF:
       insn = value;
 
   case R_ARC_8:
@@ -2497,13 +2523,6 @@ elf_arc_relocate_section (bfd *output_bfd,
 		     bfd_get_section_name (input_bfd, input_section));
 		  relocation = 0;
 		}
-	    else if (0 && r_type == R_ARC_SDA16_LD2) /* FIXME: delete this piece of code */
-	      {
-		  relocation = (h->root.u.def.value
-				+ sec->output_offset);
-		  /* add the addend since the arc has RELA relocations */
-		  relocation += rel->r_addend;
-	      }
 	      else
 		{
 		  relocation = (h->root.u.def.value
@@ -2882,10 +2901,48 @@ elf_arc_relocate_section (bfd *output_bfd,
 
 	case R_ARC_TLS_DTPOFF:
 	case R_ARC_TLS_DTPOFF_S9:
-	  /* The value we have is inside the .tbss section; we want
-	     it to be relative to the .tbss start.  */
-	  relocation -= elf_hash_table (info)->tls_sec->output_section->vma;
+	  /* Undo the addition from above.  */
+	  relocation -= rel->r_addend;
+	  if (rel->r_addend == STN_UNDEF)
+	    {
+	      /* The value we have is inside the .tbss section; we want
+		 it to be relative to the .tbss start.  */
+	      relocation -= elf_hash_table (info)->tls_sec->output_section->vma;
+	      break;
+	    }
+	  asection *b_sec;
+	  unsigned long b_symndx = rel->r_addend;
+	  /* Now find the base symbol that's encoded in the addend.  */
+	  if (b_symndx < symtab_hdr->sh_info)
+	    {
+	      /* This is a local symbol.  */
+	      Elf_Internal_Sym *b_sym = local_syms + b_symndx;
+	      b_sec = local_sections[b_symndx];
+	      relocation -= b_sym->st_value;
+	    }
+	  else
+	    {
+	      /* Global symbol.  */
+	      /* get the symbol's entry in the symtab */
+	      struct elf_link_hash_entry *b_h
+		= sym_hashes[b_symndx - symtab_hdr->sh_info];
+	      while (b_h->root.type == bfd_link_hash_indirect
+		     || b_h->root.type == bfd_link_hash_warning)
+		b_h = (struct elf_link_hash_entry *) b_h->root.u.i.link;
+	      BFD_ASSERT ((b_h->dynindx == -1) >= (b_h->forced_local != 0));
+	      b_sec = b_h->root.u.def.section;
 
+	      if (b_sec->output_section == NULL)
+		{
+		  (*_bfd_error_handler)
+		    ("%s: warning: unresolvable relocation against symbol `%s' from %s section",
+		     bfd_get_filename (input_bfd), b_h->root.root.string,
+		     bfd_get_section_name (input_bfd, input_section));
+		  continue;
+		}
+	      relocation -= b_h->root.u.def.value;
+	    }
+	  relocation -= b_sec->output_section->vma + b_sec->output_offset;
 	  break;
 
 	default:
@@ -4082,6 +4139,57 @@ elf32_arc_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
 					  note->descpos + offset);
 }
 
+/* R_ARC_TLS_DTPOFF / R_ARC_TLS_DTPOFF_S9 use the addend to encode the
+   base symbol.  Unfortunately, we can't calculate the symbol
+   index yet in gas' tc_gen_reloc, so we have to do it here.  */
+static void
+arc_elf32_write_relocs (bfd *abfd, asection *sec, void *data)
+{
+  unsigned int idx;
+
+  for (idx = 0; idx < sec->reloc_count; idx++)
+    {
+      arelent *ptr = sec->orelocation[idx];
+      if (ptr->howto->type != R_ARC_TLS_DTPOFF
+	  && ptr->howto->type != R_ARC_TLS_DTPOFF_S9)
+	continue;
+      asymbol *sym = (asymbol *) ptr->addend;
+      ptr->addend
+	= sym ? _bfd_elf_symbol_from_bfd_symbol (abfd, &sym) : STN_UNDEF;
+    }
+  bfd_elf32_write_relocs (abfd, sec, data);
+}
+
+const struct elf_size_info arc_elf32_size_info =
+{
+  sizeof (Elf32_External_Ehdr),
+  sizeof (Elf32_External_Phdr),
+  sizeof (Elf32_External_Shdr),
+  sizeof (Elf32_External_Rel),
+  sizeof (Elf32_External_Rela),
+  sizeof (Elf32_External_Sym),
+  sizeof (Elf32_External_Dyn),
+  sizeof (Elf_External_Note), 
+  4,
+  1,
+  32, 2,
+  ELFCLASS32, EV_CURRENT,
+  bfd_elf32_write_out_phdrs,
+  bfd_elf32_write_shdrs_and_ehdr,
+  bfd_elf32_checksum_contents,
+  arc_elf32_write_relocs, 
+  bfd_elf32_swap_symbol_in,
+  bfd_elf32_swap_symbol_out,
+  bfd_elf32_slurp_reloc_table,
+  bfd_elf32_slurp_symbol_table,
+  bfd_elf32_swap_dyn_in,
+  bfd_elf32_swap_dyn_out,
+  bfd_elf32_swap_reloc_in,
+  bfd_elf32_swap_reloc_out,
+  bfd_elf32_swap_reloca_in,
+  bfd_elf32_swap_reloca_out
+};
+
 #define TARGET_LITTLE_SYM	bfd_elf32_littlearc_vec
 #define TARGET_LITTLE_NAME	"elf32-littlearc"
 #define TARGET_BIG_SYM		bfd_elf32_bigarc_vec
@@ -4125,5 +4233,7 @@ elf32_arc_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
 #define elf_backend_want_plt_sym 0
 #define elf_backend_got_header_size 12
 #define elf_backend_default_execstack 0
+
+#define elf_backend_size_info		arc_elf32_size_info
 
 #include "elf32-target.h"
