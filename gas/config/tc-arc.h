@@ -109,6 +109,8 @@ extern int arc_parse_name (const char *, struct expressionS *);
   ((md_register_arithmetic || (SEG) != reg_section) \
    && ((FIX)->fx_r_type == BFD_RELOC_GPREL32 \
        || (FIX)->fx_r_type == BFD_RELOC_GPREL16 \
+       || (FIX)->fx_r_type == BFD_RELOC_ARC_TLS_DTPOFF \
+       || (FIX)->fx_r_type == BFD_RELOC_ARC_TLS_DTPOFF_S9 \
        || TC_FORCE_RELOCATION_SUB_LOCAL (FIX, SEG)))
 
 #include "opcode/arc.h" /* for arc_insn */
