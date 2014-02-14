@@ -81,7 +81,7 @@ am33_2.0*-*-linux*)
 
 arc*-*-linux*)
 	# Target: ARC Linux based targets
-	gdb_target_obs="arc-tdep.o arc-linux-tdep.o solib-svr4.o"
+	gdb_target_obs="arc-tdep.o arc-linux-tdep.o solib-svr4.o linux-tdep.o"
 	build_gdbserver=yes
 	;;
 
