@@ -1,3 +1,16 @@
+2014-02-14  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* elf32-arc.c (arc_plugin_one_reloc): No longer static.
+	<R_ARC_TLS_DTPOFF{_S9}>: Add in old offset from INSN.
+	(elf_arc_relocate_section) <R_ARC_TLS_DTPOFF{_S9}>: 
+	The addend now provides a base symbol to subtract.
+	(arc_elf32_write_relocs): New function.
+	(arc_elf32_size_info): New const struct elf_size_info.
+	(elf_backend_size_info): Define.
+
+	* elf32-arc.c (arc_plugin_one_reloc): Undo recent check_overfl_neg
+	change.
+
 2014-02-11  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* reloc.c (BFD_RELOC_ARC_TLS_LE_32, BFD_RELOC_ARC_TLS_DTPOFF_S9):
