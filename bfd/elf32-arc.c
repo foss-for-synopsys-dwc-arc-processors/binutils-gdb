@@ -2107,7 +2107,7 @@ elf_arc_check_relocs (bfd *abfd,
 		  /* We have already allocated space in the .got.  */
 		  break;
 		}
-	      if (ah->u.next_deferred)
+	      if (tls_type != GOT_NORMAL && ah->u.next_deferred)
 		break;
 	      /* Make sure this symbol is output as a dynamic symbol.  */
 	      else if (h->dynindx == -1 && !h->forced_local)
