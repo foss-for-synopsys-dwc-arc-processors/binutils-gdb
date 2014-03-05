@@ -1,3 +1,8 @@
+2014-03-05  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* elf32-arc.c (elf_arc_check_relocs): Check tls_type before
+	considering ah->u.next_deferred.
+
 2014-02-14  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* elf32-arc.c (arc_plugin_one_reloc): No longer static.
