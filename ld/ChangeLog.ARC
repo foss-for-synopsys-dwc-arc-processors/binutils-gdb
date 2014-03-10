@@ -1,3 +1,8 @@
+2014-03-10  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* scripttempl/arclinux.sc: PROVIDE_HIDDEN .tdata (in case the
+	section won't be included).
+
 2013-07-15: Christian Ruppert <christian.ruppert@abilis.com>
 
 	* scripttempl/arcelf.sc: Only define ENTRY when not relocating.
