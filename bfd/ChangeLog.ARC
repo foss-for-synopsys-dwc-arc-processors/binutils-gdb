@@ -19,6 +19,16 @@
 	(arc_allocate_got) .. this.  Changed caller.
 	Process normal GOT allocations.
 
+	* elf32-arc.c (elf_backend_copy_indirect_symbol): Define.
+	(elf_ARC_link_hash_entry): New member got_alloc.
+	(elf_ARC_link_hash_newfunc): Initialize got_alloc.
+	(elf_ARC_copy_indirect_symbol): New function.
+	(arc_got_to_pcrel): Add error on failure.
+	(elf_arc_check_relocs): Set got_alloc.
+	(arc_copy_got_alloc): New function.
+	(arc_allocate_got): Call arc_copy_got_alloc via
+	elf_ARC_link_hash_traverse.
+
 2014-03-05  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* elf32-arc.c (elf_arc_check_relocs): Check tls_type before

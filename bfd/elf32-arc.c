@@ -116,6 +116,9 @@ char * fini_str = FINI_SYM_STRING;
 #define bfd_elf32_bfd_link_hash_table_create \
 					elf_ARC_link_hash_table_create
 
+#define elf_backend_copy_indirect_symbol \
+  elf_ARC_copy_indirect_symbol
+
 struct elf_ARC_pcrel_relocs_copied
 {
   /* Next section.  */
@@ -139,6 +142,7 @@ struct elf_ARC_link_hash_entry
   /* Number of PC relative relocs copied for this symbol.  */
   struct elf_ARC_pcrel_relocs_copied *pcrel_relocs_copied;
   struct elf_ARC_link_hash_entry *next_deferred;
+  struct elf_ARC_link_hash_entry *got_alloc;
 };
 
 /* ARC ELF linker hash table.  */
@@ -224,6 +228,7 @@ elf_ARC_link_hash_newfunc (struct bfd_hash_entry *entry,
     {
       ret->pcrel_relocs_copied = NULL;
       ret->next_deferred = NULL;
+      ret->got_alloc = NULL;
       ret->tls_type = GOT_UNKNOWN;
       ret->force_got = 0;
     }
@@ -260,6 +265,28 @@ elf_ARC_link_hash_table_create (bfd * abfd)
 	 - offsetof (struct elf_ARC_link_hash_entry, next_deferred));
 
   return &ret->root.root;
+}
+
+static void
+elf_ARC_copy_indirect_symbol (struct bfd_link_info *      info,
+			      struct elf_link_hash_entry *dir,
+			      struct elf_link_hash_entry *ind)
+{
+  struct elf_ARC_link_hash_entry *adir;
+  struct elf_ARC_link_hash_entry *aind;
+
+  _bfd_elf_link_hash_copy_indirect (info, dir, ind);
+
+  adir = (struct elf_ARC_link_hash_entry *) dir;
+  aind = (struct elf_ARC_link_hash_entry *) ind;
+
+  if (aind->got_alloc == aind)
+    {
+      adir->got_alloc = aind->got_alloc;
+      adir->next_deferred = NULL;
+    }
+  if (aind->tls_type != GOT_UNKNOWN)
+    adir->tls_type = aind->tls_type;
 }
 
 /* This function is called via elf_ARC_link_hash_traverse if we are
@@ -1935,7 +1962,11 @@ arc_got_to_pcrel (const Elf_Internal_Rela *rel,
   /* ld rn,[pcl,symbol@tgot] -> add rn,pcl,symbol@pcl */
   insn -= 0x27307F80;
   if ((unsigned long) insn > 62UL)
-    return FALSE;
+    {
+      (*_bfd_error_handler)
+	(_("%B: can't modify insn %x at %x"), abfd, insn, rel->r_offset - 4);
+      return FALSE;
+    }
   insn += 0x27007F80;
   if (install)
     bfd_put_32_me (abfd, insn, contents + rel->r_offset - 4);
@@ -2160,6 +2191,7 @@ elf_arc_check_relocs (bfd *abfd,
 		}
 
 	      ah->next_deferred = (struct elf_ARC_link_hash_entry *) -1;
+	      ah->got_alloc = ah;
 	      last_deferred_got->next_deferred = ah;
 	      last_deferred_got = ah;
 	      break;
@@ -3806,6 +3838,20 @@ elf_arc_adjust_dynamic_symbol (struct bfd_link_info *info,
   return TRUE;
 }
 
+/* This function is called via elf_ARC_link_hash_traverse.  */
+   
+static bfd_boolean
+arc_copy_got_alloc (struct elf_ARC_link_hash_entry * h,
+		    void *info ATTRIBUTE_UNUSED)
+{
+  if (h->got_alloc)
+    {
+      h->root.got.offset = h->got_alloc->root.got.offset;
+      h->got_alloc = NULL;
+    }
+  return TRUE;
+}
+
 /* This function is called from elf_arc_size_dynamic_sections if we are
    creating a shared object.  We defer allocating GOT space for
    global-dynamic / initial-exec tls symbols because they could be changed
@@ -3869,7 +3915,13 @@ arc_allocate_got (struct bfd_link_info *info)
 	default:
 	  break;
 	}
+      ah->got_alloc = NULL;
     }
+  /* Symbol versioning might have set up copies of the symbols that we
+     just have given their GOT slot allocations.  Copy these allocations
+     to the symbol copies.  */
+  elf_ARC_link_hash_traverse (elf_ARC_hash_table (info), arc_copy_got_alloc,
+			      (void *) info);
 }
 
 /* Set the sizes of the dynamic sections.  */
