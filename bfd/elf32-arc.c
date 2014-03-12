@@ -135,12 +135,10 @@ struct elf_ARC_link_hash_entry
   struct elf_link_hash_entry root;
 
   unsigned char tls_type;
-  union
-    {
-      /* Number of PC relative relocs copied for this symbol.  */
-      struct elf_ARC_pcrel_relocs_copied *pcrel_relocs_copied;
-      struct elf_ARC_link_hash_entry *next_deferred;
-    } u;
+  unsigned force_got : 1;
+  /* Number of PC relative relocs copied for this symbol.  */
+  struct elf_ARC_pcrel_relocs_copied *pcrel_relocs_copied;
+  struct elf_ARC_link_hash_entry *next_deferred;
 };
 
 /* ARC ELF linker hash table.  */
@@ -151,8 +149,8 @@ struct elf_ARC_link_hash_table
 
   /* Small local sym to section mapping cache.  */
   struct sym_cache sym_cache;
-  struct elf_ARC_link_hash_entry *first_deferred_tls_got;
-  struct elf_ARC_link_hash_entry *last_deferred_tls_got;
+  struct elf_ARC_link_hash_entry *first_deferred_got;
+  struct elf_ARC_link_hash_entry *last_deferred_got;
 };
 
 /* Declare this now that the above structures are defined.  */
@@ -173,10 +171,10 @@ static bfd_boolean elf_ARC_discard_copies
 #define elf_ARC_hash_table(p) \
   ((struct elf_ARC_link_hash_table *) ((p)->hash))
 
-#define elf_arc_first_deferred_tls_got(INFO) \
-  elf_ARC_hash_table (INFO)->first_deferred_tls_got
-#define elf_arc_last_deferred_tls_got(INFO) \
-  elf_ARC_hash_table (INFO)->last_deferred_tls_got
+#define elf_arc_first_deferred_got(INFO) \
+  elf_ARC_hash_table (INFO)->first_deferred_got
+#define elf_arc_last_deferred_got(INFO) \
+  elf_ARC_hash_table (INFO)->last_deferred_got
 
 struct elf_arc_obj_tdata
 {
@@ -224,8 +222,10 @@ elf_ARC_link_hash_newfunc (struct bfd_hash_entry *entry,
 				     table, string));
   if (ret != (struct elf_ARC_link_hash_entry *) NULL)
     {
-      ret->u.pcrel_relocs_copied = NULL;
+      ret->pcrel_relocs_copied = NULL;
+      ret->next_deferred = NULL;
       ret->tls_type = GOT_UNKNOWN;
+      ret->force_got = 0;
     }
 
   return (struct bfd_hash_entry *) ret;
@@ -253,11 +253,11 @@ elf_ARC_link_hash_table_create (bfd * abfd)
     }
 
   ret->sym_cache.abfd = NULL;
-  ret->first_deferred_tls_got = NULL;
-  ret->last_deferred_tls_got
+  ret->first_deferred_got = NULL;
+  ret->last_deferred_got
     = (struct elf_ARC_link_hash_entry *)
-	((char *) &ret->first_deferred_tls_got
-	 - offsetof (struct elf_ARC_link_hash_entry, u.next_deferred));
+	((char *) &ret->first_deferred_got
+	 - offsetof (struct elf_ARC_link_hash_entry, next_deferred));
 
   return &ret->root.root;
 }
@@ -276,8 +276,16 @@ elf_ARC_discard_copies (struct elf_ARC_link_hash_entry * h, void *inf)
   struct bfd_link_info *info = (struct bfd_link_info *) inf;
   struct elf_ARC_pcrel_relocs_copied *s;
 
-  /* We only discard relocs for symbols defined in a regular object.  */
-  if (!h->root.def_regular || (!info->symbolic && !h->root.forced_local))
+  /* Discard space allocated for copied relocs if we find out
+     we don't need these copies after all.
+     When creating an executable, there are no worries about the
+     difference between SYMBOL_REFERENCES_LOCAL and SYMBOL_CALLS_LOCAL.
+     When creating a shared library, we should have compiled the code
+     with -fPIC, so any pc-relative relocs for protected symbols should
+     indeed be for calls; pointer loads of global symbols that the
+     main program might refer to by their plt address should use
+     GOT relocs.  */
+  if (!SYMBOL_CALLS_LOCAL (info, &h->root))
     {
       /* m68k / bfin set DT_TEXTREL here, but we have a different way to
 	 control add_dynamic_entry.  */
@@ -285,8 +293,8 @@ elf_ARC_discard_copies (struct elf_ARC_link_hash_entry * h, void *inf)
       return TRUE;
     }
 
-  if (h->tls_type != GOT_UNKNOWN && h->tls_type != GOT_NORMAL)
-    return TRUE;
+  BFD_ASSERT (h->pcrel_relocs_copied == NULL
+	      || h->tls_type == GOT_UNKNOWN || h->tls_type == GOT_NORMAL);
 
   for (s = h->pcrel_relocs_copied; s != NULL; s = s->next)
     s->section->size -=
@@ -1916,6 +1924,24 @@ arc_tls_transition (const Elf_Internal_Rela *rel,
   return r_type;
 }
 
+/* Return true iff we can resolve rel, a GOTPC32 relocation, using
+   pc-relative addressing, assuming the reference is local.
+   If install is true, also adjust the opcode accordingly.  */
+static bfd_boolean
+arc_got_to_pcrel (const Elf_Internal_Rela *rel,
+		  bfd *abfd, bfd_byte *contents, bfd_boolean install)
+{
+  long insn = bfd_get_32_me (abfd, contents + rel->r_offset - 4);
+  /* ld rn,[pcl,symbol@tgot] -> add rn,pcl,symbol@pcl */
+  insn -= 0x27307F80;
+  if ((unsigned long) insn > 62UL)
+    return FALSE;
+  insn += 0x27007F80;
+  if (install)
+    bfd_put_32_me (abfd, insn, contents + rel->r_offset - 4);
+  return TRUE;
+}
+
 /* Function : elf_arc_check_relocs
  * Brief    : Check the relocation entries and take any special
  *           actions, depending on the relocation type if needed.
@@ -1935,7 +1961,7 @@ elf_arc_check_relocs (bfd *abfd,
   Elf_Internal_Shdr *symtab_hdr;
   struct elf_link_hash_entry **sym_hashes;
   bfd_vma *local_got_offsets;
-  struct elf_ARC_link_hash_entry *last_deferred_tls_got;
+  struct elf_ARC_link_hash_entry *last_deferred_got;
   const Elf_Internal_Rela *rel;
   const Elf_Internal_Rela *rel_end;
   asection *sgot;
@@ -1949,7 +1975,7 @@ elf_arc_check_relocs (bfd *abfd,
   dynobj = elf_hash_table (info)->dynobj;
   symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
   sym_hashes = elf_sym_hashes (abfd);
-  last_deferred_tls_got = elf_arc_last_deferred_tls_got (info);
+  last_deferred_got = elf_arc_last_deferred_got (info);
 
   sgot = NULL;
   srelgot = NULL;
@@ -2025,6 +2051,7 @@ elf_arc_check_relocs (bfd *abfd,
 	= h ? &ah->tls_type : &elf_arc_local_got_tls_type (abfd) [r_symndx];
       enum elf_arc_reloc_type r_type
 	= arc_tls_transition (rel, ttp, NULL, NULL);
+      bfd_boolean force_got = FALSE;
       switch (r_type)
 	{
 	case R_ARC_TLS_LE_32:
@@ -2064,6 +2091,16 @@ elf_arc_check_relocs (bfd *abfd,
 	  goto create_got;
 
 	case R_ARC_GOTPC32:
+	/* We'd need to be able to inspect the contents of the input section
+	   in order to check if we have a load.
+	   Otherwise, if we really need to have @got relocs for instructions
+	   that don't fit the mold, we could have a different reloc.  */
+#if 0
+	  if (!arc_got_to_pcrel (rel, abfd, /* bfd_byte * */contents, false))
+	    force_got = 1;
+	  if (ah)
+	    ah->force_got = force_got;
+#endif
 	create_got:
 	  /* This symbol requires a global offset table entry.  */
 
@@ -2113,7 +2150,7 @@ elf_arc_check_relocs (bfd *abfd,
 		  /* We have already allocated space in the .got.  */
 		  break;
 		}
-	      if (tls_type != GOT_NORMAL && ah->u.next_deferred)
+	      if (ah->next_deferred)
 		break;
 	      /* Make sure this symbol is output as a dynamic symbol.  */
 	      else if (h->dynindx == -1 && !h->forced_local)
@@ -2122,24 +2159,22 @@ elf_arc_check_relocs (bfd *abfd,
 		    return FALSE;
 		}
 
-	      if (r_type == R_ARC_TLS_GD_GOT || r_type == R_ARC_TLS_IE_GOT)
-		{
-		  ah->u.next_deferred = (struct elf_ARC_link_hash_entry *) -1;
-		  last_deferred_tls_got->u.next_deferred = ah;
-		  last_deferred_tls_got = ah;
-		  break;
-		}
-	      h->got.offset = sgot->size;
-	      BFD_DEBUG_PIC(fprintf(stderr, "got entry stab entry %d got offset=0x%x\n",r_symndx,
-				    h->got.offset));
-
-	      BFD_DEBUG_PIC(fprintf (stderr, "Got raw size increased\n"));
-	      srelgot->size += sizeof (Elf32_External_Rela);
+	      ah->next_deferred = (struct elf_ARC_link_hash_entry *) -1;
+	      last_deferred_got->next_deferred = ah;
+	      last_deferred_got = ah;
+	      break;
 	    }
 	  else
 	    {
-	      /* This is a global offset table entry for a local
-		 symbol.  */
+	      *ttp = tls_type;
+
+	      /* Ordinary local GOT references can be turned into
+		 pc-relative references.  */
+	      if (r_type == R_ARC_GOTPC32 && !force_got)
+		break;
+
+     	      /* This is a global offset table entry for a local
+                 symbol.  */
 	      if (local_got_offsets[r_symndx] != (bfd_vma) -1)
 		{
 		  BFD_DEBUG_PIC(fprintf(stderr, "got entry stab entry already done%d\n",r_symndx));
@@ -2160,7 +2195,6 @@ elf_arc_check_relocs (bfd *abfd,
 		     linker can adjust this GOT entry.  */
 		  srelgot->size += sizeof (Elf32_External_Rela);
 		}
-	      *ttp = tls_type;
 	    }
 
 	  BFD_DEBUG_PIC(fprintf (stderr, "Got raw size increased\n"));
@@ -2263,7 +2297,7 @@ elf_arc_check_relocs (bfd *abfd,
 		    {
 		      struct elf_ARC_link_hash_entry *eh
 			= (struct elf_ARC_link_hash_entry *) h;
-		      head = &eh->u.pcrel_relocs_copied;
+		      head = &eh->pcrel_relocs_copied;
 		    }
 		  else
 		    {
@@ -2318,7 +2352,7 @@ elf_arc_check_relocs (bfd *abfd,
 
     }
 
-  elf_arc_last_deferred_tls_got (info) = last_deferred_tls_got;
+  elf_arc_last_deferred_got (info) = last_deferred_got;
 
   return TRUE;
 }
@@ -2500,8 +2534,8 @@ elf_arc_relocate_section (bfd *output_bfd,
 		       || r_type == R_ARC_NONE)
 		      && elf_hash_table (info)->dynamic_sections_created
 		      && (! info->shared
-			  || (! info->symbolic && h->dynindx != -1)
-			  || !h->def_regular))
+			  || !(_bfd_elf_symbol_refs_local_p
+				(h, info, r_type == R_ARC_PLT32))))
 		  || (info->shared
 		      && ((! info->symbolic && h->dynindx != -1)
 			  || !h->def_regular)
@@ -2573,7 +2607,11 @@ elf_arc_relocate_section (bfd *output_bfd,
 	      BFD_ASSERT (sgot != NULL);
 	    }
 
-	  if (h != NULL)
+	  if (r_type == R_ARC_GOTPC32
+	      && (h == NULL || SYMBOL_REFERENCES_LOCAL (info, h))
+	      && arc_got_to_pcrel (rel, output_bfd, contents, TRUE))
+	    ; /* We'll resolve directly against the local symbol.  */
+	  else if (h != NULL)
 	    {
 	      bfd_vma off;
 
@@ -3772,15 +3810,21 @@ elf_arc_adjust_dynamic_symbol (struct bfd_link_info *info,
    creating a shared object.  We defer allocating GOT space for
    global-dynamic / initial-exec tls symbols because they could be changed
    by merging with symbols from other input bfds into initial-exec or
-   local-exec, which need less space.  */
+   local-exec, which need less space.
+   And we defer allocating GOT space for ordinary GOT symbols because we
+   might see a hidden/protected visibility definition later.
+   Although we could find all symbols by using elf_ARC_link_hash_traverse,
+   that would make the allocation order semi-random; we get more predictable
+   output, and likely better locality, by using the linked list built up
+   during the calls to elf_arc_check_relocs.  */
 
 static void
-arc_allocate_tls_got (struct bfd_link_info *info)
+arc_allocate_got (struct bfd_link_info *info)
 {
   bfd *dynobj;
   asection *sgot;
   asection *srelgot;
-  struct elf_ARC_link_hash_entry *ah = elf_arc_first_deferred_tls_got (info);
+  struct elf_ARC_link_hash_entry *ah = elf_arc_first_deferred_got (info);
 
   if (!ah)
     return;
@@ -3791,7 +3835,7 @@ arc_allocate_tls_got (struct bfd_link_info *info)
   srelgot = bfd_get_section_by_name (dynobj, ".rela.got");
   BFD_ASSERT (srelgot != NULL);
 
-  for (; ah != (struct elf_ARC_link_hash_entry *) -1; ah = ah->u.next_deferred)
+  for (; ah != (struct elf_ARC_link_hash_entry *) -1; ah = ah->next_deferred)
     {
       if (info->executable
 	  && (ah->tls_type == GOT_TLS_IE || ah->tls_type == GOT_TLS_GD)
@@ -3799,6 +3843,15 @@ arc_allocate_tls_got (struct bfd_link_info *info)
 	ah->tls_type = GOT_TLS_LE;
       switch (ah->tls_type)
 	{
+	case GOT_NORMAL:
+	  /* A GOTPC32 reference can have the purpose of loading the pointer
+	     to a function, in which case, a shared library must load the
+	     address from the GOT, which should be the plt entry from the main
+	     program if the (non-pic) main program loads this pointer too.
+	     Thus, we can't use SYMBOL_CALLS_LOCAL here.  */
+	  if (!ah->force_got && SYMBOL_REFERENCES_LOCAL (info, &ah->root))
+	    break;
+	  /* Fall through.  */
 	case GOT_TLS_IE:
 	  srelgot->size += sizeof (Elf32_External_Rela);
 	  BFD_ASSERT (ah->root.got.offset == (bfd_vma) -1);
@@ -3834,7 +3887,7 @@ elf_arc_size_dynamic_sections (bfd *output_bfd,
   dynobj = elf_hash_table (info)->dynobj;
   BFD_ASSERT (dynobj != NULL);
 
-  arc_allocate_tls_got (info);
+  arc_allocate_got (info);
 
   if (elf_hash_table (info)->dynamic_sections_created)
     {
