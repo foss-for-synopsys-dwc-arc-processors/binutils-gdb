@@ -1,3 +1,24 @@
+2014-03-12  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* elf32-arc.c (elf_ARC_link_hash_entry): Dissolve union u,
+	make its members into direct members.  Changed all users.
+	Add member force_got.
+	(elf_ARC_link_hash_table): Rename {first,last}_deferred_tls_got
+	to {first,last}_deferred_got.  Changed all users.
+	(elf_arc_first_deferred_tls_got): Rename to ..
+	(elf_arc_first_deferred_got) .. this.  Changed all users.
+	(elf_arc_last_deferred_tls_got): Rename to ..
+	(elf_arc_last_deferred_got) .. this.  Changed all users.
+	(elf_ARC_link_hash_newfunc): Initialize force_got.
+	(elf_ARC_discard_copies): Use SYMBOLS_CALL_LOCAL.
+	(arc_got_to_pcrel): New function.
+	(elf_arc_check_relocs): Defer normal GOT allocations.
+	(elf_arc_relocate_section): Use arc_got_to_pcrel to resolve
+	GOT relocs against local symbols directly.
+	(arc_allocate_tls_got) Rename to ..
+	(arc_allocate_got) .. this.  Changed caller.
+	Process normal GOT allocations.
+
 2014-03-05  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* elf32-arc.c (elf_arc_check_relocs): Check tls_type before
