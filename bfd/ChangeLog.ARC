@@ -1,3 +1,8 @@
+2014-03-12 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* elf32-arc.c (elf_arc_relocate_section): Selective truncate
+          the last bits for pc relative relocations.
+
 2013-12-02  Simon Cook  <simon.cook@embecosm.com>
 
 	* elf32-arc.c (elf_arc_check_relocs): Add error when relocs appear that
