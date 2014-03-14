@@ -2470,7 +2470,7 @@ elf_arc_relocate_section (bfd *output_bfd,
 	    case R_ARC_32_ME:
 	      break;
 	    default:
-	      _bfd_error_handler (_("ERROR: unhandled PC-relative relocation %d"), r_type);
+	      tmp &= ~0x03;
 	      break;
 	    }
 	  relocation -= (tmp - offset_in_insn);
