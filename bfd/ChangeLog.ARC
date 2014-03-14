@@ -1,3 +1,8 @@
+2014-03-14 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* elf32-arc.c (elf_arc_relocate_section): Avoid truncation
+          only specific relocations. Otherwise keep the old logic.
+
 2014-03-12 Claudiu Zissulescu <claziss@synopsys.com>
 
 	* elf32-arc.c (elf_arc_relocate_section): Selective truncate
