@@ -48,24 +48,27 @@ convenience.  Supported values for @var{cpu} are
 @cindex @code{mA6} command line option, ARC
 @cindex @code{mARC600} command line option, ARC
 @item ARC600
-Assemble for ARC600.  Aliases: @code{-mA6}, @code{-mARC600}. This
+Assemble for ARC 600.  Aliases: @code{-mA6}, @code{-mARC600}. This
 is the default.
 
 @item ARC601
 @cindex @code{mARC600} command line option, ARC
-Assemble for ARC601. Alias: @code{-mARC601}.
+Assemble for ARC 601. Alias: @code{-mARC601}.
 
 @item ARC700
 @cindex @code{mA7} command line option, ARC
 @cindex @code{mARC700} command line option, ARC
-Assemble for ARC700.  Aliases: @code{-mA7}, @code{-mARC700}.
+Assemble for ARC 700.  Aliases: @code{-mA7}, @code{-mARC700}.
 
 @item ARCv2EM
 @cindex @code{mEM} command line option, ARC
-@cindex @code{mARCv2EM} command line option, ARC
 @cindex @code{mav2em} command line option, ARC
-Assemble for ARC v2 EM.  Aliases: @code{-mEM},
-@code{-mARCv2EM}.
+Assemble for ARC EM.  Aliases: @code{-mEM} @code{-mav2em}.
+
+@item ARCv2HS
+@cindex @code{mHS} command line option, ARC
+@cindex @code{mav2hs} command line option, ARC
+Assemble for ARC HS.  Aliases: @code{-mHS}, @code{-mav2hs}.
 
 @end table
 
@@ -86,10 +89,10 @@ trigger an error.
 @c ARC extension instructions
 ARC is a family of configurable processors.  Different extensions
 provide additional instructions which must be supported by the
-assembler.  For ARC v2 EM, all possible extensions are supported by
-the assembler, and no options are provided to control these
-extensions.  For the ARC600 and ARC700 cores, the following options
-control which extension instructions are supported:
+assembler.  For ARC EM, all possible extensions are supported by the
+assembler, and no options are provided to control these extensions.
+For the ARC 600 and ARC 700 cores, the following options control which
+extension instructions are supported:
 
 @table @code
 
@@ -120,12 +123,12 @@ extension.
 @item -mea
 @cindex @code{-mea} command line option, ARC
 Assemble extended arithmetic instructions.  @emph{Note:} this
-functionality is not available with ARC v2 EM.
+functionality is not available with ARC EM.
 
 @item -mlock
 @cindex @code{-mlock} command line option, ARC
 Assemble instructions supported by the @code{LLOCK} and @code{SCOND}
-extensions added with the ARC770 processor.
+extensions added with the ARC 770 processor.
 
 @item -mmac-24
 @cindex @code{-mmac-24} command line option, ARC
@@ -154,7 +157,7 @@ Assemble @code{norm} instructions.
 @item -mrtsc
 @cindex @code{-mrtsc} command line option, ARC
 Assemble instructions supported by the @code{RTSC} extension added
-with the ARC770 processor.
+with the ARC 770 processor.
 
 @item -msimd
 @cindex @code{-msimd} command line option, ARC
@@ -178,7 +181,7 @@ Assemble @code{swap} instructions.
 @item -mswape
 @cindex @code{-mswape} command line option, ARC
 Assemble instructions supported by the @code{SWAPE} extension added
-with the ARC770 processor.
+with the ARC 770 processor.
 
 @item -mtelephony
 @cindex @code{-mtelephony} command line option, ARC
@@ -343,20 +346,20 @@ The stack pointer and a synonym for @code{28}.
 @item ilink1
 @cindex level 1 interrupt link register, ARC
 @cindex ARC level 1 interrupt link register
-For ARC600 and ARC700, the level 1 interrupt link register and a
-synonym for @code{r29}.  Not supported for ARC v2 EM.
+For ARC 600 and ARC 700, the level 1 interrupt link register and a
+synonym for @code{r29}.  Not supported for ARCv2.
 
 @item ilink
 @cindex interrupt link register, ARC
 @cindex ARC interrupt link register
-For ARC v2 EM, the interrupt link register and a synonym for
-@code{r29}.  Not supported for ARC600 and ARC700.
+For ARCv2, the interrupt link register and a synonym for
+@code{r29}.  Not supported for ARC 600 and ARC 700.
 
 @item ilink2
 @cindex level 2 interrupt link register, ARC
 @cindex ARC level 2 interrupt link register
-For ARC600 and ARC700, the level 2 interrupt link register and a
-synonym for @code{r30}.  Not supported for ARC v2 EM.
+For ARC 600 and ARC 700, the level 2 interrupt link register and a
+synonym for @code{r30}.  Not supported for ARC v2.
 
 @item blink
 @cindex link register, ARC
@@ -734,7 +737,7 @@ Use the explicit option required.
 
 The following additional assembler modifiers have been added for
 position-independent code.  These modifiers are available only with
-the ARC700 processor and generate relocation entries, which are
+the ARC 700 processor and generate relocation entries, which are
 interpreted by the linker as follows:
 
 @table @code
@@ -760,7 +763,7 @@ instructions and PC-relative calls.
 
 The following assembler symbols will prove useful when developing
 position-independent code.  These symbols are available only with the
-ARC700 processor.
+ARC 700 processor.
 
 @table @code
 @item __GLOBAL_OFFSET_TABLE__

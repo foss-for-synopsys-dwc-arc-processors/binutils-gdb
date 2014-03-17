@@ -1,3 +1,7 @@
+2014-03-17 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* doc/c-arc.texi: Update with ARC HS options.
+
 2013-12-11 Claudiu Zissulescu <claziss@synopsys.com>
 
         * config/tc-arc.c: Mods to handle 64-bit regs when are used in
