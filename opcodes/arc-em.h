@@ -417,7 +417,7 @@
 
 /*SWI */
 /* swi                  	0010 0010 0110 1111 0000 0000 0011 1111  */
-{ (unsigned char *) "swi",                                  0xFFFFFFFF, 0x226F003F, ARC_MACH_ARCV2, 0, 0, 0, 0},
+{ (unsigned char *) "swi",                                  0xFFFFFFFF, 0x226F003F, ARC_MACH_ARC7 | ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* swi_s                	0111 1010 1110 0000  */
 { (unsigned char *) "swi_s",                                0xFFFF, 0x7AE0, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* sub_s    a,b,c               0100 1bbb ccc1 0aaa  */
