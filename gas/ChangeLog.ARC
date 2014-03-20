@@ -1,3 +1,9 @@
+2014-03-20 Claudiu Zissulescu <claziss@synopsys.com>
+
+        * config/tc-arc.c (arc_extoper): Allow negative value when
+          handling Aux Registers.
+	  (md_assemble): Check u6 immediate value for trap_s instructions.
+
 2014-03-17 Claudiu Zissulescu <claziss@synopsys.com>
 
 	* doc/c-arc.texi: Update with ARC HS options.

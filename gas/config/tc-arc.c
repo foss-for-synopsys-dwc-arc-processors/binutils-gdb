@@ -1667,7 +1667,9 @@ arc_extoper (int opertype)
 
   input_line_pointer++;		/* skip ','  */
   number = get_absolute_expression ();
-  if (number < 0)
+  /* AUX register can have negative value to fit in the s12
+     constraint. */
+  if ((number < 0) && (opertype != 2))
     {
       as_bad ("negative operand number %d", number);
       ignore_rest_of_line ();
@@ -1816,8 +1818,8 @@ arc_extoper (int opertype)
   ext_oper = xmalloc (sizeof (struct arc_ext_operand_value));
 
 /* allow extension to be loaded to */
-      if(imode!=ARC_REGISTER_READONLY)
-	  arc_ld_ext_mask |= (1 << (number-32));
+  if (imode != ARC_REGISTER_READONLY)
+    arc_ld_ext_mask |= (1 << (number - 32));
 
   if (opertype)
     {
@@ -6054,9 +6056,11 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 			  if (opcode->flags & ARC_INCR_U6)
 			    value++;    /* Incrementing value of u6 for pseudo
 					   mnemonics of BRcc .  */
-			  if ((value < 0) || (value > 63)){
-			    match_failed = 1;
-			      }
+			case '@':
+			  if ((value < 0) || (value > 63))
+			    {
+			      match_failed = 1;
+			    }
 			  break;
 			case 'K':
 			  if ((value < -2048) || (value > 2047))
