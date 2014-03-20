@@ -1,3 +1,9 @@
+2014-03-20 Claudiu Zissulescu <claziss@synopsys.com>
+
+       * arc-em.h: Allow swi instruction for ARC 700 architecture.
+       * arc-opc-old.c (insert_reg): Insert aux register values into
+         s12 and u6 instruction's fields.
+
 2014-02-05 Claudiu Zissulescu <claziss@synopsys.com>
 
        * arc-opc-old.c (arc_reg_names_em): Add r58 and r59 to be used
