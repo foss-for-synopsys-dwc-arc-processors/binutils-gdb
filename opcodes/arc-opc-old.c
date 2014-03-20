@@ -1496,13 +1496,26 @@ insert_reg (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
 	    {
 	      /* TODO: Check for validity of using ARCompact auxiliary regs.  */
 
-	      //	      insn |= reg->value << operand->shift;
-	      /* Replace this later with the corresponding function to do
-		 the insertion of signed 12 bit immediates .
-		 This is because the auxillary registers used as a mnemonic
+	      /* Replace this later with the corresponding function to
+		 do the insertion of signed 12 bit immediates .  This
+		 is because the auxillary registers used as a mnemonic
 		 would be stored in this fashion.  */
 
-	      insn |= (((reg->value & 0x3f) << 6) | ((reg->value & 0xffffffc0) >> 6));
+	      /* Predicated AEX doesn't allow s12 immediate. Only u6. */
+	      if ((insn & 0xF8FF8020) == 0x20E70020)
+		{
+		  if ((reg->value < 0) || (reg->value > 63))
+		    *errmsg = _("unable to fit auxiliary register into instruction");
+		  else
+		    insn |= ((reg->value & 0x3f) << 6);
+		}
+	      else
+		{
+		  if ((reg->value < -2048) || (reg->value > 2047))
+		    *errmsg = _("unable to fit auxiliary register into instruction");
+		  else
+		    insn |= (((reg->value & 0x3f) << 6) | ((reg->value & 0xfc0) >> 6));
+		}
 	    }
 	}
       else
