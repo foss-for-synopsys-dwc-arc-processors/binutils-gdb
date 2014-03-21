@@ -1,3 +1,8 @@
+2014-03-21 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* readelf.c (get_machine_flags): print the name of ARC
+          processors properly.
+
 2013-11-11 Claudiu Zissulescu <claziss@synopsys.com>
 
 	* readelf.c (get_machine_flags): print ARC-HS processor.

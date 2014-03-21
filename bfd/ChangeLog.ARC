@@ -1,3 +1,7 @@
+2014-03-21 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* cpu-arc.c: Use ARCv2 as a generic name for ARCv2 processors.
+
 2014-03-14 Claudiu Zissulescu <claziss@synopsys.com>
 
 	* elf32-arc.c (elf_arc_relocate_section): Avoid truncation
