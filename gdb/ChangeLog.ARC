@@ -1,3 +1,7 @@
+2014-03-24  Anton Kolesov  <Anton.Kolesov@synopsys.com>
+
+	* arc-elf-tdep.c (arc_elf_write_pc): New function.
+
 2013-12-19  Anton Kolesov  <anton.kolesov@synopsys.com>
 
 	* arc-linux-tdep.c (arc_linux_skip_solib_resolver): Fix broken solib
