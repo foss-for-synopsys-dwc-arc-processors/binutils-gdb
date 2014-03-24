@@ -1,3 +1,7 @@
+2014-03-24  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* elf32-arc.c (elf_arc_check_relocs): Don't worry about relocs in pie.
+
 2014-03-12  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* elf32-arc.c (elf_ARC_link_hash_entry): Dissolve union u,
