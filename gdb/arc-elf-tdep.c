@@ -262,7 +262,6 @@ arc_elf_breakpoint_from_pc (struct gdbarch *gdbarch, CORE_ADDR * pcptr,
   return (gdbarch_byte_order (gdbarch) == BFD_ENDIAN_BIG)
     ? breakpoint_instr_be
     : breakpoint_instr_le;
-
 }	/* arc_elf_breakpoint_from_pc () */
 
 
@@ -425,6 +424,69 @@ arc_elf_sim_map (int                gdb_regnum,
 }	/* arc_elf_sim_map () */
 #endif
 
+/*! Writes values of PC register.
+
+    In ARC PC register is a normal register so in most cases setting PC value
+    is a straightforward process: debugger just writes PC value. However it
+    gets trickier in case when current instruction is an instruction in delay
+    slot. In this case CPU will execute instruction at current PC value, then
+    will set PC to the current value of BTA register; also current instruction
+    cannot be branch/jump and some of the other instruction types. Thus if
+    debugger would try to just change PC value in this case, this instruction
+    will get executed, but then core will "jump" to the original branch target.
+
+    ARC provides following means to resolve this problem: - BTA register
+    contains address where core should jump after executing instruction in
+    delay slot - Bit DE in STATUS32 register indicates if current instruction
+    is a delay slot instruction. This bit is writable by debug host, which
+    allows debug host to prevent core from jumping after the delay slot
+    instruction. At also works in another directions: setting this bit will
+    make core to treat any current instructions as a delay slot instruction and
+    to set PC to the current value of BTA register.
+
+    To workaround issues with changing PC register while in delay slot
+    instruction, debugger should check for the STATUS32.DE bit and reset it if
+    it is set. No other change is required in this function. Most common case
+    where this function might be required is calling inferior functions from
+    debugger. Generic GDB logic handles this pretty well: current values of
+    registers are stored, value of PC is changed (that is the job of this
+    function), after inferior function is executed, GDB restores all registers,
+    which also means that core is returned to its original state of being
+    halted on delay slot instructions.
+
+    This method is useless for ARC 600, because it doesn't have externally
+    exposed BTA register. In the case of ARC 600 it is impossible to restore
+    core to it's state in all occasions thus core should never be halted (from
+    the perspective of debugger host) in the delay slot. */
+static void
+arc_elf_write_pc (struct regcache *regcache, CORE_ADDR new_pc)
+{
+    int de_bit;
+    ULONGEST status32;
+
+    if (arc_debug)
+      {
+	fprintf_unfiltered(gdb_stdlog, "writing PC. New value=0x%lx\n" , new_pc);
+      }
+
+    regcache_cooked_write_unsigned (regcache, ARC_PC_REGNUM, new_pc);
+
+    regcache_cooked_read_unsigned (regcache, ARC_AUX_STATUS32_REGNUM, &status32);
+
+    /* Mask for DE bit is 0x40 */
+    if (status32 & 0x40)
+      {
+	if (arc_debug)
+	  fprintf_unfiltered(gdb_stdlog,
+	    "arc: Changing PC while in delay slot. Will reset STATUS32.DE bit "
+	    "to zero. Value of STATUS32 register is 0x%08lx\n", status32);
+
+	/* Reset bit and write to the cache */
+	status32 &= ~0x40;
+	regcache_cooked_write_unsigned (regcache, ARC_AUX_STATUS32_REGNUM, status32);
+      }
+}
+
 
 /* -------------------------------------------------------------------------- */
 /*                               externally visible functions                 */
@@ -441,7 +503,6 @@ arc_get_osabi (void)
   return GDB_OSABI_LINUX;
 
 }	/* arc_get_osabi () */
-
 
 /*! Function to initialize for this target variant.
 
@@ -463,6 +524,7 @@ arc_gdbarch_osabi_init (struct gdbarch *gdbarch)
   set_gdbarch_cannot_fetch_register (gdbarch, arc_elf_cannot_fetch_register);
   set_gdbarch_cannot_store_register (gdbarch, arc_elf_cannot_store_register);
   set_gdbarch_breakpoint_from_pc (gdbarch, arc_elf_breakpoint_from_pc);
+  set_gdbarch_write_pc(gdbarch, arc_elf_write_pc);
 
 #ifdef WITH_SIM
   /* Provide the built-in simulator with a function that it can use to map
