@@ -1,3 +1,7 @@
+2014-03-24  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* elf32-arc.c (elf_arc_check_relocs): Don't worry about relocs in pie.
+
 2014-03-21 Claudiu Zissulescu <claziss@synopsys.com>
 
 	* cpu-arc.c: Use ARCv2 as a generic name for ARCv2 processors.

@@ -1776,7 +1776,8 @@ elf_arc_check_relocs (bfd *abfd,
 	     a shared library (as memory will be read only and the dynamic
 	     linker can not resolve these. However the error should not occur
 	     for e.g. debugging or non-readonly sections. */
-	  if (info->shared && (sec->flags & SEC_ALLOC) != 0
+	  if (info->shared && !info->pie
+	      && (sec->flags & SEC_ALLOC) != 0
 	      && (sec->flags & SEC_READONLY) != 0)
 	    {
 	      const char *name;
