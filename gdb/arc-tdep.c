@@ -2661,7 +2661,8 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   /* Default gdbarch_addr_bit suffices (same as gdbarch_ptr_bit) */
   /* No need for gdbarch_dwarf2_addr_size */
   set_gdbarch_char_signed (gdbarch, 0);	/* Default unsigned chars */
-  /* No need for read_pc or write_pc, since PC is normal register */
+  /* No need for read_pc, since PC is normal register */
+  /* write_pc is target dependent: no for linux, exists for elf32 */
   set_gdbarch_virtual_frame_pointer (gdbarch, arc_virtual_frame_pointer);
   /* No need for special pseudo register read/write. */
   set_gdbarch_num_regs (gdbarch, tdep->num_regs);
