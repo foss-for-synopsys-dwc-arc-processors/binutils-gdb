@@ -921,8 +921,7 @@ arc_is_in_prologue (struct gdbarch *gdbarch,
     }
 
   else if (instr->_opcode == 0x4
-       || (instr->_opcode == 0x8 && 
-           gdbarch_bfd_arch_info (gdbarch)->mach == bfd_mach_arc_arcv2))
+       || (instr->_opcode == 0x8 && arc_mach_is_arcv2(gdbarch)))
     {
       /* A major opcode 0x4 instruction */
       /* We are usually interested in a mov or a sub */
