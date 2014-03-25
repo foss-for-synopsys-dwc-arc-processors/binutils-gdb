@@ -1,3 +1,9 @@
+2014-03-25  Anton Kolesov  <Anton.Kolesov@synopsys.com>
+
+	* arc-tdep.h (arc_mach_is_arc600, arc_mach_is_arc700,
+	arc_mach_is_arcv2): New functions.
+	* arc-tdep.c (arc_is_in_prologue): Use new functions.
+
 2014-03-24  Anton Kolesov  <Anton.Kolesov@synopsys.com>
 
 	* arc-elf-tdep.c (arc_elf_write_pc): New function.
