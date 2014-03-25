@@ -621,5 +621,26 @@ extern int arc_debug;
 extern enum gdb_osabi arc_get_osabi (void);
 extern void arc_gdbarch_osabi_init (struct gdbarch *gdbarch);
 
+
+/* Inline functions */
+static inline int
+arc_mach_is_arc600(struct gdbarch *gdbarch)
+{
+    return gdbarch_bfd_arch_info (gdbarch)->mach == bfd_mach_arc_arc600 ||
+	gdbarch_bfd_arch_info (gdbarch)->mach == bfd_mach_arc_arc601;
+}
+
+static inline int
+arc_mach_is_arc700(struct gdbarch *gdbarch)
+{
+    return gdbarch_bfd_arch_info (gdbarch)->mach == bfd_mach_arc_arc700;
+}
+
+static inline int
+arc_mach_is_arcv2(struct gdbarch *gdbarch)
+{
+    return gdbarch_bfd_arch_info (gdbarch)->mach == bfd_mach_arc_arcv2;
+}
+
 #endif /* ARC_TDEP_H */
 /******************************************************************************/
