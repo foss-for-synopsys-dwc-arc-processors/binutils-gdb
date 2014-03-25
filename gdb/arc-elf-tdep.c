@@ -50,6 +50,9 @@
 #include "observer.h"
 #include "objfiles.h"
 #include "arch-utils.h"
+#include "dis-asm.h"
+#include "opcode/arc.h"
+#include "opcodes/arc-dis-old.h"
 
 /* ARC header files */
 #include "arc-tdep.h"
@@ -238,13 +241,26 @@ arc_elf_cannot_store_register (struct gdbarch *gdbarch, int regnum)
 }	/* arc_elf_cannot_store_register () */
 
 
-/*! Get breakpoint which is approriate for address at which it is to be set.
+/*! Get breakpoint which is appropriate for address at which it is to be set.
 
     For ARC ELF, breakpoint uses the 16-bit BRK_S instruction, which is 0x7fff
-    (little endian) or 0xff7f (big endian).
+    (little endian) or 0xff7f (big endian). We used to insert BRK_S even
+    instead of 32-bit instructions, which works mostly ok, unless breakpoint is
+    inserted into delay slot instruction. In this case if branch is taken BLINK
+    value will be set to address of instruction after delay slot, however if we
+    replaced 32-bit instruction in delay slot with 16-bit long BRK_S, then
+    BLINK value will have an invalid value - it will point to the address after
+    the BRK_S (which was there at the moment of branch execution) while it
+    should point to the address after the 32-bit long instruction. To avoid
+    such issues this function disassembles instruction at target location and
+    evaluates it value.
 
-    @todo Surely we should be able to use the same breakpoint instruction for
-          both Linux and ELF?
+    ARC 600 supports only 16-bit BRK_S.
+
+    NB:  Baremetal GDB uses BRK[_S], while user-space GDB uses TRAP_S. BRK[_S]
+    is much better because it doesn't commit unlike TRAP_S, so it can be set in
+    delay slots; however it cannot be used in user-mode, hence usage of TRAP_S
+    in GDB for user-space.
 
     @param[in]     gdbarch  Current GDB architecture
     @param[in,out] pcptr    Pointer to the PC where we want to place a
@@ -255,13 +271,34 @@ static const unsigned char *
 arc_elf_breakpoint_from_pc (struct gdbarch *gdbarch, CORE_ADDR * pcptr,
 			    int *lenptr)
 {
-  static const unsigned char breakpoint_instr_be[] = { 0x7f, 0xff };
-  static const unsigned char breakpoint_instr_le[] = { 0xff, 0x7f };
+  static const unsigned char brk_s_be[] = { 0x7f, 0xff };
+  static const unsigned char brk_s_le[] = { 0xff, 0x7f };
+  static const unsigned char brk_be[] = { 0x25, 0x6f, 0x00, 0x3f };
+  static const unsigned char brk_le[] = { 0x6f, 0x25, 0x3f, 0x00 };
+  /* Note that BRK for little endian is in middle-endian encoding. */
 
-  *lenptr = sizeof (breakpoint_instr_be);
-  return (gdbarch_byte_order (gdbarch) == BFD_ENDIAN_BIG)
-    ? breakpoint_instr_be
-    : breakpoint_instr_le;
+  struct disassemble_info di;
+  struct arcDisState instr;
+
+  /* So what is the instruction at the given PC? */
+  arc_initialize_disassembler (gdbarch, &di);
+  instr = arcAnalyzeInstr (*pcptr, &di);
+
+  /* Replace 16-bit instruction BRK_S, replace 32-bit instructions with BRK.
+   * LIMM is part of instructionLen, so it can be either 4 or 8 bytes. */
+  if ((instr.instructionLen == 4 || instr.instructionLen == 8) &&
+	!arc_mach_is_arc600(gdbarch))
+    {
+      *lenptr = sizeof(brk_le);
+      return (gdbarch_byte_order (gdbarch) == BFD_ENDIAN_BIG)
+	? brk_be : brk_le;
+    }
+  else
+    {
+      *lenptr = sizeof(brk_s_le);
+      return (gdbarch_byte_order (gdbarch) == BFD_ENDIAN_BIG)
+	? brk_s_be : brk_s_le;
+    }
 }	/* arc_elf_breakpoint_from_pc () */
 
 
