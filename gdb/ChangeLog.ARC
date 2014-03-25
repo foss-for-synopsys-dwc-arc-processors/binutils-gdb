@@ -1,5 +1,10 @@
 2014-03-25  Anton Kolesov  <Anton.Kolesov@synopsys.com>
 
+	* arc-elf-tdep.c (arc_elf_breakpoint_from_pc): Insert breakpoints
+	of the same length as instruction being replaced.
+
+2014-03-25  Anton Kolesov  <Anton.Kolesov@synopsys.com>
+
 	* arc-tdep.h (arc_mach_is_arc600, arc_mach_is_arc700,
 	arc_mach_is_arcv2): New functions.
 	* arc-tdep.c (arc_is_in_prologue): Use new functions.
