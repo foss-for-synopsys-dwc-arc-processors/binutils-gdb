@@ -1,3 +1,8 @@
+2014-03-26 Claudiu Zissulescu <claziss@synopsys.com>
+
+       * arc-opc-old.c (insert_reg): Handle SDA symbols by ld<zz>
+         instructions (prefetch type instructions).
+
 2014-03-20 Claudiu Zissulescu <claziss@synopsys.com>
 
        * arc-em.h: Allow swi instruction for ARC 700 architecture.

@@ -1417,7 +1417,7 @@ insert_reg (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
       else if ((mods & ARC_MOD_SDASYM) && !ac_add_reg_sdasym_insn (insn))
 	{
 	  /* Check if this insn is a prefetch that needs a limm */
-	  if ((insn & 0xFFFFF9FF) == 0x1600703E)
+	  if ((insn & 0xFFFFF87F) == 0x1600703E)
 	    {
 	      limm_p = 1;
 	    }
@@ -3393,7 +3393,8 @@ static struct arc_opcode arc_opcodes[] = {
   /* ld<.aa><.di><.x><.ZZ>    0,[b,c] 	0010 0bbb aa11 0ZZX DBBB CCCC CC11 1110  */
   { (unsigned char *) "ld%T%.X%.P%.V 0,[%g,%C]%3",             0xF838003F, 0x2030003E, ARC_MACH_ARCV2, 0, 0, 0, 0},
   /* ld<.aa><.di><.x><.ZZ>    0,[b,s9] 	0001 0bbb ssss ssss SBBB DaaZ ZX11 1110  */
-  { (unsigned char *) "ld%t%.x%.p%.v 0,[%g,%o]%3",             0xF800003F, 0x1000003E, ARC_MACH_ARCV2, 0, 0, 0, 0},
+  { (unsigned char *) "ld%t%.x%.p%.v 0,[%g,%o]%1",             0xF800003F, 0x1000003E, ARC_MACH_ARCV2, 0, 0, 0, 0},
+  { (unsigned char *) "ld%t%.x%.p%.v 0,[%g]%1",                0xF800003F, 0x1000003E, ARC_MACH_ARCV2, 0, 0, 0, 0},
   /* ld<.aa><.di><.x><.ZZ>    0,[b,limm] 	0010 0bbb aa11 0ZZX DBBB 1111 1011 1110  */
   { (unsigned char *) "ld%T%.X%.P%.V%Q 0,[%g,%L]%3",           0xF8380FFF, 0x20300FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
   /* ld<.aa><.di><.x><.ZZ>    0,[limm,c] 	0010 0110 aa11 0ZZX D111 CCCC CC11 1110  */
@@ -3405,6 +3406,7 @@ static struct arc_opcode arc_opcodes[] = {
   /* ld<.aa><.di><.x><.ZZ>    0,[limm,limm] 	0010 0110 aa11 0ZZX D111 1111 1011 1110  */
   { (unsigned char *) "ld%T%.X%.P%.V%Q 0,[%L,%L]%3",           0xFF387FFF, 0x26307FBE, ARC_MACH_ARCV2, 0, 0, 0, 0},
   /* ld<.di><.x><.ZZ>    0,[limm 	0001 0110 0000 0000 0111 DRRZ ZX11 1110  */
+  { (unsigned char *) "ld%t%.x%.v%Q 0,[%[L]%3",                 0xFFFFF63F, 0x1600703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
   { (unsigned char *) "ld%t%.x%.v%Q 0,[%L]%3",                 0xFFFFF63F, 0x1600703E, ARC_MACH_ARCV2, 0, 0, 0, 0},
 
   /* load instruction opcodes */
