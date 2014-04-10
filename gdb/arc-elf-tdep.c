@@ -500,15 +500,16 @@ arc_elf_write_pc (struct regcache *regcache, CORE_ADDR new_pc)
 {
     int de_bit;
     ULONGEST status32;
+    struct gdbarch *gdbarch = get_regcache_arch(regcache);
 
     if (arc_debug)
       {
 	fprintf_unfiltered(gdb_stdlog, "writing PC. New value=0x%lx\n" , new_pc);
       }
 
-    regcache_cooked_write_unsigned (regcache, ARC_PC_REGNUM, new_pc);
+    regcache_cooked_write_unsigned (regcache, gdbarch_pc_regnum (gdbarch), new_pc);
 
-    regcache_cooked_read_unsigned (regcache, ARC_AUX_STATUS32_REGNUM, &status32);
+    regcache_cooked_read_unsigned (regcache, gdbarch_ps_regnum (gdbarch), &status32);
 
     /* Mask for DE bit is 0x40 */
     if (status32 & 0x40)
@@ -520,7 +521,7 @@ arc_elf_write_pc (struct regcache *regcache, CORE_ADDR new_pc)
 
 	/* Reset bit and write to the cache */
 	status32 &= ~0x40;
-	regcache_cooked_write_unsigned (regcache, ARC_AUX_STATUS32_REGNUM, status32);
+	regcache_cooked_write_unsigned (regcache, gdbarch_ps_regnum (gdbarch), status32);
       }
 }
 
