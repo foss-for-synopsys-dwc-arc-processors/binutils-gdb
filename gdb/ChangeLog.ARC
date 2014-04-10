@@ -1,3 +1,8 @@
+2014-04-10  Anton Kolesov  <Anton.Kolesov@synopsys.com>
+
+	* arc-elf-tdep.c (arc_elf_write_pc): Use gdbarch_[pc|ps]_regnum
+	functions instead of hardcoded PC and STATUS32 regnums.
+
 2014-03-25  Anton Kolesov  <Anton.Kolesov@synopsys.com>
 
 	* arc-elf-tdep.c (arc_elf_breakpoint_from_pc): Insert breakpoints
