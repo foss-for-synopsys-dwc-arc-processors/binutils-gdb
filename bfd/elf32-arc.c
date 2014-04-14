@@ -2621,6 +2621,7 @@ elf_arc_relocate_section (bfd *output_bfd,
       switch (r_type)
 	{
 	case R_ARC_TLS_IE_GOT:
+	case R_ARC_TLS_GD_GOT:
 	  /* We don't care about the value of RELOCATION here in the non-local
 	     case, as it'll be replaced just below, but
 	     for local IE variables, the offset of the tls var from this
@@ -2628,7 +2629,6 @@ elf_arc_relocate_section (bfd *output_bfd,
 	  if (elf_hash_table (info)->tls_sec)
 	    relocation -= elf_hash_table (info)->tls_sec->output_section->vma;
 	  /* Fall through.  */
-	case R_ARC_TLS_GD_GOT:
 	case R_ARC_GOTPC32:
 	  /* Relocation is to the entry for this symbol in the global
 	     offset table.  */
@@ -3309,30 +3309,39 @@ elf_arc_finish_dynamic_symbol (bfd *output_bfd,
       struct elf_ARC_link_hash_entry *ah = (struct elf_ARC_link_hash_entry *) h;
       if (ah->tls_type > GOT_NORMAL) switch (ah->tls_type)
 	{
+	  long indx;
 	case GOT_TLS_GD:
 	  /* With the obsolete GD design, DTPMOD is the dtv index.
 	     With the descriptor design, it is the address of a function
-	     that knows the dtv index of the symbol, or a lazy resolver
+	     that knows the dtv index of the symbol - fetching the
+	     correspondig value and adding the contents from the DTPOFF
+	     slot, or a lazy resolver
 	     function that finds and stores the address of the former
-	     kind of function.  The runtime can also further optimize
-	     de-facto initial-exec access by storing adding the module
-	     base to the FTPOFF slot and put the address of a function that
+	     kind of function, before jumping to it.
+	     The runtime can also further optimize
+	     de-facto initial-exec access by adding the module
+	     base to the DTPOFF slot contents and storing the sum back there,
+	     and putting into the DTPMOD slot the address of a function that
 	     merely fetches that and returns.
 	     So, the actual differences are not in the static linker, but
 	     in gcc and the runtime.  */
-	  bfd_put_32 (output_bfd, (bfd_vma) 0, sgot->contents + h_got_offset);
-	  bfd_put_32 (output_bfd, (bfd_vma) 0,
-		      sgot->contents + h_got_offset + 4);
-	  rel.r_info = ELF32_R_INFO (h->dynindx, R_ARC_TLS_DTPMOD);
+	  indx = (h->dynindx == -1 ? 0 : h->dynindx);
+	  rel.r_info = ELF32_R_INFO (indx, R_ARC_TLS_DTPMOD);
 	  rel.r_addend = 0;
 	  bfd_elf32_swap_reloca_out
 	    (output_bfd, & rel,
 	     (bfd_byte *) ((Elf32_External_Rela *) srel->contents
 			   + srel->reloc_count));
 	  ++ srel->reloc_count;
-	  rel.r_info = ELF32_R_INFO (h->dynindx, R_ARC_TLS_DTPOFF);
+	  rel.r_info = ELF32_R_INFO (indx, R_ARC_TLS_DTPOFF);
 	  rel.r_offset += 4;
 	  rel.r_addend = 0;
+	  if (h->dynindx == -1)
+	    rel.r_addend
+	      = bfd_get_32 (output_bfd, sgot->contents + h_got_offset);
+	  bfd_put_32 (output_bfd, (bfd_vma) 0, sgot->contents + h_got_offset);
+	  bfd_put_32 (output_bfd, (bfd_vma) 0,
+		      sgot->contents + h_got_offset + 4);
 	  break;
 	case GOT_TLS_IE:
 	  if (h->dynindx == -1)
