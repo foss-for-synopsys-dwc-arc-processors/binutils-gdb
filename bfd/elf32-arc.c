@@ -2665,7 +2665,8 @@ elf_arc_relocate_section (bfd *output_bfd,
 		  else
 		    {
 		      bfd_put_32 (output_bfd, relocation,
-				  sgot->contents + off);
+				  sgot->contents + off
+				  + (r_type == R_ARC_TLS_GD_GOT ? 4 : 0));
 		      h->got.offset |= 1;
 		    }
 		}
@@ -3303,7 +3304,6 @@ elf_arc_finish_dynamic_symbol (bfd *output_bfd,
       struct elf_ARC_link_hash_entry *ah = (struct elf_ARC_link_hash_entry *) h;
       if (ah->tls_type > GOT_NORMAL) switch (ah->tls_type)
 	{
-	  long indx;
 	case GOT_TLS_GD:
 	  /* With the obsolete GD design, DTPMOD is the dtv index.
 	     With the descriptor design, it is the address of a function
@@ -3319,21 +3319,22 @@ elf_arc_finish_dynamic_symbol (bfd *output_bfd,
 	     merely fetches that and returns.
 	     So, the actual differences are not in the static linker, but
 	     in gcc and the runtime.  */
-	  indx = (h->dynindx == -1 ? 0 : h->dynindx);
-	  rel.r_info = ELF32_R_INFO (indx, R_ARC_TLS_DTPMOD);
+	  bfd_put_32 (output_bfd, (bfd_vma) 0, sgot->contents + h_got_offset);
 	  rel.r_addend = 0;
+	  if (h->dynindx == -1)
+	    {
+	      rel.r_info = ELF32_R_INFO (0, R_ARC_TLS_DTPMOD);
+	      break;
+	    }
+	  rel.r_info = ELF32_R_INFO (h->dynindx, R_ARC_TLS_DTPMOD);
 	  bfd_elf32_swap_reloca_out
 	    (output_bfd, & rel,
 	     (bfd_byte *) ((Elf32_External_Rela *) srel->contents
 			   + srel->reloc_count));
 	  ++ srel->reloc_count;
-	  rel.r_info = ELF32_R_INFO (indx, R_ARC_TLS_DTPOFF);
+	  rel.r_info = ELF32_R_INFO (h->dynindx, R_ARC_TLS_DTPOFF);
 	  rel.r_offset += 4;
 	  rel.r_addend = 0;
-	  if (h->dynindx == -1)
-	    rel.r_addend
-	      = bfd_get_32 (output_bfd, sgot->contents + h_got_offset);
-	  bfd_put_32 (output_bfd, (bfd_vma) 0, sgot->contents + h_got_offset);
 	  bfd_put_32 (output_bfd, (bfd_vma) 0,
 		      sgot->contents + h_got_offset + 4);
 	  break;
