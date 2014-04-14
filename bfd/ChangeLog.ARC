@@ -1,5 +1,13 @@
 2014-04-14  Joern Rennecke  <joern.rennecke@embecosm.com>
 
+	* elf32-arc.c (elf_arc_relocate_section): For a local R_ARC_TLS_GD_GOT,
+	put the offset in the second got slot.
+	(elf_arc_finish_dynamic_symbol) <GOT_TLS_GD>: For h->dynindx == -1,
+	don't emit a R_ARC_TLS_DTPOFF reloc, just leave the contents of the
+	second got slot as-is.
+
+2014-04-14  Joern Rennecke  <joern.rennecke@embecosm.com>
+
 	* elf32-arc.c (elf_arc_relocate_section): Also do adjustment for
 	local tls variables for R_ARC_TLS_GD_GOT relocations.
 	(elf_arc_finish_dynamic_symbol) <GOT_TLS_GD>: Fix comment to make sense.
