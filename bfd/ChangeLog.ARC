@@ -1,3 +1,10 @@
+2014-04-16  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* elf32-arc.c (elf_arc_finish_dynamic_symbol) <GOT_TLS_GD>: Use
+	SYMBOL_REFERENCES_LOCAL.
+	(arc_allocate_got) <GOT_TLS_GD>: Only add one reloc's size when the
+	symbol reference is local.
+
 2014-04-14  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* elf32-arc.c (elf_arc_relocate_section): Also do adjustment for
