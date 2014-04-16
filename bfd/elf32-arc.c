@@ -3321,7 +3321,7 @@ elf_arc_finish_dynamic_symbol (bfd *output_bfd,
 	     in gcc and the runtime.  */
 	  bfd_put_32 (output_bfd, (bfd_vma) 0, sgot->contents + h_got_offset);
 	  rel.r_addend = 0;
-	  if (h->dynindx == -1)
+	  if (SYMBOL_REFERENCES_LOCAL (info, h))
 	    {
 	      rel.r_info = ELF32_R_INFO (0, R_ARC_TLS_DTPMOD);
 	      break;
@@ -3909,9 +3909,12 @@ arc_allocate_got (struct bfd_link_info *info)
 	  sgot->size += 4;
 	  break;
 	case GOT_TLS_GD:
-	  /* Fixme: could do with a single reloc if that was more intelligent.
+	  /* We need a DTPMOD reloc for the first got slot, and unless this
+	     symbol is local, a DTPOFFF reloc for the second got slot.
+	     Fixme: could do with a single reloc if that was more intelligent.
 	   */
-	  srelgot->size += 2 * sizeof (Elf32_External_Rela);
+	  srelgot->size += (sizeof (Elf32_External_Rela)
+			    << !SYMBOL_REFERENCES_LOCAL (info, &ah->root));
 	  BFD_ASSERT (ah->root.got.offset == (bfd_vma) -1);
 	  ah->root.got.offset = sgot->size;
 	  sgot->size += 8;
