@@ -1,3 +1,8 @@
+2014-04-17 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* elf32-arc.c (arc_elf_object_p): Increase compatibility with
+          metaware tools.
+
 2014-03-24  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* elf32-arc.c (elf_arc_check_relocs): Don't worry about relocs in pie.
