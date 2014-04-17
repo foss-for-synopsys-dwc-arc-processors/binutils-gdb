@@ -776,41 +776,71 @@ arc_elf_object_p (bfd *abfd)
    /* Make sure this is initialised, or you'll have the potential of
       passing garbage---or misleading values---into the call to
       bfd_default_set_arch_mach().  */
-  int mach = 0;
-
+  int mach = bfd_mach_arc_arc700;
   unsigned long arch = elf_elfheader (abfd)->e_flags & EF_ARC_MACH_MSK;
+  unsigned e_machine = elf_elfheader (abfd)->e_machine;
 
-  switch (arch)
+  switch (e_machine)
     {
-    case E_ARC_MACH_A4:
+    case EM_ARC:
       mach = bfd_mach_arc_a4;
+      if (arch == E_ARC_MACH_A5)
+	mach = bfd_mach_arc_a5;
       break;
-    case E_ARC_MACH_A5:
-      mach = bfd_mach_arc_a5;
+    case EM_ARCOMPACT:
+      switch (arch)
+	{
+	case E_ARC_MACH_ARC600:
+	  mach = bfd_mach_arc_arc600;
+	  break;
+	case E_ARC_MACH_ARC601:
+	  mach = bfd_mach_arc_arc601;
+	  break;
+	case E_ARC_MACH_ARC700:
+	  mach = bfd_mach_arc_arc700;
+	  break;
+	default:
+	  mach = bfd_mach_arc_arc700;
+	  (*_bfd_error_handler)
+	    (_("Warning: unset architecture flags. \n"
+	       "         Use default machine: A7.\n"));
+	  /* Unknown cpu type.  ??? What to do?  */
+	  /* We do not do this:
+	   *   return FALSE;
+	   * since all other BFD ports either return TRUE from
+	   * their equivalent *_elf_object_p() function, or give back
+	   * the result of the set_arch_mach callback---most without
+	   * doing any sort of checking at all.
+	   */
+	  /* No-op */
+	  break;
+	}
       break;
-    case E_ARC_MACH_ARC600:
-      mach = bfd_mach_arc_arc600;
-      break;
-    case E_ARC_MACH_ARC601:
-      mach = bfd_mach_arc_arc601;
-      break;
-    case E_ARC_MACH_ARC700:
-      mach = bfd_mach_arc_arc700;
-      break;
-    case EF_ARC_CPU_ARCV2HS:
-    case EF_ARC_CPU_ARCV2EM:
-      mach = bfd_mach_arc_arcv2;
+    case EM_ARCV2:
+      switch (arch)
+	{
+	case EF_ARC_CPU_ARCV2HS:
+	case EF_ARC_CPU_ARCV2EM:
+	  mach = bfd_mach_arc_arcv2;
+	  break;
+	default:
+	  mach = bfd_mach_arc_arcv2;
+	  (*_bfd_error_handler)
+	    (_("Warning: unset architecture flags. \n"
+	       "         Use default machine.\n"));
+	  /* Unknown cpu type.  ??? What to do?  */
+	  /* We do not do this:
+	   *   return FALSE;
+	   * since all other BFD ports either return TRUE from
+	   * their equivalent *_elf_object_p() function, or give back
+	   * the result of the set_arch_mach callback---most without
+	   * doing any sort of checking at all.
+	   */
+	  /* No-op */
+	  break;
+	}
       break;
     default:
-      /* Unknown cpu type.  ??? What to do?  */
-      /* We do not do this:
-       *   return FALSE;
-       * since all other BFD ports either return TRUE from
-       * their equivalent *_elf_object_p() function, or give back
-       * the result of the set_arch_mach callback---most without
-       * doing any sort of checking at all.
-       */
-       /* No-op */
       break;
     }
 
