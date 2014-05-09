@@ -1,3 +1,9 @@
+2013-11-11  Claudiu Zissulescu <claziss@synopsys.com>
+
+	* elf/arc.h: Rename E_ARC_MACH_ARCV2 to
+	  EF_ARC_CPU_ARCV2EM. Define EF_ARC_CPU_GENERIC and
+	  EF_ARC_CPU_ARCV2HS.
+
 2013-06-28 Vineet Gupta <vgupta@synopsys.com>
 
 	* elf/common.h: Replaced EM_ARCOMPACT2 with EM_ARCV2
@@ -21,4 +27,4 @@
 	* elf.h: Define E_ARC_MACH_ARC601 = 4.
 
 14  Irfan Rafiq  <irfan.rafiq@arc.com>
-        * dis-asm.h (arc_get_disassembler) Update prototype.
+	* dis-asm.h (arc_get_disassembler) Update prototype.

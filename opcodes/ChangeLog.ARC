@@ -1,11 +1,73 @@
+2014-03-26 Claudiu Zissulescu <claziss@synopsys.com>
+
+       * arc-opc-old.c (insert_reg): Handle SDA symbols by ld<zz>
+         instructions (prefetch type instructions).
+
+2014-03-20 Claudiu Zissulescu <claziss@synopsys.com>
+
+       * arc-em.h: Allow swi instruction for ARC 700 architecture.
+       * arc-opc-old.c (insert_reg): Insert aux register values into
+         s12 and u6 instruction's fields.
+
+2014-02-05 Claudiu Zissulescu <claziss@synopsys.com>
+
+       * arc-opc-old.c (arc_reg_names_em): Add r58 and r59 to be used
+         by ARCv2 as ACCL and ACCH.
+
+2014-01-22 Claudiu Zissulescu <claziss@synopsys.com>
+
+       * arc-em.h : Fix order DIV/DIVU, add HS floating point instructions.
+       * arcompact-dis.c: Decode HS floating point instructions.
+
 2013-12-18 Claudiu Zissulescu <claziss@synopsys.com>
 
        * arc-em.h: Fix AEX pattern to accept auxiliary registers.
 
+2013-12-17 Claudiu Zissulescu <claziss@synopsys.com>
+
+       * arcompact-dis.c: Add HS instructions.
+
+2013-12-16 Claudiu Zissulescu <claziss@synopsys.com>
+
+       * arc-em.h: Add VADD2H instruction.
+
+2013-12-11 Claudiu Zissulescu <claziss@synopsys.com>
+
+       * arc-opc-old.c: Add modifiers for 64 bit operands.
+       * arc-em.h: Add DMACWH, DMACWHU, DMPYWH, DMPYWHU, MACD, MACDU,
+         MPYD, MPYDU, QMACH, QMACHU, QMPYH, QMPYHU, VADD2, VADD4H,
+         VADDSUB, VADDSUB4H,VMPY2H, VMPY2HU, VSUB2, VSUB4H, VSUBADD,
+         VSUBADD4H HS instructions.
+
+2013-11-27 Claudiu Zissulescu <claziss@synopsys.com>
+
+       * arc-em.h: Add DMACH, DMACHU, DMPY, DMPYHU, MAC, MACU,
+         VADDSUB2H, VSUB2H, and VSUBADD2H instructions.
+
+2013-11-21 Claudiu Zissulescu <claziss@synopsys.com>
+
+       * arc-opc-old.c: Choose the right set of register names for
+         ARCv2HS.
+
+2013-11-14 Claudiu Zissulescu <claziss@synopsys.com>
+
+       * arc-em.h: Add LDD, STD definitions.
+       * arc-opc-old.c: Add support to parse 64 bit registers.
+
+2013-11-13 Claudiu Zissulescu <claziss@synopsys.com>
+
+       * arc-em.h: Add XBFU definitions.
+       * arc-opc-old.c: Add HS support.
+
+2013-11-11 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* arccompact-dis.c: Replace E_ARC_MACH_ARCV2 with
+	  bfd_mach_arc_arcv2.
+
 2013-10-04 Claudiu Zissulescu <claziss@synopsys.com>
 
 	* arc-opc-old.c: Fixed limm_p flag for prefetch instructions
-          when prefetching a small data symbol.
+	  when prefetching a small data symbol.
 
 2013-08-05 Claudiu Zissulescu <claziss@synopsys.com>
 
@@ -31,7 +93,7 @@
 
 2013-07-24  Claudiu Zissulescu <claziss@synopsys.com>
 
-        * arc-em.h: Add LLOCK mnemonic to EM
+	* arc-em.h: Add LLOCK mnemonic to EM
 
 2013-07-19  Simon Cook  <simon.cook@embecosm.com>
 
@@ -62,23 +124,23 @@
 
 2013-07-02  Claudiu Zissulescu <claziss@synopsys.com>
 
-        * arc-em.h: Allow mov_s.nz
+	* arc-em.h: Allow mov_s.nz
 
 2013-06-11  Claudiu Zissulescu <claziss@synopsys.com>
 
-        * arc-em.h: Allow seti/clri instructions without []
+	* arc-em.h: Allow seti/clri instructions without []
 
 2013-06-11  Claudiu Zissulescu <claziss@synopsys.com>
 
-        * arc-em.h: rearange seti/clri instructions
+	* arc-em.h: rearange seti/clri instructions
 
 2013-06-10  Claudiu Zissulescu <claziss@synopsys.com>
 
-        * arc-opc-old.c: add variant of prefetch instruction
+	* arc-opc-old.c: add variant of prefetch instruction
 
 2013-06-06  Claudiu Zissulescu <claziss@synopsys.com>
 
-        * arc-em.h: add seti/clri as valid instructions
+	* arc-em.h: add seti/clri as valid instructions
 
 2013-05-07  Simon Cook  <simon.cook@embecosm.com>
 
@@ -241,7 +303,7 @@
 
 	* arc-opc.c (arc_opcodes): Remove incorrect asl multibit
 	pattern.
-	
+
 2010-08-27  Michael Eager  <eager@eagercon.com>
 
 	* arc.h: New: ARC_MACH_ARC601.
@@ -288,16 +350,16 @@
 	(hash_insn_list, cgen_dis_lookup_insn): Likewise.
 
 2008-11-14  Irfan Rafiq  <irfan.rafiq@arc.com>
-        * arc-dis.c,	Target specific improvements.
-          arc-ext.c,
-          arc-opc.c 
-                
+	* arc-dis.c,	Target specific improvements.
+	  arc-ext.c,
+	  arc-opc.c
+
 
 2008-11-10  Irfan Rafiq  <irfan.rafiq@arc.com>
-        * arcompact-dis.c:	 Added arcompact-dis.c        
-        * configure.in: 	 Added arcompact-dis.c
-        * configure:		 Regenerated
-        
+	* arcompact-dis.c:	 Added arcompact-dis.c
+	* configure.in: 	 Added arcompact-dis.c
+	* configure:		 Regenerated
+
 2008-04-09  J"orn Rennecke  <joern.rennecke@arc.com>
 
 	* arc-ext.c (arcExtMap_add): Fix pointer signedness mismatch.

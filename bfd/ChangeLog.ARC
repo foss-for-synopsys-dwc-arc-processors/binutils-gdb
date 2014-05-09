@@ -1,3 +1,8 @@
+2014-04-17 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* elf32-arc.c (arc_elf_object_p): Increase compatibility with
+          metaware tools.
+
 2014-04-16  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* elf32-arc.c (elf_arc_finish_dynamic_symbol) <GOT_TLS_GD>: Use
@@ -21,6 +26,20 @@
 2014-03-24  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* elf32-arc.c (elf_arc_check_relocs): Don't worry about relocs in pie.
+
+2014-03-21 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* cpu-arc.c: Use ARCv2 as a generic name for ARCv2 processors.
+
+2014-03-14 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* elf32-arc.c (elf_arc_relocate_section): Avoid truncation
+	  only specific relocations. Otherwise keep the old logic.
+
+2014-03-12 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* elf32-arc.c (elf_arc_relocate_section): Selective truncate
+	  the last bits for pc relative relocations.
 
 2014-03-12  Joern Rennecke  <joern.rennecke@embecosm.com>
 
@@ -328,6 +347,22 @@
 	* elf32-arc.c (elf_arc_check_relocs): Add error when relocs appear that
 	shouldn't in read-only memory for shared libraries.
 
+2013-11-22 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* elf32-arc.c (arc_elf_merge_private_bfd_data): Hard error if
+	  we mix ARCv2EM with ARCv2HS objects.
+
+2013-11-13 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* elf32-arc.c: Add arc_elf_copy_private_bfd_data() function.
+
+2013-11-11 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* cpu-arc.c: Add HS as a valid processor type.
+	* elf32-arc.c: Introduce arc_elf_set_private_flags() and
+	  arc_elf_print_private_bfd_data(). Give warning if we link
+	  two objects having different elf flags.
+
 2013-11-06  Anton Kolesov  <anton.kolesov@synopsys.com>
 
 	* elf32-arc.c (elf_backend_can_gc_sections): Set to 0, because
@@ -468,7 +503,7 @@ Adapt 2002/12/04 elf32-m68k.c change:
 	(elf_arc_abs_pltn_entry, elf_arc_pic_plt0_entry): Likewise.
 	(elf_arc_pic_pltn_entry): Likewise.
 	(pltcpy): New static function.
-	(elf_arc_finish_dynamic_symbol): Use it. 
+	(elf_arc_finish_dynamic_symbol): Use it.
 	* config.bfd (arc*, arc*-*-linux-uclibc*): New configurations.
 
 2011-12-05  Joern Rennecke  <joern.rennecke@embecosm.com>
@@ -520,17 +555,17 @@ Adapt 2002/12/04 elf32-m68k.c change:
 	elf_link_hash_lookup being a null pointer.
 
 2008-11-12  Irfan Rafiq  <irfan.rafiq@arc.com>
-        * elf32-arc.c (arc_elf_final_write_processing,
-                       arc_elf_object_p): Sync with arch_info_struct        
-        * cpu-arc.c (arch_info_struct): Update info for ARC600/ARC700.
-        
-        
+	* elf32-arc.c (arc_elf_final_write_processing,
+		       arc_elf_object_p): Sync with arch_info_struct
+	* cpu-arc.c (arch_info_struct): Update info for ARC600/ARC700.
+
+
 2008-10-10  Irfan Rafiq  <irfan.rafiq@arc.com>
-        
-        *  bfd-in2.h  : Add relocation types.
-        *  config.bfd : Add arc-linux-uclibc target.
-        *  config.in  : Update version.
-        *  libbfd.h   : Sync. relocation types.        
+
+	*  bfd-in2.h  : Add relocation types.
+	*  config.bfd : Add arc-linux-uclibc target.
+	*  config.in  : Update version.
+	*  libbfd.h   : Sync. relocation types.
 
 2008-02-27  J"orn Rennecke  <joern.rennecke@arc.com>
 

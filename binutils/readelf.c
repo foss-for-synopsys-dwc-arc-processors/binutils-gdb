@@ -2239,11 +2239,14 @@ get_machine_flags (unsigned e_flags, unsigned e_machine)
 	case EM_ARCV2:
 	  switch(e_flags & EF_ARC_MACH_MSK)
 	    {
-	    case E_ARC_MACH_ARCV2:
-	      strcat (buf, ", ARCv2");
+	    case EF_ARC_CPU_ARCV2EM:
+	      strcat (buf, ", ARC EM");
+	      break;
+	    case EF_ARC_CPU_ARCV2HS:
+	      strcat (buf, ", ARC HS");
 	      break;
 	    default:
-	      strcat (buf, ", Generic ARCv2");
+	      strcat (buf, ", unrecognized flag for ARCv2");
 	      break;
 	    }
 	  switch(e_flags & EF_ARC_OSABI_MSK)
@@ -2261,13 +2264,13 @@ get_machine_flags (unsigned e_flags, unsigned e_machine)
 	      strcat (buf, ", A5");
 	      break;
 	    case E_ARC_MACH_ARC600:
-	      strcat (buf, ", ARC600");
+	      strcat (buf, ", ARC 600");
 	      break;
 	    case E_ARC_MACH_ARC601:
-	      strcat (buf, ", ARC601");
+	      strcat (buf, ", ARC 601");
 	      break;
 	    case E_ARC_MACH_ARC700:
-	      strcat (buf, ", ARC700");
+	      strcat (buf, ", ARC 700");
 	      break;
 	    default:
 	      strcat (buf, ", Generic ARCompact");

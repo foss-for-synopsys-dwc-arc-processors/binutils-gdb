@@ -41,11 +41,12 @@
 #define ARC_MACH_ARC5 2
 #define ARC_MACH_ARC6 4
 #define ARC_MACH_ARC7 8
-#define ARC_MACH_ARC601 16
-#define ARC_MACH_ARCV2 32
+#define ARC_MACH_ARC601  16
+#define ARC_MACH_ARCV2   32
+#define ARC_MACH_ARCV2HS 64
 
 /* Additional cpu values can be inserted here and ARC_MACH_BIG moved down.  */
-#define ARC_MACH_BIG 64
+#define ARC_MACH_BIG 128
 
 /* ARC processors which implement ARCompact ISA. */
 #define ARCOMPACT (ARC_MACH_ARC5 | ARC_MACH_ARC6 | ARC_MACH_ARC601 | ARC_MACH_ARC7 | ARC_MACH_ARCV2)

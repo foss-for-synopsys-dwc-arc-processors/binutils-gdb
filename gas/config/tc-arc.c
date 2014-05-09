@@ -207,6 +207,7 @@ enum options
   OPTION_ARC601,
   OPTION_ARC700,
   OPTION_ARCEM,
+  OPTION_ARCHS,
   OPTION_MCPU,
   OPTION_USER_MODE,
   OPTION_LD_EXT_MASK,
@@ -247,7 +248,9 @@ struct option md_longopts[] =
   { "mARC700", no_argument, NULL, OPTION_ARC700 },
   { "mA7", no_argument, NULL, OPTION_ARC700 },
   { "mEM", no_argument, NULL, OPTION_ARCEM },
+  { "mHS", no_argument, NULL, OPTION_ARCHS },
   { "mav2em", no_argument, NULL, OPTION_ARCEM },
+  { "mav2hs", no_argument, NULL, OPTION_ARCHS },
   { "mcpu", required_argument, NULL, OPTION_MCPU },
   { "muser-mode-only", no_argument, NULL, OPTION_USER_MODE },
   { "mld-extension-reg-mask", required_argument, NULL, OPTION_LD_EXT_MASK },
@@ -321,37 +324,47 @@ static arc700_special_symtype current_special_sym_flag;
 /* Here's all the ARCompact illegal instruction sequence checking stuff.  */
 /**************************************************************************/
 
-#define MAJOR_OPCODE(x) ((x & 0xf8000000) >> 27)
+#define MAJOR_OPCODE(x)  ((x & 0xf8000000) >> 27)
 #define SUB_OPCODE(x)	 ((x & 0x003f0000) >> 16)
 
-#define SUB_OPCODE2(x)	(x & 0x0000003f)
+#define SUB_OPCODE2(x)	 (x & 0x0000003f)
 
-#define SUB_OPCODE3(x)	(((x & 0x07000000) >> 24) |   \
-			 ((x & 0x00007000) >> 9))
+#define SUB_OPCODE3(x)	 (((x & 0x07000000) >> 24) |   \
+			  ((x & 0x00007000) >> 9))
 
-#define J_INSN(x)	((MAJOR_OPCODE (x) == 0x4) && \
-			 (SUB_OPCODE (x) >= 0x21) &&  \
-			 (SUB_OPCODE (x) <= 0x22))
+#define J_INSN(x)	 ((MAJOR_OPCODE (x) == 0x4) && \
+			  (SUB_OPCODE (x) >= 0x21) &&  \
+			  (SUB_OPCODE (x) <= 0x22))
 
-#define JL_INSN(x)	((MAJOR_OPCODE (x) == 0x4) && \
-			 (SUB_OPCODE (x) >= 0x23) &&  \
-			 (SUB_OPCODE (x) <= 0x24))
+#define JL_INSN(x)	 ((MAJOR_OPCODE (x) == 0x4) && \
+			  (SUB_OPCODE (x) >= 0x23) &&  \
+			  (SUB_OPCODE (x) <= 0x24))
 
-#define BLcc_INSN(x)    ((MAJOR_OPCODE (x) == 0x1) && \
-			 ((x & 0x00010000) == 0))
+#define BLcc_INSN(x)     ((MAJOR_OPCODE (x) == 0x1) && \
+			  ((x & 0x00010000) == 0))
 
-#define LP_INSN(x)	((MAJOR_OPCODE (x) == 0x4) && \
-			 (SUB_OPCODE (x) == 0x28))
+#define Bcc_INSN(x)      (MAJOR_OPCODE (x) == 0x0)
+#define BRcc_INSN(x)     ((MAJOR_OPCODE (x) == 0x1) &&	\
+			  ((x & 0x00010000) == 1))
 
-#define SLEEP_INSN(x)	((MAJOR_OPCODE (x) == 0x4) && \
-			 (SUB_OPCODE (x) == 0x2f)  && \
-			 (SUB_OPCODE2 (x) == 0x3f) && \
-			 (SUB_OPCODE3 (x) == 0x01))
+#define LP_INSN(x)	 ((MAJOR_OPCODE (x) == 0x4) && \
+			  (SUB_OPCODE (x) == 0x28))
 
-#define BRK_INSN(x)	((MAJOR_OPCODE (x) == 0x4) && \
-			 (SUB_OPCODE (x) == 0x2f)  && \
-			 (SUB_OPCODE2 (x) == 0x3f) && \
-			 (SUB_OPCODE3 (x) == 0x05))
+#define SLEEP_INSN(x)	 ((MAJOR_OPCODE (x) == 0x4) && \
+			  (SUB_OPCODE (x) == 0x2f)  && \
+			  (SUB_OPCODE2 (x) == 0x3f) && \
+			  (SUB_OPCODE3 (x) == 0x01))
+
+#define BRK_INSN(x)	 ((MAJOR_OPCODE (x) == 0x4) && \
+			  (SUB_OPCODE (x) == 0x2f)  && \
+			  (SUB_OPCODE2 (x) == 0x3f) && \
+			  (SUB_OPCODE3 (x) == 0x05))
+
+#define MAJOR16_OPCODE(x)  (x & 0x1F00)
+#define SUB16_OPCODE2(x)   ((x & 0x00E0) >> 5)
+
+#define Jx_S(x)            ((MAJOR16_OPCODE(x) == 0x0F) && \
+			    (SUB16_OPCODE2(x) <= 0x03))
 
 /* Data structures and functions for illegal instruction sequence
    checks. arc_insn last_two_insns is a queue of the last two instructions
@@ -367,6 +380,231 @@ static struct enriched_insn last_two_insns[2];
 /* This is an "insert at front" linked list per Metaware spec
    that new definitions override older ones.  */
 static struct arc_opcode *arc_ext_opcodes;
+
+/* Flags to set in the elf header. */
+static flagword arc_flags = 0x00;
+
+/* Jump/Branch insn used to check if are the last insns in a ZOL */
+struct insn_tuple
+{
+  /* The opcode itself.  Those bits which will be filled in with
+     operands are zeroes.  */
+  unsigned long opcode;
+
+  /* The opcode mask.  This is used by the disassembler.  This is a
+     mask containing ones indicating those bits which must match the
+     opcode field, and zeroes indicating those bits which need not
+     match (and are presumably filled in by operands).  */
+  unsigned long mask;
+};
+
+static struct insn_tuple arcHS_checks[] = {
+  { 0xF8010000, 0x0 },
+  { 0xF8010010, 0x10000 },
+  { 0xFE00, 0xF000 },
+  { 0xFE00, 0xF200 },
+  { 0xFE00, 0xF400 },
+  { 0xFFC0, 0xF600 },
+  { 0xFFC0, 0xF640 },
+  { 0xFFC0, 0xF680 },
+  { 0xFFC0, 0xF6C0 },
+  { 0xFFC0, 0xF700 },
+  { 0xFFC0, 0xF740 },
+  { 0xFFC0, 0xF780 },
+  { 0xFFC0, 0xF7C0 },
+  { 0xF8030000, 0x8000000 },
+  { 0xF8030010, 0x8020000 },
+  { 0xF800, 0xF800 },
+  { 0xF801001F, 0x8010000 },
+  { 0xF801001F, 0x8010010 },
+  { 0xF8010FFF, 0x8010F80 },
+  { 0xFF01703F, 0xE017000 },
+  { 0xFF01703F, 0xE017010 },
+  { 0xF801001F, 0x8010001 },
+  { 0xF801001F, 0x8010011 },
+  { 0xF8010FFF, 0x8010F81 },
+  { 0xFF01703F, 0xE017001 },
+  { 0xFF01703F, 0xE017011 },
+  { 0xF801001F, 0x8010002 },
+  { 0xF801001F, 0x8010012 },
+  { 0xF8010FFF, 0x8010F82 },
+  { 0xFF01703F, 0xE017002 },
+  { 0xFF01703F, 0xE017012 },
+  { 0xF801001F, 0x8010003 },
+  { 0xF801001F, 0x8010013 },
+  { 0xF8010FFF, 0x8010F83 },
+  { 0xFF01703F, 0xE017003 },
+  { 0xFF01703F, 0xE017013 },
+  { 0xF801001F, 0x8010004 },
+  { 0xF801001F, 0x8010014 },
+  { 0xF8010FFF, 0x8010F84 },
+  { 0xFF01703F, 0xE017004 },
+  { 0xFF01703F, 0xE017014 },
+  { 0xF801001F, 0x8010005 },
+  { 0xF801001F, 0x8010015 },
+  { 0xF8010FFF, 0x8010F85 },
+  { 0xFF01703F, 0xE017005 },
+  { 0xFF01703F, 0xE017015 },
+  { 0xF8010017, 0x8010000 },
+  { 0xF8010017, 0x8010010 },
+  { 0xF8010FF7, 0x8010F80 },
+  { 0xFF017FF7, 0xE017F80 },
+  { 0xFF017037, 0xE017000 },
+  { 0xFF017037, 0xE017010 },
+  { 0xF8010017, 0x8010001 },
+  { 0xF8010017, 0x8010011 },
+  { 0xF8010FF7, 0x8010F81 },
+  { 0xFF017FF7, 0xE017F81 },
+  { 0xFF017037, 0xE017001 },
+  { 0xFF017037, 0xE017011 },
+  { 0xF8010017, 0x8010002 },
+  { 0xF8010017, 0x8010012 },
+  { 0xF8010FF7, 0x8010F82 },
+  { 0xFF017FF7, 0xE017F82 },
+  { 0xFF017037, 0xE017002 },
+  { 0xFF017037, 0xE017012 },
+  { 0xF8010017, 0x8010003 },
+  { 0xF8010017, 0x8010013 },
+  { 0xF8010FF7, 0x8010F83 },
+  { 0xFF017FF7, 0xE017F83 },
+  { 0xFF017037, 0xE017003 },
+  { 0xFF017037, 0xE017013 },
+  { 0xF8010017, 0x8010004 },
+  { 0xF8010017, 0x8010014 },
+  { 0xF8010FF7, 0x8010F84 },
+  { 0xFF017FF7, 0xE017F84 },
+  { 0xFF017037, 0xE017004 },
+  { 0xFF017037, 0xE017014 },
+  { 0xF8010017, 0x8010005 },
+  { 0xF8010017, 0x8010015 },
+  { 0xF8010FF7, 0x8010F85 },
+  { 0xFF017FF7, 0xE017F85 },
+  { 0xFF017037, 0xE017005 },
+  { 0xFF017037, 0xE017015 },
+  { 0xF880, 0xE880 },
+  { 0xF880, 0xE800 },
+  { 0xFFFFFFFF, 0x256F003F },
+  { 0xFFFF, 0x7FFF },
+  { 0xF801001F, 0x801000E },
+  { 0xF801001F, 0x801001E },
+  { 0xF8010FFF, 0x8010F8E },
+  { 0xFF01703F, 0xE01700E },
+  { 0xFF01703F, 0xE01701E },
+  { 0xFF017FFF, 0xE017F8E },
+  { 0xF8010017, 0x8010006 },
+  { 0xF8010017, 0x8010016 },
+  { 0xF8010FF7, 0x8010F86 },
+  { 0xFF017037, 0xE017006 },
+  { 0xFF017037, 0xE017016 },
+  { 0xFF017FF7, 0xE017F86 },
+  { 0xF801001F, 0x801000F },
+  { 0xF801001F, 0x801001F },
+  { 0xF8010FFF, 0x8010F8F },
+  { 0xFF01703F, 0xE01700F },
+  { 0xFF01703F, 0xE01701F },
+  { 0xFF017FFF, 0xE017F8F },
+  { 0xF8010017, 0x8010007 },
+  { 0xF8010017, 0x8010017 },
+  { 0xF8010FF7, 0x8010F87 },
+  { 0xFF017037, 0xE017007 },
+  { 0xFF017037, 0xE017017 },
+  { 0xFF017FF7, 0xE017F87 },
+  { 0xFFFFF03F, 0x20200000 },
+  { 0xFFFFFFFF, 0x202007C0 },
+  { 0xFFFFFFFF, 0x20200F80 },
+  { 0xFFFFFFFF, 0x20208740 },
+  { 0xFFFFFFFF, 0x20208780 },
+  { 0xFFFFF03F, 0x20600000 },
+  { 0xFFFFF000, 0x20A00000 },
+  { 0xFFFFF020, 0x20E00000 },
+  { 0xFFFFFFE0, 0x20E007C0 },
+  { 0xFFFFFFE0, 0x20E00F80 },
+  { 0xFFFFFFE0, 0x20E08740 },
+  { 0xFFFFFFE0, 0x20E08780 },
+  { 0xFFFFF020, 0x20E00020 },
+  { 0xFFFFF03F, 0x20210000 },
+  { 0xFFFFFFFF, 0x202107C0 },
+  { 0xFFFFF03F, 0x20610000 },
+  { 0xFFFFF000, 0x20A10000 },
+  { 0xFFFFF020, 0x20E10000 },
+  { 0xFFFFFFE0, 0x20E107C0 },
+  { 0xFFFFF020, 0x20E10020 },
+  { 0xF8FF, 0x7800 },
+  { 0xF8FF, 0x7820 },
+  { 0xFFFF, 0x7EE0 },
+  { 0xFFFF, 0x7FE0 },
+  { 0xFFFF, 0x7CE0 },
+  { 0xFFFF, 0x7DE0 },
+  { 0xFFFFF03F, 0x20200000 },
+  { 0xFFFFFFFF, 0x202007C0 },
+  { 0xFFFFFFFF, 0x20200F80 },
+  { 0xFFFFF03F, 0x20600000 },
+  { 0xFFFFF000, 0x20A00000 },
+  { 0xFFFFF020, 0x20E00000 },
+  { 0xFFFFFFE0, 0x20E007C0 },
+  { 0xFFFFFFE0, 0x20E00F80 },
+  { 0xFFFFF020, 0x20E00020 },
+  { 0xFFFFF03F, 0x20210000 },
+  { 0xFFFFFFFF, 0x202107C0 },
+  { 0xFFFFF03F, 0x20610000 },
+  { 0xFFFFF000, 0x20A10000 },
+  { 0xFFFFF020, 0x20E10000 },
+  { 0xFFFFFFE0, 0x20E107C0 },
+  { 0xFFFFF020, 0x20E10020 },
+  { 0xF8FF, 0x7800 },
+  { 0xF8FF, 0x7820 },
+  { 0xFFFF, 0x7EE0 },
+  { 0xFFFF, 0x7FE0 },
+  { 0xFFFF, 0x7CE0 },
+  { 0xFFFF, 0x7DE0 },
+  { 0xFFFFF03F, 0x20220000 },
+  { 0xFFFFFFFF, 0x20220F80 },
+  { 0xFFFFF03F, 0x20620000 },
+  { 0xFFFFF000, 0x20A20000 },
+  { 0xFFFFF020, 0x20E20000 },
+  { 0xFFFFFFE0, 0x20E20F80 },
+  { 0xFFFFF020, 0x20E20020 },
+  { 0xFFFFF03F, 0x20230000 },
+  { 0xFFFFF03F, 0x20630000 },
+  { 0xFFFFF000, 0x20A30000 },
+  { 0xFFFFF020, 0x20E30000 },
+  { 0xFFFFF020, 0x20E30020 },
+  { 0xF8FF, 0x7840 },
+  { 0xF8FF, 0x7860 },
+  { 0xFFFFF03F, 0x20220000 },
+  { 0xFFFFFFFF, 0x20220F80 },
+  { 0xFFFFF03F, 0x20620000 },
+  { 0xFFFFF000, 0x20A20000 },
+  { 0xFFFFF020, 0x20E20000 },
+  { 0xFFFFFFE0, 0x20E20F80 },
+  { 0xFFFFF020, 0x20E20020 },
+  { 0xFFFFF03F, 0x20230000 },
+  { 0xFFFFF03F, 0x20630000 },
+  { 0xFFFFF000, 0x20A30000 },
+  { 0xFFFFF020, 0x20E30000 },
+  { 0xFFFFF020, 0x20E30020 },
+  { 0xF8FF, 0x7840 },
+  { 0xF8FF, 0x7860 },
+  { 0xFC00, 0x5800 }
+};
+
+/* helper zero_overhead_checks. */
+static int check_last_ZOL_insn (arc_insn insn)
+{
+  int i;
+  for (i = 0; i < sizeof (arcHS_checks)/sizeof (arcHS_checks[0]); i++)
+    {
+      /* Avoid checking short instruction vs long masks, can introduce
+	 false positive. */
+      if (((insn & 0xFFFF0000) == 0)
+	  && ((arcHS_checks[i].opcode & 0xFFFF0000) != 0))
+	continue;
+
+      if ((arcHS_checks[i].opcode & insn) == arcHS_checks[i].mask)
+	return 1;
+    }
+  return 0;
+}
 
 static void zero_overhead_checks (struct loop_target *);
 static void insert_last_insn (arc_insn insn,
@@ -478,6 +716,19 @@ instruction slot.");
       break;
 
     case bfd_mach_arc_arcv2:
+      if ((arc_flags & EF_ARC_MACH_MSK) == EF_ARC_CPU_ARCV2HS)
+	{
+	  arc_insn insn = lt->prev_two_insns[PREV_INSN_1].insn;
+	  if (check_last_ZOL_insn (insn))
+	    as_bad ("An instruction of this type may not be executed in this \
+instruction slot.");
+
+	  insn = lt->prev_two_insns[PREV_INSN_2].insn;
+	  if (lt->prev_two_insns[PREV_INSN_2].delay_slot
+	      && check_last_ZOL_insn (insn))
+	    as_bad ("An instruction of this type may not be executed in this \
+instruction slot.");
+	}
     case bfd_mach_arc_arc700:
 
       if (lt->prev_two_insns[PREV_INSN_1].delay_slot)
@@ -550,28 +801,41 @@ arc_check_label (symbolS *labelsym)
 int
 md_parse_option (int c, char *arg)
 {
+  int cpu_flags = EF_ARC_CPU_GENERIC;
+
   switch (c)
     {
     case OPTION_A4:
 	as_warn(_("Obsolete option mA4"));
       break;
     case OPTION_A5:
+      cpu_flags = E_ARC_MACH_A5;
       mach_type_specified_p = 1;
       arc_mach_type = bfd_mach_arc_a5;
       break;
     case OPTION_ARC600:
+      cpu_flags = E_ARC_MACH_ARC600;
       mach_type_specified_p = 1;
       arc_mach_type = bfd_mach_arc_arc600;
       break;
     case OPTION_ARC601:
+      cpu_flags = E_ARC_MACH_ARC601;
       mach_type_specified_p = 1;
       arc_mach_type = bfd_mach_arc_arc601;
       break;
     case OPTION_ARC700:
+      cpu_flags = E_ARC_MACH_ARC700;
       mach_type_specified_p = 1;
       arc_mach_type = bfd_mach_arc_arc700;
       break;
+    case OPTION_ARCHS:
+      cpu_flags = EF_ARC_CPU_ARCV2HS;
+      mach_type_specified_p = 1;
+      arc_mach_type = bfd_mach_arc_arcv2;
+      arc_mach_a4= 0;
+      break;
     case OPTION_ARCEM:
+      cpu_flags = EF_ARC_CPU_ARCV2EM;
       mach_type_specified_p = 1;
       arc_mach_type = bfd_mach_arc_arcv2;
       break;
@@ -586,6 +850,8 @@ md_parse_option (int c, char *arg)
 	return md_parse_option (OPTION_ARC700, NULL);
       else if (strcmp (arg, "ARCv2EM") == 0)
 	return md_parse_option (OPTION_ARCEM, NULL);
+      else if (strcmp (arg, "ARCv2HS") == 0)
+	return md_parse_option (OPTION_ARCHS, NULL);
       else
 	as_warn(_("Unknown CPU identifier `%s'"), arg);
       break;
@@ -669,6 +935,10 @@ md_parse_option (int c, char *arg)
     default:
       return 0;
     }
+
+  if (cpu_flags != EF_ARC_CPU_GENERIC)
+    arc_flags = (arc_flags & ~EF_ARC_MACH_MSK) | cpu_flags;
+
   return 1;
 }
 
@@ -680,6 +950,7 @@ ARC Options:\n\
   -mA[4|5]                select processor variant (default arc%d)\n\
   -mARC[600|700]          select processor variant\n\
   -mEM|-mav2em            select ARCv2 EM processor variant\n\
+  -mHS|-mav2hs            select ARCv2 HS processor variant\n\
   -EB                     assemble code for a big endian cpu\n\
   -EL                     assemble code for a little endian cpu\n", arc_mach_type + 4);
 }
@@ -941,10 +1212,13 @@ md_begin (void)
   if (!bfd_set_arch_mach (stdoutput, bfd_arch_arc, arc_mach_type))
     as_warn ("could not set architecture and machine");
 
+  if (arc_flags)
+    bfd_set_private_flags (stdoutput, arc_flags);
+
   /* Assume the base cpu.  This call is necessary because we need to
      initialize `arc_operand_map' which may be needed before we see the
      first insn.  */
-  arc_opcode_init_tables (arc_get_opcode_mach (arc_mach_type,
+  arc_opcode_init_tables (arc_get_opcode_mach (arc_flags ? arc_flags : arc_mach_type,
 					       target_big_endian));
 
   arc_process_extinstr_options ();
@@ -967,7 +1241,8 @@ init_opcode_tables (int mach)
 
   /* This initializes a few things in arc-opc.c that we need.
      This must be called before the various arc_xxx_supported fns.  */
-  arc_opcode_init_tables (arc_get_opcode_mach (mach, target_big_endian));
+  arc_opcode_init_tables (arc_get_opcode_mach (arc_flags ? arc_flags : mach,
+					       target_big_endian));
 
   /* Only put the first entry of each equivalently named suffix in the
      table.  */
@@ -1316,7 +1591,9 @@ arc_extoper (int opertype)
 
   input_line_pointer++;		/* skip ','  */
   number = get_absolute_expression ();
-  if (number < 0)
+  /* AUX register can have negative value to fit in the s12
+     constraint. */
+  if ((number < 0) && (opertype != 2))
     {
       as_bad ("negative operand number %d", number);
       ignore_rest_of_line ();
@@ -1465,8 +1742,8 @@ arc_extoper (int opertype)
   ext_oper = xmalloc (sizeof (struct arc_ext_operand_value));
 
 /* allow extension to be loaded to */
-      if(imode!=ARC_REGISTER_READONLY)
-	  arc_ld_ext_mask |= (1 << (number-32));
+  if (imode != ARC_REGISTER_READONLY)
+    arc_ld_ext_mask |= (1 << (number - 32));
 
   if (opertype)
     {
@@ -3624,7 +3901,6 @@ arc_common (int localScope)
 static void
 arc_option (int ignore ATTRIBUTE_UNUSED)
 {
-  extern int arc_get_mach (char *);
   int mach;
   char c;
   char *cpu;
@@ -3651,7 +3927,8 @@ arc_option (int ignore ATTRIBUTE_UNUSED)
 	arc_mach_type = mach;
 	if (mach == bfd_mach_arc_a4)
 	  as_bad (_("Support for Arctangent-A4 has been removed"));
-	arc_opcode_init_tables (arc_get_opcode_mach (mach, target_big_endian));
+	arc_opcode_init_tables (arc_get_opcode_mach (arc_flags ? arc_flags : mach,
+						     target_big_endian));
 
       if (!bfd_set_arch_mach (stdoutput, bfd_arch_arc, mach))
 	as_fatal ("could not set architecture and machine");
@@ -5390,9 +5667,11 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 			  if (opcode->flags & ARC_INCR_U6)
 			    value++;    /* Incrementing value of u6 for pseudo
 					   mnemonics of BRcc .  */
-			  if ((value < 0) || (value > 63)){
-			    match_failed = 1;
-			      }
+			case '@':
+			  if ((value < 0) || (value > 63))
+			    {
+			      match_failed = 1;
+			    }
 			  break;
 			case 'K':
 			  if ((value < -2048) || (value > 2047))
@@ -5805,7 +6084,7 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 			 occurance of the operand's format 'B'(or 'b') in the
 			 instruction's syntax being matched */
 		      /* Added # as destination version of B */
-		      if ((*syn == 'B') || (*syn == 'b') || (*syn == '#'))
+		      if ((*syn == 'B') || (*syn == 'b') || (*syn == '#') || (*syn == ';'))
 			{
 			  if (regb_p && regb != reg)
 			    {

@@ -1,3 +1,39 @@
+2014-03-20 Claudiu Zissulescu <claziss@synopsys.com>
+
+        * config/tc-arc.c (arc_extoper): Allow negative value when
+          handling Aux Registers.
+	  (md_assemble): Check u6 immediate value for trap_s instructions.
+
+2014-03-17 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* doc/c-arc.texi: Update with ARC HS options.
+
+2013-12-11 Claudiu Zissulescu <claziss@synopsys.com>
+
+        * config/tc-arc.c: Mods to handle 64-bit regs when are used in
+          op b,b,x format.
+
+2013-11-26 Claudiu Zissulescu <claziss@synopsys.com>
+
+        * config/tc-arc.c: Overwrite the arc_flags only when a cpu
+          option is used.
+
+2013-11-22 Claudiu Zissulescu <claziss@synopsys.com>
+
+        * config/tc-arc.c: Introduce check_last_ZOL_insn function,
+          used for checking the last two instructions of a HS ZOL.
+
+2013-11-13 Claudiu Zissulescu <claziss@synopsys.com>
+
+        * config/tc-arc.c: The arguments passed to
+          arc_get_opcode_mach() function are the ELF e_flags.
+
+2013-11-11  Claudiu Zissulescu <claziss@synopsys.com>
+
+        * config/tc-arc.c: Add HS as a valid processor choice. Fill
+          the elf flags field using bfd_set_private_flags() function
+          call.
+
 2014-02-14  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* tc-arc.c (md_apply_fix) <BFD_RELOC_ARC_TLS_DTPOFF{,_S9}>:
