@@ -201,6 +201,7 @@ static unsigned long extinsnlib = 0;
 #define SWAPE_INSN              (LOCK_INSNS    << 1)
 #define RTSC_INSN               (SWAPE_INSN    << 1)
 /* END ARC LOCAL */
+#define FPUDA_INSN               (RTSC_INSN     << 1)
 
 static struct hash_control *arc_suffix_hash = NULL;
 
@@ -240,8 +241,9 @@ enum options
   /* START ARC LOCAL */
   OPTION_LOCK,
   OPTION_SWAPE,
-  OPTION_RTSC
+  OPTION_RTSC,
   /* END ARC LOCAL */
+  OPTION_FPUDA
 /* ARC Extension library options.  */
 };
 
@@ -302,6 +304,7 @@ struct option md_longopts[] =
   { "mswape", no_argument, NULL, OPTION_SWAPE},
   { "mrtsc", no_argument, NULL, OPTION_RTSC},
   /* END ARC LOCAL */
+  { "mfpuda", no_argument, NULL, OPTION_FPUDA},
   { NULL, no_argument, NULL, 0 }
 };
 
@@ -944,6 +947,9 @@ md_parse_option (int c, char *arg)
       extinsnlib |= RTSC_INSN;
       break;
     /* END ARC LOCAL */
+    case OPTION_FPUDA:
+      extinsnlib |= FPUDA_INSN;
+      break;
 
     default:
       return 0;
@@ -1014,8 +1020,9 @@ static struct extension_macro extension_macros[]=
     /* START ARC LOCAL */
     {LOCK_INSNS, "__Xlock"},
     {SWAPE_INSN, "__Xswape"},
-    {RTSC_INSN, "__Xrtsc"}
+    {RTSC_INSN, "__Xrtsc"},
     /* END ARC LOCAL */
+    {FPUDA_INSN, "__Xfpuda"}
   };
 
 static unsigned short n_extension_macros = (sizeof (extension_macros) /
@@ -1082,9 +1089,15 @@ arc_process_extinstr_options (void)
   /*For ARCv2EM disable all lib extensions (Except the FP ops). All
     ARCv2 instructions are recognized by default by the GAS*/
   if ((arc_mach_type == bfd_mach_arc_arcv2)
-      && (extinsnlib & ~(SP_FLOAT_INSN | DP_FLOAT_INSN)))
+      && (extinsnlib & ~(SP_FLOAT_INSN | DP_FLOAT_INSN | FPUDA_INSN)))
     {
-      extinsnlib &= (SP_FLOAT_INSN | DP_FLOAT_INSN);
+      if (((extinsnlib & SP_FLOAT_INSN) && (extinsnlib & FPUDA_INSN))
+	  || ((extinsnlib & DP_FLOAT_INSN) && (extinsnlib & FPUDA_INSN)))
+	{
+	  as_bad ("Cannot mix ARCompact FPX with EM's double precision assist ops.");
+	  exit (1);
+	}
+      extinsnlib &= (SP_FLOAT_INSN | DP_FLOAT_INSN | FPUDA_INSN);
     }
 
   if ((extinsnlib & NO_MPY_INSN) && (arc_mach_type != bfd_mach_arc_arc700))
@@ -2638,7 +2651,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 			(syntax_class | syntax_class_modifiers),
 			suffix_class & (AC_SUFFIX_FLAG));
 
-      arc_add_ext_inst (instruction_name, " 0,%L,%C%F",
+      arc_add_ext_inst (instruction_name, "%Q 0,%L,%C%F",
 			INSN_32(major_opcode,
 				I_FIELD(sub_opcode, 1),
 				0, 62, 62, 0),
@@ -2662,7 +2675,7 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 			(syntax_class | syntax_class_modifiers),
 			suffix_class & (AC_SUFFIX_FLAG));
 
-      arc_add_ext_inst (instruction_name, " 0,%B,%K%F",
+      arc_add_ext_inst (instruction_name, "%Q 0,%L,%K%F",
 			INSN_32(major_opcode,
 				I_FIELD(sub_opcode, 2),
 				1, 62, 0, 0),

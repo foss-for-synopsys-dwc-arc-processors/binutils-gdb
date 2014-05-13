@@ -1,3 +1,13 @@
+2014-05-13 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* config/extlib/arcextlib.s: Add double precision assist
+          operations for EM.
+
+	* config/tc-arc.c (mfpuda): New option.
+	(arc_process_extinstr_options): Allow use of double precision
+	assist operations.
+	(arc_generate_extinst32_operand_string): Fix pattern strings.
+
 2014-03-20 Claudiu Zissulescu <claziss@synopsys.com>
 
         * config/tc-arc.c (arc_extoper): Allow negative value when

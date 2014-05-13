@@ -293,6 +293,34 @@
 .endif
 .endif
 
+.ifdef __Xfpuda
+	.ifdef __ARCv2__
+;;; New EM's FPX double precission assist operations.
+	.extInstruction dmulh11,0x06,0x30,SUFFIX_FLAG,SYNTAX_3OP
+	.extInstruction dmulh12,0x06,0x31,SUFFIX_FLAG,SYNTAX_3OP
+	.extInstruction dmulh21,0x06,0x32,SUFFIX_FLAG,SYNTAX_3OP
+	.extInstruction dmulh22,0x06,0x33,SUFFIX_FLAG,SYNTAX_3OP
+
+	.extInstruction daddh11,0x06,0x34,SUFFIX_FLAG,SYNTAX_3OP
+	.extInstruction daddh12,0x06,0x35,SUFFIX_FLAG,SYNTAX_3OP
+	.extInstruction daddh21,0x06,0x36,SUFFIX_FLAG,SYNTAX_3OP
+	.extInstruction daddh22,0x06,0x37,SUFFIX_FLAG,SYNTAX_3OP
+
+	.extInstruction dsubh11,0x06,0x38,SUFFIX_FLAG,SYNTAX_3OP
+	.extInstruction dsubh12,0x06,0x39,SUFFIX_FLAG,SYNTAX_3OP
+	.extInstruction dsubh21,0x06,0x3a,SUFFIX_FLAG,SYNTAX_3OP
+	.extInstruction dsubh22,0x06,0x3b,SUFFIX_FLAG,SYNTAX_3OP
+
+	.extInstruction dexcl1, 0x06,0x3c,SUFFIX_NONE,SYNTAX_3OP
+	.extInstruction dexcl2, 0x06,0x3d,SUFFIX_NONE,SYNTAX_3OP
+
+	.extAuxRegister D1L,0x302,r|w
+	.extAuxRegister D1H,0x303,r|w
+	.extAuxRegister D2L,0x304,r|w
+	.extAuxRegister D2H,0x305,r|w
+	.endif
+.endif
+
 .ifdef __Xxy
 	.ifndef __ARCCOMPACT__
 	.extCoreRegister x0_nu,   48, r|w, cannot_shortcut
