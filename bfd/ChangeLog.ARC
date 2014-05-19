@@ -1,3 +1,8 @@
+2014-05-19  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* elf32-arc.c (arc_plugin_one_reloc) <R_ARC_TLS_LE_32>: Use value of
+	insn.
+
 2014-05-19  Claudiu Zissulescu  <claziss@synopsys.com>
 
 	Revert parts of commit 7be39c8c9ac947c8a498d6c7e1bff104a5814bd7.
