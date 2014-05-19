@@ -1,3 +1,9 @@
+2014-05-19  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* config/tc-arc.c (md_apply_fix) <BFD_RELOC_ARC_TLS_LE_32>:
+	Handle like BFD_RELOC_ARC_TLS_DTPOFF.
+	<BFD_RELOC_ARC_TLS_LE_S9>: Handle like BFD_RELOC_ARC_TLS_DTPOFF_S9.
+
 2014-03-20 Claudiu Zissulescu <claziss@synopsys.com>
 
         * config/tc-arc.c (arc_extoper): Allow negative value when

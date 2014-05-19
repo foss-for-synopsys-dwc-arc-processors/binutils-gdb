@@ -1749,6 +1749,7 @@ arc_plugin_one_reloc (unsigned long insn, enum elf_arc_reloc_type r_type,
       break;
 
   case R_ARC_TLS_DTPOFF:
+  case R_ARC_TLS_LE_32:
     insn += value;
     break;
 
@@ -1761,7 +1762,6 @@ arc_plugin_one_reloc (unsigned long insn, enum elf_arc_reloc_type r_type,
   case R_ARC_PC32:
   case R_ARC_TLS_GD_GOT:
   case R_ARC_TLS_IE_GOT:
-  case R_ARC_TLS_LE_32:
       insn = value;
 
   case R_ARC_8:

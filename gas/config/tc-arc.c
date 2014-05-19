@@ -4556,6 +4556,7 @@ md_apply_fix (fixS *fixP, valueT *valueP, segT seg ATTRIBUTE_UNUSED)
 	  break;
 
 	case BFD_RELOC_ARC_TLS_DTPOFF:
+	case BFD_RELOC_ARC_TLS_LE_32:
 	  if (fixP->fx_done)
 	    {
 	      gas_assert (!fixP->fx_addsy);
@@ -4566,7 +4567,6 @@ md_apply_fix (fixS *fixP, valueT *valueP, segT seg ATTRIBUTE_UNUSED)
 	  fixP->fx_offset = 0;
 	case BFD_RELOC_ARC_TLS_GD_GOT:
 	case BFD_RELOC_ARC_TLS_IE_GOT:
-	case BFD_RELOC_ARC_TLS_LE_32:
 	  S_SET_THREAD_LOCAL (fixP->fx_addsy);
 	  /* Fall through.  */
 	apply32_me:
@@ -4591,12 +4591,14 @@ md_apply_fix (fixS *fixP, valueT *valueP, segT seg ATTRIBUTE_UNUSED)
 	  /* These two relocs are there just to allow ld to change the tls
 	     model for this symbol, by patching the code.  */
 	  /* Fall through.  */
-	case BFD_RELOC_ARC_TLS_LE_S9:
 	  /* The offset - and scale, if any - will be installed by the
 	     linker.  */
 	  gas_assert (!fixP->fx_done);
 	  S_SET_THREAD_LOCAL (fixP->fx_addsy);
 	  break;
+	case BFD_RELOC_ARC_TLS_LE_S9:
+	  gas_assert (!fixP->fx_done);
+	  /* Fall through.  */
 	case BFD_RELOC_ARC_TLS_DTPOFF_S9:
 	  if (!fixP->fx_done)
 	    S_SET_THREAD_LOCAL (fixP->fx_addsy);
@@ -4608,9 +4610,7 @@ md_apply_fix (fixS *fixP, valueT *valueP, segT seg ATTRIBUTE_UNUSED)
 	    }
 	  short overflow_detected = 0;
 	  char *contents = fixP->fx_frag->fr_literal + fixP->fx_where;
-	  value
-	    = md_chars_to_number (fixP->fx_frag->fr_literal + fixP->fx_where,
-				  -4);
+	  value = md_chars_to_number (contents, -4);
 	  value
 	    = arc_plugin_one_reloc (value, R_ARC_TLS_LE_S9, fixP->fx_offset,
 				    &overflow_detected, TRUE);
