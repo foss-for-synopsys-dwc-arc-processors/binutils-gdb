@@ -1,3 +1,9 @@
+2014-05-19  Claudiu Zissulescu  <claziss@synopsys.com>
+
+	Revert parts of commit 7be39c8c9ac947c8a498d6c7e1bff104a5814bd7.
+	* elf32-arc.c (elf_arc_relocate_section): Handle the pc_relative
+	case along with other relocation types.
+
 2014-04-16  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* elf32-arc.c (elf_arc_finish_dynamic_symbol) <GOT_TLS_GD>: Use
