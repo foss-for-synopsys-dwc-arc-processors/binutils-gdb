@@ -1,5 +1,10 @@
 2014-05-13 Claudiu Zissulescu <claziss@synopsys.com>
 
+       * arc-opc-old.c (insert_reg): Check if register class 'h' is
+         proper use.
+
+2014-05-13 Claudiu Zissulescu <claziss@synopsys.com>
+
        * arc-em.h: Allow single precision FPU ops for EM architecture.
 
 2014-03-26 Claudiu Zissulescu <claziss@synopsys.com>
