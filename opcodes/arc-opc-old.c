@@ -1567,11 +1567,14 @@ insert_reg (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
             }
           else if (!arc_mach_a4 && operand->fmt == 128)
 	    {
-	      if (reg->value > 31)
+	      if (reg->value > 31
+		  || reg->value == 30
+		  || reg->value == 29)
 		{
 		  sprintf (buf, _("invalid register number `%d'"), reg->value);
 		  *errmsg = buf;
-		} else
+		}
+	      else
 		{
 		  /* H5 class*/
 		  insn |= (reg->value & 0x7) << operand->shift;
