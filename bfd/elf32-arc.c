@@ -2553,7 +2553,8 @@ elf_arc_relocate_section (bfd *output_bfd,
 	      if (r_type == R_ARC_GOTPC
 		  || (r_type == R_ARC_PLT32
 		      && h->plt.offset != (bfd_vma) -1)
-		  || ((r_type == R_ARC_GOTPC32
+		  || (((r_type == R_ARC_GOTPC32
+			&& h != NULL && !SYMBOL_REFERENCES_LOCAL (info, h))
 		       || r_type == R_ARC_TLS_IE_GOT
 		       || r_type == R_ARC_TLS_GD_GOT
 		       /* R_ARC_TLS_GD_{LD,CALL} -> R_ARC_NONE */
