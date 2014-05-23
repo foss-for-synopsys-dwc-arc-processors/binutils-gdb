@@ -1028,18 +1028,66 @@ static struct extension_macro extension_macros[]=
 static unsigned short n_extension_macros = (sizeof (extension_macros) /
 				   sizeof (struct extension_macro));
 
-static int
+/* Check whether file exists. There is a possible issue, that file might exist
+   at the moment of this check, but might be deleted when gas will attempt to
+   actually open it. However for simplicity of ARC-specific code we ignore this
+   possibility. */
+static inline int
 file_exists (char *filename)
 {
-  FILE *fp = fopen (filename , "r");
+  return !access (filename, R_OK);
+}
 
-  if (fp)
+/* Get path to extension lib file. NULL is returned if file doesn't exist,
+   which makes callee code simplier. */
+static char*
+get_extension_lib_path (const char * const bindir,
+			const char * const libdir,
+			const char * const fpath)
+{
+  char *extension_library_path = NULL;
+  char *relative_prefix = NULL;
+  unsigned long extension_library_path_size = 0;
+
+  gas_assert (bindir != NULL);
+  gas_assert (libdir != NULL);
+  gas_assert (fpath != NULL);
+
+  /* Return value of make_relative_prefix is allocated with malloc() and should
+     be free()'d by the caller. Zero is returned on error. */
+  relative_prefix = make_relative_prefix (myname, bindir, libdir);
+  if (!relative_prefix)
     {
-      fclose (fp);
-      return 1;
+      as_bad ("No relative prefix can be computed for `%s' and `%s'.", bindir, libdir);
+      exit (1);
     }
-  else
-    return 0;
+
+  /* Allocate string that will have enough space for file path. strlen()
+     doesn't count null terminator, add it manually. */
+  extension_library_path_size = strlen (relative_prefix) + strlen (fpath) + 1;
+  extension_library_path = malloc (extension_library_path_size);
+  if (!extension_library_path)
+    {
+      as_bad ("Not enough memory. malloc() failed.");
+      exit (1);
+    }
+
+  /* Concatenate extfile path. No need for "strn" versions, since allocated
+   * string has enough size. */
+  strcpy (extension_library_path, relative_prefix);
+  strcat (extension_library_path, fpath);
+
+  /* Local variable not needed anymore. */
+  free (relative_prefix);
+
+  /* Return NULL if file doesn't exist. */
+  if (!file_exists (extension_library_path))
+    {
+      free (extension_library_path);
+      return NULL;
+    }
+
+  return extension_library_path;
 }
 
 /* This function reads in the "configuration files" based on the options
@@ -1048,7 +1096,7 @@ static void
 arc_process_extinstr_options (void)
 {
   unsigned long i;
-  char extension_library_path[160];
+  char *extension_library_path = NULL;
   char temp[80];
   symbolS *sym;
 
@@ -1153,76 +1201,48 @@ arc_process_extinstr_options (void)
 	}
     }
 
-
-  /* Let's get the path of the base directory of the extension configuration
-  libraries.  */
-
-  strcpy (extension_library_path,
-	  make_relative_prefix (myname, BINDIR1, LIBDIR1));
-  strcat (extension_library_path, "/"EXTLIBFILE);
-
-  if (!file_exists (extension_library_path))
-    {
-      strcpy (extension_library_path,
-	      make_relative_prefix (myname, BINDIR2, LIBDIR1));
-      strcat (extension_library_path, "/"EXTLIBFILE);
-    }
-
-  if (!file_exists (extension_library_path))
-    {
-      strcpy (extension_library_path,
-	      make_relative_prefix (myname, BINDIR3, LIBDIR2));
-      strcat (extension_library_path, "/"EXTLIBFILE);
-    }
-
-  if (!file_exists (extension_library_path))
-    {
-      strcpy (extension_library_path,
-	      make_relative_prefix (myname, BINDIR4, LIBDIR2));
-      strcat (extension_library_path, "/"EXTLIBFILE);
-    }
-
-  if (!file_exists (extension_library_path))
-    {
-      as_bad ("Extension library file(s) do not exist\n");
-      exit (1);
-    }
-
-  /* For A4, A5 and ARC600 read the lib file if extinsnlib is set
-     For ARC700 do not read the lib file if the NO_MPY_INSN flag
-     is the only one set*/
+  /* For ARC700 do not read the lib file if the NO_MPY_INSN flag is the only
+     one set. For other cores read the lib file if extinsnlib is set. */
   if ( (arc_mach_type == bfd_mach_arc_arc700)?
        (extinsnlib != NO_MPY_INSN)
        : extinsnlib)
-    read_a_source_file (extension_library_path);
-
-  if (extinsnlib &  SIMD_INSN)
     {
-      strcpy (extension_library_path,
-	      make_relative_prefix (myname, BINDIR1, LIBDIR1));
-      strcat (extension_library_path, "/"SIMDEXTLIBFILE);
+      /* Let's get the path of the base directory of the extension
+       * configuration libraries.  */
+      extension_library_path = get_extension_lib_path (BINDIR1, LIBDIR1, "/"EXTLIBFILE);
+      if (!extension_library_path)
+        extension_library_path = get_extension_lib_path (BINDIR2, LIBDIR1, "/"EXTLIBFILE);
+      if (!extension_library_path)
+        extension_library_path = get_extension_lib_path (BINDIR3, LIBDIR2, "/"EXTLIBFILE);
+      if (!extension_library_path)
+        extension_library_path = get_extension_lib_path (BINDIR4, LIBDIR2, "/"EXTLIBFILE);
 
-      if (!file_exists (extension_library_path))
-	{
-	  strcpy (extension_library_path,
-		  make_relative_prefix (myname, BINDIR2, LIBDIR1));
-	  strcat (extension_library_path, "/"SIMDEXTLIBFILE);
-	}
+      if (!extension_library_path)
+        {
+          as_bad ("Extension library file(s) do not exist\n");
+          exit (1);
+        }
 
-      if (!file_exists (extension_library_path))
-	{
-	  strcpy (extension_library_path,
-		  make_relative_prefix (myname, BINDIR3, LIBDIR2));
-	  strcat (extension_library_path, "/"SIMDEXTLIBFILE);
-	}
+      read_a_source_file (extension_library_path);
+      free (extension_library_path);
+    }
 
-      if (!file_exists (extension_library_path))
+  if (extinsnlib & SIMD_INSN)
+    {
+      extension_library_path = get_extension_lib_path (BINDIR1, LIBDIR1, "/"SIMDEXTLIBFILE);
+      if (!extension_library_path)
+        extension_library_path = get_extension_lib_path (BINDIR2, LIBDIR1, "/"SIMDEXTLIBFILE);
+      if (!extension_library_path)
+        extension_library_path = get_extension_lib_path (BINDIR3, LIBDIR2, "/"SIMDEXTLIBFILE);
+
+      if (!extension_library_path)
 	{
 	  as_bad ("ARC700 SIMD Extension library file(s) do not exist\n");
 	  exit (1);
 	}
 
-      read_a_source_file (extension_library_path );
+      read_a_source_file (extension_library_path);
+      free (extension_library_path);
     }
 }
 

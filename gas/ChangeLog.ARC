@@ -1,3 +1,10 @@
+2014-05-26 Anton Kolesov  <Anton.Kolesov@synopsys.com>
+
+	* config/tc-arc.c (arc_process_extinstr_options): Fix segmentation
+	fault for paths > 160 symbols.
+	(get_extension_lib_path): New function.
+	(file_exists): Replace call to fopen() with access().
+
 2014-05-13 Claudiu Zissulescu <claziss@synopsys.com>
 
 	* config/extlib/arcextlib.s: Add double precision assist
