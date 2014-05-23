@@ -1,3 +1,8 @@
+2014-05-23  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* elf32-arc.c (elf_arc_relocate_section): Calculate relocation for
+	locally resolved R_ARC_GOTPC32.
+
 2014-05-19  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* elf32-arc.c (arc_plugin_one_reloc) <R_ARC_TLS_LE_32>: Use value of
