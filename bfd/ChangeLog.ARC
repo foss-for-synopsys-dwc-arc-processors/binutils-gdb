@@ -1,5 +1,10 @@
 2014-05-23  Joern Rennecke  <joern.rennecke@embecosm.com>
 
+	* elf32-arc.c (arc_tls_transition) <R_ARC_TLS_IE_GOT -> GOT_TLS_LE>:
+	Verify that we are changing a load.
+
+2014-05-23  Joern Rennecke  <joern.rennecke@embecosm.com>
+
 	* elf32-arc.c (elf_arc_relocate_section): Calculate relocation for
 	locally resolved R_ARC_GOTPC32.
 
