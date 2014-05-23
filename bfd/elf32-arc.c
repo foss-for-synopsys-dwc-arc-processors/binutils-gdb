@@ -1840,6 +1840,8 @@ arc_tls_transition (const Elf_Internal_Rela *rel,
 	    {
 	      /* ld rn,[pcl,symbol@tlsie] -> mov rn,symbol@tpoff */
 	      long insn = bfd_get_32_me (abfd, contents + rel->r_offset - 4);
+	      /* Verify it's ld a,[pcl,limm] or ld a,[limm,pcl].  */
+	      BFD_ASSERT ((insn & 0xfeffff80) == 0x26307f80);
 	      insn &= 0x3f;
 	      insn = (insn & 7) << 24 | (insn & 56) << 9 | 0x200A0F80;
 	      bfd_put_32_me (abfd, insn, contents + rel->r_offset - 4);
