@@ -1,3 +1,7 @@
+2014-06-03  Anton Kolesov  <Anton.Kolesov@synopsys.com>
+
+	* linux-arc-low.c: Remove support for ABI v2 ptrace.
+
 2013-03-27  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* linux-arc-low.c: Use linux/elf.h rather than elf.h
