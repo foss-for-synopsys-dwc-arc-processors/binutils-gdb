@@ -37,31 +37,15 @@
 
    This file defines the implementation of gdbserver for ARC Linux.
 
-   Access to registers via ptrace changes between Linux 3.2 and Linux
-   3.9. With the new (ABI v3) interface in Linux 3.9, registers are accessed
-   as a complete set with PTRACE_GETREGSET and PTRACE_SETREGSET. With Linux
-   3.2 and the old (ABI v2) interface, registers are accessed individually
-   using PTRACE_PEEKUSER and PTRACE_POKEUSER.
-
-   To build gdbserver with ABI v2, define ARC_LEGACY_PTRACE_ABI. Otherwise
-   gdbserver will build for ABI v3.
-
-   ## ABI v3 (Linux 3.9 and later)
+   Access to registers via ptrace has changed between Linux 3.2 and Linux 3.9.
+   With the new (ABI v3) interface in Linux 3.9, registers are accessed as a
+   complete set with PTRACE_GETREGSET and PTRACE_SETREGSET. This file
+   implements support only for ABI v3. If you need support for ABI v2, use
+   ARC GNU Toolchain 4.8-R3 release.
 
    ptrace returns regsets in a struct, "user_regs_struct", defined in the
-   asm/ptrace.h header.
-
-   The implementation uses the target_regsets functionality to control the
-   access to registers.
-
-   ## ABI v2 (Linux 3.2 and earlier)
-
-   ptrace returns registers in a buffer. The order of registers is those in
-   struct "pt_regs", followed by those in struct "callee_regs", followed by efa
-   and stop_pc. The structs are defined in the asm/ptrace.h header.
-
-   For convenience, we define a struct, "user_regs_struct" built on those
-   structs, and use it to construct a mapping. */
+   asm/ptrace.h header. The implementation uses the target_regsets
+   functionality to control the access to registers. */
 /* -------------------------------------------------------------------------- */
 
 #include "server.h"
@@ -72,33 +56,6 @@
 #include <arpa/inet.h>
 #include <asm/ptrace.h>
 #include <sys/ptrace.h>
-
-
-/* -------------------------------------------------------------------------- */
-/*				  Data types				      */
-/* -------------------------------------------------------------------------- */
-
-#ifdef ARC_LEGACY_PTRACE_ABI
-/*! Register data structure.
-
-    This struct matches the sequence returned by ptrace.
-
-    The meaning of orig_r0 is lost in the mists of time. orig_r8 tells you
-    what stop_pc, status32 and ret really refer to, but is dropped in ABI v3
-    and so not used here. */
-struct user_regs_struct {
-
-  struct pt_regs  scratch;
-  struct callee_regs  callee;
-  long int efa;		/* break pt addr, for break points in delay slots */
-  long int stop_pc;	/* give dbg stop_pc directly after checking orig_r8 */
-};
-#endif
-
-
-/* -------------------------------------------------------------------------- */
-/*		    Static variables global to this file.		      */
-/* -------------------------------------------------------------------------- */
 
 
 /* -------------------------------------------------------------------------- */
@@ -129,124 +86,10 @@ extern void init_registers_arc (void);
 static void
 arc_arch_setup (void)
 {
-#ifdef ARC_LEGACY_PTRACE_ABI
-  static int *regmap;
-  struct user_regs_struct  pt_buf;
-  long int *pt_base;
-#endif
-
   /* The auto generated register initialization. */
   init_registers_arc ();
   /* Work out how many 32-bit registers we have. */
   the_low_target.num_regs = register_cache_size() / sizeof (uint32_t);
-
-#ifdef ARC_LEGACY_PTRACE_ABI
-  /* Work out all the ptrace offsets. We have to set these in GDB register
-     order. Unused registers have an offset of -1, to indicate they are not
-     worth fetching. */
-  regmap = xcalloc (the_low_target.num_regs, sizeof (*regmap));
-  pt_base = &(pt_buf.scratch.res);
-
-  regmap[0]  = (&(pt_buf.scratch.r0)       - pt_base) * sizeof (*pt_base);
-  regmap[1]  = (&(pt_buf.scratch.r1)       - pt_base) * sizeof (*pt_base);
-  regmap[2]  = (&(pt_buf.scratch.r2)       - pt_base) * sizeof (*pt_base);
-  regmap[3]  = (&(pt_buf.scratch.r3)       - pt_base) * sizeof (*pt_base);
-  regmap[4]  = (&(pt_buf.scratch.r4)       - pt_base) * sizeof (*pt_base);
-  regmap[5]  = (&(pt_buf.scratch.r5)       - pt_base) * sizeof (*pt_base);
-  regmap[6]  = (&(pt_buf.scratch.r6)       - pt_base) * sizeof (*pt_base);
-  regmap[7]  = (&(pt_buf.scratch.r7)       - pt_base) * sizeof (*pt_base);
-  regmap[8]  = (&(pt_buf.scratch.r8)       - pt_base) * sizeof (*pt_base);
-  regmap[9]  = (&(pt_buf.scratch.r9)       - pt_base) * sizeof (*pt_base);
-  regmap[10] = (&(pt_buf.scratch.r10)      - pt_base) * sizeof (*pt_base);
-  regmap[11] = (&(pt_buf.scratch.r11)      - pt_base) * sizeof (*pt_base);
-  regmap[12] = (&(pt_buf.scratch.r12)      - pt_base) * sizeof (*pt_base);
-  regmap[13] = (&(pt_buf.callee.r13)       - pt_base) * sizeof (*pt_base);
-  regmap[14] = (&(pt_buf.callee.r14)       - pt_base) * sizeof (*pt_base);
-  regmap[15] = (&(pt_buf.callee.r15)       - pt_base) * sizeof (*pt_base);
-  regmap[16] = (&(pt_buf.callee.r16)       - pt_base) * sizeof (*pt_base);
-  regmap[17] = (&(pt_buf.callee.r17)       - pt_base) * sizeof (*pt_base);
-  regmap[18] = (&(pt_buf.callee.r18)       - pt_base) * sizeof (*pt_base);
-  regmap[19] = (&(pt_buf.callee.r19)       - pt_base) * sizeof (*pt_base);
-  regmap[20] = (&(pt_buf.callee.r20)       - pt_base) * sizeof (*pt_base);
-  regmap[21] = (&(pt_buf.callee.r21)       - pt_base) * sizeof (*pt_base);
-  regmap[22] = (&(pt_buf.callee.r22)       - pt_base) * sizeof (*pt_base);
-  regmap[23] = (&(pt_buf.callee.r23)       - pt_base) * sizeof (*pt_base);
-  regmap[24] = (&(pt_buf.callee.r24)       - pt_base) * sizeof (*pt_base);
-  regmap[25] = (&(pt_buf.callee.r25)       - pt_base) * sizeof (*pt_base);
-  regmap[26] = (&(pt_buf.scratch.r26)      - pt_base) * sizeof (*pt_base);
-  regmap[27] = (&(pt_buf.scratch.fp)       - pt_base) * sizeof (*pt_base);
-  regmap[28] = (&(pt_buf.scratch.sp)       - pt_base) * sizeof (*pt_base);
-  /* ilink1 & ilink2 not available. */
-  regmap[29] = -1;
-  regmap[31] = -1;
-  regmap[31] = (&(pt_buf.scratch.blink)    - pt_base) * sizeof (*pt_base);
-  /* Extension core regs r32-r59 not available. */
-  regmap[32] = -1;
-  regmap[33] = -1;
-  regmap[34] = -1;
-  regmap[35] = -1;
-  regmap[36] = -1;
-  regmap[37] = -1;
-  regmap[38] = -1;
-  regmap[39] = -1;
-  regmap[40] = -1;
-  regmap[41] = -1;
-  regmap[42] = -1;
-  regmap[43] = -1;
-  regmap[44] = -1;
-  regmap[45] = -1;
-  regmap[46] = -1;
-  regmap[47] = -1;
-  regmap[48] = -1;
-  regmap[49] = -1;
-  regmap[50] = -1;
-  regmap[51] = -1;
-  regmap[52] = -1;
-  regmap[53] = -1;
-  regmap[54] = -1;
-  regmap[55] = -1;
-  regmap[56] = -1;
-  regmap[57] = -1;
-  regmap[58] = -1;
-  regmap[59] = -1;
-  regmap[60] = (&(pt_buf.scratch.lp_count) - pt_base) * sizeof (*pt_base);
-  /* Reserved, limm and pcl registers not available. */
-  regmap[61] = -1;
-  regmap[62] = -1;
-  regmap[63] = -1;
-  /* PC is a special case. On reading we should use stop_pc and on writing, we
-     should use ret. We'll use arc_fetch_register to deal with the read case
-     as a special. */
-  regmap[64] = (&(pt_buf.scratch.ret)      - pt_base) * sizeof (*pt_base);
-  regmap[65] = (&(pt_buf.scratch.lp_start) - pt_base) * sizeof (*pt_base);
-  regmap[66] = (&(pt_buf.scratch.lp_end)   - pt_base) * sizeof (*pt_base);
-  regmap[67] = (&(pt_buf.scratch.status32) - pt_base) * sizeof (*pt_base);
-  /* status32_l1, status32_l2, aux_irq_lv12, aux_irq_lev, aux_irq_hint, eret,
-     erbta, erstatus, ecr aux registers not available. */
-  regmap[68] = -1;
-  regmap[69] = -1;
-  regmap[70] = -1;
-  regmap[71] = -1;
-  regmap[72] = -1;
-  regmap[73] = -1;
-  regmap[74] = -1;
-  regmap[75] = -1;
-  regmap[76] = -1;
-  regmap[77] = (&(pt_buf.efa)              - pt_base) * sizeof (*pt_base);
-  /* icause1, icause2, aux_ienable, aux_itrigger, bta, bta_l1, bta_l2,
-     aux_irq_pulse_cancel, aux_irq_pending aux registers not available. */
-  regmap[78] = -1;
-  regmap[79] = -1;
-  regmap[80] = -1;
-  regmap[81] = -1;
-  regmap[82] = -1;
-  regmap[83] = -1;
-  regmap[84] = -1;
-  regmap[85] = -1;
-  regmap[86] = -1;
-
-  the_low_target.regmap = regmap;
-#endif
 }	/* arc_arch_setup () */
 
 
@@ -346,41 +189,6 @@ arc_cannot_store_register (int regno)
 }	/* arc_cannot_store_register () */
 
 
-#ifdef ARC_LEGACY_PTRACE_ABI
-/*! Fetch a register
-
-    For legacy, deal with special cases for fetching a register. In our case,
-    this is used for the PC, which in the regmap (used for writing) is written
-    to "ret", but on reading should be read from "stop_pc"
-
-    @param[out] regcache  Register cache to be populated.
-    @param[in]  regno     Register number of interest.
-    @return               Non-zero (TRUE) if we supplied the register, zero
-                          (FALSE) otherwise, when we should use the standard
-                          methods. */
-static int
-arc_fetch_register (struct regcache *regcache,
-		    int  regno)
-{
-  /* PC is register 64. */
-  if (regno != 64)
-    {
-      return  0;
-    }
-  else
-    {
-      struct user_regs_struct  pt_buf;
-      int pid = lwpid_of (get_thread_lwp (current_inferior));
-      int offset = &(pt_buf.stop_pc) - &(pt_buf.scratch.res);
-      long int reg = ptrace (PTRACE_PEEKUSER, pid,
-			     offset * sizeof (pt_buf.scratch.res), 0);
-      supply_register_by_name (regcache, "pc", &reg);
-      return  1;
-    }
-}	/* arc_fetch_register () */
-#endif
-      
-
 /*! Get the PC from the register cache.
 
     @param[in] regcache  Register cache
@@ -433,7 +241,6 @@ arc_breakpoint_at (CORE_ADDR where)
 }	/* arc_breakpoint_at () */
 
 
-#ifndef ARC_LEGACY_PTRACE_ABI
 /* -------------------------------------------------------------------------- */
 /*			Register set access functions.			      */
 /*									      */
@@ -607,7 +414,6 @@ arc_store_gregset (struct regcache *regcache, const void *buf)
   /* aux_irq_pending not currently supported. */
 
 }	/* arc_store_gregset () */
-#endif
 
 /* -------------------------------------------------------------------------- */
 /*		   Global variables defining the interface		      */
@@ -622,7 +428,6 @@ arc_store_gregset (struct regcache *regcache, const void *buf)
     the registers in struct user_regs_struct. For ARC ABI v2, we must still
     define target_regsets, but with no entries. */
 struct regset_info target_regsets[] = {
-#ifndef ARC_LEGACY_PTRACE_ABI
   { .get_request    = PTRACE_GETREGSET,
     .set_request    = PTRACE_SETREGSET,
     .nt_type        = NT_PRSTATUS,
@@ -630,7 +435,6 @@ struct regset_info target_regsets[] = {
     .type           = GENERAL_REGS,
     .fill_function  = arc_fill_gregset,
     .store_function = arc_store_gregset },
-#endif
   { .get_request    = 0,		/* End marker */
     .set_request    = 0,
     .nt_type        = 0,
@@ -665,11 +469,7 @@ struct linux_target_ops the_low_target = {
   .regset_bitmap                    = NULL,
   .cannot_fetch_register            = arc_cannot_fetch_register,
   .cannot_store_register            = arc_cannot_store_register,
-#ifdef ARC_LEGACY_PTRACE_ABI
-  .fetch_register                   = arc_fetch_register,
-#else
   .fetch_register                   = NULL,
-#endif
   .get_pc                           = arc_get_pc,
   .set_pc                           = arc_set_pc,
   .breakpoint                       = NULL,
