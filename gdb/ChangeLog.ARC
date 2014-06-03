@@ -1,5 +1,9 @@
 2014-06-03  Anton Kolesov  <Anton.Kolesov@synopsys.com>
 
+	* linux-low.c: Remove temporary hack that breaks build for native GDB.
+
+2014-06-03  Anton Kolesov  <Anton.Kolesov@synopsys.com>
+
 	* config: Add ARC as a valid native target.
 	* arc-linux-tdep.h: New file.
 	* arc-linux-tdep.c (arc_linux_collect_gregset): New function.
