@@ -1,8 +1,8 @@
 all:
 	-install @srcdir@/*.s .
 install:
-	install -d @prefix@/extlib
-	install @srcdir@/*.s @prefix@/extlib
+	install -d $(DESTDIR)@prefix@/extlib
+	install @srcdir@/*.s $(DESTDIR)@prefix@/extlib
 
 check:
 clean:

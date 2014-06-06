@@ -1,3 +1,7 @@
+2014-06-06 Anton Kolesov  <Anton Kolesov@synopsys.com>
+
+	* config/extlib/Makefile.in: Honor DESTDIR.
+
 2014-05-26 Anton Kolesov  <Anton.Kolesov@synopsys.com>
 
 	* config/tc-arc.c (arc_process_extinstr_options): Fix segmentation
