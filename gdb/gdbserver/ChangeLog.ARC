@@ -1,3 +1,8 @@
+2014-06-17  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* linux-low.c: Avoid inclusion of <linux/elf.h>.
+	Always include <elf.h>.
+
 2014-06-03  Anton Kolesov  <Anton.Kolesov@synopsys.com>
 
 	* linux-arc-low.c: Remove support for ABI v2 ptrace.
