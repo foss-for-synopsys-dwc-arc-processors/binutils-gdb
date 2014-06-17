@@ -17,6 +17,13 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "server.h"
+
+/* linux-low.h includes gdb_proc_service.h, which in includes linux/elf.h
+   unless HAVE_ELF_FPREGSET_T is set.  We need elf.h, hence we must not
+   include linux/elf.h, which defines some of the same types and structures.  */
+#ifndef HAVE_ELF_FPREGSET_T
+#define HAVE_ELF_FPREGSET_T
+#endif
 #include "linux-low.h"
 #include "nat/linux-osdata.h"
 #include "agent.h"
@@ -43,13 +50,7 @@
 #include "filestuff.h"
 #include "tracepoint.h"
 #include "hostio.h"
-#ifndef ELFMAG0
-/* Don't include <linux/elf.h> here.  If it got included by gdb_proc_service.h
-   then ELFMAG0 will have been defined.  If it didn't get included by
-   gdb_proc_service.h then including it will likely introduce a duplicate
-   definition of elf_fpregset_t.  */
 #include <elf.h>
-#endif
 
 #ifndef SPUFS_MAGIC
 #define SPUFS_MAGIC 0x23c9b64e
