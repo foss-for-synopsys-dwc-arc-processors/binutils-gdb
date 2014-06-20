@@ -1,3 +1,8 @@
+2014-06-20  Anton Kolesov  <Anton.Kolesov@synopsys.com>
+
+	* arc-tdep.c (arc_gdbarch_init): set decr_pc_after_break to 0 instead
+	of 2.
+
 2014-06-03  Anton Kolesov  <Anton.Kolesov@synopsys.com>
 
 	* linux-low.c: Remove temporary hack that breaks build for native GDB.
