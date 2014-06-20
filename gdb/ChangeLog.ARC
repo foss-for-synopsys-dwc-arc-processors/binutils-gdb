@@ -1,5 +1,9 @@
 2014-06-20  Anton Kolesov  <Anton.Kolesov@synopsys.com>
 
+	* arc-linux-nat.c (ps_get_thread_area): New function.
+
+2014-06-20  Anton Kolesov  <Anton.Kolesov@synopsys.com>
+
 	* arc-tdep.c (arc_gdbarch_init): set decr_pc_after_break to 0 instead
 	of 2.
 
