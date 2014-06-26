@@ -1,3 +1,7 @@
+2014-06-26  Anton Kolesov  <Anton.Kolesov@synopsys.com>
+
+	* linux-arc-low.c (ps_get_thread_area): New function.
+
 2014-06-03  Anton Kolesov  <Anton.Kolesov@synopsys.com>
 
 	* linux-arc-low.c: Remove support for ABI v2 ptrace.
