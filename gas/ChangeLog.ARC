@@ -1,3 +1,7 @@
+2014-06-30 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* config/tc-arc.c (md_parse_option): Add new mcpu options.
+
 2014-06-06 Anton Kolesov  <Anton Kolesov@synopsys.com>
 
 	* config/extlib/Makefile.in: Honor DESTDIR.
