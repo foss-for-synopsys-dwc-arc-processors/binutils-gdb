@@ -564,6 +564,10 @@ arc_gdbarch_osabi_init (struct gdbarch *gdbarch)
   set_gdbarch_breakpoint_from_pc (gdbarch, arc_elf_breakpoint_from_pc);
   set_gdbarch_write_pc(gdbarch, arc_elf_write_pc);
 
+  /* On ARC 600 BRK_S instruction advances PC, unlike other ARC cores. */
+  if (arc_mach_is_arc600 (gdbarch))
+    set_gdbarch_decr_pc_after_break (gdbarch, 2);
+
 #ifdef WITH_SIM
   /* Provide the built-in simulator with a function that it can use to map
      from gdb register numbers to h/w register numbers */
