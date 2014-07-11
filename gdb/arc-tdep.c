@@ -2708,6 +2708,7 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   /* No need for gdbarch_adjust_breakpoint_address. */
   /* Default gdbarch_memory_insert_breakpoint and
      gdbarch_memory_remove_breakpoint suffice. */
+  /* ARC 600 is a special case for decr_pc, it is handled in arc-elf-tdep.c */
   set_gdbarch_decr_pc_after_break (gdbarch, 0);
   /* Default gdbarch_remote_register_number suffices. */
   /* Whether to support TLS is target specific (yes for Linux, no for ELF) */
