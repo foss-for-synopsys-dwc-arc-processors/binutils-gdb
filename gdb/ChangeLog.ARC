@@ -1,3 +1,7 @@
+2014-07-11  Anton Kolesov  <Anton.Kolesov@synopsys.com>
+
+	* arc-elf32-tdep.c: Set decr_pc_after_break to 2 for ARC 600.
+
 2014-06-20  Anton Kolesov  <Anton.Kolesov@synopsys.com>
 
 	* arc-linux-nat.c (ps_get_thread_area): New function.
