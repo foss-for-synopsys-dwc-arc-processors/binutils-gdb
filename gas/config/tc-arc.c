@@ -875,6 +875,16 @@ md_parse_option (int c, char *arg)
 	return md_parse_option (OPTION_ARCEM, NULL);
       else if (strcmp (arg, "ARCv2HS") == 0)
 	return md_parse_option (OPTION_ARCHS, NULL);
+      else if (strcmp (arg, "arc600") == 0)
+	return md_parse_option (OPTION_ARC600, NULL);
+      else if (strcmp (arg, "arc601") == 0)
+	return md_parse_option (OPTION_ARC601, NULL);
+      else if (strcmp (arg, "arc700") == 0)
+	return md_parse_option (OPTION_ARC700, NULL);
+      else if (strcmp (arg, "arcem") == 0)
+	return md_parse_option (OPTION_ARCEM, NULL);
+      else if (strcmp (arg, "archs") == 0)
+	return md_parse_option (OPTION_ARCHS, NULL);
       else
 	as_warn(_("Unknown CPU identifier `%s'"), arg);
       break;
