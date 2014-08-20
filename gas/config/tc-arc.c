@@ -395,15 +395,15 @@ static flagword arc_flags = 0x00;
 /* Jump/Branch insn used to check if are the last insns in a ZOL */
 struct insn_tuple
 {
-  /* The opcode itself.  Those bits which will be filled in with
-     operands are zeroes.  */
-  unsigned long opcode;
-
   /* The opcode mask.  This is used by the disassembler.  This is a
      mask containing ones indicating those bits which must match the
      opcode field, and zeroes indicating those bits which need not
      match (and are presumably filled in by operands).  */
   unsigned long mask;
+
+  /* The opcode itself.  Those bits which will be filled in with
+     operands are zeroes.  */
+  unsigned long opcode;
 };
 
 static struct insn_tuple arcHS_checks[] = {
@@ -600,15 +600,22 @@ static struct insn_tuple arcHS_checks[] = {
 static int check_last_ZOL_insn (arc_insn insn)
 {
   int i;
+  unsigned int buffer;
   for (i = 0; i < sizeof (arcHS_checks)/sizeof (arcHS_checks[0]); i++)
     {
       /* Avoid checking short instruction vs long masks, can introduce
 	 false positive. */
       if (((insn & 0xFFFF0000) == 0)
-	  && ((arcHS_checks[i].opcode & 0xFFFF0000) != 0))
-	continue;
+	  && ((arcHS_checks[i].mask & 0xFFFF0000) != 0))
+	{
+	  /*Double check that short instruction, can be a b<cc> insn. */
+	  buffer = (insn >> 8) & 0xF8;
+	  if ((buffer > 0x38)
+	      || (buffer == 0x48))
+	    continue;
+	}
 
-      if ((arcHS_checks[i].opcode & insn) == arcHS_checks[i].mask)
+      if ((arcHS_checks[i].mask & insn) == arcHS_checks[i].opcode)
 	return 1;
     }
   return 0;
@@ -867,16 +874,6 @@ md_parse_option (int c, char *arg)
       else if (strcmp (arg, "ARCv2EM") == 0)
 	return md_parse_option (OPTION_ARCEM, NULL);
       else if (strcmp (arg, "ARCv2HS") == 0)
-	return md_parse_option (OPTION_ARCHS, NULL);
-      else if (strcmp (arg, "arc600") == 0)
-	return md_parse_option (OPTION_ARC600, NULL);
-      else if (strcmp (arg, "arc601") == 0)
-	return md_parse_option (OPTION_ARC601, NULL);
-      else if (strcmp (arg, "arc700") == 0)
-	return md_parse_option (OPTION_ARC700, NULL);
-      else if (strcmp (arg, "arcem") == 0)
-	return md_parse_option (OPTION_ARCEM, NULL);
-      else if (strcmp (arg, "archs") == 0)
 	return md_parse_option (OPTION_ARCHS, NULL);
       else
 	as_warn(_("Unknown CPU identifier `%s'"), arg);

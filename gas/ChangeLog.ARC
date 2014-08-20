@@ -1,3 +1,7 @@
+2014-08-19 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* config/tc-arc.c (check_last_ZOL_insn): Fix detection of short instructions.
+
 2014-06-30 Claudiu Zissulescu <claziss@synopsys.com>
 
 	* config/tc-arc.c (md_parse_option): Add new mcpu options.
