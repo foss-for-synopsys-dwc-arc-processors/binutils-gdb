@@ -1144,6 +1144,8 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 	case 0x1B: instrName = "macdu"; break;
 	case 0x1C: instrName = "vmpy2h"; break;
 	case 0x1D: instrName = "vmpy2hu"; break;
+	case 0x1E: instrName = "vmac2h"; break;
+	case 0x1F: instrName = "vmac2hu"; break;
 
 	  /* A700's */
 	case 0x28: instrName = "addsdw";break;

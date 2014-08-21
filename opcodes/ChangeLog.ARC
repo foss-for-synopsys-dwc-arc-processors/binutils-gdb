@@ -1,3 +1,8 @@
+2014-08-21 Claudiu Zissulescu <claziss@synopsys.com>
+
+       * arc-em.h: Add PREALLOC, VMAC2H, and VMAC2HU instructions.
+       * arcompact-dis.c: Handle VMAC2H/VMAC2HU instructions.
+
 2014-05-13 Claudiu Zissulescu <claziss@synopsys.com>
 
        * arc-opc-old.c (insert_reg): Check if register class 'h' is
