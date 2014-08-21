@@ -2240,3 +2240,60 @@
 { (unsigned char *) "fdsqrt%Q %#,%L",                        0xF8FF8FFF, 0x302F0F81, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
 { (unsigned char *) "fdsqrt%Q 0,%L",                         0xFFFFFFFF, 0x362F7F81, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
 
+/*PREALLOC */
+/* prealloc<.aa>    [b,c]        0010 0bbb aa11 0001 0BBB CCCC CC11 1110  */
+{ (unsigned char *) "prealloc%.P [%g,%C]%3",                    0xF83F803F, 0x2031003E, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+/* prealloc<.aa>    [b,s9]       0001 0bbb ssss ssss SBBB 0aa0 0111 1110  */
+{ (unsigned char *) "prealloc%.p [%g,%o]%3",                    0xF80009FF, 0x1000007E, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+/* prealloc<.aa>    [b,limm]     0010 0bbb aa11 0001 0BBB 1111 1011 1110  */
+{ (unsigned char *) "prealloc%.P%Q [%g,%L]%3",                  0xF83F8FFF, 0x20310FBE, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+/* prealloc    [limm,c]          0010 0110 RR11 0001 0111 CCCC CC11 1110  */
+{ (unsigned char *) "prealloc%Q [%L,%C]%1",                     0xFFFFF03F, 0x2631703E, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+/* prealloc    [limm,s9]         0001 0110 ssss ssss S111 0RR0 0111 1110  */
+{ (unsigned char *) "prealloc%Q [%L,%o]%1",                     0xFF007FFF, 0x1600707E, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+/* prealloc    [limm]            0001 0110 0000 0000 0111 0RR0 0111 1110  */
+{ (unsigned char *) "prealloc%Q [%L]%1",                        0xFFFFFFFF, 0x1600707E, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+
+/*VMAC2H */
+{ (unsigned char *) "vmac2h %=,%B,%C",                       0xF8FF8000, 0x281E0000, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+{ (unsigned char *) "vmac2h %=,%B,%u",                       0xF8FF8000, 0x285E0000, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+{ (unsigned char *) "vmac2h %#,%B,%K",                       0xF8FF8000, 0x289E0000, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+{ (unsigned char *) "vmac2h 0,%B,%C",                        0xF8FF803F, 0x281E003E, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+{ (unsigned char *) "vmac2h 0,%B,%u",                        0xF8FF803F, 0x285E003E, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+{ (unsigned char *) "vmac2h%Q %=,%L,%C",                     0xFFFFF000, 0x2E1E7000, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+{ (unsigned char *) "vmac2h%Q %=,%L,%u",                     0xFFFFF000, 0x2E5E7000, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+{ (unsigned char *) "vmac2h%Q %=,%B,%L",                     0xF8FF8FC0, 0x281E0F80, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+{ (unsigned char *) "vmac2h%Q %=,%L,%L",                     0xFFFFFFC0, 0x2E1E7F80, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+{ (unsigned char *) "vmac2h%Q 0,%L,%C",                      0xFFFFF03F, 0x2E1E703E, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+{ (unsigned char *) "vmac2h%Q 0,%L,%u",                      0xFFFFF03F, 0x2E5E703E, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+{ (unsigned char *) "vmac2h%Q 0,%L,%K",                      0xFFFFF000, 0x2E9E7000, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+{ (unsigned char *) "vmac2h%Q 0,%B,%L",                      0xF8FF8FFF, 0x281E0FBE, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+{ (unsigned char *) "vmac2h%Q 0,%L,%L",                      0xFFFF8FFF, 0x2E1E0FBE, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+{ (unsigned char *) "vmac2h%.q %#,%B,%C",                    0xF8FF8020, 0x28DE0000, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+{ (unsigned char *) "vmac2h%.q %#,%B,%u",                    0xF8FF8020, 0x28DE0020, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+{ (unsigned char *) "vmac2h%.q%Q %#,%B,%L",                  0xF8FF8FE0, 0x28DE0F80, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+{ (unsigned char *) "vmac2h%.q%Q 0,%L,%C",                   0xFFFFF020, 0x2EDE7000, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+{ (unsigned char *) "vmac2h%.q%Q 0,%L,%u",                   0xFFFFF020, 0x2EDE7020, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+{ (unsigned char *) "vmac2h%.q%Q 0,%L,%L",                   0xFFFFFFE0, 0x2EDE7F80, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+
+/*VMAC2HU */
+{ (unsigned char *) "vmac2hu %=,%B,%C",                      0xF8FF8000, 0x281F0000, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+{ (unsigned char *) "vmac2hu %=,%B,%u",                      0xF8FF8000, 0x285F0000, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+{ (unsigned char *) "vmac2hu %#,%B,%K",                      0xF8FF8000, 0x289F0000, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+{ (unsigned char *) "vmac2hu 0,%B,%C",                       0xF8FF803F, 0x281F003E, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+{ (unsigned char *) "vmac2hu 0,%B,%u",                       0xF8FF803F, 0x285F003E, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+{ (unsigned char *) "vmac2hu%Q %=,%L,%C",                    0xFFFFF000, 0x2E1F7000, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+{ (unsigned char *) "vmac2hu%Q %=,%L,%u",                    0xFFFFF000, 0x2E5F7000, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+{ (unsigned char *) "vmac2hu%Q %=,%B,%L",                    0xF8FF8FC0, 0x281F0F80, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+{ (unsigned char *) "vmac2hu%Q %=,%L,%L",                    0xFFFFFFC0, 0x2E1F7F80, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+{ (unsigned char *) "vmac2hu%Q 0,%L,%C",                     0xFFFFF03F, 0x2E1F703E, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+{ (unsigned char *) "vmac2hu%Q 0,%L,%u",                     0xFFFFF03F, 0x2E5F703E, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+{ (unsigned char *) "vmac2hu%Q 0,%L,%K",                     0xFFFFF000, 0x2E9F7000, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+{ (unsigned char *) "vmac2hu%Q 0,%B,%L",                     0xF8FF8FFF, 0x281F0FBE, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+{ (unsigned char *) "vmac2hu%Q 0,%L,%L",                     0xFFFF8FFF, 0x2E1F0FBE, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+{ (unsigned char *) "vmac2hu%.q %#,%B,%C",                   0xF8FF8020, 0x28DF0000, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+{ (unsigned char *) "vmac2hu%.q%Q %#,%B,%L",                 0xF8FF8FE0, 0x28DF0F80, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+{ (unsigned char *) "vmac2hu%.q%Q 0,%L,%C",                  0xFFFFF020, 0x2EDF7000, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+{ (unsigned char *) "vmac2hu%.q%Q 0,%L,%u",                  0xFFFFF020, 0x2EDF7020, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+{ (unsigned char *) "vmac2hu%.q%Q 0,%L,%L",                  0xFFFFFFE0, 0x2EDF7F80, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+
