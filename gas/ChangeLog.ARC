@@ -1,3 +1,10 @@
+2014-09-05 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* config/tc-arc.c: Remove wrong ext_insn variant.
+	* testsuite/gas/arc/arc.exp: New test.
+	* testsuite/gas/arc/subsdw.d: New file.
+	* testsuite/gas/arc/subsdw.s: New file.
+
 2014-08-19 Claudiu Zissulescu <claziss@synopsys.com>
 
 	* config/tc-arc.c (check_last_ZOL_insn): Fix detection of short instructions.

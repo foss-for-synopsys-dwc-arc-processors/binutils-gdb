@@ -1,17 +1,17 @@
 # ARC gas testsuite
-# 
+#
 # Copyright 2007-2012 Synopsys Inc.
-# 
+#
 # This file is free software# you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
 # Free Software Foundation# either version 3, or (at your option) any
 # later version.
-# 
+#
 # This file is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY# without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # General Public License for more details.
-# 
+#
 # You should have received a copy of the GNU General Public License
 # along with this program# see the file COPYING3.  If not see
 # <http://www.gnu.org/licenses/>.  */
@@ -20,8 +20,8 @@
 if [istarget arc*-*-*] then {
     run_dump_test ld
     run_dump_test ld2
-    
-    # FIXME: ??? somehow unmeaningful diffs with st.d fails the testcase, commenting out for now - needs fixing eventually.  
+
+    # FIXME: ??? somehow unmeaningful diffs with st.d fails the testcase, commenting out for now - needs fixing eventually.
     # run_dump_test st
 
     # Specially encoded/single operand instructions
@@ -42,10 +42,11 @@ if [istarget arc*-*-*] then {
     run_dump_test bl
     run_dump_test lp
     run_dump_test j
-    # FIXME: ??? somehow unmeaningful diffs with jl.d fails the testcase, commenting out for now - needs fixing eventually.  
+    # FIXME: ??? somehow unmeaningful diffs with jl.d fails the testcase, commenting out for now - needs fixing eventually.
     #run_dump_test jl
     run_dump_test add
     run_dump_test asl
+    run_dump_test subsdw
     # FIXME: ??? `lsl' gets dumped as `asl'
     #run_dump_test lsl
     #run_dump_test adc

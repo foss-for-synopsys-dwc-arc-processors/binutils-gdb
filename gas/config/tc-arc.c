@@ -2712,14 +2712,6 @@ arc_generate_extinst32_operand_strings (char *instruction_name,
 			(syntax_class | syntax_class_modifiers),
 			suffix_class & (AC_SUFFIX_FLAG));
 
-      arc_add_ext_inst (instruction_name, "%Q 0,%L,%K%F",
-			INSN_32(major_opcode,
-				I_FIELD(sub_opcode, 2),
-				1, 62, 0, 0),
-			INSN_32(-1,-1,-1,0,-1,0),
-			(syntax_class | syntax_class_modifiers),
-			suffix_class & (AC_SUFFIX_FLAG));
-
       arc_add_ext_inst (instruction_name, " 0,%B,%C%F",
 			INSN_32(major_opcode,
 				I_FIELD(sub_opcode, 1),
