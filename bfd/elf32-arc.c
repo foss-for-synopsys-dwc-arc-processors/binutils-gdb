@@ -1749,6 +1749,7 @@ arc_plugin_one_reloc (unsigned long insn, enum elf_arc_reloc_type r_type,
       break;
 
   case R_ARC_TLS_DTPOFF:
+  case R_ARC_TLS_LE_32:
     insn += value;
     break;
 
@@ -1761,7 +1762,6 @@ arc_plugin_one_reloc (unsigned long insn, enum elf_arc_reloc_type r_type,
   case R_ARC_PC32:
   case R_ARC_TLS_GD_GOT:
   case R_ARC_TLS_IE_GOT:
-  case R_ARC_TLS_LE_32:
       insn = value;
 
   case R_ARC_8:
@@ -1872,6 +1872,8 @@ arc_tls_transition (const Elf_Internal_Rela *rel,
 	    {
 	      /* ld rn,[pcl,symbol@tlsie] -> mov rn,symbol@tpoff */
 	      long insn = bfd_get_32_me (abfd, contents + rel->r_offset - 4);
+	      /* Verify it's ld a,[pcl,limm] or ld a,[limm,pcl].  */
+	      BFD_ASSERT ((insn & 0xfeffff80) == 0x26307f80);
 	      insn &= 0x3f;
 	      insn = (insn & 7) << 24 | (insn & 56) << 9 | 0x200A0F80;
 	      bfd_put_32_me (abfd, insn, contents + rel->r_offset - 4);
@@ -2586,7 +2588,8 @@ elf_arc_relocate_section (bfd *output_bfd,
 	      if (r_type == R_ARC_GOTPC
 		  || (r_type == R_ARC_PLT32
 		      && h->plt.offset != (bfd_vma) -1)
-		  || ((r_type == R_ARC_GOTPC32
+		  || (((r_type == R_ARC_GOTPC32
+			&& h != NULL && !SYMBOL_REFERENCES_LOCAL (info, h))
 		       || r_type == R_ARC_TLS_IE_GOT
 		       || r_type == R_ARC_TLS_GD_GOT
 		       /* R_ARC_TLS_GD_{LD,CALL} -> R_ARC_NONE */
@@ -3059,8 +3062,9 @@ elf_arc_relocate_section (bfd *output_bfd,
 	relocation -= ((input_section->output_section->vma +
 			input_section->output_offset + rel->r_offset)
 		       - offset_in_insn);
-      else if (r_type==R_ARC_PLT32 || r_type==R_ARC_GOTPC || r_type==R_ARC_GOTPC32
-	  || r_type == R_ARC_TLS_IE_GOT || r_type == R_ARC_TLS_GD_GOT)
+      else if (howto->pc_relative || r_type==R_ARC_PLT32 || r_type==R_ARC_GOTPC
+	       || r_type==R_ARC_GOTPC32
+	       || r_type == R_ARC_TLS_IE_GOT || r_type == R_ARC_TLS_GD_GOT)
 	{
 	  /* For branches we need to find the offset from pcl rounded
 	     down to 4 byte boundary.Hence the (& ~3) */
@@ -3068,31 +3072,6 @@ elf_arc_relocate_section (bfd *output_bfd,
 			   input_section->output_offset + rel->r_offset) & ~3)
 			 - offset_in_insn);
 	}
-      else if (howto->pc_relative)
-	{
-	  bfd_vma tmp;
-	  tmp = input_section->output_section->vma +
-	    input_section->output_offset + rel->r_offset;
-
-	  switch (r_type)
-	    {
-	    case R_ARC_B22_PCREL:
-	    case R_ARC_S13_PCREL:
-	    case R_ARC_S21W_PCREL:
-	    case R_ARC_S25W_PCREL:
-	    case R_ARC_S25H_PCREL:
-	      tmp &= ~0x03;
-	      break;
-	    case R_ARC_PC32:
-	    case R_ARC_32_ME:
-	      break;
-	    default:
-	      tmp &= ~0x03;
-	      break;
-	    }
-	  relocation -= (tmp - offset_in_insn);
-	}
-
 
       BFD_DEBUG_PIC(fprintf(stderr, "relocation AFTER the pc relative handling = %d[0x%x]\n", relocation, relocation));
 

@@ -1,3 +1,18 @@
+2014-05-23  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* elf32-arc.c (arc_tls_transition) <R_ARC_TLS_IE_GOT -> GOT_TLS_LE>:
+	Verify that we are changing a load.
+
+2014-05-23  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* elf32-arc.c (elf_arc_relocate_section): Calculate relocation for
+	locally resolved R_ARC_GOTPC32.
+
+2014-05-19  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* elf32-arc.c (arc_plugin_one_reloc) <R_ARC_TLS_LE_32>: Use value of
+	insn.
+
 2014-04-17 Claudiu Zissulescu <claziss@synopsys.com>
 
 	* elf32-arc.c (arc_elf_object_p): Increase compatibility with
