@@ -1,0 +1,6 @@
+GC_SEC {
+    global:
+        bar;
+    local:
+        foo;
+};
