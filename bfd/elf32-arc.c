@@ -2378,11 +2378,19 @@ elf_arc_relocate_section (bfd *output_bfd,
 		}
 	      else
 		{
-		  /* h->dynindx may be -1 if this symbol was marked to
-		     become local.  */
+                  /* Handle local symbols, they either do not have a global
+                     hash table entry (h == NULL), or are forced local due
+                     to a version script (h->forced_local), or the third
+                     condition is legacy, it appears to say something like,
+                     for links where we are pre-binding the symbols, or
+                     there's not an entry for this symbol in the dynamic
+                     symbol table, and it's a regular symbol not defined in
+                     a shared object, then treat the symbol as local,
+                     resolve it now.  */
 		  if (h == NULL
 		      || ((info->symbolic || h->dynindx == -1)
-			  && h->def_regular))
+			  && h->def_regular)
+		      || h->forced_local)
 		    {
 		      relocate = TRUE;
 		      /* outrel.r_addend = 0; */
@@ -3575,7 +3583,7 @@ elf32_arc_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
 #define elf_backend_grok_prstatus elf32_arc_grok_prstatus
 
 #define elf_backend_gc_sweep_hook	elf32_arc_gc_sweep_hook
-#define elf_backend_can_gc_sections    0
+#define elf_backend_can_gc_sections    1
 #define elf_backend_want_got_plt 1
 #define elf_backend_plt_readonly 1
 #define elf_backend_want_plt_sym 0
