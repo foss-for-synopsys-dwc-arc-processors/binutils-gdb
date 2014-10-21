@@ -267,18 +267,18 @@ static bfd_vma bfd_getm32_ac (unsigned int) ATTRIBUTE_UNUSED;
 	}
 
 /****************** <.T> syntax **************************/
-#define CHECK_T(x) {                             \
-    if (BITS(state->words[0],3,3) == (x))	 \
-	{					\
+#define CHECK_T(x) {					\
+    if (BITS(state->words[0],3,3) == (x))		\
+      {							\
 	  if (((int) FIELDS9(state->words[0]))> 0)	\
-	    {					\
-	      branchPrediction = 1;		\
-	    }					\
-	  else					\
-	    {					\
-	      branchPrediction = 2;		\
-	    }					\
-	}					\
+	    {						\
+	      branchPrediction = 1;			\
+	    }						\
+	  else						\
+	    {						\
+	      branchPrediction = 2;			\
+	    }						\
+      }							\
     }
 
 #define IS_SMALL(x) (((field##x) < 256) && ((field##x) > -257))
@@ -3315,7 +3315,8 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
       fieldA += (addr & ~0x3);
 
       CHECK_NULLIFY();
-      CHECK_T(BITS(state->words[0],0,2) < 5? 1:0);
+      if(info->mach == bfd_mach_arc_arcv2)
+	CHECK_T(BITS(state->words[0],0,2) < 5? 1:0);
 
       write_instr_name();
 
