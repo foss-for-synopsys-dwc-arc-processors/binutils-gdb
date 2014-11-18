@@ -157,8 +157,19 @@ supply_fpregset (struct regcache *regcache,
 static void
 arc_linux_prepare_to_resume (struct lwp_info *lwp) {
     ULONGEST new_pc;
-    struct regcache *regcache = get_thread_regcache (lwp->ptid);
-    struct gdbarch *gdbarch = get_regcache_arch (regcache);
+    struct regcache *regcache;
+    struct gdbarch *gdbarch;
+
+    /* When new processes and threads are created we do not have address space
+     * for them and call to get_thread_regcache will cause an internal error in
+     * GDB. It looks like that checking for last_resume_kind is sensible way to
+     * determine processes for which we cannot get regcache. Ultimately better
+     * way would be remote the need for prepare_to_resume at all. */
+    if (lwp->last_resume_kind == resume_stop)
+	return;
+
+    regcache = get_thread_regcache (lwp->ptid);
+    gdbarch = get_regcache_arch (regcache);
 
     /* Read current PC value, then write it back. It is required to call
        invalidate() otherwise GDB will note that new value is equal to old
