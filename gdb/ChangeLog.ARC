@@ -1,3 +1,8 @@
+2014-11-20  Anton Kolesov  <Anton.Kolesov@synopsys.com>
+
+	* arc-linux-nat.c (arc_linux_prepare_to_resume): Fix failed assert
+	with multiprocess applications.
+
 2014-07-11  Anton Kolesov  <Anton.Kolesov@synopsys.com>
 
 	* arc-elf32-tdep.c: Set decr_pc_after_break to 2 for ARC 600.
