@@ -2278,6 +2278,13 @@ elf_arc_check_relocs (bfd *abfd,
 	      bfd_set_error (bfd_error_bad_value);
 	      return FALSE;
 	    }
+
+          /* In some cases we are not setting the 'non_got_ref' flag, even
+             though the relocations don't require a GOT access.  We should
+             extend the testing in this area to ensure that no significant
+             cases are being missed.  */
+          if (h)
+            h->non_got_ref = 1;
 	  /* FALLTHROUGH */
 	case R_ARC_PC32:
 	case R_ARC_32_PCREL:
@@ -3765,6 +3772,11 @@ elf_arc_adjust_dynamic_symbol (struct bfd_link_info *info,
       h->root.u.def.value = h->u.weakdef->root.u.def.value;
       return TRUE;
     }
+
+  /* If there are no non-GOT references, we do not need a copy
+     relocation.  */
+  if (!h->non_got_ref)
+    return TRUE;
 
   /* This is a reference to a symbol defined by a dynamic object which
      is not a function.  */
