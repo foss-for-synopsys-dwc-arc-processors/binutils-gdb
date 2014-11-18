@@ -1,3 +1,10 @@
+2014-11-18  Andrew Burgess  <andrew.burgess@embecosm.com>
+
+	* elf32-arc.c (elf_arc_check_relocs): Set non_got_ref when
+	appropriate.
+	(elf_arc_adjust_dynamic_symbol): Check non_got_ref when
+	appropriate.
+
 2014-05-23  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* elf32-arc.c (arc_tls_transition) <R_ARC_TLS_IE_GOT -> GOT_TLS_LE>:
