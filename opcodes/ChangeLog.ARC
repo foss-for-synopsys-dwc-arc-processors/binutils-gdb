@@ -1,3 +1,7 @@
+2014-11-19 Claudiu Zissulescu <claziss@synopsys.com>
+
+       * arc-em.h: Add DSYNC, WEVT, and WLFC instructions.
+
 2014-10-21 Claudiu Zissulescu <claziss@synopsys.com>
 
        * arcompact-dis.c: Print .t/.nt only for arcv2 architecture.

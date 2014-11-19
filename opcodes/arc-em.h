@@ -2297,3 +2297,18 @@
 { (unsigned char *) "vmac2hu%.q%Q 0,%L,%u",                  0xFFFFF020, 0x2EDF7020, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
 { (unsigned char *) "vmac2hu%.q%Q 0,%L,%L",                  0xFFFFFFE0, 0x2EDF7F80, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
 
+/*WEVT */
+/* wevt    c                    0010 0000 0010 1111 0001 CCCC CC11 1111  */
+{ (unsigned char *) "wevt %C",                               0xFFFFF03F, 0x202F103F, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+/* wevt    u6                   0010 0000 0110 1111 0001 uuuu uu11 1111  */
+{ (unsigned char *) "wevt %u",                               0xFFFFF03F, 0x206F103F, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+
+/*WLFC */
+/* wlfc    c                    0010 0001 0010 1111 0001 CCCC CC11 1111  */
+{ (unsigned char *) "wlfc %C",                               0xFFFFF03F, 0x212F103F, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+/* wlfc    u6                   0010 0001 0110 1111 0001 uuuu uu11 1111  */
+{ (unsigned char *) "wlfc %u",                               0xFFFFF03F, 0x216F103F, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+
+/*DSYNC */
+/* dsync                        0010 0010 0110 1111 0001 RRRR RR11 1111  */
+{ (unsigned char *) "dsync",                                 0xFFFFFFFF, 0x226F103F, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
