@@ -959,6 +959,10 @@ static const struct arc_operand arc_operands_ac[] =
 #define ARCV2_REGC_64 (ARCV2_REGB_64 + 1)
   { '_', 6, ARC_SHIFT_REGC_AC, ARC_OPERAND_SIGNED | ARC_OPERAND_ERROR, insert_reg, 0 },
 
+  /* immediate 3-bits used by DMB instruction */
+#define ARCV2_UIMM3_AC32 (ARCV2_REGC_64 + 1)
+  { '~', 3, 6, ARC_OPERAND_UNSIGNED, 0, 0 },
+
 /* end of list place holder */
   { 0, 0, 0, 0, 0, 0 }
 };
@@ -5451,6 +5455,7 @@ ac_constant_operand (const struct arc_operand *op)
     case 138: /*u7 as in LEAVE_S*/
     case 141: /*s11 as in ST_S*/
     case 142: /*u5 as in LD_S*/
+    case '~': /*u2 as in DMB */
 
       return 1;
     }
