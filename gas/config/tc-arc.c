@@ -6363,6 +6363,10 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 			      match_failed = 1;
 			    }
 			  break;
+			case '~':
+			  if (value < 0 || value > 7)
+			    match_failed = 1;
+			  break;
 			default:
 			  as_warn ("Unchecked constant");
 			} /* end switch(operand->fmt) */

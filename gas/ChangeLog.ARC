@@ -1,3 +1,7 @@
+2014-11-19 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* config/tc-arc.c: Add check DMB constant.
+
 2014-09-05 Claudiu Zissulescu <claziss@synopsys.com>
 
 	* config/tc-arc.c: Remove wrong ext_insn variant.
