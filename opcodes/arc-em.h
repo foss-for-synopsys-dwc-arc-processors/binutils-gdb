@@ -2312,3 +2312,7 @@
 /*DSYNC */
 /* dsync                        0010 0010 0110 1111 0001 RRRR RR11 1111  */
 { (unsigned char *) "dsync",                                 0xFFFFFFFF, 0x226F103F, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+
+/*DMB */
+/* dmb    u3                    0010 0011 0110 1111 0001 RRRu uu11 1111  */
+{ (unsigned char *) "dmb %~",                                0xFFFFFE3F, 0x236F103F, ARC_MACH_ARCV2HS, 0, 0, 0, 0},

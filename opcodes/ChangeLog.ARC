@@ -1,6 +1,7 @@
 2014-11-19 Claudiu Zissulescu <claziss@synopsys.com>
 
-       * arc-em.h: Add DSYNC, WEVT, and WLFC instructions.
+       * arc-em.h: Add DMB, DSYNC, WEVT, and WLFC instructions.
+       * arc-opc-old.c: Add unsigned constant needed by DMB.
 
 2014-10-21 Claudiu Zissulescu <claziss@synopsys.com>
 
