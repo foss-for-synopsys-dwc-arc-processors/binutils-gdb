@@ -1025,13 +1025,18 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 		  if((info->mach) == ARC_MACH_ARC7)
 		    instrName = "trap0";
 		  else
-		    instrName = "swi";
+		    {
+		       if (BITS(state->words[0],12,13))
+			 instrName = "dysnc";
+		       else
+			 instrName = "swi";
+                    }
 		  break;
 		case 3:
-
-		  if(BITS(state->words[0],22,23) == 1)
+		  if(!BITS(state->words[0],12,14))
 		    instrName = "sync" ;
-
+		  else
+		    instrName = "dmb"; decodingClass = 32;
 		  break;
 		case 4 : instrName = "rtie" ; break;
 		case 5 : instrName = "brk"; break;
@@ -3912,7 +3917,10 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
       }
       else
       {
-	FIELD_C();
+        if (BITS(state->words[0],24,26) == 3)
+	  fieldC = BITS(state->words[0],6,8);
+	else
+	  FIELD_C();
 	fieldCisReg = 0;
       }
 
