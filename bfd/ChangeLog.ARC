@@ -32,7 +32,7 @@
 	* elf32-arc.c (elf_arc_relocate_section): Selective truncate
           the last bits for pc relative relocations.
 
--2013-12-02  Simon Cook  <simon.cook@embecosm.com>
+2013-12-02  Simon Cook  <simon.cook@embecosm.com>
 
 	* elf32-arc.c (elf_arc_check_relocs): Add error when relocs appear that
 	shouldn't in read-only memory for shared libraries.
@@ -53,12 +53,12 @@
           arc_elf_print_private_bfd_data(). Give warning if we link
           two objects having different elf flags.
 
--2013-11-06  Anton Kolesov  <anton.kolesov@synopsys.com>
+2013-11-06  Anton Kolesov  <anton.kolesov@synopsys.com>
 
 	* elf32-arc.c (elf_backend_can_gc_sections): Set to 0, because
 	--gc-sections causes known troubles for ARC.
 
--2013-10-31  Vineet Gupta <vgupta@synopsys.com>
+2013-10-31  Vineet Gupta <vgupta@synopsys.com>
 
 	*  elf32-arc.c (elf_arc_reloc_type): Add new relocations to syncup
 	with Metaware tools
