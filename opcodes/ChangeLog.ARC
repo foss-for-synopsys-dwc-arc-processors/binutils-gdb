@@ -1,3 +1,7 @@
+2014-11-20 Vineet Gupta <vgupta@synopsys.com>
+
+	* arcompact-dis.c: Handle DMB, DSYNC
+
 2014-11-19 Claudiu Zissulescu <claziss@synopsys.com>
 
        * arc-em.h: Add DMB, DSYNC, WEVT, and WLFC instructions.
