@@ -1,3 +1,8 @@
+2014-11-21  Anton Kolesov  <Anton.Kolesov@synopsys.com>
+
+	* arc-tdep.c (arc_register_type): LP_START and LP_END are instruction
+	pointer register type.
+
 2014-11-20  Anton Kolesov  <Anton.Kolesov@synopsys.com>
 
 	* arc-linux-nat.c (arc_linux_prepare_to_resume): Fix failed assert
