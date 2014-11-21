@@ -1564,6 +1564,8 @@ arc_register_type (struct gdbarch *gdbarch, int regnum)
 	case OA6_ILINK2:
 	case OA6_BLINK:
 	case OA6_PCL:
+	case OA6_AUX_LP_START:
+	case OA6_AUX_LP_END:
 	  return builtin_type (gdbarch)->builtin_func_ptr;
 
 	default:
@@ -1581,6 +1583,8 @@ arc_register_type (struct gdbarch *gdbarch, int regnum)
 	case OA7_ILINK2:
 	case OA7_BLINK:
 	case OA7_PCL:
+	case OA7_AUX_LP_START:
+	case OA7_AUX_LP_END:
 	case OA7_AUX_ERET:
 	case OA7_AUX_ERBTA:
 	case OA7_AUX_BTA:
@@ -1603,6 +1607,8 @@ arc_register_type (struct gdbarch *gdbarch, int regnum)
 	case ARC_ILINK2_REGNUM:
 	case ARC_BLINK_REGNUM:
 	case ARC_PCL_REGNUM:
+	case ARC_AUX_LP_START_REGNUM:
+	case ARC_AUX_LP_END_REGNUM:
 	case ARC_AUX_ERET_REGNUM:
 	case ARC_AUX_ERBTA_REGNUM:
 	case ARC_AUX_BTA_REGNUM:
