@@ -1,3 +1,12 @@
+2014-11-27: Claudiu Zissulescu <claziss@synopsys.com>
+
+	* Makefile.am: Add two new emulation scripts for ARCv2.
+	* configure.tgt: Likewise.
+	* Makefile.in: Regenerate.
+	* emulparams/arcv2elf.sh: New file.
+	* emulparams/arcv2elfb.sh: Likewise.
+	* scripttempl/elfarcv2.sc: Likewise.
+
 2013-07-15: Christian Ruppert <christian.ruppert@abilis.com>
 
 	* scripttempl/arcelf.sc: Only define ENTRY when not relocating.

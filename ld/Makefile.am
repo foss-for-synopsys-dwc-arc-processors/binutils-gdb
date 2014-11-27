@@ -133,6 +133,8 @@ ALL_EMULATION_SOURCES = \
 	eaixrs6.c \
 	ealpha.c \
 	ealphavms.c \
+	earcv2elf.c \
+	earcv2elfb.c \
 	earcelf.c \
 	earcelf_prof.c \
 	earclinux.c \
@@ -686,6 +688,12 @@ ealphavms.c: $(srcdir)/emulparams/alphavms.sh \
   $(srcdir)/emultempl/vms.em $(srcdir)/scripttempl/alphavms.sc \
   ${GEN_DEPENDS}
 	${GENSCRIPTS} alphavms "$(tdir_alphavms)"
+earcv2elf.c: $(srcdir)/emulparams/arcv2elf.sh \
+  $(ELF_GEN_DEPS) $(srcdir)/scripttempl/elfarcv2.sc ${GEN_DEPENDS}
+	${GENSCRIPTS} arcv2elf "$(tdir_arcelf)"
+earcv2elfb.c: $(srcdir)/emulparams/arcv2elfb.sh \
+  $(ELF_GEN_DEPS) $(srcdir)/scripttempl/elfarcv2.sc ${GEN_DEPENDS}
+	${GENSCRIPTS} arcv2elfb "$(tdir_arcelf)"
 earcelf.c: $(srcdir)/emulparams/arcelf.sh \
   $(ELF_GEN_DEPS) $(srcdir)/scripttempl/elfarc.sc ${GEN_DEPENDS}
 	${GENSCRIPTS} arcelf "$(tdir_arcelf)"
