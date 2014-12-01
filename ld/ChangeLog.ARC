@@ -1,3 +1,7 @@
+2014-12-01: Claudiu Zissulescu <claziss@synopsys.com>
+
+	* scripttempl/elfarcv2.sc: Align the start of the stack.
+
 2014-11-27: Claudiu Zissulescu <claziss@synopsys.com>
 
 	* Makefile.am: Add two new emulation scripts for ARCv2.

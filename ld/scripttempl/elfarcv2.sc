@@ -73,7 +73,7 @@ MEMORY
 }
 
 /* Setup the stack on the top of the data memory bank.  */
-PROVIDE (__stack_top = ${RAM_START_ADDR} + ${RAM_SIZE} - 1);
+PROVIDE (__stack_top = (${RAM_START_ADDR} + ${RAM_SIZE} - 1) & -4);
 PROVIDE (__end_heap = ${RAM_START_ADDR} + ${RAM_SIZE} - 1);
 "
 	;;
@@ -90,12 +90,12 @@ ${RELOCATING+${MEMORY_DEF}}
 
 SECTIONS
 {
-  .ivt 0x00 ${RELOCATING-0} :
+  .ivt 0x00 :
   {
    KEEP (*(.ivt));
-  } ${RELOCATING+ > ${STARTUP_MEMORY}} = 0
+  } ${RELOCATING+ > ${STARTUP_MEMORY}}
 
-  .startup ${TEXT_START_ADDR} ${RELOCATING-0} :
+  .startup 0x100:
   {
     KEEP (*(.startup))
   } ${RELOCATING+ > ${STARTUP_MEMORY}}
