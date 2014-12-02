@@ -1,3 +1,8 @@
+2014-12-02 Andrew Burgess <andrew.burgess@embecosm.com>
+
+	* elf32-arc.c (elf_arc_finish_dynamic_symbol): Don't generate
+	R_ARC_GLOB_DAT relocations for symbols that have been removed.
+
 2014-10-21 Claudiu Zissulescu <claziss@synopsys.com>
 
 	* elf32-arc.c (arc_elf_object_p): Throw a warning/error only
