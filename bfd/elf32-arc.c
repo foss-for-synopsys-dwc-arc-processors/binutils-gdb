@@ -2720,6 +2720,8 @@ elf_arc_finish_dynamic_symbol (bfd *output_bfd,
 	  rel.r_addend = 0;
 	  rel.r_info = ELF32_R_INFO (0, R_ARC_RELATIVE);
 	}
+      else if (h->dynindx == -1)
+        memset (&rel, 0, sizeof rel);
       else
 	{
 	  bfd_put_32 (output_bfd, (bfd_vma) 0, sgot->contents + h->got.offset);
