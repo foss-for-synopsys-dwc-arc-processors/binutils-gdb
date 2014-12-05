@@ -1,3 +1,8 @@
+2014-12-05 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* elf32-arc.c (elf_arc_relocate_section): Fix relocation for weak
+          undefined symbols.
+
 2014-12-02 Andrew Burgess <andrew.burgess@embecosm.com>
 
 	* elf32-arc.c (elf_arc_finish_dynamic_symbol): Don't generate
