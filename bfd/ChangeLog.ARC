@@ -1,3 +1,8 @@
+2014-12-05 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* elf32-arc.c (elf_arc_relocate_section): Fix rolacation foe weak
+          undefined symbols.
+
 2014-10-21 Claudiu Zissulescu <claziss@synopsys.com>
 
 	* elf32-arc.c (arc_elf_object_p): Throw a warning/error only
