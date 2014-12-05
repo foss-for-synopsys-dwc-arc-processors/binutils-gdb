@@ -2111,7 +2111,10 @@ elf_arc_relocate_section (bfd *output_bfd,
 		}
 	    }
 	  else if (h->root.type == bfd_link_hash_undefweak)
-	    relocation = 0;
+	    {
+	      symbol_defined = FALSE;
+	      relocation = 0;
+	    }
 	  else if (info->shared && !info->symbolic)
 	    relocation = 0;
 	  else
