@@ -3099,13 +3099,6 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
       CHECK_FIELD_A();
       CHECK_FIELD_B();
 
-      if(FIELDA(state->words[0]) == 62)
-	{
-	  instrName = "prefetch";
-	}
-
-
-
       if (is_limm)
       {
 	FIELD_C();
@@ -3125,6 +3118,19 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
       state->_mem_load = 1;
 
       directMem     = BIT(state->words[0],15);
+      if(FIELDA(state->words[0]) == 62)
+       {
+	 if (directMem)
+	   {
+	     instrName = "prefetchw";
+	     directMem = 0;
+	   }
+	 else if (BITS (state->words[0], 17, 21) == 25)
+	   instrName = "prefetch.l2";
+	 else
+	   instrName = "prefetch";
+	}
+
       /* - We should display the instruction as decoded, not some censored
 	   version of it
 	 - Scaled index is encoded as 'addrWriteBack', even though it isn't
@@ -3166,11 +3172,6 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
       /* Support for Prefetch */
       /* Fixme :: Check for A700 within this function */
 
-      if(FIELDA(state->words[0]) == 62)
-	{
-	  instrName = "prefetch";
-	}
-
       fieldC = FIELDD9(state->words[0]);
       fieldCisReg = 0;
 
@@ -3185,6 +3186,18 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
       else state->_offset += fieldB, state->_ea_present = 0;
 
       directMem     = BIT(state->words[0],11);
+      if(FIELDA(state->words[0]) == 62)
+	{
+	  if (directMem)
+	    {
+	      instrName = "prefetchw";
+	      directMem = 0;
+	    }
+	  else if (BITS (state->words[0], 7, 8) == 1)
+	    instrName = "prefetch.l2";
+	  else
+	    instrName = "prefetch";
+	}
       /* Check if address writeback is allowed before decoding the
 	 address writeback field of a load instruction.*/
       if (fieldBisReg && (fieldB != 62))
