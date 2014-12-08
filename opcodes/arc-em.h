@@ -2316,3 +2316,41 @@
 /*DMB */
 /* dmb    u3                    0010 0011 0110 1111 0001 RRRu uu11 1111  */
 { (unsigned char *) "dmb %~",                                0xFFFFFE3F, 0x236F103F, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+
+/*PREFETCHW */
+/* prefetchw<.aa>    b          0001 0bbb 0000 0000 0BBB 1RR0 0011 1110  */
+{ (unsigned char *) "prefetchw%.p [%g]%3",                   0xF80009FF, 0x1000083E, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+/* prefetchw<.aa>    b,c        0010 0bbb aa11 0000 1BBB CCCC CC11 1110  */
+{ (unsigned char *) "prefetchw%.P [%g,%C]%3",                0xF83F803F, 0x2030803E, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+/* prefetchw<.aa>    b,s9       0001 0bbb ssss ssss SBBB 1aa0 0011 1110  */
+{ (unsigned char *) "prefetchw%.p [%g,%o]%3",                0xF80009FF, 0x1000083E, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+/* prefetchw<.aa>    b,limm     0010 0bbb aa11 0000 1BBB 1111 1011 1110  */
+{ (unsigned char *) "prefetchw%.P%Q [%g,%L]%3",              0xF83F8FFF, 0x20308FBE, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+/* prefetchw    limm,c          0010 0110 RR11 0000 1111 CCCC CC11 1110  */
+{ (unsigned char *) "prefetchw%Q [%L,%C]%1",                 0xFFFFF03F, 0x2630F03E, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+/* prefetchw    limm,s9         0001 0110 ssss ssss S111 1RR0 0011 1110  */
+{ (unsigned char *) "prefetchw%Q [%L,%o]%1",                 0xFF007FFF, 0x1600783E, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+/* prefetchw    limm            0001 0110 0000 0000 0111 1RR0 0011 1110  */
+{ (unsigned char *) "prefetchw%Q [%L]%1",                    0xFFFFFFFF, 0x1600783E, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+
+/*PREFETCHL2 */
+/* prefetchl2<.aa>    b,c       0010 0bbb aa11 0010 0BBB CCCC CC11 1110  */
+{ (unsigned char *) "prefetch.l2%.P [%g,%C]%3",                   0xF83F803F, 0x2032003E, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+/* prefetchl2<.aa>    b,s9      0001 0bbb ssss ssss SBBB 0aa0 1011 1110  */
+{ (unsigned char *) "prefetch.l2%.p [%g,%o]%3",              0xF80009FF, 0x100000BE, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+/* prefetchl2<.aa>    b,limm    0010 0bbb aa11 0010 0BBB 1111 1011 1110  */
+{ (unsigned char *) "prefetch.l2%.P%Q [%g,%L]%3",                 0xF83F8FFF, 0x20320FBE, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+/* prefetchl2<.aa>    limm,c    0010 0110 aa11 0000 0111 CCCC CC11 1110  */
+{ (unsigned char *) "prefetchl2%.P%Q [%L,%C]%3",                 0xFF3FF03F, 0x2630703E, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+/* prefetchl2<.aa>    limm,s9   0001 0110 ssss ssss S111 0aa0 0011 1110  */
+{ (unsigned char *) "prefetch.l2%.P%Q [%L,%o]%3",            0xFF0079FF, 0x1600703E, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+/* prefetchl2<.aa>    limm,limm         0010 0110 aa11 0000 0111 1111 1011 1110  */
+{ (unsigned char *) "prefetch.l2%.P%Q [%L,%L]%3",                 0xFF3FFFFF, 0x26307FBE, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+/* prefetchl2    limm,c         0010 0110 RR11 0010 0111 CCCC CC11 1110  */
+{ (unsigned char *) "prefetch.l2%Q [%L,%C]%3",                    0xFFFFF03F, 0x2632703E, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+/* prefetchl2    limm,s9        0001 0110 ssss ssss S111 0RR0 1011 1110  */
+{ (unsigned char *) "prefetch.l2%Q [%L,%o]%3",               0xFF007FFF, 0x160070BE, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+/* prefetchl2    limm           0001 0110 0000 0000 0111 0RR0 1011 1110  */
+{ (unsigned char *) "prefetch.l2%Q [%L]%3",                       0xFFFFFFFF, 0x160070BE, ARC_MACH_ARCV2HS, 0, 0, 0, 0},
+
+

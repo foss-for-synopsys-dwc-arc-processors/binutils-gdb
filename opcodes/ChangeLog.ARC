@@ -1,3 +1,8 @@
+2014-12-08 Claudiu Zissulescu <claziss@synopsys.com>
+
+       * arcompact-dis.c: Handle PREFETCHW, PREFETCH.L2
+       * arc-em.h: Likewise.
+
 2014-11-20 Vineet Gupta <vgupta@synopsys.com>
 
 	* arcompact-dis.c: Handle DMB, DSYNC
