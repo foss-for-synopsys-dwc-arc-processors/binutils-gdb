@@ -1,3 +1,9 @@
+2014-12-08: Claudiu Zissulescu <claziss@synopsys.com>
+
+	* emulparams/arcv2elf.sh :Add discarded sections.
+	* emulparams/arcv2elfb.sh: Likewise
+	* scripttempl/elfarcv2.sc: New sections.
+
 2014-12-01: Claudiu Zissulescu <claziss@synopsys.com>
 
 	* scripttempl/elfarcv2.sc: Align the start of the stack.

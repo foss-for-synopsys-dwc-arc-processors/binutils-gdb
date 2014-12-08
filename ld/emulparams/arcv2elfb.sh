@@ -18,3 +18,5 @@ BIG_OUTPUT_FORMAT="elf32-bigarc"
 TEXT_START_ADDR=0x100
 ENTRY=__start
 SDATA_START_SYMBOLS='__SDATA_BEGIN__ = .;'
+OTHER_SECTIONS="/DISCARD/ : { *(.__arc_profile_*) }"
+EMBEDDED=yes

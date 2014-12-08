@@ -8,15 +8,51 @@
 # When adding sections, do note that the names of some sections are used
 # when specifying the start address of the next.
 #
-test -z "$ENTRY" && ENTRY=_start
+test -z "$ENTRY" && ENTRY=start
 test -z "${BIG_OUTPUT_FORMAT}" && BIG_OUTPUT_FORMAT=${OUTPUT_FORMAT}
 test -z "${LITTLE_OUTPUT_FORMAT}" && LITTLE_OUTPUT_FORMAT=${OUTPUT_FORMAT}
 # If we request a big endian toolchain, give a big endian linker
+test -z "$GOT" && GOT=".got          ${RELOCATING-0} : { *(.got.plt) *(.got) } ${RELOCATING+ > ${DATA_MEMORY}}"
 test "${ARC_ENDIAN}" == "big" && OUTPUT_FORMAT=${BIG_OUTPUT_FORMAT}
 if [ -z "$MACHINE" ]; then OUTPUT_ARCH=${ARCH}; else OUTPUT_ARCH=${ARCH}:${MACHINE}; fi
 test -z "${ELFSIZE}" && ELFSIZE=32
 test -z "${ALIGNMENT}" && ALIGNMENT="${ELFSIZE} / 8"
 test "$LD_FLAG" = "N" && DATA_ADDR=.
+
+CTOR=".ctors        ${CONSTRUCTING-0} : 
+  {
+    ${CONSTRUCTING+${CTOR_START}}
+    /* gcc uses crtbegin.o to find the start of
+       the constructors, so we make sure it is
+       first.  Because this is a wildcard, it
+       doesn't matter if the user does not
+       actually link against crtbegin.o; the
+       linker won't look for a file to match a
+       wildcard.  The wildcard also means that it
+       doesn't matter which directory crtbegin.o
+       is in.  */
+
+    KEEP (*crtbegin*.o(.ctors))
+
+    /* We don't want to include the .ctor section from
+       from the crtend.o file until after the sorted ctors.
+       The .ctor section from the crtend file contains the
+       end of ctors marker and it must be last */
+
+    KEEP (*(EXCLUDE_FILE (*crtend*.o $OTHER_EXCLUDE_FILES) .ctors))
+    KEEP (*(SORT(.ctors.*)))
+    KEEP (*(.ctors))
+    ${CONSTRUCTING+${CTOR_END}}
+  } ${RELOCATING+ > ${DATA_MEMORY}}"
+DTOR=".dtors        ${CONSTRUCTING-0} :
+  {
+    ${CONSTRUCTING+${DTOR_START}}
+    KEEP (*crtbegin*.o(.dtors))
+    KEEP (*(EXCLUDE_FILE (*crtend*.o $OTHER_EXCLUDE_FILES) .dtors))
+    KEEP (*(SORT(.dtors.*)))
+    KEEP (*(.dtors))
+    ${CONSTRUCTING+${DTOR_END}}
+  } ${RELOCATING+ > ${DATA_MEMORY}}"
 
 if test -z "${NO_SMALL_DATA}"; then
   SBSS=".sbss         ${RELOCATING-0} :
@@ -37,6 +73,9 @@ if test -z "${NO_SMALL_DATA}"; then
   {
     ${RELOCATING+${SDATA_START_SYMBOLS}}
     *(.sdata${RELOCATING+ .sdata.* .gnu.linkonce.s.*})
+
+    ${RELOCATING+_edata  =  .;}
+    ${RELOCATING+PROVIDE (edata = .);}
   } ${RELOCATING+ > ${SDATA_MEMORY}}"
   SDATA2=".sdata2       ${RELOCATING-0} : { *(.sdata2${RELOCATING+ .sdata2.* .gnu.linkonce.s2.*}) } ${RELOCATING+ > ${SDATA_MEMORY}}"
   REL_SDATA=".rel.sdata    ${RELOCATING-0} : { *(.rel.sdata${RELOCATING+ .rel.sdata.* .rel.gnu.linkonce.s.*}) }
@@ -147,48 +186,44 @@ SECTIONS
   } ${RELOCATING+> ${TEXT_MEMORY}}
 
   .rodata1      ${RELOCATING-0} : { *(.rodata1) } ${RELOCATING+> ${TEXT_MEMORY}}
-  .text         ${RELOCATING-0} :
+
+  .init         ${RELOCATING-0} :
   {
-    ${RELOCATING+${TEXT_START_SYMBOLS}}
-
-    ${CONSTRUCTING+${CTOR_START}}
-    KEEP (*crtbegin*.o(.ctors))
-    KEEP (*(EXCLUDE_FILE (*crtend*.o $OTHER_EXCLUDE_FILES) .ctors))
-    KEEP (*(SORT(.ctors.*)))
-    KEEP (*(.ctors))
-    ${CONSTRUCTING+${CTOR_END}}
-
-    ${CONSTRUCTING+${DTOR_START}}
-    KEEP (*crtbegin*.o(.dtors))
-    KEEP (*(EXCLUDE_FILE (*crtend*.o $OTHER_EXCLUDE_FILES) .dtors))
-    KEEP (*(SORT(.dtors.*)))
-    KEEP (*(.dtors))
-    ${CONSTRUCTING+${DTOR_END}}
-
     ${RELOCATING+${INIT_START}}
     KEEP (*(.init))
     ${RELOCATING+${INIT_END}}
+  } ${RELOCATING+ > ${TEXT_MEMORY}}  =${NOP-0}
+
+  .text         ${RELOCATING-0} :
+  {
+    ${RELOCATING+${TEXT_START_SYMBOLS}}
 
     *(.text .stub${RELOCATING+ .text.* .gnu.linkonce.t.*})
     /* .gnu.warning sections are handled specially by elf32.em.  */
     *(.gnu.warning)
 
+    ${RELOCATING+${OTHER_TEXT_SECTIONS}}
+
+  } ${RELOCATING+ > ${TEXT_MEMORY}} =${NOP-0}
+
+  .fini         ${RELOCATING-0} :
+  {
     ${RELOCATING+${FINI_START}}
     KEEP (*(.fini))
     ${RELOCATING+${FINI_END}}
 
-    ${RELOCATING+${OTHER_TEXT_SECTIONS}}
-  } ${RELOCATING+ > ${TEXT_MEMORY}}
-  ${RELOCATING+PROVIDE (__etext = .);}
-  ${RELOCATING+PROVIDE (_etext = .);}
-  ${RELOCATING+PROVIDE (etext = .);}
+    ${RELOCATING+PROVIDE (__etext = .);}
+    ${RELOCATING+PROVIDE (_etext = .);}
+    ${RELOCATING+PROVIDE (etext = .);}
+  } ${RELOCATING+ > ${TEXT_MEMORY}} =${NOP-0}
+
   ${RELOCATING+${OTHER_READONLY_SECTIONS}}
 
   /* Start of the data section image in ROM.  */
   ${RELOCATING+__data_image = .;}
   ${RELOCATING+PROVIDE (__data_image = .);}
 
-  .data	${RELOCATING-0} : ${RELOCATING+AT (__data_image)}
+  .data	${RELOCATING-0} :
   {
     ${RELOCATING+ PROVIDE (__data_start = .) ; }
     /* --gc-sections will delete empty .data. This leads to wrong start
@@ -198,7 +233,12 @@ SECTIONS
     ${RELOCATING+${DATA_START_SYMBOLS}}
     *(.data${RELOCATING+ .data.* .gnu.linkonce.d.*})
     ${CONSTRUCTING+SORT(CONSTRUCTORS)}
+
   } ${RELOCATING+ > ${DATA_MEMORY}}
+
+  ${GOT}
+  ${RELOCATING+${CTOR}}
+  ${RELOCATING+${DTOR}}
 
   ${RELOCATING+${SDATA}}
   ${RELOCATING+${SDATA2}}
