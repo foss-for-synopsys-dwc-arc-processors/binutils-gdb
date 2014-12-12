@@ -1153,6 +1153,10 @@ arc_process_extinstr_options (void)
 
   /*For ARCv2EM disable all lib extensions (Except the FP ops). All
     ARCv2 instructions are recognized by default by the GAS*/
+  if ((arc_mach_type == bfd_mach_arc_arcv2) &&
+      (extinsnlib & BARREL_SHIFT_INSN))
+    extinsnlib &= ~BARREL_SHIFT_INSN;
+
   if ((arc_mach_type == bfd_mach_arc_arcv2)
       && (extinsnlib & ~(SP_FLOAT_INSN | DP_FLOAT_INSN | FPUDA_INSN)))
     {

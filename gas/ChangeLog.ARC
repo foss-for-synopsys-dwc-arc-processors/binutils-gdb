@@ -1,3 +1,8 @@
+2014-12-12 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* config/tc-arc.c: mbarrel-shifter option selects the right
+          encoding.
+
 2014-11-19 Claudiu Zissulescu <claziss@synopsys.com>
 
 	* config/tc-arc.c: Add check DMB constant.
