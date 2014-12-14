@@ -3365,7 +3365,7 @@ elf_arc_size_dynamic_sections (bfd *output_bfd,
 	}
 
       /* Allocate memory for the section contents.  */
-      s->contents = (bfd_byte *) bfd_alloc (dynobj, s->size);
+      s->contents = (bfd_byte *) bfd_zalloc (dynobj, s->size);
       if (s->contents == NULL && s->size != 0)
 	return FALSE;
     }

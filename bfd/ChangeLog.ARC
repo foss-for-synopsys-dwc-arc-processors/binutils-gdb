@@ -1,3 +1,8 @@
+2014-12-14 Andrew Burgess <andrew.burgess@embecosm.com>
+
+	* elf32-arc.c (elf_arc_size_dynamic_sections): Zero initialise
+	contents of dynamic sections before use.
+
 2014-12-02 Andrew Burgess <andrew.burgess@embecosm.com>
 
 	* elf32-arc.c (elf_arc_finish_dynamic_symbol): Don't generate
