@@ -136,7 +136,7 @@ SECTIONS
 
   .startup 0x100:
   {
-    KEEP (*(.startup))
+    KEEP (*crt0.o(.text.__startup))
   } ${RELOCATING+ > ${STARTUP_MEMORY}}
 
   /* Read-only sections, merged into text segment: */

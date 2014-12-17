@@ -1,3 +1,7 @@
+2014-12-17: Claudiu Zissulescu <claziss@synopsys.com>
+
+	* scripttempl/elfarcv2.sc: Update .startup section.
+
 2014-12-08: Claudiu Zissulescu <claziss@synopsys.com>
 
 	* emulparams/arcv2elf.sh :Add discarded sections.
