@@ -1,3 +1,7 @@
+2015-01-15  Anton Kolesov  <Anton.Kolesov@synopsys.com>
+
+	* Makefile.in: Call SET_TEXINPUTS for all PDF/DVI files.
+
 2013-05-13  Jeremy Bennett  <jeremy.bennett@embecosm.com>
 
 	* doc/gdb.texinfo (Setting Watchpoints): Note that automatic
