@@ -3556,7 +3556,8 @@ static struct arc_opcode arc_opcodes[] = {
   { (unsigned char *) "mov%.q%.f 0,%u%F", 0xffff7020, 0x26ca7020, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "mov%.q%.f%Q 0,%L%F", 0xffff7fe0, 0x26ca7f80, ARCOMPACT, 0, 0 ,0,0},
 
-  { (unsigned char *) "neg%.f %A,%B%F", 0xf8ff0000, 0x204e0000, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "neg%.f %A,%B%F", 0xf8ff0000, 0x204e0000, ARCOMPACT, 0, 0 ,0, 0},
+  { (unsigned char *) "neg%.f 0,%B%F",  0xF8FF0FFF, 0x204E003E, ARCOMPACT, 0, 0, 0, 0},
   { (unsigned char *) "neg%.q%.f %#,%B%F", 0xf8ff0020, 0x20ce0020, ARCOMPACT, 0, 0 ,0,0},
 
   { (unsigned char *) "norm%.f %#,%C%F", 0xf8ff003f, 0x282f0001, ARC_MACH_ARC7, 0, 0 ,0,0},
