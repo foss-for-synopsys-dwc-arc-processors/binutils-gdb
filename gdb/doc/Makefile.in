@@ -467,7 +467,7 @@ gdb.dvi: ${GDB_DOC_FILES}
 		ln $(srcdir)/GDBvn.texi . || \
 		cp $(srcdir)/GDBvn.texi . ; else true; fi
 	rm -f $(GDB_TEX_TMPS)
-	$(TEXI2DVI) $(READLINE_TEXI_INCFLAG) -I ${GDBMI_DIR} -I $(srcdir) \
+	$(SET_TEXINPUTS) $(TEXI2DVI) $(READLINE_TEXI_INCFLAG) -I ${GDBMI_DIR} -I $(srcdir) \
 		$(srcdir)/gdb.texinfo
 
 gdb.ps: gdb.dvi
@@ -479,7 +479,7 @@ gdb.pdf: ${GDB_DOC_FILES}
 		ln $(srcdir)/GDBvn.texi . || \
 		cp $(srcdir)/GDBvn.texi . ; else true; fi
 	rm -f $(GDB_TEX_TMPS)
-	$(TEXI2DVI) --pdf $(READLINE_TEXI_INCFLAG) -I ${GDBMI_DIR} -I $(srcdir) \
+	$(SET_TEXINPUTS) $(TEXI2DVI) --pdf $(READLINE_TEXI_INCFLAG) -I ${GDBMI_DIR} -I $(srcdir) \
 		$(srcdir)/gdb.texinfo
 
 # GDB MANUAL: info file
@@ -579,14 +579,14 @@ STABS_TEX_TMPS = stabs.aux stabs.cp* stabs.fn* stabs.ky* \
 # STABS DOCUMENTATION: TeX dvi file
 stabs.dvi : $(STABS_DOC_FILES)
 	rm -f $(STABS_TEX_TMPS)
-	$(TEXI2DVI) -I $(srcdir) $(srcdir)/stabs.texinfo
+	$(SET_TEXINPUTS) $(TEXI2DVI) -I $(srcdir) $(srcdir)/stabs.texinfo
 
 stabs.ps: stabs.dvi
 	$(DVIPS) -o $@ $?
 
 stabs.pdf: $(STABS_DOC_FILES)
 	rm -f $(STABS_TEX_TMPS)
-	$(TEXI2DVI) --pdf -I $(srcdir) $(srcdir)/stabs.texinfo
+	$(SET_TEXINPUTS) $(TEXI2DVI) --pdf -I $(srcdir) $(srcdir)/stabs.texinfo
 
 # Clean these up before each run.  Avoids a catch 22 with not being
 # able to re-generate these files (to fix a corruption) because these
@@ -597,14 +597,14 @@ ANNOTATE_TEX_TMPS = annotate.aux annotate.cp* annotate.fn* annotate.ky* \
 # ANNOTATE DOCUMENTATION: TeX dvi file
 annotate.dvi : $(ANNOTATE_DOC_FILES)
 	rm -f $(ANNOTATE_TEX_TMPS)
-	$(TEXI2DVI) -I $(srcdir) $(srcdir)/annotate.texinfo
+	$(SET_TEXINPUTS) $(TEXI2DVI) -I $(srcdir) $(srcdir)/annotate.texinfo
 
 annotate.ps: annotate.dvi
 	$(DVIPS) -o $@ $?
 
 annotate.pdf: $(ANNOTATE_DOC_FILES)
 	rm -f $(ANNOTATE_TEX_TMPS)
-	$(TEXI2DVI) --pdf -I $(srcdir) $(srcdir)/annotate.texinfo
+	$(SET_TEXINPUTS) $(TEXI2DVI) --pdf -I $(srcdir) $(srcdir)/annotate.texinfo
 
 annotate.info: $(ANNOTATE_DOC_FILES)
 	$(MAKEINFO_CMD) -I $(srcdir) -o annotate.info $(srcdir)/annotate.texinfo
