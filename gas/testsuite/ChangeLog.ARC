@@ -1,3 +1,8 @@
+2015-02-18  Andrew Burgess  <andrew.burgess@embecosm.com>
+
+	* gas/arc/warn.s: Update error message to reflect change in
+	default architecture.
+
 2013-06-14  Claudiu Zissulescu <claziss@synopsys.com>
 
 	* gas/arc/warn.exp: Extend script for errors and warnings

@@ -1,3 +1,26 @@
+2015-02-18  Andrew Burgess  <andrew.burgess@embecosm.com>
+
+	* config/tc-arc.c (a4_brk_insn): Remove declaration.
+	(arc_handle_extinst, arc_extinst, arc_extoper)
+	(get_arc_exp_reloc_type): Removed commented out declarations.
+	(arc_mach_type): Change default to a5.
+	(IS_SYMBOL_OPERAND): Remove a4 specific code.
+	(md_parse_option): Remove a4 support, add warning.
+	(arc_process_extinstr_options): Remove a4 support.
+	(md_begin): Turn a4 mode off.
+	(get_arc_exp_reloc_type): Remove code that was guarded with '#if
+	0', this code was a4 support.  Trim the comment to remove mention
+	of the a4 support parts.
+	(arc_extinst): Delete unused a4 support function.
+	(arc_handle_extinst): Remove a4 support.
+	(arc_option): Likewise.
+	(md_operand): Likewise.
+	(md_pcrel_from): Likewise.
+	(md_apply_fix): Likewise.
+	(md_assemble): Likewise.
+	(arc_handle_align): Likewise.
+	(md_show_usage): Make arc5 default in usage message.
+
 2015-02-10 Claudiu Zissulescu <claziss@synopsys.com>
 
 	* config/tc-arc.c: Fix selection of ld_s r1,[gp, s11] opcode.
