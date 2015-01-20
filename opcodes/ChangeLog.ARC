@@ -1,5 +1,20 @@
 2015-02-18  Andrew Burgess  <andrew.burgess@embecosm.com>
 
+	* arc-opc-old.c (arc_mach_a4): Remove.
+	(insert_reg): Remove a4 specific code.
+	(insert_addr_wb): Likewise.
+	(insert_base): Likewise.
+	(insert_offset): Likewise.
+	(insert_st_syntax): Likewise.
+	(insert_ld_syntax): Likewise.
+	(insert_reladdr): Likewise.
+	(arc_opcode_init_tables): Likewise.
+	(arc_operand_type): Likewise.
+	(get_ext_suffix): Likewise.
+	(a4_brk_insn): Remove declaration and definition.
+
+2015-02-18  Andrew Burgess  <andrew.burgess@embecosm.com>
+
 	* arc-opc-old.c (arc_mach_a4): Make static and const.
 
 2014-12-08 Claudiu Zissulescu <claziss@synopsys.com>
