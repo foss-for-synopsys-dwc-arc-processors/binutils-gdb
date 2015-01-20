@@ -1,3 +1,7 @@
+2015-02-18  Andrew Burgess  <andrew.burgess@embecosm.com>
+
+	* opcode/arc.h (arc_mach_a4): Remove declaration.
+
 2013-11-11  Claudiu Zissulescu <claziss@synopsys.com>
 
 	* elf/arc.h: Rename E_ARC_MACH_ARCV2 to

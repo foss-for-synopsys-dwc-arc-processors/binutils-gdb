@@ -1245,10 +1245,6 @@ arc_process_extinstr_options (void)
 void
 md_begin (void)
 {
-  /* The variable ARC_MACH_A4 is defined elsewhere, but must be set to
-     false early on to indicate that we are not assembling for A4.  */
-  arc_mach_a4 = 0;
-
   /* The endianness can be chosen "at the factory".  */
   target_big_endian = byte_order == BIG_ENDIAN;
 

@@ -446,7 +446,6 @@ extern unsigned short *arc_operand_map;
  *   'Q'        FORCELIMM       set `arc_cond_p' to 1 to ensure a constant is a limm */
 extern int           arc_cond_p;
 
-extern int           arc_mach_a4;
 extern unsigned long arc_ld_ext_mask;
 extern int           arc_user_mode_only;
 

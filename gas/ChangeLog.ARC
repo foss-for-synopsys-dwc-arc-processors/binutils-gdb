@@ -1,5 +1,9 @@
 2015-02-18  Andrew Burgess  <andrew.burgess@embecosm.com>
 
+	* config/tc-arc.c (md_begin): No longer set arc_mach_a4.
+
+2015-02-18  Andrew Burgess  <andrew.burgess@embecosm.com>
+
 	* config/tc-arc.h (DWARF2_LINE_MIN_INSN_LENGTH): Remove a4
 	support.
 	(MAX_MEM_FOR_RS_ALIGN_CODE): Remove a4 support.
