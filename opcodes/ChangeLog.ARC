@@ -1,3 +1,7 @@
+2015-02-18  Andrew Burgess  <andrew.burgess@embecosm.com>
+
+	* arc-opc-old.c (arc_mach_a4): Make static and const.
+
 2014-12-08 Claudiu Zissulescu <claziss@synopsys.com>
 
        * arcompact-dis.c: Handle PREFETCHW, PREFETCH.L2

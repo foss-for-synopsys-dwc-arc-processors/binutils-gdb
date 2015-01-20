@@ -981,7 +981,7 @@ int arc_cond_p;
    should make sure arc_opcode_init_tables understands this, otherwise
    we would operate with a CPU_TYPE for the A4, but the operand tables
    would be for ARCompact.  */
-int arc_mach_a4 = 1;
+static const int arc_mach_a4 = 0;
 /* END ARC LOCAL */
 
 /* For ARC700, no extension registers nor LP_COUNT may be the target of
