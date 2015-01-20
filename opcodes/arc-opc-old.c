@@ -975,15 +975,6 @@ static const struct arc_operand arc_operands_ac[] =
 /* Nonzero if we've seen a 'q' suffix (condition code).  */
 int arc_cond_p;
 
-/* Non-zero, for ARCtangent-A4 */
-/* START ARC LOCAL */
-/* Since the arc_operand_map and arc_operands default to the A4, we
-   should make sure arc_opcode_init_tables understands this, otherwise
-   we would operate with a CPU_TYPE for the A4, but the operand tables
-   would be for ARCompact.  */
-static const int arc_mach_a4 = 0;
-/* END ARC LOCAL */
-
 /* For ARC700, no extension registers nor LP_COUNT may be the target of
    LD or EX instructions, the only allowed encoding above 32 is 62,
    which is used for prefetch.  The initial setting of arc_ld_ext_mask
@@ -1390,35 +1381,7 @@ insert_reg (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
 	 field.  Handle these by updating the register field and saving the
 	 value for later handling by either %S (shimm) or %L (limm).  */
 
-      /* Try to use a shimm value before a limm one.  */
-      if (arc_mach_a4 && ARC_SHIMM_CONST_P (value)
-	  /* If we've seen a conditional suffix we have to use a limm.  */
-	  && !arc_cond_p
-	  /* If we already have a shimm value that is different than ours
-	     we have to use a limm.  */
-	  && (!shimm_p || shimm == value))
-	{
-	  int marker;
-
-	  op_type = OP_SHIMM;
-	  /* Forget about shimm as dest mlm.  */
-
-	  if ('a' != operand->fmt)
-	    {
-	      shimm_p = 1;
-	      shimm = value;
-	      flagshimm_handled_p = 1;
-	      marker = flag_p ? ARC_REG_SHIMM_UPDATE : ARC_REG_SHIMM;
-	    }
-	  else
-	    {
-	      /* Don't request flag setting on shimm as dest.  */
-	      marker = ARC_REG_SHIMM;
-	    }
-	  insn |= marker << operand->shift;
-	  /* insn |= value & 511; - done later.  */
-	}
-      else if ((mods & ARC_MOD_SDASYM) && !ac_add_reg_sdasym_insn (insn))
+      if ((mods & ARC_MOD_SDASYM) && !ac_add_reg_sdasym_insn (insn))
 	{
 	  /* Check if this insn is a prefetch that needs a limm */
 	  if ((insn & 0xFFFFF87F) == 0x1600703E)
@@ -1457,15 +1420,7 @@ insert_reg (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
 		op_type = OP_LIMM;
 		limm_p = 1;
 		limm = value;
-		if (arc_mach_a4)
-		  insn |= ARC_REG_LIMM << operand->shift;
 		/* The constant is stored later.  */
-	      }
-	    else
-	      {
-		if (arc_mach_a4)
-		  insn |= ARC_REG_SHIMM << operand->shift;
-		/* insn |= value & 511; - done later.  */
 	      }
 	}
       else
@@ -1481,21 +1436,6 @@ insert_reg (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
 	{
 	  if (!(mods & ARC_MOD_AUXREG))
 	    *errmsg = _("auxiliary register not allowed here");
-	  else if (arc_mach_a4)
-	    {
-	      if ((insn & I(-1)) == I(2)) /* Check for use validity.  */
-		{
-		  if (reg->flags & ARC_REGISTER_READONLY)
-		    *errmsg = _("attempt to set readonly register");
-		}
-	      else
-		{
-		  if (reg->flags & ARC_REGISTER_WRITEONLY)
-		    *errmsg = _("attempt to read writeonly register");
-		}
-	      insn |= ARC_REG_SHIMM << operand->shift;
-	      insn |= reg->value << arc_operands[reg->type].shift;
-	    }
 	  else /* Insert auxiliary register value for ARCompact ISA.  */
 	    {
 	      /* TODO: Check for validity of using ARCompact auxiliary regs.  */
@@ -1525,36 +1465,32 @@ insert_reg (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
       else
 	{
           /* Check for use validity.  */
-          if (('a' == operand->fmt) || (arc_mach_a4 && ((insn & I(-1)) < I(2))) ||
-              (!arc_mach_a4 && (('A' == operand->fmt)||('#' == operand->fmt))))
+          if (('a' == operand->fmt)
+              || ('A' == operand->fmt)
+              || ('#' == operand->fmt))
             {
 	      if (reg->flags & ARC_REGISTER_READONLY)
 		*errmsg = _("attempt to set readonly register");
             }
-          if ('a' != operand->fmt || (!arc_mach_a4 && ('A' != operand->fmt)))
+          if ('a' != operand->fmt || (('A' != operand->fmt)))
             {
 	      if (reg->flags & ARC_REGISTER_WRITEONLY)
 		*errmsg = _("attempt to read writeonly register");
 	    }
 	  /* We should never get an invalid register number here.  */
-	  if (arc_mach_a4 && ((unsigned int) reg->value > 60))
+	  if ((unsigned int) reg->value > 63)
 	    {
 	      sprintf (buf, _("invalid register number `%d'"), reg->value);
 	      *errmsg = buf;
 	    }
-	  if (!arc_mach_a4 && ((unsigned int) reg->value > 63))
-	    {
-	      sprintf (buf, _("invalid register number `%d'"), reg->value);
-	      *errmsg = buf;
-	    }
-          if (!arc_mach_a4 && (   ('B' == operand->fmt) || ('#' == operand->fmt)
+          if ((   ('B' == operand->fmt) || ('#' == operand->fmt)
 			   || ('g' == operand->fmt) || ('(' == operand->fmt)
 			   || ('{' == operand->fmt) || ('<' == operand->fmt)))
 	    {
 	      insn |= (reg->value & 0x7) << operand->shift;
 	      insn |= (reg->value >> 3) << ARC_SHIFT_REGB_HIGH_AC;
 	    }
-          else if (!arc_mach_a4 && 'U' == operand->fmt)
+          else if ('U' == operand->fmt)
             {
 	      insn |= (reg->value & 0x7) << operand->shift;
 	      insn |= reg->value >> 3;
@@ -1569,7 +1505,7 @@ insert_reg (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
 	      if ((insn & 0xFF) == 0xFF)
 		*errmsg = _("attempt to set readonly register");
             }
-          else if (!arc_mach_a4 && operand->fmt == 128)
+          else if (operand->fmt == 128)
 	    {
 	      if (reg->value > 31
 		  || reg->value == 30
@@ -1585,7 +1521,7 @@ insert_reg (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
 		  insn |= reg->value >> 3;
 		}
 	    }
-	  else if (!arc_mach_a4 && operand->fmt == 140)
+	  else if (operand->fmt == 140)
 	    {
 	      if (reg->value > 31)
 		{
@@ -1598,7 +1534,7 @@ insert_reg (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
 		  insn |= (reg->value & 0x18);
 		}
 	    }
-	  else if (!arc_mach_a4 && (operand->fmt == '=' || operand->fmt == '_'))
+	  else if (operand->fmt == '=' || operand->fmt == '_')
 	    {
 	      if ((reg->value % 2) == 1 )
 		{
@@ -1611,7 +1547,7 @@ insert_reg (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
 		  insn |= (reg->value & 0x3E) << operand->shift;
 		}
 	    }
-	  else if (!arc_mach_a4 && (operand->fmt == ';'))
+	  else if ((operand->fmt == ';'))
 	    {
 	      if ((reg->value % 2) == 1 )
 		{
@@ -1631,48 +1567,25 @@ insert_reg (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
 	}
     }
 
-  if (arc_mach_a4)
+  switch (operand->fmt)
     {
-      switch (operand->fmt)
-        {
-	case 'a':
-	  ls_operand[LS_DEST] = op_type;
-	  break;
-	case 's':
-	  ls_operand[LS_BASE] = op_type;
-	  break;
-	case 'c':
-	  if ((insn & I(-1)) == I(2))
-	    ls_operand[LS_VALUE] = op_type;
-	  else
-	    ls_operand[LS_OFFSET] = op_type;
-	  break;
-	case 'o': case 'O':
-	  ls_operand[LS_OFFSET] = op_type;
-	  break;
-	}
+    case 'a':
+    case 'A':
+    case '#':
+    case '*':
+      ls_operand[LS_DEST] = op_type;
+      break;
+    case 'C':
+    case ')':
+    case '}':
+    case '>':
+      if ((insn & I(-1)) == I(3))
+        ls_operand[LS_VALUE] = op_type;
+      else
+        ls_operand[LS_OFFSET] = op_type;
+      break;
     }
-  else
-    {
-      switch (operand->fmt)
-        {
-        case 'a':
-        case 'A':
-        case '#':
-        case '*':
-          ls_operand[LS_DEST] = op_type;
-          break;
-        case 'C':
-        case ')':
-        case '}':
-        case '>':
-          if ((insn & I(-1)) == I(3))
-            ls_operand[LS_VALUE] = op_type;
-          else
-            ls_operand[LS_OFFSET] = op_type;
-          break;
-        }
-    }
+
   return insn;
 }
 
@@ -1777,10 +1690,10 @@ insert_addr_wb (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
      * adding suport for it in the arc_suffixes_ac by defining aw, ab and as
      * to be ADDRESS3_AC also */
 
-    if (!arc_mach_a4 && (('p' == operand->fmt)
-		      || ('P' == operand->fmt)
-		      || ('w' == operand->fmt)
-		      || ('&' == operand->fmt)))
+    if (('p' == operand->fmt)
+        || ('P' == operand->fmt)
+        || ('w' == operand->fmt)
+        || ('&' == operand->fmt))
       addrwb_p = value << operand->shift;
     else
       addrwb_p = 1 << operand->shift;
@@ -1798,7 +1711,7 @@ insert_base (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
   if (reg != NULL)
     {
       arc_insn myinsn;
-      if (!arc_mach_a4 && ('g' == operand->fmt))
+      if (('g' == operand->fmt))
         insn |= insert_reg (0, ex, operand,mods, reg, value, errmsg);
       else
 	{
@@ -1807,35 +1720,6 @@ insert_base (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
 	  insn |= B (myinsn);
 	}
       ls_operand[LS_BASE] = OP_REG;
-    }
-  else if (arc_mach_a4 && ARC_SHIMM_CONST_P (value) && !arc_cond_p)
-    {
-      if (shimm_p && value != shimm)
-	{
-	  /* Convert the previous shimm operand to a limm.  */
-	  limm_p = 1;
-	  limm = shimm;
-	  insn &= ~C(-1); /* We know where the value is in insn.  */
-	  insn |= C(ARC_REG_LIMM);
-	  ls_operand[LS_VALUE] = OP_LIMM;
-	}
-      insn |= ARC_REG_SHIMM << operand->shift;
-      shimm_p = 1;
-      shimm = value;
-      ls_operand[LS_BASE] = OP_SHIMM;
-      ls_operand[LS_OFFSET] = OP_SHIMM;
-    }
-  else if (arc_mach_a4)
-    {
-      if (limm_p && value != limm)
-	{
-	  *errmsg = _("too many long constants");
-	  return insn;
-	}
-      limm_p = 1;
-      limm = value;
-      insn |= B(ARC_REG_LIMM);
-      ls_operand[LS_BASE] = OP_LIMM;
     }
 
   return insn;
@@ -1856,20 +1740,7 @@ insert_offset (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
 
   if (reg != NULL)
     {
-      if (arc_mach_a4)
-        {
-	  arc_insn myinsn
-	    = (insert_reg (0, ex, operand, mods, reg, value, errmsg)
-	       >> operand->shift);
-
-	  /* Not if store, catch it later.  */
-	  if (operand->flags & ARC_OPERAND_LOAD)
-	    /* Not if opcode == 1, catch it later.  */
-	    if ((insn & I(-1)) != I(1))
-	      insn |= C(myinsn);
-        }
-      else
-        insn |= insert_reg (0, ex, operand, mods, reg, value, errmsg);
+      insn |= insert_reg (0, ex, operand, mods, reg, value, errmsg);
       ls_operand[LS_OFFSET] = OP_REG;
     }
   else
@@ -1895,88 +1766,37 @@ insert_offset (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
 	  minval = 0;
 	  maxval = (1 << bits) - 1;
 	}
-      if (arc_mach_a4 && ((arc_cond_p && !limm_p) || value < minval || value > maxval))
-	{
-	  if (limm_p && value != limm)
-	    *errmsg = _("too many long constants");
-	  else
-	    {
-	      limm_p = 1;
-	      limm = value;
-	      if (operand->flags & ARC_OPERAND_STORE)
-		insn |= B(ARC_REG_LIMM);
-	      if (operand->flags & ARC_OPERAND_LOAD)
-		insn |= C(ARC_REG_LIMM);
-	      ls_operand[LS_OFFSET] = OP_LIMM;
-	    }
-	}
-      else
-	{
-	  if ((value < minval || value > maxval))
-	    *errmsg = _("Immediate value out of bounds");
-	  else if (arc_mach_a4 && shimm_p && value != shimm)
-	    {
-	      /* Check for bad operand combinations
-		 before we lose info about them.  */
-	      if ((insn & I(-1)) == I(1))
-		{
-		  *errmsg = _("to many shimms in load");
-		  goto out;
-		}
-	      if (limm_p && operand->flags & ARC_OPERAND_LOAD)
-		{
-		  *errmsg = _("too many long constants");
-		  goto out;
-		}
-	      /* Convert what we thought was a shimm to a limm.  */
-	      limm_p = 1;
-	      limm = shimm;
-	      if (ls_operand[LS_VALUE] == OP_SHIMM
-		  && operand->flags & ARC_OPERAND_STORE)
-		{
-		  insn &= ~C(-1);
-		  insn |= C(ARC_REG_LIMM);
-		  ls_operand[LS_VALUE] = OP_LIMM;
-		}
-	      if (ls_operand[LS_BASE] == OP_SHIMM
-		  && operand->flags & ARC_OPERAND_STORE)
-		{
-		  insn &= ~B(-1);
-		  insn |= B(ARC_REG_LIMM);
-		  ls_operand[LS_BASE] = OP_LIMM;
-		}
-	    }
-	  if (!arc_mach_a4)
-	    {
-	      switch (operand->fmt)
-		{
-		case 'o':
-		  insn |= ((value & 0xff) << operand->shift);
-		  insn |= (((value & 0x100) >> 8) << 15);
-		  break;
-		case 'k':
-		  insn |= ((value >> 1) & 0x1f) << operand->shift;
-		  break;
-		case 'm':
-		  insn |= ((value >> 2) & 0xff) << operand->shift;
-		  break;
-		case 'M':
-		  insn |= (value & 0x1ff) << operand->shift;
-		  break;
-		case 'O':
-		  insn |= ((value >> 1) & 0x1ff) << operand->shift;
-		  break;
-		case 'R':
-		  insn |= ((value >> 2) & 0x1ff) << operand->shift;
-		  break;
-		}
-	    }
-	  shimm = value;
-	  shimm_p = 1;
-	  ls_operand[LS_OFFSET] = OP_SHIMM;
-	}
+
+      if ((value < minval || value > maxval))
+        *errmsg = _("Immediate value out of bounds");
+
+      switch (operand->fmt)
+        {
+        case 'o':
+          insn |= ((value & 0xff) << operand->shift);
+          insn |= (((value & 0x100) >> 8) << 15);
+          break;
+        case 'k':
+          insn |= ((value >> 1) & 0x1f) << operand->shift;
+          break;
+        case 'm':
+          insn |= ((value >> 2) & 0xff) << operand->shift;
+          break;
+        case 'M':
+          insn |= (value & 0x1ff) << operand->shift;
+          break;
+        case 'O':
+          insn |= ((value >> 1) & 0x1ff) << operand->shift;
+          break;
+        case 'R':
+          insn |= ((value >> 2) & 0x1ff) << operand->shift;
+          break;
+        }
+      shimm = value;
+      shimm_p = 1;
+      ls_operand[LS_OFFSET] = OP_SHIMM;
     }
- out:
+
   return insn;
 }
 
@@ -2040,88 +1860,14 @@ insert_st_syntax (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
 		  const char **errmsg)
 {
   /* do syntax check for ARCompact 'st' insn */
-  if (!arc_mach_a4)
-    {
-      /* TODO - check for validity of operands for ARCompact store insn */
+  /* TODO - check for validity of operands for ARCompact store insn */
 
-      if (addrwb_p)
-        {
-          if (ls_operand[LS_BASE] != OP_REG)
-            *errmsg = _("address writeback not allowed");
-          insn |= addrwb_p;
-        }
-      return insn;
-    }
-
-  /* Do syntax check for ARCtangent-A4 'st' insn.  */
-  if (ST_SYNTAX (OP_SHIMM, OP_REG, OP_NONE) && shimm != 0)
-    {
-      /* Change an illegal insn into a legal one, it's easier to
-	 do it here than to try to handle it during operand scan.  */
-      limm_p = 1;
-      limm = shimm;
-      shimm_p = 0;
-      shimm = 0;
-      insn= insn & ~(C(-1) | 511);
-      insn |= ARC_REG_LIMM << ARC_SHIFT_REGC;
-      ls_operand[LS_VALUE] = OP_LIMM;
-    }
-
-  if (ST_SYNTAX (OP_REG, OP_SHIMM, OP_NONE)
-      || ST_SYNTAX (OP_LIMM, OP_SHIMM, OP_NONE))
-    {
-      /* Try to salvage this syntax.  */
-      if (shimm & 0x1) /* Odd shimms won't work.  */
-	{
-	  if (limm_p) /* Do we have a limm already?  */
-	    *errmsg = _("impossible store");
-	  limm_p = 1;
-	  limm = shimm;
-	  shimm = 0;
-	  shimm_p = 0;
-	  insn = insn & ~(B(-1) | 511);
-	  insn |= B(ARC_REG_LIMM);
-	  ls_operand[LS_BASE] = OP_LIMM;
-	}
-      else
-	{
-	  shimm >>= 1;
-	  insn = insn & ~511;
-	  insn |= shimm;
-	  ls_operand[LS_OFFSET] = OP_SHIMM;
-	}
-    }
-  if (ST_SYNTAX (OP_SHIMM, OP_LIMM, OP_NONE))
-    limm += arc_limm_fixup_adjust (insn);
-  if (ST_SYNTAX (OP_LIMM, OP_SHIMM, OP_SHIMM) && (shimm * 2 == limm))
-    {
-      insn &= ~C (-1);
-      limm_p = 0;
-      limm = 0;
-      insn |= C (ARC_REG_SHIMM);
-      ls_operand[LS_VALUE] = OP_SHIMM;
-    }
-  if (!(   ST_SYNTAX (OP_REG,OP_REG,OP_NONE)
-	|| ST_SYNTAX (OP_REG,OP_LIMM,OP_NONE)
-	|| ST_SYNTAX (OP_REG,OP_REG,OP_SHIMM)
-	|| ST_SYNTAX (OP_REG,OP_SHIMM,OP_SHIMM)
-	|| (ST_SYNTAX (OP_SHIMM,OP_SHIMM,OP_NONE) && (shimm == 0))
-	|| ST_SYNTAX (OP_SHIMM,OP_LIMM,OP_NONE)
-	|| ST_SYNTAX (OP_SHIMM,OP_REG,OP_NONE)
-	|| ST_SYNTAX (OP_SHIMM,OP_REG,OP_SHIMM)
-	|| ST_SYNTAX (OP_SHIMM,OP_SHIMM,OP_SHIMM)
-	|| ST_SYNTAX (OP_LIMM,OP_SHIMM,OP_SHIMM)
-	|| ST_SYNTAX (OP_LIMM,OP_REG,OP_NONE)
-	|| ST_SYNTAX (OP_LIMM,OP_REG,OP_SHIMM)))
-    *errmsg = _("st operand error");
   if (addrwb_p)
     {
       if (ls_operand[LS_BASE] != OP_REG)
-	*errmsg = _("address writeback not allowed");
+        *errmsg = _("address writeback not allowed");
       insn |= addrwb_p;
     }
-  if (ST_SYNTAX(OP_SHIMM,OP_REG,OP_NONE) && shimm)
-    *errmsg = _("store value must be zero");
   return insn;
 }
 
@@ -2141,73 +1887,46 @@ insert_ld_syntax (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
     && ls_operand[LS_OFFSET] == (O)))
 
 #define X(x,b,m) ((unsigned)((x)&(((1<<m)-1)<<b))>>b)
-  int test = insn & I (-1);
 
   /* do syntax check for ARCompact 'ld' insn */
-  if (!arc_mach_a4)
-    {
-      /* TODO - check for validity of operands for ARCompact load insn */
+  /* TODO - check for validity of operands for ARCompact load insn */
 
-      /* Extract operand 6 bits of the A field from insn starting at bit
-         position 0.  */
-      unsigned char ac_reg_num = X(insn,0,6);
+  /* Extract operand 6 bits of the A field from insn starting at bit
+     position 0.  */
+  unsigned char ac_reg_num = X(insn,0,6);
 
-      if (addrwb_p)
-	{
-	  if (ls_operand[LS_BASE] != OP_REG
-	      /* .as is not actually an address write-back.  */
-	      && addrwb_p != 0xc00000  && (mods & ARC_OPERAND_ERROR))
-	    *errmsg = _("address writeback not allowed");
-	  insn |= addrwb_p;
-	}
-
-      /* Fixme: We should hash define register names to their respective
-         numbers and not use them as 29, 30, 31,....  */
-
-      if (0x20 <= ac_reg_num && ac_reg_num <= 0x3F)
-	{
-	  if (!((arc_ld_ext_mask >> (ac_reg_num - 32)) & 1))
-	    *errmsg = _("ld operand error: Instruction Error exception");
-	}
-
-      /* Ravi: operand validity checks for the ARC700 */
-      if (cpu_type == ARC_MACH_ARC7 && arc_user_mode_only)
-      /* if (arc_get_opcode_mach (arc_mach_type, 0) == ARC_MACH_ARC7) */
-	{
-	  if (ac_reg_num == 29 || ac_reg_num == 30)
-	    {
-	      *errmsg = _("ld operand error: Privilege Violation exception");
-	    }
-	}
-      if ((cpu_type & ARC_MACH_ARCV2) && arc_user_mode_only && (ac_reg_num == 29))
-	{
-	  *errmsg = _("ld operand error: Privilege Violation exception");
-	}
-
-      return insn;
-    }
-
-  /* do syntax check for ARCtangent-A4 'ld' insn */
-  if (!(test == I (1)))
-    {
-      if ((ls_operand[LS_DEST] == OP_SHIMM || ls_operand[LS_BASE] == OP_SHIMM
-	   || ls_operand[LS_OFFSET] == OP_SHIMM))
-	*errmsg = _("invalid load/shimm insn");
-    }
-  if (!(LD_SYNTAX(OP_REG,OP_REG,OP_NONE)
-	|| LD_SYNTAX(OP_REG,OP_REG,OP_REG)
-	|| LD_SYNTAX(OP_REG,OP_REG,OP_SHIMM)
-	|| (LD_SYNTAX(OP_REG,OP_LIMM,OP_REG) && !(test == I(1)))
-	|| (LD_SYNTAX(OP_REG,OP_REG,OP_LIMM) && !(test == I(1)))
-	|| LD_SYNTAX(OP_REG,OP_SHIMM,OP_SHIMM)
-	|| (LD_SYNTAX(OP_REG,OP_LIMM,OP_NONE) && (test == I(1)))))
-    *errmsg = _("ld operand error");
   if (addrwb_p)
     {
-      if ((ls_operand[LS_BASE] != OP_REG) && (mods & ARC_OPERAND_ERROR))
-	 *errmsg = _("address writeback not allowed");
+      if (ls_operand[LS_BASE] != OP_REG
+          /* .as is not actually an address write-back.  */
+          && addrwb_p != 0xc00000  && (mods & ARC_OPERAND_ERROR))
+        *errmsg = _("address writeback not allowed");
       insn |= addrwb_p;
     }
+
+  /* Fixme: We should hash define register names to their respective
+     numbers and not use them as 29, 30, 31,....  */
+
+  if (0x20 <= ac_reg_num && ac_reg_num <= 0x3F)
+    {
+      if (!((arc_ld_ext_mask >> (ac_reg_num - 32)) & 1))
+        *errmsg = _("ld operand error: Instruction Error exception");
+    }
+
+  /* Ravi: operand validity checks for the ARC700 */
+  if (cpu_type == ARC_MACH_ARC7 && arc_user_mode_only)
+    /* if (arc_get_opcode_mach (arc_mach_type, 0) == ARC_MACH_ARC7) */
+    {
+      if (ac_reg_num == 29 || ac_reg_num == 30)
+        {
+          *errmsg = _("ld operand error: Privilege Violation exception");
+        }
+    }
+  if ((cpu_type & ARC_MACH_ARCV2) && arc_user_mode_only && (ac_reg_num == 29))
+    {
+      *errmsg = _("ld operand error: Privilege Violation exception");
+    }
+
   return insn;
 }
 
@@ -2364,7 +2083,7 @@ insert_reladdr (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
 		long value,
 		const char **errmsg)
 {
-  if (!arc_mach_a4 && ('h' == operand->fmt))
+  if ('h' == operand->fmt)
     {
       if (value & 3)
 	*errmsg = _("branch address not on 4 byte boundary");
@@ -2375,7 +2094,7 @@ insert_reladdr (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
       /* Insert most significant 10-bits.  */
       insn |= ((value >> 9) & 0x3ff) << 6;
     }
-  else if (!arc_mach_a4 && ('H' == operand->fmt))
+  else if ('H' == operand->fmt)
     {
       if (value & 3)
 	*errmsg = _("branch address not on 4 byte boundary");
@@ -2388,7 +2107,7 @@ insert_reladdr (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
       /* Insert most significant 4-bits.  */
       insn |= (value >> 19) & 0xf;
     }
-  else if (!arc_mach_a4 && ('i' == operand->fmt))
+  else if ('i' == operand->fmt)
     {
       if (value & 1)
 	*errmsg = _("branch address not on 2 byte boundary");
@@ -2399,7 +2118,7 @@ insert_reladdr (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
       /* Insert most significant 10-bits.  */
       insn |= ((value >> 10) & 0x3ff) << 6;
     }
-  else if (!arc_mach_a4 && ('I' == operand->fmt))
+  else if ('I' == operand->fmt)
     {
       if (value & 1)
 	*errmsg = _("branch address not on 2 byte boundary");
@@ -2412,33 +2131,33 @@ insert_reladdr (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
       /* Insert most significant 4-bits.  */
       insn |= (value >> 20) & 0xf;
     }
-  else if (!arc_mach_a4 && ('d' == operand->fmt))
+  else if ('d' == operand->fmt)
     {
       /* Insert least significant 7-bits.  */
       insn |= ((value >> 1) & 0x7f) << operand->shift;
       /* Insert most significant bit.  */
       insn |= (((value >> 1) & 0x80) >> 7) << 15;
     }
-  else if (!arc_mach_a4 && ('y' == operand->fmt))
+  else if ('y' == operand->fmt)
     {
       /* Insert most significant 6-bits of 7-bit unsigned immediate value.  */
       insn |= ((value >> 1) & 0x3f) << operand->shift;
     }
-  else if (!arc_mach_a4 && ('Y' == operand->fmt))
+  else if ('Y' == operand->fmt)
     {
       /* Insert bit-1 to bit-6 of 13-bit signed immediate value.  */
       insn |= ((value >> 1) & 0x3f) << operand->shift;
       /* Insert bit-7 to bit-13 of 13-bit signed immediate value.  */
       insn |= ((value >> 1) & 0xfc0) >> 6;
     }
-  else if (!arc_mach_a4 && (('s' == operand->fmt) || ('S' == operand->fmt)
-			|| ('Z' == operand->fmt)))
+  else if (('s' == operand->fmt) || ('S' == operand->fmt)
+            || ('Z' == operand->fmt))
     {
       if (value & 1)
 	*errmsg = _("branch address not on 2 byte boundary");
       insn |= ((value >> 1) & ((1 << operand->bits) - 1)) << operand->shift;
     }
-  else if (!arc_mach_a4 && ('W' == operand->fmt))
+  else if ('W' == operand->fmt)
     {
       if (value & 3)
 	*errmsg = _("branch address not on 4 byte boundary");
@@ -2446,7 +2165,11 @@ insert_reladdr (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
     }
   else
     {
-      /* for ARCtangent-A4 */
+      /* TODO: When support for ARCtangent-A4 was removed this code was
+         left over, and included a comment right here, that implied this
+         code would only ever be reached for the A4 architecture, in which
+         case this code is now unreachable.  We should consider replacing
+         this code with an error.  */
 
       if (value & 3)
 	*errmsg = _("branch address not on 4 byte boundary");
@@ -4943,65 +4666,42 @@ arc_opcode_init_tables (int flags)
     {
       int i;
 
-      if (arc_mach_a4)
+      /* Initialize operand map table for ARCompact */
+      memset (arc_operand_map_ac, 0, sizeof (arc_operand_map_ac));
+
+      for (i = 0; i < (int) ELEMENTS_IN (arc_operands_ac); ++i)
         {
-          /* Initialize operand map table for ARCtanget-A4 */
-          memset (arc_operand_map_a4, 0, sizeof (arc_operand_map_a4));
+          /*Just make sure that no strange number is comming through*/
+          assert(arc_operands_ac[i].fmt < 512);
+          arc_operand_map_ac[arc_operands_ac[i].fmt] = i;
+        }
 
-          for (i = 0; i < (int) ELEMENTS_IN (arc_operands_a4); ++i)
-	    {
-	      /*Just make sure that no strange number is comming through*/
-	      assert(arc_operands_a4[i].fmt < 512);
-	      arc_operand_map_a4[arc_operands_a4[i].fmt] = i;
-	    }
+      /* Set the pointers to operand table, operand map table */
+      arc_operands = arc_operands_ac;
+      arc_operand_map = arc_operand_map_ac;
 
-          /* Set the pointers to operand table, operand map table */
-          arc_operands        = arc_operands_a4;
-          arc_operand_map     = arc_operand_map_a4;
-          arc_reg_names       = arc_reg_names_a4;
-          arc_reg_names_count = ELEMENTS_IN(arc_reg_names_a4);
-          arc_suffixes        = arc_suffixes_a4;
-          arc_suffixes_count  = ELEMENTS_IN(arc_suffixes_a4);
+      /* Codito :: Ideally all the checking should be on this
+         basis and not on flags shared across the libraries as seems
+         to be the case for A4. Would have to check that and test
+         it at some point in time.
+      */
+      if (ARC_OPCODE_CPU(flags) == ARC_MACH_ARC7)
+        {
+          arc_reg_names       = arc_reg_names_a700;
+          arc_reg_names_count = ELEMENTS_IN(arc_reg_names_a700);
+        }
+      else if (ARC_OPCODE_CPU(flags) & ARC_MACH_ARCV2)
+        {
+          arc_reg_names       = arc_reg_names_em;
+          arc_reg_names_count = ELEMENTS_IN(arc_reg_names_em);
         }
       else
         {
-          /* Initialize operand map table for ARCompact */
-          memset (arc_operand_map_ac, 0, sizeof (arc_operand_map_ac));
-
-          for (i = 0; i < (int) ELEMENTS_IN (arc_operands_ac); ++i)
-	    {
-	      /*Just make sure that no strange number is comming through*/
-	      assert(arc_operands_ac[i].fmt < 512);
-	      arc_operand_map_ac[arc_operands_ac[i].fmt] = i;
-	    }
-
-          /* Set the pointers to operand table, operand map table */
-          arc_operands = arc_operands_ac;
-          arc_operand_map = arc_operand_map_ac;
-
-	  /* Codito :: Ideally all the checking should be on this
-	     basis and not on flags shared across the libraries as seems
-	     to be the case for A4. Would have to check that and test
-	     it at some point in time.
-	  */
-	  if (ARC_OPCODE_CPU(flags) == ARC_MACH_ARC7)
-	    {
-	      arc_reg_names       = arc_reg_names_a700;
-	      arc_reg_names_count = ELEMENTS_IN(arc_reg_names_a700);
-	    }
-	  else if (ARC_OPCODE_CPU(flags) & ARC_MACH_ARCV2)
-	    {
-	      arc_reg_names       = arc_reg_names_em;
-	      arc_reg_names_count = ELEMENTS_IN(arc_reg_names_em);
-	    }
-	  else
-	    {
-	      arc_reg_names       = arc_reg_names_a500600;
-	      arc_reg_names_count = ELEMENTS_IN(arc_reg_names_a500600);
-	    }
-          arc_suffixes       = arc_suffixes_ac;
-          arc_suffixes_count = ELEMENTS_IN(arc_suffixes_ac);
+          arc_reg_names       = arc_reg_names_a500600;
+          arc_reg_names_count = ELEMENTS_IN(arc_reg_names_a500600);
         }
+      arc_suffixes       = arc_suffixes_ac;
+      arc_suffixes_count = ELEMENTS_IN(arc_suffixes_ac);
 
       memset (opcode_map, 0, sizeof (opcode_map));
       memset (icode_map,  0, sizeof (icode_map));
@@ -5148,7 +4848,6 @@ int ac_get_load_sdasym_insn_type(arc_insn, int);
 int ac_get_store_sdasym_insn_type(arc_insn, int);
 int arc_insn_not_jl(arc_insn insn);
 int arc_insn_is_j(arc_insn insn);
-int a4_brk_insn(arc_insn insn);
 int ac_brk_s_insn(arc_insn insn);
 int ac_branch_or_jump_insn(arc_insn insn, int compact_insn_16);
 int ARC700_rtie_insn(arc_insn insn);
@@ -5166,16 +4865,6 @@ arc_insn_not_jl (arc_insn insn)
 {
   return ((insn & (I(-1)|A(-1)|C(-1)|R(-1,7,1)|R(-1,9,1)))
 	  != (I(0x7) | R(-1,9,1)));
-}
-
-
-/* Returns true if insn being encoded is a brk insn
-   It can be used only for A4 architecture */
-int
-a4_brk_insn(arc_insn insn)
-
-{
-  return insn == 0x1ffffe00;
 }
 
 
@@ -5561,11 +5250,11 @@ arc_operand_type (int opertype)
   switch (opertype)
     {
     case 0:
-      return (arc_mach_a4 ? COND : COND_AC);
+      return (COND_AC);
     case 1:
-      return (arc_mach_a4 ? REG : REG_AC);
+      return (REG_AC);
     case 2:
-      return (arc_mach_a4 ? AUXREG : AUXREG_AC);
+      return (AUXREG_AC);
     default:
       abort();
     }
@@ -5581,72 +5270,72 @@ get_ext_suffix (char *s, char field)
   ctype = 0;
   switch(field){
   case 'e' : 
-      ctype = arc_mach_a4 ? CACHEBYPASS5 : 0;
+      ctype = 0;
       break;
   case 'f' : 
-      ctype = arc_mach_a4 ? FLAG : FLAG_AC;
+      ctype = FLAG_AC;
       break;
   case 'j' : 
-      ctype = arc_mach_a4 ? JUMPFLAGS : 0;
+      ctype = 0;
       break;
   case 'p' : 
-      ctype = arc_mach_a4 ? 0 : ADDRESS9_AC;
+      ctype = ADDRESS9_AC;
       break;
   case 'q' : 
-      ctype = arc_mach_a4 ? COND : COND_AC;
+      ctype = COND_AC;
       break;
   case 't' : 
-      ctype = arc_mach_a4 ? 0 : SIZE7_AC;
+      ctype = SIZE7_AC;
       break;
   case 'v' : 
-      ctype = arc_mach_a4 ? ADDRESS24 : CACHEBYPASS11_AC;
+      ctype = CACHEBYPASS11_AC;
       break;
   case 'w' : 
-      ctype = arc_mach_a4 ? ADDRESS3 : ADDRESS3_AC;
+      ctype = ADDRESS3_AC;
       break;
   case 'x' : 
-      ctype = arc_mach_a4 ? SIGN0 : SIGN6_AC;
+      ctype = SIGN6_AC;
       break;
   case 'y' : 
-      ctype = arc_mach_a4 ? SIZE22 : 0;
+      ctype = 0;
       break;
   case 'z' : 
-      ctype = arc_mach_a4 ? SIZE1 : SIZE1_AC;
+      ctype = SIZE1_AC;
       break;
   case 'D' : 
-      ctype = arc_mach_a4 ? CACHEBYPASS26 : CACHEBYPASS5_AC;
+      ctype = CACHEBYPASS5_AC;
       break;
   case 'E' : 
-      ctype = arc_mach_a4 ? CACHEBYPASS14 : 0;
+      ctype = 0;
       break;
   case 'P' : 
-      ctype = arc_mach_a4 ? 0 : ADDRESS22_AC;
+      ctype = ADDRESS22_AC;
       break;
   case 'T' : 
-      ctype = arc_mach_a4 ? 0 : SIZE17_AC;
+      ctype = SIZE17_AC;
       break;
   case 'V' : 
-      ctype = arc_mach_a4 ? 0 : CACHEBYPASS15_AC;
+      ctype = CACHEBYPASS15_AC;
       break;
   case 'W' : 
-      ctype = arc_mach_a4 ? ADDRESS12 : 0;
+      ctype = 0;
       break;
   case 'X' : 
-      ctype = arc_mach_a4 ? SIGN9 : SIGN16_AC;
+      ctype = SIGN16_AC;
       break;
   case 'Z' : 
-      ctype = arc_mach_a4 ? SIZE10 : 0;
+      ctype = 0;
       break;
   case '&' : 
-      ctype = arc_mach_a4 ? 0 : ADDRESS22S_AC;
+      ctype = ADDRESS22S_AC;
       break;
   default : 
-      ctype = arc_mach_a4 ? COND : COND_AC;
+      ctype = COND_AC;
       break;
   } /* end switch(field) */
 
   if(ctype == 0)
-      ctype = arc_mach_a4 ? COND : COND_AC;
+      ctype = COND_AC;
 
   while (suffix){
     if ((suffix->operand.type == ctype)
