@@ -6362,7 +6362,7 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 			      as_warn ("The constant must be 4-byte aligned");
 			      match_failed = 1;
 			    }
-			  if((value < 0) || (value > 63))
+			  if((value < 0) || (value > 31))
 			    {
 			      match_failed = 1;
 			    }

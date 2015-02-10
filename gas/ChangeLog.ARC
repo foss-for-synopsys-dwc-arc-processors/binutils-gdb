@@ -1,3 +1,7 @@
+2015-02-10 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* config/tc-arc.c: Fix selection of ld_s r1,[gp, s11] opcode.
+
 2014-12-12 Claudiu Zissulescu <claziss@synopsys.com>
 
 	* config/tc-arc.c: mbarrel-shifter option selects the right
