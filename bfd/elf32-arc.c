@@ -1854,8 +1854,13 @@ arc_tls_transition (const Elf_Internal_Rela *rel,
 	{
 	  if (contents)
 	    {
-	      /* add r0,pcl,symbol@tlsgd -> add r0,rtp,symbol@tpoff */
-	      long insn = 0x20000F80 | (rtp & 7) << 24 | (rtp & 56) << (12-3);
+	      long insn = bfd_get_32_me (abfd, contents + rel->r_offset - 4);
+              /* Verify it's: add REG,pcl,symbol@tlsgd */
+              BFD_ASSERT ((insn & 0xffffffc0) == 0x27007f80);
+	      /* add REG,pcl,symbol@tlsgd -> add REG,rtp,symbol@tpoff */
+	      insn = ((insn & 0xf8ff8fff)
+                      | (rtp & 0x7) << 24
+                      | ((rtp >> 3) & 0x7) << 12);
 	      bfd_put_32_me (abfd, insn, contents + rel->r_offset - 4);
 	    }
 	  return R_ARC_TLS_LE_32;

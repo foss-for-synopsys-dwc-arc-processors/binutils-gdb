@@ -1,3 +1,8 @@
+2015-02-20  Andrew Burgess  <andrew.burgess@embecosm.com>
+
+	* elf32-arc.c (arc_tls_transition): Don't assume register
+	destination is r0.
+
 2014-11-18  Andrew Burgess  <andrew.burgess@embecosm.com>
 
 	* elf32-arc.c (elf_arc_check_relocs): Set non_got_ref when
