@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!-- Copyright (C) 2013-2015 Synopsys Inc.
+
+     Contributor Jeremy Bennett <jeremy.bennett@embecosm.com> on behalf of
+     Synopsys Inc.
+     Contributor Anton Kolesov <Anton.Kolesov@synopsys.com>
+
+     Copying and distribution of this file, with or without modification,
+     are permitted in any medium without royalty provided the copyright
+     notice and this notice are preserved.  -->
+
+<!DOCTYPE feature SYSTEM "gdb-target.dtd">
+<feature name="org.gnu.gdb.arc.aux-compatible">
+  <!-- Here register names for ARCompact are used. Some registers has been
+  renamed in ARC v2. Compatible register feature is evil in it's nature and
+  should be replaced with proper register definitions, which really represent
+  target, thus it is considered possible to use same register feature for
+  ARCompact and ARC v2 in this situation. -->
+
+ <reg name="status32_l1"  bitsize="32" group="" regnum="68"/>
+ <reg name="status32_l2"  bitsize="32" group=""/>
+ <reg name="aux_irq_lv12" bitsize="32" group=""/>
+ <reg name="aux_irq_lev"  bitsize="32" group=""/>
+ <reg name="aux_irq_hint" bitsize="32" group=""/>
+ <reg name="eret"         bitsize="32" group="" type="code_ptr"/>
+ <reg name="erbta"        bitsize="32" group="" type="code_ptr"/>
+ <reg name="erstatus"     bitsize="32" group=""/>
+ <reg name="ecr"          bitsize="32" group=""/>
+ <reg name="efa"          bitsize="32" group=""/>
+ <reg name="icause1"      bitsize="32" group=""/>
+ <reg name="icause2"      bitsize="32" group=""/>
+ <reg name="aux_ienable"  bitsize="32" group=""/>
+ <reg name="aux_itrigger" bitsize="32" group=""/>
+ <reg name="bta"          bitsize="32" group="" type="code_ptr"/>
+ <reg name="bta_l1"       bitsize="32" group="" type="code_ptr"/>
+ <reg name="bta_l2"       bitsize="32" group="" type="code_ptr"/>
+ <reg name="aux_irq_pulse_cancel" bitsize="32" group=""/>
+ <reg name="aux_irq_pending"      bitsize="32" group=""/>
+</feature>
