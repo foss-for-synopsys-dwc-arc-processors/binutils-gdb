@@ -69,29 +69,44 @@
 
    ### Core register set.
 
-   Old GDB used to have a completely arbitrary mapping, and that mapping
-   differed between ELF32 and LINUX tool chains. In this version we use the
-   direct address number for the core registers (r0 through r63).
+   We use the direct address number for the core registers (r0 through r63).
+   That makes for simpler code of GDB, since GDB has some operations on
+   registers depending on their purpose (SP, PC, argument registers, callee
+   saved registers, return value registers...), and those operations are much
+   easier to implement when register numbers are fixed even if some registers
+   in between do not exist, like with extension core registers.
 
-   `#define` constants are defined for named registers, but not the numbered
-   core registers r0 through r25 and the optional extension core registers
-   r32 through r59.
+   `enum` constants are defined for named registers and some important ones
+   (first arg, last arg, etc), but not for undistinguished, or extension core
+   registers.
 
    ABI usage of core general registers, all having rw access:
-   - r0  .. r3:   args
-   - r4  .. r7:   args (32-bit instructions only)
-   - r8  .. r9:   temp regs (32 bit instructions only)
-   - r10 .. r11:  temp regs (32 bit & reduced instructsion set only)
-   - r12 .. r15:  temp regs
-   - r16 .. r25:  saved reg
+     Register     Use                     16bit instr access    16 reg file
+   - r0  .. r3:   arguments               +                     +
+   - r4  .. r7:   arguments
+   - r8  .. r9:   temp regs
+   - r10 .. r11:  temp regs                                     +
+   - r12:         temp reg                +                     +
+   - r13 .. r15:  callee-saved regs       +                     +
+   - r16 .. r25:  callee-saved regs
+   - when a return value is stored in registers it is in either R0 or in the
+     pair (R0,R1).
 
-   ### Auxilliary registers.
+   NB: PRM for ARCompact and ARC v2 give different designations for r12-r15
+   registers, which causes some discrepancy between documents. However all
+   Synopsys tools (GDB, GCC, MetaWare, etc) follow designation given here.
 
-   These are the sequential register numbers by which these are known in
-   GDB.
+   ### Auxiliary registers.
 
-   @todo For now we hardcode only the key registers. Eventually these should
-         be sorted out through XML.
+   These are the sequential register numbers by which these are known in GDB.
+   Four registers have fixed numbers: PC, STATUS32, LP_START and LP_END. For PC
+   and STATUS32 that is because those are special registers, assigning them
+   permanent regnum makes GDB code simpler. LP_ registers got stuck in between
+   in the old-style compatible register set, and to allow same code path to be
+   used for both new register sets and old one, those registers have been
+   allowed to stay in between. Besides they are pretty important so in most
+   cases we would like them to be available anyway, although technically they
+   are optional.
 
    ### Simulator register numbers
 
@@ -102,278 +117,9 @@
    For the auxilliary registers, the numbering follows the ARC architecture
    numbering, so we must provide a mapping (the simulator has an API call to
    which we hook in).
-
-   @todo This mapping should be provide via the XML file.
-
-   ## ABI related processor details
-
-   - r0  .. r7 are the registers used to pass arguments in function calls
-   - r13 .. r26 are the callee-saved registers
-   - when a return value is stored in registers it is in either R0 or in the
-     pair (R0,R1).
-
-   
-   ### Other comments
-
-   We'll eventually use Franck Jullien's OpenRISC GDB trick, of only accessing
-   the core registers using G/g packets, requiring aux registers to be
-   accessed using P/p packets. That way a G packet need not be too large.
-
-
-   However, in the short term, we are only supporting a modest number of
-   fixed aux regs, so we just use the G packet.                               */
+*/
 /* -------------------------------------------------------------------------- */
 
-/* -------------------------------------------------------------------------- */
-/* Opella ARC600 register numbering.                                          */
-/* -------------------------------------------------------------------------- */
-
-#define OA6_R0                         0
-#define OA6_R25                       25
-#define OA6_GP                        26
-#define OA6_FP                        27
-#define OA6_SP                        28
-#define OA6_ILINK1                    29
-#define OA6_ILINK2                    30
-#define OA6_BLINK                     31
-#define OA6_LP_COUNT                  32
-#define OA6_PCL                       33
-#define OA6_AUX_STATUS                34
-#define OA6_AUX_SEMAPHORE             35
-#define OA6_AUX_LP_START              36
-#define OA6_AUX_LP_END                37
-#define OA6_AUX_IDENTITY              38
-#define OA6_AUX_DEBUG                 39
-#define OA6_AUX_PC                    40
-#define OA6_AUX_STATUS32              41
-#define OA6_AUX_STATUS32_L1           42
-#define OA6_AUX_STATUS32_L2           43
-#define OA6_AUX_COUNT0                44
-#define OA6_AUX_CONTROL0              45
-#define OA6_AUX_LIMIT0                46
-#define OA6_AUX_INT_VECTOR_BASE       47
-#define OA6_AUX_AUX_MACMODE           48
-#define OA6_AUX_AUX_IRQ_LV12          49
-#define OA6_AUX_COUNT1                50
-#define OA6_AUX_CONTROL1              51
-#define OA6_AUX_LIMIT1                52
-#define OA6_AUX_AUX_IRQ_LEV           53
-#define OA6_AUX_AUX_IRQ_HINT          54
-#define OA6_AUX_IC_IVIC               55
-#define OA6_AUX_IC_CTRL               56
-#define OA6_AUX_DC_IVDC               57
-#define OA6_AUX_DC_CTRL               58
-#define OA6_AUX_AMV0                  59
-#define OA6_AUX_AMM0                  60
-#define OA6_AUX_AC0                   61
-#define OA6_BCR_DCCM_BASE_BUILD       63
-#define OA6_BCR_CRC_BASE_BUILD        64
-#define OA6_BCR_DVBF_BUILD            65
-#define OA6_BCR_TEL_INSTR_BUILD       66
-#define OA6_BCR_MEMSUBSYS             68
-#define OA6_BCR_VECBASE_AC_BUILD      69
-#define OA6_BCR_P_BASE_ADDRESS        70
-#define OA6_BCR_RF_BUILD              75
-#define OA6_BCR_MMU_BUILD             76
-#define OA6_BCR_ARCANGEL_BUILD        77
-#define OA6_BCR_DCACHE_BUILD          79
-#define OA6_BCR_MADI_BUILD            80
-#define OA6_BCR_DCCM_BUILD            81
-#define OA6_BCR_TIMER_BUILD           82
-#define OA6_BCR_AP_BUILD              83
-#define OA6_BCR_ICACHE_BUILD          84
-#define OA6_BCR_ICCM_BUILD            85
-#define OA6_BCR_DSPRAM_BUILD          86
-#define OA6_BCR_MAC_BUILD             87
-#define OA6_BCR_MULTIPLY_BUILD        88
-#define OA6_BCR_SWAP_BUILD            99
-#define OA6_BCR_NORM_BUILD            90
-#define OA6_BCR_MINMAX_BUILD          91
-#define OA6_BCR_BARREL_BUILD          92
-
-#define OA6_NUM_CORE_REGS    (OA6_PCL + 1)
-#define OA6_NUM_REGS         (OA6_BCR_BARREL_BUILD + 1)
-#define OA6_NUM_PSEUDO_REGS   0
-
-/* -------------------------------------------------------------------------- */
-/* Opella ARC700 register numbering.                                          */
-/* -------------------------------------------------------------------------- */
-
-#define OA7_R0                         0
-#define OA7_R25                       25
-#define OA7_GP                        26
-#define OA7_FP                        27
-#define OA7_SP                        28
-#define OA7_ILINK1                    29
-#define OA7_ILINK2                    30
-#define OA7_BLINK                     31
-#define OA7_LP_COUNT                  32
-#define OA7_PCL                       33
-#define OA7_AUX_STATUS                34
-#define OA7_AUX_LP_START              35
-#define OA7_AUX_LP_END                36
-#define OA7_AUX_IDENTITY              37
-#define OA7_AUX_DEBUG                 38
-#define OA7_AUX_PC                    39
-#define OA7_AUX_STATUS32              40
-#define OA7_AUX_STATUS32_L1           41
-#define OA7_AUX_STATUS32_L2           42
-#define OA7_AUX_COUNT0                43
-#define OA7_AUX_CONTROL0              44
-#define OA7_AUX_LIMIT0                45
-#define OA7_AUX_INT_VECTOR_BASE       46
-#define OA7_AUX_AUX_MACMODE           47
-#define OA7_AUX_AUX_IRQ_LV12          48
-#define OA7_AUX_COUNT1                49
-#define OA7_AUX_CONTROL1              50
-#define OA7_AUX_LIMIT1                51
-#define OA7_AUX_AUX_IRQ_LEV           52
-#define OA7_AUX_AUX_IRQ_HINT          53
-#define OA7_AUX_ERET                  54
-#define OA7_AUX_ERBTA                 55
-#define OA7_AUX_ERSTATUS              56
-#define OA7_AUX_ECR                   57
-#define OA7_AUX_EFA                   58
-#define OA7_AUX_ICAUSE1               59
-#define OA7_AUX_ICAUSE2               60
-#define OA7_AUX_AUX_IENABLE           61
-#define OA7_AUX_AUX_ITRIGGER          62
-#define OA7_AUX_XPU                   63
-#define OA7_AUX_BTA                   64
-#define OA7_AUX_BTA_L1                65
-#define OA7_AUX_BTA_L2                66
-#define OA7_AUX_AUX_IRQ_PULSE_CANCEL  67
-#define OA7_AUX_AUX_IRQ_PENDING       68
-#define OA7_AUX_IC_IVIC               69
-#define OA7_AUX_IC_CTRL               70
-#define OA7_AUX_DC_IVDC               71
-#define OA7_AUX_DC_CTRL               72
-#define OA7_AUX_AMV0                  73
-#define OA7_AUX_AMM0                  74
-#define OA7_AUX_AC0                   75
-#define OA7_BCR_DCCM_BASE_BUILD       77
-#define OA7_BCR_CRC_BASE_BUILD        78
-#define OA7_BCR_BTA_LINK_BUILD        79
-#define OA7_BCR_DVBF_BUILD            80
-#define OA7_BCR_TEL_INSTR_BUILD       81
-#define OA7_BCR_MEMSUBSYS             83
-#define OA7_BCR_VECBASE_AC_BUILD      84
-#define OA7_BCR_P_BASE_ADDRESS        85
-#define OA7_BCR_MMU_BUILD             91
-#define OA7_BCR_ARCANGEL_BUILD        92
-#define OA7_BCR_DCACHE_BUILD          94
-#define OA7_BCR_MADI_BUILD            95
-#define OA7_BCR_DCCM_BUILD            96
-#define OA7_BCR_TIMER_BUILD           97
-#define OA7_BCR_AP_BUILD              98
-#define OA7_BCR_ICACHE_BUILD          99
-#define OA7_BCR_ICCM_BUILD           100
-#define OA7_BCR_DSPRAM_BUILD         101
-#define OA7_BCR_MAC_BUILD            102
-#define OA7_BCR_MULTIPLY_BUILD       103
-#define OA7_BCR_SWAP_BUILD           104
-#define OA7_BCR_NORM_BUILD           105
-#define OA7_BCR_MINMAX_BUILD         106
-#define OA7_BCR_BARREL_BUILD         107
-
-#define OA7_NUM_CORE_REGS    (OA7_PCL + 1)
-#define OA7_NUM_REGS         (OA7_BCR_BARREL_BUILD + 1)
-#define OA7_NUM_PSEUDO_REGS   0
-
-/* -------------------------------------------------------------------------- */
-/* ARC v2 EM register numbering.                                              */
-/* -------------------------------------------------------------------------- */
-
-#define OAEM_R0                         0
-#define OAEM_R25                        25
-#define OAEM_GP                         26
-#define OAEM_FP                         27
-#define OAEM_SP                         28
-#define OAEM_ILINK                      29
-#define OAEM_R30                        30
-#define OAEM_BLINK                      31
-#define OAEM_LP_COUNT                   32
-#define OAEM_PCL                        33
-#define OAEM_AUX_IDENTITY               34
-#define OAEM_AUX_PC                     35
-#define OAEM_AUX_STATUS32               36
-#define OAEM_AUX_BTA                    37
-#define OAEM_AUX_ECR                    38
-#define OAEM_AUX_INT_VECTOR_BASE        39
-#define OAEM_AUX_ERET                   40
-#define OAEM_AUX_ERBTA                  41
-#define OAEM_AUX_ERSTATUS               42
-#define OAEM_AUX_LP_START               43
-#define OAEM_AUX_LP_END                 44
-#define OAEM_AUX_JLI_BASE               45
-#define OAEM_AUX_LDI_BASE               46
-#define OAEM_AUX_EI_BASE                47
-#define OAEM_AUX_DEBUG                  48
-#define OAEM_AUX_DEBUGI                 49
-#define OAEM_AUX_COUNT0                 50
-#define OAEM_AUX_CONTROL0               51
-#define OAEM_AUX_LIMIT0                 52
-#define OAEM_AUX_COUNT1                 53
-#define OAEM_AUX_CONTROL1               54
-#define OAEM_AUX_LIMIT1                 55
-#define OAEM_AUX_IC_IVIC                56
-#define OAEM_AUX_IC_CTRL                57
-#define OAEM_AUX_IC_LIL                 58
-#define OAEM_AUX_IC_IVIL                59
-#define OAEM_AUX_IC_RAM_ADDR            60
-#define OAEM_AUX_IC_TAG                 61
-#define OAEM_AUX_IC_DATA                62
-#define OAEM_AUX_DC_IVDC                63
-#define OAEM_AUX_DC_CTRL                64
-#define OAEM_AUX_DC_FLSH                65
-#define OAEM_AUX_CACHE_LIMIT            66
-#define OAEM_AUX_DC_LDL                 67
-#define OAEM_AUX_DC_IVDL                68
-#define OAEM_AUX_DC_FLDL                69
-#define OAEM_AUX_DC_RAM_ADDR            70
-#define OAEM_AUX_DC_TAG                 71
-#define OAEM_AUX_DC_DATA                72
-#define OAEM_AUX_ICCM                   73
-#define OAEM_AUX_DCCM                   74
-#define OAEM_AUX_SMART_CONTROL          75
-#define OAEM_AUX_SMART_DATA             76
-#define OAEM_AUX_IRQ_CTRL               77
-#define OAEM_AUX_IRQ_PRIORITY_PENDING   78
-#define OAEM_AUX_IRQ_ACT                79
-#define OAEM_AUX_IRQ_SELECT             80
-#define OAEM_AUX_IRQ_PRIORITY           81
-#define OAEM_AUX_IRQ_ENABLE             82
-#define OAEM_AUX_IRQ_TRIGGER            83
-#define OAEM_AUX_IRQ_PENDING            84
-#define OAEM_AUX_IRQ_PULSE_CANCEL       85
-#define OAEM_AUX_IRQ_STATUS             86
-#define OAEM_AUX_IRQ_HINT               87
-#define OAEM_AUX_ICAUSE                 88
-#define OAEM_AUX_USER_SP                89
-#define OAEM_AUX_AMV0                   90
-#define OAEM_AUX_AMM0                   91
-#define OAEM_AUX_AC0                    92
-#define OAEM_BCR_VER                    93
-#define OAEM_BCR_BTA_LINK_BUILD         94
-#define OAEM_BCR_VECBASE_AC_BUILD       95
-#define OAEM_BCR_RF_BUILD               96
-#define OAEM_BCR_ISA_CONFIG             97
-#define OAEM_BCR_DCACHE_BUILD           98
-#define OAEM_BCR_DCCM_BUILD             99
-#define OAEM_BCR_SMART_BUILD            100
-#define OAEM_BCR_TIMER_BUILD            101
-#define OAEM_BCR_AP_BUILD               102
-#define OAEM_BCR_ICACHE_BUILD           103
-#define OAEM_BCR_ICCM_BUILD             104
-#define OAEM_BCR_MULTIPLY_BUILD         105
-#define OAEM_BCR_SWAP_BUILD             106
-#define OAEM_BCR_NORM_BUILD             107
-#define OAEM_BCR_MINMAX_BUILD           108
-#define OAEM_BCR_BARREL_BUILD           109
-#define OAEM_BCR_IRQ_BUILD              110
-#define OAEM_NUM_CORE_REGS    (OAEM_PCL + 1)
-#define OAEM_NUM_REGS         (OAEM_BCR_IRQ_BUILD + 1)
-#define OAEM_NUM_PSEUDO_REGS   0
 
 /* -------------------------------------------------------------------------- */
 /* Simulator aux reg numbers                                                  */
@@ -407,108 +153,78 @@
 /* GDB register numbering                                                     */
 /* -------------------------------------------------------------------------- */
 
-/* Core register definitions. */
-#define ARC_GP_REGNUM               26	/*!< Access __rw__ */
-#define ARC_FP_REGNUM               27	/*!< Access __rw__ */
-#define ARC_SP_REGNUM               28	/*!< Access __rw__ */
-#define ARC_ILINK1_REGNUM           29	/*!< Access __RW__ */
-#define ARC_ILINK2_REGNUM           30	/*!< Access __RW__ */
-#define ARC_BLINK_REGNUM            31	/*!< Access __rw__ */
+/* Certain limitations are imposed on GDB register numbers to simplify logic
+ * in the GDB. Those limitations applie to both ARCompact and ARC v2.
+ *   1. ARC can have up to 64 core registers, and each one of them has same GDB
+ *   regnum as an architectural number. So R0 always has regnum 0, LP_COUNT
+ *   always has regnum 60.
+ *   2. PC always has regnum 64. That register is mandatory.
+ *   3. LP_START and LP_END has regnums 65 and 66 respectively, those registers
+ *   are optional, and those register numbers shall not be occupied by other
+ *   registers when LP_START and LP_END are not present.
+ *   4. STATUS32 always has regnum 67.
+ */
+enum arc_regnum
+{
+  /* Core registers. */
+  ARC_R0_REGNUM       = 0,
+  ARC_R1_REGNUM       = 1,
+  ARC_R7_REGNUM       = 7,
+  ARC_R13_REGNUM      = 13,
+  ARC_R25_REGNUM      = 25,
+  ARC_GP_REGNUM,
+  ARC_FP_REGNUM,
+  ARC_SP_REGNUM,
+  ARC_BLINK_REGNUM    = 31,
+  ARC_LP_COUNT_REGNUM = 60,
+  ARC_RESERVED_REGNUM,
+  ARC_LIMM_REGNUM,
+  ARC_PCL_REGNUM,
+  /* AUX registers */
+  ARC_PC_REGNUM,
+  ARC_LP_START_REGNUM,
+  ARC_LP_END_REGNUM,
+  ARC_STATUS32_REGNUM,
 
-/* Extension core registers r32-r59 */
-#define ARC_FIRST_EXT_CORE_REGNUM   32	/*!< Access __rw__ */
-#define ARC_LAST_EXT_CORE_REGNUM    59	/*!< Access __rw__ */
+  /* Additional ABI constants */
+  ARC_FIRST_ARG_REGNUM = ARC_R0_REGNUM,
+  ARC_LAST_ARG_REGNUM = ARC_R7_REGNUM,
+  ARC_FIRST_CALLEE_SAVED_REGNUM = ARC_R13_REGNUM,
+  ARC_LAST_CALLEE_SAVED_REGNUM  = ARC_R25_REGNUM,
+};
 
-#define ARC_LP_COUNT_REGNUM         60	/*!< Access __rw__ */
-#define ARC_RESERVED_REGNUM         61	/*!< No access */
-#define ARC_LIMM_REGNUM             62	/*!< No access */
-#define ARC_PCL_REGNUM              63	/*!< Access __r__ */
-
-/*! Stop and resume PC register.
-
-    There is no one register which corresponds to the PC of the address where
-    we stopped. Depending on the type of exception, we may have the address of
-    the current instruction (TLB or protection exceptions) or the next
-    instruction (traps and syscalls) in our hand.
-
-    However this is not a pseudo register, since it has a physical
-    representation (actually several) and must be fetched from and restored to
-    the target.
-
-    We define one register, which reads the address of the instruction
-    on which we stopped and writes the address of the instruction which we
-    will next execute. It is up to the server on the target to sort out what
-    it does with this value.
-
-    @note This register is distinguished from the auxilliary register PC,
-          which is named ARC_AUX_PC_REGNUM.
-
-    @note Previously this was two registers STOP_PC for where we stopped and
-          RET for where we want to restart. They are unified here.
-
-    @todo This is still subject to some discussion. This is not yet regarded as
-          stable. */
-#define ARC_PC_REGNUM               64 /*!< Access __rw__ */
-
-/* Auxilliary registers - subset for GDB. */
-#define ARC_AUX_LP_START_REGNUM              65	/*!< Access __rw_ */
-#define ARC_AUX_LP_END_REGNUM                66	/*!< Access __rw_ */
-#define ARC_AUX_STATUS32_REGNUM              67	/*!< Access __rG__ */
-#define ARC_AUX_STATUS32_L1_REGNUM           68	/*!< Access __RW__ */
-#define ARC_AUX_STATUS32_L2_REGNUM           69	/*!< Access __RW__ */
-#define ARC_AUX_AUX_IRQ_LV12_REGNUM          70	/*!< Access __RW_ */
-#define ARC_AUX_AUX_IRQ_LEV_REGNUM           71	/*!< Access __RW_ */
-#define ARC_AUX_AUX_IRQ_HINT_REGNUM          72	/*!< Access __RW_ */
-#define ARC_AUX_ERET_REGNUM                  73	/*!< Access __RW__ */
-#define ARC_AUX_ERBTA_REGNUM                 74	/*!< Access __RW__ */
-#define ARC_AUX_ERSTATUS_REGNUM              75	/*!< Access __RW__ */
-#define ARC_AUX_ECR_REGNUM                   76	/*!< Access __RW__ */
-#define ARC_AUX_EFA_REGNUM                   77	/*!< Access __RW_ */
-#define ARC_AUX_ICAUSE1_REGNUM               78	/*!< Access __RW__ */
-#define ARC_AUX_ICAUSE2_REGNUM               79	/*!< Access __RW__ */
-#define ARC_AUX_AUX_IENABLE_REGNUM           80	/*!< Access __RW_ */
-#define ARC_AUX_AUX_ITRIGGER_REGNUM          81	/*!< Access __RW_ */
-#define ARC_AUX_BTA_REGNUM                   82	/*!< Access __RW__ */
-#define ARC_AUX_BTA_L1_REGNUM                83	/*!< Access __RW_ */
-#define ARC_AUX_BTA_L2_REGNUM                84	/*!< Access __RW_ */
-#define ARC_AUX_AUX_IRQ_PULSE_CANCEL_REGNUM  85 /*!< Access __RW_ */
-#define ARC_AUX_AUX_IRQ_PENDING_REGNUM       86	/*!< Access __RW_ */
-
-/* Some useful counts. */
-
-/*! Maximum number of core registers (i.e. with extension core regs). */
-#define ARC_MAX_CORE_REGS  (ARC_PCL_REGNUM + 1)  /*!< Total core regs */
-/*! Number of extension core registers. */
-#define ARC_EXT_CORE_REGS			\
-  (ARC_LAST_EXT_CORE_REGNUM - ARC_FIRST_EXT_CORE_REGNUM + 1)
-/*! Number of standard core registers (i.e. without extension core regs). */
-#define ARC_STD_CORE_REGS			\
-  (ARC_MAX_CORE_REGS - ARC_NUM_EXT_CORE_REGS)
-
-/*! Number of "raw" registers (i.e. core + aux). */
-#define ARC_NUM_RAW_REGS    (ARC_AUX_AUX_IRQ_PENDING_REGNUM + 1)
-/*! Number of pseudo registers. */
-#define ARC_NUM_PSEUDO_REGS 0
+/* Assign regnums to compatible register feature. */
+enum arc_compat_regnum
+{
+  ARC_COMPATIBLE_STATUS32_L1_REGNUM = ARC_STATUS32_REGNUM + 1,
+  ARC_COMPATIBLE_STATUS32_L2_REGNUM,
+  ARC_COMPATIBLE_AUX_IRQ_LV12_REGNUM,
+  ARC_COMPATIBLE_AUX_IRQ_LEV_REGNUM,
+  ARC_COMPATIBLE_AUX_IRQ_HINT_REGNUM,
+  ARC_COMPATIBLE_ERET_REGNUM,
+  ARC_COMPATIBLE_ERBTA_REGNUM,
+  ARC_COMPATIBLE_ERSTATUS_REGNUM,
+  ARC_COMPATIBLE_ECR_REGNUM,
+  ARC_COMPATIBLE_EFA_REGNUM,
+  ARC_COMPATIBLE_ICAUSE1_REGNUM,
+  ARC_COMPATIBLE_ICAUSE2_REGNUM,
+  ARC_COMPATIBLE_AUX_IENABLE_REGNUM,
+  ARC_COMPATIBLE_AUX_ITRIGGER_REGNUM,
+  ARC_COMPATIBLE_BTA_REGNUM,
+  ARC_COMPATIBLE_BTA_L1_REGNUM,
+  ARC_COMPATIBLE_BTA_L2_REGNUM,
+  ARC_COMPATIBLE_AUX_IRQ_PULSE_CANCEL_REGNUM,
+  ARC_COMPATIBLE_AUX_IRQ_PENDING_REGNUM,
+};
 
 /* -------------------------------------------------------------------------- */
 /* ABI constants and macros                                                   */
 /* -------------------------------------------------------------------------- */
 
-#define ARC_FIRST_CALLEE_SAVED_REGNUM  13
-#define ARC_LAST_CALLEE_SAVED_REGNUM   26
-
-#define ARC_FIRST_ARG_REGNUM            0
-#define ARC_LAST_ARG_REGNUM             7
-
-#define ARC_RET_REGNUM                  0
-#define ARC_RET_LOW_REGNUM              0
-#define ARC_RET_HIGH_REGNUM             1
-
 /*! Offset (in words) of PC in uClibc jmp_buf structure for longjmp () */
 #define ARC_UCLIBC_JB_PC  15
 /*! Offset (in words) of PC in Newlib jmp_buf structure for longjmp () */
 #define ARC_NEWLIB_JB_PC  19
-
 
 /* -------------------------------------------------------------------------- */
 /* Useful constants                                                           */
@@ -540,14 +256,18 @@
 /* Globally visible datatypes                                                 */
 /* -------------------------------------------------------------------------- */
 
-
-/* Enumeration of possible Opella targets */
-enum arc_opella_target {
-  ARC600,
-  ARC700,
-  ARCEM,
-  NONE,
-  INVALID
+/* Register information. */
+struct arc_reginfo
+{
+  char * name;
+  /* Readable by baremetal debugger. */
+  uint8_t readable;
+  /* Writable by baremetal debugger. */
+  uint8_t writable;
+  /* Readable by userspace debugger. */
+  uint8_t user_readable;
+  /* Writable by userspace debugger. */
+  uint8_t user_writable;
 };
 
 /*! Target dependencies.
@@ -572,21 +292,10 @@ struct gdbarch_tdep
   const int*   sc_reg_offset;
   unsigned int sc_num_regs;
   
-  /* Opella JTAG target. */
-  enum arc_opella_target opella_target;
-
-  /* Register mapping stuff (for Opella) */
-  int  num_core_regs;
-  int  num_regs;
-  int  num_pseudo_regs;
-  int  first_arg_regnum;
-  int  last_arg_regnum;
-  int  first_callee_saved_regnum;
-  int  last_callee_saved_regnum;
-  int  pc_regnum;
-  int  fp_regnum;
-  int  sp_regnum;
-  int  ps_regnum;
+  struct arc_reginfo *reginfo;
+  /* reginfo_sz is useful in cannot_(store|fetch), where gdbarch_num_regs might
+   * be greater than amount of registers in reginfo. */
+  size_t reginfo_sz;
 };
 
 
@@ -643,4 +352,5 @@ arc_mach_is_arcv2(struct gdbarch *gdbarch)
 }
 
 #endif /* ARC_TDEP_H */
-/******************************************************************************/
+
+/* vim: set sts=2 shiftwidth=2 ts=8: */

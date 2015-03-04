@@ -187,6 +187,8 @@
 #include "demangle.h"
 #include "objfiles.h"
 
+#include "target-descriptions.h"
+
 /* ARC header files */
 #include "opcode/arc.h"
 #include "opcodes/arc-dis-old.h"
@@ -194,6 +196,9 @@
 #include "opcodes/arcompact-dis.h"
 #include "arc-tdep.h"
 
+/* Default target descriptions. */
+#include "features/arc/compatible-v2.c"
+#include "features/arc/compatible-arcompact.c"
 
 /* -------------------------------------------------------------------------- */
 /*                               local types                                  */
@@ -259,9 +264,185 @@ int arc_debug;
 static struct cmd_list_element *setarccmdlist = NULL;
 static struct cmd_list_element *showarccmdlist = NULL;
 
-/*! Default string for "set arc opella-target" */
-static const char *arc_opella_string = "none";
+/* XML target descriptions features. */
+static const char * const
+  core_base_v2_feature_name = "org.gnu.gdb.arc.core.v2";
+static const char * const
+  core_reduced_v2_feature_name = "org.gnu.gdb.arc.core-reduced.v2";
+static const char * const
+  core_base_arcompact_feature_name = "org.gnu.gdb.arc.core.arcompact";
+static const char * const
+  aux_base_v2_feature_name = "org.gnu.gdb.arc.aux-minimal";
+static const char * const
+  aux_compatible_feature_name = "org.gnu.gdb.arc.aux-compatible";
 
+/* XML target description known registers. */
+static const struct arc_reginfo const core_base_v2_reginfo[] =
+{
+  {"r0",       TRUE, TRUE, TRUE,  TRUE},
+  {"r1",       TRUE, TRUE, TRUE,  TRUE},
+  {"r2",       TRUE, TRUE, TRUE,  TRUE},
+  {"r3",       TRUE, TRUE, TRUE,  TRUE},
+  {"r4",       TRUE, TRUE, TRUE,  TRUE},
+  {"r5",       TRUE, TRUE, TRUE,  TRUE},
+  {"r6",       TRUE, TRUE, TRUE,  TRUE},
+  {"r7",       TRUE, TRUE, TRUE,  TRUE},
+  {"r8",       TRUE, TRUE, TRUE,  TRUE},
+  {"r9",       TRUE, TRUE, TRUE,  TRUE},
+  {"r10",      TRUE, TRUE, TRUE,  TRUE},
+  {"r11",      TRUE, TRUE, TRUE,  TRUE},
+  {"r12",      TRUE, TRUE, TRUE,  TRUE},
+  {"r13",      TRUE, TRUE, TRUE,  TRUE},
+  {"r14",      TRUE, TRUE, TRUE,  TRUE},
+  {"r15",      TRUE, TRUE, TRUE,  TRUE},
+  {"r16",      TRUE, TRUE, TRUE,  TRUE},
+  {"r17",      TRUE, TRUE, TRUE,  TRUE},
+  {"r18",      TRUE, TRUE, TRUE,  TRUE},
+  {"r19",      TRUE, TRUE, TRUE,  TRUE},
+  {"r20",      TRUE, TRUE, TRUE,  TRUE},
+  {"r21",      TRUE, TRUE, TRUE,  TRUE},
+  {"r22",      TRUE, TRUE, TRUE,  TRUE},
+  {"r23",      TRUE, TRUE, TRUE,  TRUE},
+  {"r24",      TRUE, TRUE, TRUE,  TRUE},
+  {"r25",      TRUE, TRUE, TRUE,  TRUE},
+  {"gp",       TRUE, TRUE, TRUE,  TRUE},
+  {"fp",       TRUE, TRUE, TRUE,  TRUE},
+  {"sp",       TRUE, TRUE, TRUE,  TRUE},
+  {"ilink",    TRUE, TRUE, FALSE, FALSE},
+  {"r30",      TRUE, TRUE, TRUE,  TRUE},
+  {"blink",    TRUE, TRUE, TRUE,  TRUE},
+  {"r32",      TRUE, TRUE, FALSE, FALSE},
+  {"r33",      TRUE, TRUE, FALSE, FALSE},
+  {"r34",      TRUE, TRUE, FALSE, FALSE},
+  {"r35",      TRUE, TRUE, FALSE, FALSE},
+  {"r36",      TRUE, TRUE, FALSE, FALSE},
+  {"r37",      TRUE, TRUE, FALSE, FALSE},
+  {"r38",      TRUE, TRUE, FALSE, FALSE},
+  {"r39",      TRUE, TRUE, FALSE, FALSE},
+  {"r40",      TRUE, TRUE, FALSE, FALSE},
+  {"r41",      TRUE, TRUE, FALSE, FALSE},
+  {"r42",      TRUE, TRUE, FALSE, FALSE},
+  {"r43",      TRUE, TRUE, FALSE, FALSE},
+  {"r44",      TRUE, TRUE, FALSE, FALSE},
+  {"r45",      TRUE, TRUE, FALSE, FALSE},
+  {"r46",      TRUE, TRUE, FALSE, FALSE},
+  {"r47",      TRUE, TRUE, FALSE, FALSE},
+  {"r48",      TRUE, TRUE, FALSE, FALSE},
+  {"r49",      TRUE, TRUE, FALSE, FALSE},
+  {"r50",      TRUE, TRUE, FALSE, FALSE},
+  {"r51",      TRUE, TRUE, FALSE, FALSE},
+  {"r52",      TRUE, TRUE, FALSE, FALSE},
+  {"r53",      TRUE, TRUE, FALSE, FALSE},
+  {"r54",      TRUE, TRUE, FALSE, FALSE},
+  {"r55",      TRUE, TRUE, FALSE, FALSE},
+  {"r56",      TRUE, TRUE, FALSE, FALSE},
+  {"r57",      TRUE, TRUE, FALSE, FALSE},
+  {"accl",     TRUE, TRUE, FALSE, FALSE},
+  {"acch",     TRUE, TRUE, FALSE, FALSE},
+  {"lp_count", TRUE, TRUE, TRUE,  TRUE},
+  {"reserved", FALSE,FALSE,FALSE, FALSE},
+  {"limm",     FALSE,FALSE,FALSE, FALSE},
+  {"pcl",      TRUE, FALSE,TRUE,  FALSE},
+};
+
+static const struct arc_reginfo const aux_base_v2_reginfo[] =
+{
+  {"pc",       TRUE, TRUE, TRUE, TRUE},
+  {"lp_start", TRUE, TRUE, TRUE, TRUE},
+  {"lp_end",   TRUE, TRUE, TRUE, TRUE},
+  {"status32", TRUE, TRUE, TRUE, TRUE},
+};
+
+static const struct arc_reginfo const core_base_arcompact_reginfo[] =
+{
+  {"r0",       TRUE, TRUE, TRUE,  TRUE},
+  {"r1",       TRUE, TRUE, TRUE,  TRUE},
+  {"r2",       TRUE, TRUE, TRUE,  TRUE},
+  {"r3",       TRUE, TRUE, TRUE,  TRUE},
+  {"r4",       TRUE, TRUE, TRUE,  TRUE},
+  {"r5",       TRUE, TRUE, TRUE,  TRUE},
+  {"r6",       TRUE, TRUE, TRUE,  TRUE},
+  {"r7",       TRUE, TRUE, TRUE,  TRUE},
+  {"r8",       TRUE, TRUE, TRUE,  TRUE},
+  {"r9",       TRUE, TRUE, TRUE,  TRUE},
+  {"r10",      TRUE, TRUE, TRUE,  TRUE},
+  {"r11",      TRUE, TRUE, TRUE,  TRUE},
+  {"r12",      TRUE, TRUE, TRUE,  TRUE},
+  {"r13",      TRUE, TRUE, TRUE,  TRUE},
+  {"r14",      TRUE, TRUE, TRUE,  TRUE},
+  {"r15",      TRUE, TRUE, TRUE,  TRUE},
+  {"r16",      TRUE, TRUE, TRUE,  TRUE},
+  {"r17",      TRUE, TRUE, TRUE,  TRUE},
+  {"r18",      TRUE, TRUE, TRUE,  TRUE},
+  {"r19",      TRUE, TRUE, TRUE,  TRUE},
+  {"r20",      TRUE, TRUE, TRUE,  TRUE},
+  {"r21",      TRUE, TRUE, TRUE,  TRUE},
+  {"r22",      TRUE, TRUE, TRUE,  TRUE},
+  {"r23",      TRUE, TRUE, TRUE,  TRUE},
+  {"r24",      TRUE, TRUE, TRUE,  TRUE},
+  {"r25",      TRUE, TRUE, TRUE,  TRUE},
+  {"gp",       TRUE, TRUE, TRUE,  TRUE},
+  {"fp",       TRUE, TRUE, TRUE,  TRUE},
+  {"sp",       TRUE, TRUE, TRUE,  TRUE},
+  {"ilink1",   TRUE, TRUE, FALSE, FALSE},
+  {"ilink2",   TRUE, TRUE, FALSE, FALSE},
+  {"blink",    TRUE, TRUE, TRUE,  TRUE},
+  {"r32",      TRUE, TRUE, FALSE, FALSE},
+  {"r33",      TRUE, TRUE, FALSE, FALSE},
+  {"r34",      TRUE, TRUE, FALSE, FALSE},
+  {"r35",      TRUE, TRUE, FALSE, FALSE},
+  {"r36",      TRUE, TRUE, FALSE, FALSE},
+  {"r37",      TRUE, TRUE, FALSE, FALSE},
+  {"r38",      TRUE, TRUE, FALSE, FALSE},
+  {"r39",      TRUE, TRUE, FALSE, FALSE},
+  {"r40",      TRUE, TRUE, FALSE, FALSE},
+  {"r41",      TRUE, TRUE, FALSE, FALSE},
+  {"r42",      TRUE, TRUE, FALSE, FALSE},
+  {"r43",      TRUE, TRUE, FALSE, FALSE},
+  {"r44",      TRUE, TRUE, FALSE, FALSE},
+  {"r45",      TRUE, TRUE, FALSE, FALSE},
+  {"r46",      TRUE, TRUE, FALSE, FALSE},
+  {"r47",      TRUE, TRUE, FALSE, FALSE},
+  {"r48",      TRUE, TRUE, FALSE, FALSE},
+  {"r49",      TRUE, TRUE, FALSE, FALSE},
+  {"r50",      TRUE, TRUE, FALSE, FALSE},
+  {"r51",      TRUE, TRUE, FALSE, FALSE},
+  {"r52",      TRUE, TRUE, FALSE, FALSE},
+  {"r53",      TRUE, TRUE, FALSE, FALSE},
+  {"r54",      TRUE, TRUE, FALSE, FALSE},
+  {"r55",      TRUE, TRUE, FALSE, FALSE},
+  {"r56",      TRUE, TRUE, FALSE, FALSE},
+  {"r57",      TRUE, TRUE, FALSE, FALSE},
+  {"r58",     TRUE, TRUE, FALSE, FALSE},
+  {"r59",     TRUE, TRUE, FALSE, FALSE},
+  {"lp_count", TRUE, TRUE, TRUE,  TRUE},
+  {"reserved", FALSE,FALSE,FALSE, FALSE},
+  {"limm",     FALSE,FALSE,FALSE, FALSE},
+  {"pcl",      TRUE, FALSE,TRUE,  FALSE},
+};
+
+static const struct arc_reginfo const aux_compatible_reginfo[] =
+{
+  {"status32_l1",          TRUE, TRUE, FALSE, FALSE},
+  {"status32_l2",          TRUE, TRUE, FALSE, FALSE},
+  {"aux_irq_lv12",         TRUE, TRUE, FALSE, FALSE},
+  {"aux_irq_lev",          TRUE, TRUE, FALSE, FALSE},
+  {"aux_irq_hint",         TRUE, TRUE, FALSE, FALSE},
+  {"eret",                 TRUE, TRUE, FALSE, FALSE},
+  {"erbta",                TRUE, TRUE, FALSE, FALSE},
+  {"erstatus",             TRUE, TRUE, FALSE, FALSE},
+  {"ecr",                  TRUE, TRUE, FALSE, FALSE},
+  {"efa",                  TRUE, TRUE, FALSE, FALSE},
+  {"icause1",              TRUE, FALSE,FALSE, FALSE},
+  {"icause2",              TRUE, FALSE,FALSE, FALSE},
+  {"aux_ienable",          TRUE, TRUE, FALSE, FALSE},
+  {"aux_itrigger",         TRUE, TRUE, FALSE, FALSE},
+  {"bta",                  TRUE, TRUE, FALSE, FALSE},
+  {"bta_l1",               TRUE, TRUE, FALSE, FALSE},
+  {"bta_l2",               TRUE, TRUE, FALSE, FALSE},
+  {"aux_irq_pulse_cancel", FALSE,TRUE, FALSE, FALSE},
+  {"aux_irq_pending",      TRUE, FALSE,FALSE, FALSE},
+};
 
 /* -------------------------------------------------------------------------- */
 /*                               local functions                              */
@@ -465,8 +646,7 @@ arc_print_frame_info (struct gdbarch *gdbarch,
   fprintf_unfiltered (gdb_stdlog, "is_leaf = %d, uses_fp = %d\n",
 		      info->is_leaf, info->uses_fp);
 
-  for (i = tdep->first_callee_saved_regnum;
-       i < tdep->last_callee_saved_regnum; i++)
+  for (i = ARC_FIRST_CALLEE_SAVED_REGNUM; i <= ARC_LAST_CALLEE_SAVED_REGNUM; i++)
     {
       if (info->saved_regs_mask & (1 << i))
 	fprintf_unfiltered (gdb_stdlog, "saved register R%02d %s %s\n",
@@ -604,7 +784,7 @@ arc_frame_base_address (struct frame_info  *this_frame,
   struct gdbarch *gdbarch = get_frame_arch (this_frame);
   struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
 
-  return  (CORE_ADDR) get_frame_register_unsigned (this_frame, tdep->fp_regnum);
+  return  (CORE_ADDR) get_frame_register_unsigned (this_frame, ARC_FP_REGNUM);
 
 }	/* arc_frame_base_address() */
 
@@ -644,7 +824,7 @@ arc_find_this_sp (struct arc_unwind_cache * info,
        */
       this_base = arc_frame_base_address (this_frame, NULL);
       info->frame_base = (CORE_ADDR) this_base;
-      info->saved_regs[tdep->fp_regnum].addr = (long long) this_base;
+      info->saved_regs[ARC_FP_REGNUM].addr = (LONGEST) this_base;
 
       /* The previous SP is the current frame base + the difference between
        * that frame base and the previous SP.
@@ -652,8 +832,7 @@ arc_find_this_sp (struct arc_unwind_cache * info,
       info->prev_sp =
 	info->frame_base + (CORE_ADDR) info->old_sp_offset_from_fp;
 
-      for (i = tdep->first_callee_saved_regnum;
-	   i < tdep->last_callee_saved_regnum; i++)
+      for (i = ARC_FIRST_CALLEE_SAVED_REGNUM; i <= ARC_LAST_CALLEE_SAVED_REGNUM; i++)
 	{
 	  /* If this register has been saved, add the previous stack pointer
 	   * to the offset from the previous stack pointer at which the
@@ -747,8 +926,7 @@ arc_is_callee_saved (struct gdbarch *gdbarch,
 {
   struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
 
-  if (tdep->first_callee_saved_regnum <= reg
-      && reg <= tdep->last_callee_saved_regnum)
+  if (ARC_FIRST_CALLEE_SAVED_REGNUM <= reg && reg <= ARC_LAST_CALLEE_SAVED_REGNUM)
     {
       if (arc_debug)
 	{
@@ -845,7 +1023,12 @@ arc_is_in_prologue (struct gdbarch *gdbarch,
       if (instr->_addrWriteBack != (char) 0)
 	{
 	  /* This is a st.a  */
-	  if (instr->ea_reg1 == tdep->sp_regnum)
+	  /* Value of ea_reg1 is an architecture register number, while
+	   * ARC_SP_REGNUM is GDB regnum, so in general they cannot be
+	   * compared, however to simplify code we impose a restriction that
+	   * for core registers regnum is always equal to architectural number.
+	   * */
+	  if (instr->ea_reg1 == gdbarch_sp_regnum (gdbarch))
 	    {
 	      if (instr->_offset == -4)
 		{
@@ -888,7 +1071,7 @@ arc_is_in_prologue (struct gdbarch *gdbarch,
 	      /* Is this a store of some register onto the stack using the
 	       * stack pointer?
 	       */
-	      if (instr->ea_reg1 == tdep->sp_regnum)
+	      if (instr->ea_reg1 == gdbarch_sp_regnum (gdbarch))
 		{
 		  /* st <reg>, [sp,offset] */
 
@@ -904,11 +1087,10 @@ arc_is_in_prologue (struct gdbarch *gdbarch,
 	       * frame pointer? We check for argument registers getting saved
 	       * and restored.
 	       */
-	      if (instr->ea_reg1 == tdep->fp_regnum)
+	      if (instr->ea_reg1 == ARC_FP_REGNUM)
 		{
 		  int regnum = instr->source_operand.registerNum;
-		  if ((tdep->first_arg_regnum <= regnum)
-		      && (regnum <= tdep->last_arg_regnum))
+		  if (ARC_FIRST_ARG_REGNUM <= regnum && regnum <= ARC_LAST_ARG_REGNUM)
 		    {
 		      /* Saving argument registers. Don't set the bits in the
 		       * saved mask, just skip.
@@ -1085,8 +1267,8 @@ arc_scan_prologue (CORE_ADDR entrypoint,
   prologue_ends_pc = entrypoint;
   final_pc = (this_frame)
     ? get_frame_pc (this_frame)
-    : entrypoint + 4 * (6 + tdep->last_callee_saved_regnum
-			- tdep->first_callee_saved_regnum + 1);
+    : entrypoint + 4 * (6 + ARC_LAST_CALLEE_SAVED_REGNUM -
+	ARC_FIRST_CALLEE_SAVED_REGNUM + 2);
 
   if (info)
     {
@@ -1150,7 +1332,7 @@ arc_scan_prologue (CORE_ADDR entrypoint,
 
       /* The PC is found in blink (the actual register or located on the
 	 stack). */
-      info->saved_regs[tdep->pc_regnum] = info->saved_regs[ARC_BLINK_REGNUM];
+      info->saved_regs[ARC_PC_REGNUM] = info->saved_regs[ARC_BLINK_REGNUM];
 
       if (arc_debug)
 	{
@@ -1177,6 +1359,7 @@ arc_extract_return_value (struct gdbarch *gdbarch, struct type *type,
 			  struct regcache *regcache, gdb_byte *valbuf)
 {
   unsigned int len = TYPE_LENGTH (type);
+  const struct gdbarch_tdep * const tdep = gdbarch_tdep (gdbarch);
 
   ARC_ENTRY_DEBUG ("")
 
@@ -1185,7 +1368,7 @@ arc_extract_return_value (struct gdbarch *gdbarch, struct type *type,
       ULONGEST val;
 
       /* Get the return value from one register. */
-      regcache_cooked_read_unsigned (regcache, ARC_RET_REGNUM, &val);
+      regcache_cooked_read_unsigned (regcache, ARC_R0_REGNUM, &val);
       store_unsigned_integer (valbuf, (int) len,
 			      gdbarch_byte_order (gdbarch), val);
 
@@ -1200,9 +1383,9 @@ arc_extract_return_value (struct gdbarch *gdbarch, struct type *type,
       ULONGEST low, high;
 
       /* Get the return value from two registers. */
-      regcache_cooked_read_unsigned (regcache, ARC_RET_LOW_REGNUM,
+      regcache_cooked_read_unsigned (regcache, ARC_R0_REGNUM,
 				     &low);
-      regcache_cooked_read_unsigned (regcache, ARC_RET_HIGH_REGNUM,
+      regcache_cooked_read_unsigned (regcache, ARC_R1_REGNUM,
 				     &high);
 
       store_unsigned_integer (valbuf, BYTES_IN_REGISTER,
@@ -1238,6 +1421,7 @@ arc_store_return_value (struct gdbarch *gdbarch, struct type *type,
 			struct regcache *regcache, const gdb_byte * valbuf)
 {
   unsigned int len = TYPE_LENGTH (type);
+  const struct gdbarch_tdep * const tdep = gdbarch_tdep (gdbarch);
 
   ARC_ENTRY_DEBUG ("")
 
@@ -1248,7 +1432,7 @@ arc_store_return_value (struct gdbarch *gdbarch, struct type *type,
       /* Put the return value into one register. */
       val = extract_unsigned_integer (valbuf, (int) len,
 				      gdbarch_byte_order (gdbarch));
-      regcache_cooked_write_unsigned (regcache, ARC_RET_REGNUM, val);
+      regcache_cooked_write_unsigned (regcache, ARC_R0_REGNUM, val);
 
       if (arc_debug)
 	{
@@ -1268,9 +1452,9 @@ arc_store_return_value (struct gdbarch *gdbarch, struct type *type,
 				  (int) len - BYTES_IN_REGISTER,
 				  gdbarch_byte_order (gdbarch));
 
-      regcache_cooked_write_unsigned (regcache, ARC_RET_LOW_REGNUM,
+      regcache_cooked_write_unsigned (regcache, ARC_R0_REGNUM,
 				      low);
-      regcache_cooked_write_unsigned (regcache, ARC_RET_HIGH_REGNUM,
+      regcache_cooked_write_unsigned (regcache, ARC_R1_REGNUM,
 				      high);
 
       if (arc_debug)
@@ -1324,303 +1508,10 @@ arc_virtual_frame_pointer (struct gdbarch *gdbarch,
 			    LONGEST        *offset_ptr)
 {
   struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
-  *reg_ptr    = tdep->sp_regnum;
+  *reg_ptr    = gdbarch_sp_regnum (gdbarch);
   *offset_ptr = 0;
 
 }	/* arc_virtual_frame_pointer () */
-
-
-/*! Return the name of the given register.
-
-    This should only give a register name, if the register is represented on a
-    particular architecture.
-
-    The array of names is sized, so we'll throw an error if we try to put in
-    too many strings (but not sadly if we put in too few).
-
-    Rather than duplicate information in gdbarch_cannot_fetch_register and
-    gdbarch_cannot_store_register, we use those functions to determine whether
-    we return a name - if a register can be neither fetched, nor stored, we
-    presume it is not on this architecture.
-
-    @todo This will get more complicated when we start reading details of the
-          architecture from XML.
-
-    @param[in] gdbarch  The current GDB architecture.
-    @param[in] regnum   The register of interest.
-    @return             Textual name of the register. */
-static const char *
-arc_register_name (struct gdbarch *gdbarch, int regnum)
-{
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
-
-  static const char *oa6_register_names[] = {
-    /* Core registers. */
-    "r0",              "r1",              "r2",              "r3",
-    "r4",              "r5",              "r6",              "r7",
-    "r8",              "r9",              "r10",             "r11",
-    "r12",             "r13",             "r14",             "r15",
-    "r16",             "r17",             "r18",             "r19",
-    "r20",             "r21",             "r22",             "r23",
-    "r24",             "r25",             "gp",              "fp",
-    "sp",              "ilink1",          "ilink2",          "blink",
-    "lp_count",        "pcl",
-    /* Aux registers. */
-    "status",          "semaphore",       "lp_start",        "lp_end",
-    "identity",        "debug",           "pc",              "status32",
-    "status32_l1",     "status32_l2",     "count0",          "control0",
-    "limit0",          "int_vector_base", "aux_macmode",     "aux_irq_lv12",
-    "count1",          "control1",        "limit1",          "aux_irq_lev",
-    "aux_irq_hint",    "ic_ivic",         "ic_ctrl",         "dc_ivdc",
-    "dc_ctrl",
-    /* Action point 0 registers. */
-    "amv0",            "amm0",            "ac0",
-    /* Build configuration registers. */
-    "",                "dccm_base_build", "crc_base_build",  "dvbf_build",
-    "tel_instr_build", "",                "memsubsys",       "vecbase_ac_build",
-    "p_base_address",  "",                "",                "",
-    "",                "rf_build",        "mmu_build",       "arcangel_build",
-    "",                "dcache_build",    "madi_build",      "dccm_build",
-    "timer_build",     "ap_build",        "icache_build",    "iccm_build",
-    "dspram_build",    "mac_build",       "multiply_build",  "swap_build",
-    "norm_build",      "minmax_build",    "barrel_build"
-  };
-
-  static const char *oa7_register_names[] = {
-    /* Core registers. */
-    "r0",              "r1",              "r2",              "r3",
-    "r4",              "r5",              "r6",              "r7",
-    "r8",              "r9",              "r10",             "r11",
-    "r12",             "r13",             "r14",             "r15",
-    "r16",             "r17",             "r18",             "r19",
-    "r20",             "r21",             "r22",             "r23",
-    "r24",             "r25",             "gp",              "fp",
-    "sp",              "ilink1",          "ilink2",          "blink",
-    "lp_count",        "pcl",
-    /* Aux registers. */
-    "status",          "lp_start",        "lp_end",
-    "identity",        "debug",           "pc",              "status32",
-    "status32_l1",     "status32_l2",     "count0",          "control0",
-    "limit0",          "int_vector_base", "aux_macmode",     "aux_irq_lv12",
-    "count1",          "control1",        "limit1",          "aux_irq_lev",
-    "aux_irq_hint",    "eret",            "erbta",           "erstatus",
-    "ecr",             "efa",             "icause1",         "icause2",
-    "aux_ienable",     "aux_itrigger",    "xpu",             "bta",
-    "bta_l1",          "bta_l2",          "aux_irq_pulse_cancel",
-    "aux_irq_pending", "ic_ivic",         "ic_ctrl",         "dc_ivdc",
-    "dc_ctrl",
-    /* Action point 0 registers. */
-    "amv0",            "amm0",            "ac0",
-    /* Build configuration registers. */
-    "",                "dccm_base_build", "crc_base_build",  "bta_link_build",
-    "dvbf_build",      "tel_instr_build", "",                "memsubsys",
-    "vecbase_ac_build", "p_base_address", "",                "",
-    "",                "",                "",              "mmu_build",
-    "arcangel_build",  "",                "dcache_build",    "madi_build",
-    "dccm_build",      "timer_build",     "ap_build",        "icache_build",
-    "iccm_build",      "dspram_build",    "mac_build",       "multiply_build",
-    "swap_build",      "norm_build",      "minmax_build",    "barrel_build"
-  };
-
-  static const char *oaem_register_names[] = {
-    /* Core registers. */
-    "r0",               "r1",               "r2",               "r3",
-    "r4",               "r5",               "r6",               "r7",
-    "r8",               "r9",               "r10",              "r11",
-    "r12",              "r13",              "r14",              "r15",
-    "r16",              "r17",              "r18",              "r19",
-    "r20",              "r21",              "r22",              "r23",
-    "r24",              "r25",              "gp",               "fp",
-    "sp",               "ilink",            "r30",              "blink",
-    "lp_count",         "pcl",
-    /* AUX regs */
-    "identity",         "pc",               "status32",         "bta",
-    "ecr",              "int_vector_base",  "eret",             "erbta",
-    "erstatus",         "lp_start",         "lp_end",           "jli_base",
-    "ldi_base",         "ei_base",          "debug",            "debugi",
-    "count0",           "control0",         "limit0",           "count1",
-    "control1",         "limit1",           "ic_ivic",          "ic_ctrl",
-    "ic_lil",           "ic_ivil",          "ic_ram_addr",      "ic_tag",
-    "ic_data",          "dc_ivdc",          "dc_ctrl",          "dc_flsh",
-    "cache_limit",      "dc_ldl",           "dc_ivdl",          "dc_fldl",
-    "dc_ram_addr",      "dc_tag",           "dc_data",          "aux_iccm",
-    "aux_dccm",         "smart_control",    "smart_data",       "irq_ctrl",
-    "irq_priority_pending", "aux_irq_act",  "irq_select",       "irq_priority",
-    "irq_enable",       "irq_trigger",      "irq_pending",      "irq_pulse_cancel",
-    "irq_status",       "aux_irq_hint",     "icause",           "aux_user_sp",
-
-    /* Action points */
-    "amv0",             "amm0",             "ac0",
-
-    /* BCRs */
-    "bcr_ver",          "bta_link_build",   "vecbase_ac_build", "rf_build",
-    "isa_config",       "dcache_build",     "dccm_build",       "smart_build",
-    "timer_build",      "ap_build",         "icache_build",     "iccm_build",
-    "multiply_build",   "swap_build",       "norm_build",       "minmax_build",
-    "barrel_build",     "irq_build"
-  };
-
-  static const char *default_register_names[] = {
-    /* Core registers. */
-    "r0",              "r1",              "r2",              "r3",
-    "r4",              "r5",              "r6",              "r7",
-    "r8",              "r9",              "r10",             "r11",
-    "r12",             "r13",             "r14",             "r15",
-    "r16",             "r17",             "r18",             "r19",
-    "r20",             "r21",             "r22",             "r23",
-    "r24",             "r25",             "gp",              "fp",
-    "sp",              "ilink1",          "ilink2",          "blink",
-    /* Extension core registers. */
-    "r32",             "r33",             "r34",             "r35",
-    "r36",             "r37",             "r38",             "r39",
-    "r40",             "r41",             "r42",             "r43",
-    "r44",             "r45",             "r46",             "r47",
-    "r48",             "r49",             "r50",             "r51",
-    "r52",             "r53",             "r54",             "r55",
-    "r56",             "r57",             "r58",             "r59",
-    /* Core registers again. */
-    "lp_count",        "reserved",        "limm",            "pcl",
-    "pc",
-    /* Aux registers. */
-    "lp_start",        "lp_end",          "status32",        "status32_l1",
-    "status32_l2",     "aux_irq_lv12",    "aux_irq_lev",     "aux_irq_hint",
-    "eret",            "erbta",           "erstatus",        "ecr",
-    "efa",             "icause1",         "icause2",         "aux_ienable",
-    "aux_itrigger",    "bta",             "bta_l1",          "bta_l2",
-    "aux_irq_pulse_cancel",               "aux_irq_pending"
-  };
-
-  const char **register_names =
-    (tdep->opella_target) == ARC600 ? oa6_register_names
-    : (tdep->opella_target) == ARC700 ? oa7_register_names
-    : (tdep->opella_target) == ARCEM ? oaem_register_names
-    : default_register_names;
-
-  gdb_assert ((0 <= regnum) && (regnum < tdep->num_regs));
-  if (gdbarch_cannot_fetch_register (gdbarch, regnum)
-      && gdbarch_cannot_store_register (gdbarch, regnum))
-    {
-      return "";
-    }
-  else
-    {
-      return register_names[regnum];
-    }
-}	/* arc_register_name () */
-
-
-/*! Return the type of a register
- 
-    @param[in] gdbarch  Current GDB architecture
-    @param[in] regnum   Register number whose type we want.
-    @return             Type of the register. */
-static struct type *
-arc_register_type (struct gdbarch *gdbarch, int regnum)
-{
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
-
-  /* Variable registers. */
-  if ((regnum == tdep->fp_regnum) || (regnum == tdep->sp_regnum))
-    return builtin_type (gdbarch)->builtin_data_ptr;
-  else if (regnum == tdep->pc_regnum)
-    return builtin_type (gdbarch)->builtin_func_ptr;
-  else if (regnum == tdep->ps_regnum)
-    return builtin_type (gdbarch)->builtin_uint32;
-
-  /* Fixed register numbers, depending on target. */
-  switch (tdep->opella_target)
-    {
-    case ARCEM:
-      switch (regnum)
-        {
-        case OAEM_GP:
-        case OAEM_AUX_LDI_BASE:
-          return builtin_type(gdbarch)->builtin_data_ptr;
-
-        case OAEM_ILINK:
-        case OAEM_BLINK:
-        case OAEM_PCL:
-        case OAEM_AUX_BTA:
-        case OAEM_AUX_INT_VECTOR_BASE:
-        case OAEM_AUX_ERET:
-        case OAEM_AUX_ERBTA:
-        case OAEM_AUX_LP_START:
-        case OAEM_AUX_LP_END:
-        case OAEM_AUX_JLI_BASE:
-        case OAEM_AUX_EI_BASE:
-          return builtin_type (gdbarch)->builtin_func_ptr;
-
-        default:
-          return builtin_type (gdbarch)->builtin_uint32;
-        }
-
-    case ARC600:
-      switch (regnum)
-	{
-	case OA6_GP:
-	  return builtin_type (gdbarch)->builtin_data_ptr;
-
-	case OA6_ILINK1:
-	case OA6_ILINK2:
-	case OA6_BLINK:
-	case OA6_PCL:
-	case OA6_AUX_LP_START:
-	case OA6_AUX_LP_END:
-	  return builtin_type (gdbarch)->builtin_func_ptr;
-
-	default:
-	  return builtin_type (gdbarch)->builtin_uint32;
-	}
-
-    case ARC700:
-      switch (regnum)
-	{
-	case OA7_GP:
-	case OA7_AUX_EFA:
-	  return builtin_type (gdbarch)->builtin_data_ptr;
-
-	case OA7_ILINK1:
-	case OA7_ILINK2:
-	case OA7_BLINK:
-	case OA7_PCL:
-	case OA7_AUX_LP_START:
-	case OA7_AUX_LP_END:
-	case OA7_AUX_ERET:
-	case OA7_AUX_ERBTA:
-	case OA7_AUX_BTA:
-	case OA7_AUX_BTA_L1:
-	case OA7_AUX_BTA_L2:
-	  return builtin_type (gdbarch)->builtin_func_ptr;
-
-	default:
-	  return builtin_type (gdbarch)->builtin_uint32;
-	}
-
-    default:
-      switch (regnum)
-	{
-	case ARC_GP_REGNUM:
-	case ARC_AUX_EFA_REGNUM:
-	  return builtin_type (gdbarch)->builtin_data_ptr;
-
-	case ARC_ILINK1_REGNUM:
-	case ARC_ILINK2_REGNUM:
-	case ARC_BLINK_REGNUM:
-	case ARC_PCL_REGNUM:
-	case ARC_AUX_LP_START_REGNUM:
-	case ARC_AUX_LP_END_REGNUM:
-	case ARC_AUX_ERET_REGNUM:
-	case ARC_AUX_ERBTA_REGNUM:
-	case ARC_AUX_BTA_REGNUM:
-	case ARC_AUX_BTA_L1_REGNUM:
-	case ARC_AUX_BTA_L2_REGNUM:
-	  return builtin_type (gdbarch)->builtin_func_ptr;
-
-	default:
-	  return builtin_type (gdbarch)->builtin_uint32;
-	}
-    }
-}	/* arc_register_type () */
 
 
 /*! Return the frame ID for a dummy stack frame
@@ -1670,7 +1561,7 @@ arc_push_dummy_call (struct gdbarch *gdbarch,
 		     CORE_ADDR sp, int struct_return, CORE_ADDR struct_addr)
 {
   struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
-  int arg_reg = tdep->first_arg_regnum;
+  int arg_reg = ARC_FIRST_ARG_REGNUM;
 
   ARC_ENTRY_DEBUG ("nargs = %d", nargs)
 
@@ -1751,7 +1642,7 @@ arc_push_dummy_call (struct gdbarch *gdbarch,
 
       /* Now load as much as possible of the memory image into registers. */
       data = memory_image;
-      while (arg_reg <= tdep->last_arg_regnum)
+      while (arg_reg <= ARC_LAST_ARG_REGNUM)
 	{
 	  if (arc_debug)
 	    {
@@ -1792,7 +1683,7 @@ arc_push_dummy_call (struct gdbarch *gdbarch,
     }
 
   /* Finally, update the SP register. */
-  regcache_cooked_write_unsigned (regcache, tdep->sp_regnum, sp);
+  regcache_cooked_write_unsigned (regcache, gdbarch_sp_regnum (gdbarch), sp);
 
   return sp;
 
@@ -1835,63 +1726,6 @@ arc_push_dummy_code (struct gdbarch *gdbarch, CORE_ADDR sp, CORE_ADDR funaddr,
   return sp;
     
 }	/* arc_push_dummy_code *() */
-
-
-/*! Print registers.
-
-    This supports the "info registers" command.
-
-    We print the core registers + PC. If "all" is specified, this is followed
-    by aux registers. We currently have no pseudo registers relevant here.
-
-    For now we use the default_print_registers_info () function to print out
-    each individual register.
-
-    @note We assume that regnum is either -1 or a valid register number.
-
-    @todo We need to be cleverer about dealing with extension core registers
-          and auxilliary registers, based on what the architecture tdep
-          structure has to say.
-
-    @param[in] gdbarch  The current GDB architecture.
-    @param[in] file     The GDB file handle to which to write.
-    @param[in] frame    The current stack frame.
-    @param[in] regnum   The register to print, or -1 to print all (with or
-                        without aux regs as determined by next arg).
-    @param[in] all      If non-zero (TRUE), then print core regs + aux regs,
-                        otherwise just print the core regs. */
-static void
-arc_print_registers_info (struct gdbarch *gdbarch, struct ui_file *file,
-			  struct frame_info *frame, int regnum, int all)
-{
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
-
-  if (regnum >= 0)
-    {
-      /* Print a single register */
-      default_print_registers_info (gdbarch, file, frame, regnum, all);
-    }
-  else
-    {
-      /* Print all the registers, as determined by the "all" parameter. */
-      int r;
-
-      for (r = 0; r < tdep->num_core_regs; r++)
-	{
-	  default_print_registers_info (gdbarch, file, frame, r, all);
-	}
-      default_print_registers_info (gdbarch, file, frame, tdep->pc_regnum, all);
-
-      /* If "all" is non-zero (TRUE), also print out the aux regs. */
-      if (all)
-	{
-	  for (r = tdep->num_core_regs; r < tdep->num_regs; r++)
-	    {
-	      default_print_registers_info (gdbarch, file, frame, r, all);
-	    }
-	}
-    }
-}	/* arc_print_registers_info () */
 
 
 /*! Print floating point registers.
@@ -1973,11 +1807,14 @@ arc_get_longjmp_target (struct frame_info *frame, CORE_ADDR *pc)
   int  element_size = gdbarch_ptr_bit (gdbarch) / TARGET_CHAR_BIT;
   void *buf = alloca (element_size);
   enum gdb_osabi osabi = gdbarch_osabi (gdbarch);
+  /* todo: Either this whole function should be extracted to target-dependent
+   * level, or we need to receive offset dynamically. For example from the
+   * valid OS_ABI. */
   int  pc_offset = (GDB_OSABI_LINUX == osabi)
     ? ARC_UCLIBC_JB_PC * element_size
     : ARC_NEWLIB_JB_PC * element_size;
 
-  jb_addr = get_frame_register_unsigned (frame, tdep->first_arg_regnum);
+  jb_addr = get_frame_register_unsigned (frame, ARC_FIRST_ARG_REGNUM);
 
   if (target_read_memory (jb_addr + pc_offset, buf, element_size))
     {
@@ -2197,8 +2034,7 @@ arc_frame_cache (struct frame_info *this_frame, void **this_cache)
   if ((*this_cache) == NULL)
     {
         CORE_ADDR  entrypoint =
-	  (CORE_ADDR) get_frame_register_unsigned (this_frame,
-						   tdep->pc_regnum);
+	  (CORE_ADDR) get_frame_register_unsigned (this_frame, gdbarch_pc_regnum (gdbarch));
         struct arc_unwind_cache *cache = arc_create_cache (this_frame);
 
         /* return the newly-created cache */
@@ -2259,7 +2095,7 @@ arc_frame_this_id (struct frame_info *this_frame,
    */
   code_addr = get_frame_func(this_frame);
   if (!code_addr)
-    code_addr = get_frame_register_unsigned(this_frame, tdep->pc_regnum);
+    code_addr = get_frame_register_unsigned(this_frame, gdbarch_pc_regnum (gdbarch));
 
   *this_id = frame_id_build (stack_addr, code_addr);
 
@@ -2298,7 +2134,7 @@ arc_frame_prev_register (struct frame_info *this_frame,
            function's resume location.
 
            Is this still true? Do we need the following code. */
-  if (regnum == tdep->pc_regnum)
+  if (regnum == gdbarch_pc_regnum (gdbarch))
     {
       regnum = ARC_BLINK_REGNUM;
     }
@@ -2334,9 +2170,9 @@ arc_dwarf2_frame_init_reg (struct gdbarch *gdbarch,
 {
   struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
 
-  if (regnum == tdep->pc_regnum)
+  if (regnum == gdbarch_pc_regnum (gdbarch))
     reg->how = DWARF2_FRAME_REG_RA;	/* The return address column. */
-  else if (regnum == tdep->sp_regnum)
+  else if (regnum == gdbarch_sp_regnum (gdbarch))
     reg->how = DWARF2_FRAME_REG_CFA;	/* The call frame address. */
 
 }	/* arc_dwarf2_frame_init_reg () */
@@ -2415,7 +2251,7 @@ arc_sigtramp_frame_this_id (struct frame_info *this_frame,
   tdep = gdbarch_tdep (gdbarch);
 
   stack_addr = arc_sigtramp_frame_cache (this_frame, this_cache)->frame_base;
-  code_addr = get_frame_register_unsigned (this_frame, tdep->pc_regnum);
+  code_addr = get_frame_register_unsigned (this_frame, gdbarch_pc_regnum (gdbarch));
   *this_id = frame_id_build (stack_addr, code_addr);
 
 }	/* arc_sigtramp_frame_this_id () */
@@ -2563,7 +2399,6 @@ arc_sigtramp_frame_base_sniffer (struct frame_info *this_frame)
 
 }	/* arc_sigtramp_frame_base_sniffer () */
 
-
 /*! Initialize GDB
 
     The functions set here are generic to *all* versions of GDB for ARC. The
@@ -2578,6 +2413,224 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 {
   struct gdbarch_tdep *tdep;
   struct gdbarch *gdbarch;
+  const struct target_desc *tdesc = info.target_desc;
+  struct tdesc_arch_data *tdesc_data = NULL;
+  int num_regs = 0;
+  const struct tdesc_feature *feature;
+  int valid_p = 1;
+  int i;
+  /* Filled while parsing tdesc. */
+  struct arc_reginfo *reginfo = NULL;
+
+  /* Depending on whether this is ARCompact or ARCv2 we will assigned different
+   * default registers sets (which will differ in exactly two core registers).
+   * GDB will also refuse to accept register feature from invalid ISA - v2
+   * features can be used only with v2 ARChitecture.  registers of invalid
+   * architecture.  We read bfd_arch_info, which looks like to be a safe bet
+   * here, as it looks like it is always initialized even when we don't pass
+   * any elf file to GDB at all (it uses default arch in this case). Also GDB
+   * will call this function multiple times, and if XML target description file
+   * contains architecture specifications, then GDB will set this architecture
+   * to info.bfd_arch_info, overriding value from ELF file if they are
+   * different. That means that, where matters, this value is always our best
+   * guess on what CPU we are debugging. It has been noted that that
+   * architecture specified in tdesc file has higher precedence over ELF and
+   * even "set architecture" - that is, using "set architecture" command will
+   * have no effect when tdesc has "arch" tag.
+  */
+  const int is_arcv2 = (info.bfd_arch_info->mach == bfd_mach_arc_arcv2);
+  int is_reduced_rf;
+  const struct arc_reginfo const * core_reginfo;
+  const char * core_feature_name;
+
+  /* If target doesn't provide us description - use default one. */
+  if (!tdesc_has_registers (tdesc))
+    {
+      if (is_arcv2)
+	{
+	  tdesc = tdesc_compatible_v2;
+	  if (arc_debug)
+	    fprintf_unfiltered (gdb_stdlog, "Using default register set for ARC v2.\n");
+	}
+      else
+	{
+	  tdesc = tdesc_compatible_arcompact;
+	  if (arc_debug)
+	    fprintf_unfiltered (gdb_stdlog, "Using default register set for ARCompact.\n");
+	}
+    }
+  else
+    {
+      if (arc_debug)
+	fprintf_unfiltered (gdb_stdlog, "Using provided register set.\n");
+    }
+  gdb_assert (tdesc);
+
+  /* Now we can search for base registers. Depending on situation that might be
+   * core registers or compatible registers. Core registers can be either full
+   * or reduced. Summary:
+   * - core-baseline.v2 + aux-baseline.v2
+   * - core-reduced.v2 + aux-baseline.v2
+   * - core-baseline.arcompact + aux-baseline.arcompcact
+   * - compat.v2
+   * - compat.v1
+   * NB: It is interely feaseble to have ARCompact with reduced core regs, but
+   * we ignore that because GCC doesn't support that and at the same time this
+   * architecture is obsolete.
+   */
+  feature = tdesc_find_feature (tdesc, core_base_v2_feature_name);
+  if (feature)
+    {
+      /* Confirm that register and architecture match, to prevent accidents in
+       * some situations. This code will trigger an error if:
+       *   1. XML tdesc doesn't specify arch explicitly, registers are for arch
+       *   X, but ELF specifies arch Y.
+       *   2. XML tdesc specifies arch X, but contains registers for arch Y.
+       * It will not protect from case where XML or ELF specify arch X,
+       * registers are for the same arch X, but the real target is arch Y. To
+       * detect this case we need to check IDENTITY register.
+       */
+      if (!is_arcv2)
+	{
+	  fprintf_unfiltered (gdb_stdlog, "Error: ARC v2 target description "
+	      "supplied for non-ARCv2 target.\n");
+	  return NULL;
+	}
+
+      is_reduced_rf = FALSE;
+      core_feature_name = core_base_v2_feature_name;
+      core_reginfo = core_base_v2_reginfo;
+    }
+  else
+    {
+      feature = tdesc_find_feature (tdesc, core_reduced_v2_feature_name);
+      if (feature)
+	{
+	  if (!is_arcv2)
+	    {
+	      fprintf_unfiltered (gdb_stdlog, "Error: ARC v2 target description "
+		  "supplied for non-ARCv2 target.\n");
+	      return NULL;
+	    }
+
+	  is_reduced_rf = TRUE;
+	  core_feature_name = core_reduced_v2_feature_name;
+	  core_reginfo = core_base_v2_reginfo;
+	}
+      else
+        {
+	  feature = tdesc_find_feature (tdesc, core_base_arcompact_feature_name);
+	  if (feature)
+	    {
+	      if (is_arcv2)
+		{
+		  fprintf_unfiltered (gdb_stdlog, "Error: ARCompact target description "
+		      "supplied for non-ARCompact target.\n");
+		  return NULL;
+		}
+
+	      is_reduced_rf = FALSE;
+	      core_feature_name = core_base_arcompact_feature_name;
+	      core_reginfo = core_base_arcompact_reginfo;
+	    }
+	  else
+	    {
+	      fprintf_unfiltered (gdb_stdlog, "Error: Couldn't find core "
+		  "register feature in supplied target description.");
+	      return NULL;
+	    }
+	}
+    }
+
+  tdesc_data = tdesc_data_alloc ();
+
+  gdb_assert (feature);
+  gdb_assert (valid_p);
+
+  for (i = 0; i < 64; i++)
+    {
+      /* R61 and R62 do never exist in real hardware, however have to check for
+       * them to preserve compatibility with old gdbserver which reserve a slot
+       * for them in g/G-packet. */
+
+      /* If rf16, then skip extra registers. */
+      if (is_reduced_rf && ((i >= 4 && i <= 9) || (i >= 16 && i <= 25)))
+        continue;
+
+      valid_p = tdesc_numbered_register (feature, tdesc_data, i,
+          core_reginfo[i].name);
+
+      /* Ignore errors in extension registers - they are optional. */
+      if (!valid_p && (i <= 31 || i == 60 || i == 63))
+        {
+          fprintf_unfiltered (gdb_stdlog, "Error: Cannot find required "
+	  "register `%s' in feature `%s'.\n",
+	  core_reginfo[i].name, core_feature_name);
+          tdesc_data_cleanup (tdesc_data);
+          return NULL;
+        }
+    }
+
+  num_regs = i;
+
+  /* Mandatory AUX registeres are intentionally few and are common between
+   * ARCompact and ARC v2, so same code can be used for both. */
+  feature = tdesc_find_feature (tdesc, aux_base_v2_feature_name);
+  if (!feature)
+    {
+      fprintf_unfiltered (gdb_stdlog, "Error: Cannot find required feature "
+          "`%s' in supplied target description.\n", aux_base_v2_feature_name);
+      tdesc_data_cleanup (tdesc_data);
+      return NULL;
+    }
+
+  for (i = 0; i < ARRAY_SIZE (aux_base_v2_reginfo); i++)
+    {
+      valid_p = tdesc_numbered_register (feature, tdesc_data, \
+	  num_regs + i, aux_base_v2_reginfo[i].name);
+      /* LP_registers are optional */
+      if (!valid_p && (i + num_regs != ARC_LP_START_REGNUM ) &&
+	  (i + num_regs != ARC_LP_END_REGNUM))
+	{
+	  fprintf_unfiltered (gdb_stdlog, "Error: Cannot find required register "
+	      "`%s' in feature `%s'.\n",
+	      aux_base_v2_reginfo[i].name, tdesc_feature_name (feature));
+	  tdesc_data_cleanup (tdesc_data);
+	  return NULL;
+	}
+    }
+
+  /* Copy both core and AUX reginfo at once. */
+  reginfo = xmemdup (core_reginfo,
+      sizeof (struct arc_reginfo) * num_regs,
+      sizeof (struct arc_reginfo) * (num_regs + i));
+  memcpy (&(reginfo[num_regs]), aux_base_v2_reginfo,
+      sizeof (struct arc_reginfo) * i);
+
+  num_regs += i;
+
+  /* Check for compatible AUX registers. */
+  feature = tdesc_find_feature (tdesc, aux_compatible_feature_name);
+  if (feature)
+    {
+      for (i = 0; i < ARRAY_SIZE (aux_compatible_reginfo); i++)
+	{
+	  valid_p = tdesc_numbered_register (feature, tdesc_data, \
+	      num_regs + i, aux_compatible_reginfo[i].name);
+	  if (!valid_p)
+	    {
+	      fprintf_unfiltered (gdb_stdlog, "Error: Cannot find required register "
+		  "`%s' in feature `%s'.\n",
+		  aux_compatible_reginfo[i].name, tdesc_feature_name (feature));
+	      tdesc_data_cleanup (tdesc_data);
+	      return NULL;
+	    }
+	}
+
+      /* realloc will do free (reginfo), so we shouldn't do that. */
+      reginfo = xrealloc (reginfo, sizeof (struct arc_reginfo) * (num_regs + i));
+      num_regs += i;
+    }
 
   /* Determine which OSABI we have. A different version of this function is
      linked in for each GDB target. Must do this before we allocate the
@@ -2587,67 +2640,10 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   /* Allocate the ARC-private target-dependent information structure, and the
      GDB target-independent information structure. */
   tdep = xmalloc (sizeof (struct gdbarch_tdep));
-  gdbarch = gdbarch_alloc (&info, tdep);
-
   memset (tdep, 0, sizeof (*tdep));
-
-  /* Set tdep register data that (for now) is generic. This is here for future
-     expandability. The values will differ for reduced cores. */
-  tdep->first_arg_regnum = ARC_FIRST_ARG_REGNUM;
-  tdep->last_arg_regnum = ARC_LAST_ARG_REGNUM;
-  tdep->first_callee_saved_regnum = ARC_FIRST_CALLEE_SAVED_REGNUM;
-  tdep->last_callee_saved_regnum = ARC_LAST_CALLEE_SAVED_REGNUM;
-
-  /* Set the opella target and associated data. */
-  tdep->opella_target = strcmp ("none", arc_opella_string) == 0 ? NONE
-    : strcmp ("arc600", arc_opella_string) == 0 ? ARC600
-    : strcmp ("arc700", arc_opella_string) == 0 ? ARC700
-    : strcmp ("arcem", arc_opella_string) == 0 ? ARCEM
-    : INVALID;
-  gdb_assert (tdep->opella_target != INVALID);
-
-  switch (tdep->opella_target)
-    {
-    case NONE:
-      tdep->num_core_regs = ARC_MAX_CORE_REGS;
-      tdep->num_regs = ARC_NUM_RAW_REGS;
-      tdep->num_pseudo_regs = ARC_NUM_PSEUDO_REGS;
-      tdep->pc_regnum = ARC_PC_REGNUM;
-      tdep->fp_regnum = ARC_FP_REGNUM;
-      tdep->sp_regnum = ARC_SP_REGNUM;
-      tdep->ps_regnum = ARC_AUX_STATUS32_REGNUM;
-      break;
-
-    case ARC600:
-      tdep->num_core_regs = OA6_NUM_CORE_REGS;
-      tdep->num_regs = OA6_NUM_REGS;
-      tdep->num_pseudo_regs = OA6_NUM_PSEUDO_REGS;
-      tdep->pc_regnum = OA6_AUX_PC;
-      tdep->fp_regnum = OA6_FP;
-      tdep->sp_regnum = OA6_SP;
-      tdep->ps_regnum = OA6_AUX_STATUS32;
-      break;
-
-    case ARC700:
-      tdep->num_core_regs = OA7_NUM_CORE_REGS;
-      tdep->num_regs = OA7_NUM_REGS;
-      tdep->num_pseudo_regs = OA7_NUM_PSEUDO_REGS;
-      tdep->pc_regnum = OA7_AUX_PC;
-      tdep->fp_regnum = OA7_FP;
-      tdep->sp_regnum = OA7_SP;
-      tdep->ps_regnum = OA7_AUX_STATUS32;
-      break;
-
-    case ARCEM:
-      tdep->num_core_regs = OAEM_NUM_CORE_REGS;
-      tdep->num_regs = OAEM_NUM_REGS;
-      tdep->num_pseudo_regs = OAEM_NUM_PSEUDO_REGS;
-      tdep->pc_regnum = OAEM_AUX_PC;
-      tdep->fp_regnum = OAEM_FP;
-      tdep->sp_regnum = OAEM_SP;
-      tdep->ps_regnum = OAEM_AUX_STATUS32;
-      break;
-    }
+  tdep->reginfo = reginfo;
+  tdep->reginfo_sz = num_regs;
+  gdbarch = gdbarch_alloc (&info, tdep);
 
   /* gdbarch setup. */
   /* Default gdbarch_bits_big_endian suffices. */
@@ -2670,25 +2666,28 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   /* write_pc is target dependent: no for linux, exists for elf32 */
   set_gdbarch_virtual_frame_pointer (gdbarch, arc_virtual_frame_pointer);
   /* No need for special pseudo register read/write. */
-  set_gdbarch_num_regs (gdbarch, tdep->num_regs);
+  /* tdesc_use_registers expects gdbarch_num_regs to return number of registers
+   * parsed by gdbarch_init, and then it will add all of the remaining
+   * registers and will increase number of registers. */
+  set_gdbarch_num_regs (gdbarch, tdep->reginfo_sz);
   set_gdbarch_num_pseudo_regs (gdbarch, 0);
   /* We don't use Agent Expressions here (only MIPS does it seems) */
-  set_gdbarch_sp_regnum (gdbarch, tdep->sp_regnum);
-  set_gdbarch_pc_regnum (gdbarch, tdep->pc_regnum);
-  set_gdbarch_ps_regnum (gdbarch, tdep->ps_regnum);
+  set_gdbarch_sp_regnum (gdbarch, ARC_SP_REGNUM);
+  set_gdbarch_pc_regnum (gdbarch, ARC_PC_REGNUM);
+  set_gdbarch_ps_regnum (gdbarch, ARC_STATUS32_REGNUM);
   set_gdbarch_fp0_regnum (gdbarch, -1);		/* No FPU registers */
   /* Don't try to convert STAB, ECOFF or SDB regnums. We don't really support
      these debugging formats, and if used assume regnums are the same. */
   /* No need to convert DWARF register numbers, since they are now the same
      (this is a change from GDB 6.8 for ARC). */
-  set_gdbarch_register_name (gdbarch, arc_register_name);
-  set_gdbarch_register_type (gdbarch, arc_register_type);
+  /* gdbarch_register_name will be set bytdesc_use_registers. */
+  /* gdbarch_register_type will be set bytdesc_use_registers. */
   set_gdbarch_dummy_id (gdbarch, arc_dummy_id);
   /* No need for deprecated_fp_regnum */
   set_gdbarch_push_dummy_call (gdbarch, arc_push_dummy_call);
   /* call_dummy_location obsoleted by push_dummy_code */
   set_gdbarch_push_dummy_code (gdbarch, arc_push_dummy_code);
-  set_gdbarch_print_registers_info (gdbarch, arc_print_registers_info);
+  /* Use default_print_registers_info. */
   set_gdbarch_print_float_info (gdbarch, arc_print_float_info);
   /* No vector registers need printing. */
   /* Default gdbarch_register_sim_regno suffices */
@@ -2779,6 +2778,8 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
      ones specified above. */
   arc_gdbarch_osabi_init (gdbarch);
 
+  tdesc_use_registers (gdbarch, tdesc, tdesc_data);
+
   return gdbarch;			/* Newly created architecture. */
 
 }	/* arc_gdbarch_init () */
@@ -2793,43 +2794,16 @@ arc_dump_tdep (struct gdbarch *gdbarch, struct ui_file *file)
 {
   struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
 
-  fprintf_unfiltered (file, "arc_dump_tdep: is_sigtramp = %p\n", 
+  fprintf_unfiltered (file, "arc_dump_tdep: is_sigtramp = %p\n",
 		      tdep->is_sigtramp);
-  fprintf_unfiltered (file, "arc_dump_tdep: sigcontext_addr = %p\n", 
+  fprintf_unfiltered (file, "arc_dump_tdep: sigcontext_addr = %p\n",
 		      tdep->sigcontext_addr);
-  fprintf_unfiltered (file, "arc_dump_tdep: sc_reg_offset = %p\n", 
+  fprintf_unfiltered (file, "arc_dump_tdep: sc_reg_offset = %p\n",
 		      tdep->sc_reg_offset);
-  fprintf_unfiltered (file, "arc_dump_tdep: sc_num_regs = %d\n", 
+  fprintf_unfiltered (file, "arc_dump_tdep: sc_num_regs = %d\n",
 		      tdep->sc_num_regs);
-  fprintf_unfiltered (file, "arc_dump_tdep: opella_target = %s\n", 
-		      tdep->opella_target == NONE ? "none"
-		      : tdep->opella_target == ARC600 ? "ARC600"
-		      : tdep->opella_target == ARC700 ? "ARC700"
-		      : tdep->opella_target == ARCEM ? "ARCEM"
-		      : tdep->opella_target == INVALID ? "INVALID" : "Help!");
-  fprintf_unfiltered (file, "arc_dump_tdep: num_core_regs = %d\n", 
-		      tdep->num_core_regs);
-  fprintf_unfiltered (file, "arc_dump_tdep: num_regs = %d\n", 
-		      tdep->num_regs);
-  fprintf_unfiltered (file, "arc_dump_tdep: num_pseudo_regs = %d\n", 
-		      tdep->num_pseudo_regs);
-  fprintf_unfiltered (file, "arc_dump_tdep: first_arg_regnum = %d\n", 
-		      tdep->first_arg_regnum);
-  fprintf_unfiltered (file, "arc_dump_tdep: last_arg_regnum = %d\n", 
-		      tdep->last_arg_regnum);
-  fprintf_unfiltered (file, "arc_dump_tdep: first_callee_saved_regnum = %d\n", 
-		      tdep->first_callee_saved_regnum);
-  fprintf_unfiltered (file, "arc_dump_tdep: last_callee_saved_regnum = %d\n", 
-		      tdep->last_callee_saved_regnum);
-  fprintf_unfiltered (file, "arc_dump_tdep: pc_regnum = %d\n", 
-		      tdep->pc_regnum);
-  fprintf_unfiltered (file, "arc_dump_tdep: fp_regnum = %d\n", 
-		      tdep->fp_regnum);
-  fprintf_unfiltered (file, "arc_dump_tdep: sp_regnum = %d\n", 
-		      tdep->sp_regnum);
-  fprintf_unfiltered (file, "arc_dump_tdep: ps_regnum = %d\n", 
-		      tdep->ps_regnum);
-  
+  fprintf_unfiltered (file, "arc_dump_tdep: reginfo_sz = %zd\n",
+		      tdep->reginfo_sz);
 }	/* arc_dump_tdep () */
 
 
@@ -2871,29 +2845,6 @@ show_arc_command (char *args, int from_tty)
   cmd_show_list (showarccmdlist, from_tty, "");
 }
 
-
-/*! The possible opella targets  */
-static const char *const opella_strings[] =
-  {
-    "none",
-    "arc600",
-    "arc700",
-    "arcem",
-    NULL
-  };
-
-/*! Update the architecture after setting the target. */
-static void
-arc_set_opella (char *args, int from_tty,
-		struct cmd_list_element *c)
-{
-  struct gdbarch_info info;
-  gdbarch_info_init (&info);
-  gdbarch_update_p (info);
-
-}	/* arc_set_opella () */
-
-
 /* this function is called from gdb */
 void
 _initialize_arc_tdep (void)
@@ -2905,6 +2856,9 @@ _initialize_arc_tdep (void)
    *                architecture
    */
   gdbarch_register (bfd_arch_arc, arc_gdbarch_init, arc_dump_tdep);
+
+  initialize_tdesc_compatible_v2 ();
+  initialize_tdesc_compatible_arcompact ();
 
   /* register ARC-specific commands with gdb */
 
@@ -2927,14 +2881,6 @@ _initialize_arc_tdep (void)
 			    NULL,
 			    &setdebuglist,
 			    &showdebuglist);
-
-  /* Command to control Opella JTAG debugger */
-  add_setshow_enum_cmd ("opella-target", class_support,
-			opella_strings, &arc_opella_string,
-			_("Set the ARC debug target for the Opella-XD JTAG probe."),
-			_("Show the ARC debug target for the Opella-XD JTAG probe."),
-			NULL, arc_set_opella, NULL,
-			&setarccmdlist, &showarccmdlist);
-
-
 }	/* _initialize_arc_tdep () */
+
+/* vim: set sts=2 shiftwidth=2 ts=8: */

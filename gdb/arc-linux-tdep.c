@@ -70,7 +70,8 @@
 
 
 /*! Mapping between the general-purpose registers in `struct sigcontext' format
-    and GDB's register cache layout.
+    and GDB's register cache layout. It should match current target
+    description, currently it is aligned to the "compatible" register layout.
 
     arc_linux_sc_reg_offset[i] is the sigcontext offset of GDB regnum `i'.
 	
@@ -79,7 +80,7 @@
 	subset of registers from user_regs_struct, namely "scratch" part.*/
 
 /* From <include/uapi/asm/sigcontext.h> and <include/uapi/asm/ptrace.h>. */
-static const int arc_linux_sc_reg_offset[ARC_NUM_RAW_REGS] = {
+static const int arc_linux_sc_reg_offset[] = {
   22 * BYTES_IN_REGISTER,	/* r0       */
   21 * BYTES_IN_REGISTER,	/* r1       */
   20 * BYTES_IN_REGISTER,	/* r2       */
@@ -173,12 +174,13 @@ static const int arc_linux_sc_reg_offset[ARC_NUM_RAW_REGS] = {
 
 
 /* arc_linux_core_reg_offsets[i] is the offset in the .reg section of GDB
- * regnum i.
+ * regnum i. It should match current target description, currently it is
+ * aligned to the "compatible" register layout.
  *
  * From include/uapi/asm/ptrace.h in the ARC Linux sources.
  */
 
-static const int arc_linux_core_reg_offsets[ARC_NUM_RAW_REGS] = {
+static const int arc_linux_core_reg_offsets[] = {
   22 * BYTES_IN_REGISTER,	/* r0       */
   21 * BYTES_IN_REGISTER,	/* r1       */
   20 * BYTES_IN_REGISTER,	/* r2       */
@@ -359,10 +361,10 @@ arc_linux_next_pc (CORE_ADDR pc, CORE_ADDR *fall_thru, CORE_ADDR *target)
 
 
   /* Zero-overhead loops */
-  regcache_cooked_read_unsigned (regcache, ARC_AUX_LP_START_REGNUM, &lp_start);
-  regcache_cooked_read_unsigned (regcache, ARC_AUX_LP_END_REGNUM, &lp_end);
+  regcache_cooked_read_unsigned (regcache, ARC_LP_START_REGNUM, &lp_start);
+  regcache_cooked_read_unsigned (regcache, ARC_LP_END_REGNUM, &lp_end);
   regcache_cooked_read_unsigned (regcache, ARC_LP_COUNT_REGNUM, &lp_count);
-  regcache_cooked_read_unsigned (regcache, ARC_AUX_STATUS32_REGNUM, &status32);
+  regcache_cooked_read_unsigned (regcache, gdbarch_pc_regnum (gdbarch), &status32);
 
   if (!(status32 & 0x00000100) && *fall_thru == lp_end && lp_count > 1)
     {
@@ -467,11 +469,14 @@ arc_linux_sigcontext_addr (struct frame_info *this_frame)
 
 /*! Determine whether a register can be read.
 
-    A Linux target can only read registers writable in user space and for now
-    only sees a small subset of aux registers and no core extension registers.
+    This function relies on tdep->reginfo, since numbers of individual
+    registers are not globally same and can change from one run to another.
 
-    @todo We'll need a more complex interface once the aux registers are
-          defined via XML.
+    A Linux target can only read registers writable in user space and only sees
+    a small subset of aux registers and no core extension registers.  This
+    information is stored in the tdep->reginfo, but since availability is
+    different with baremetal case, this function relies on
+    user_readable/user_writable functions.
 
     @param[in] gdbarch  The current GDB architecture.
     @param[in] regnum   The register of interest.
@@ -480,53 +485,25 @@ arc_linux_sigcontext_addr (struct frame_info *this_frame)
 static int
 arc_linux_cannot_fetch_register (struct gdbarch *gdbarch, int regnum)
 {
-  /* Default is to be able to read regs, pick out the others explicitly. */
-  switch (regnum)
-    {
-    case 32: case 33: case 34: case 35:	/* Extension core registers */
-    case 36: case 37: case 38: case 39:
-    case 40: case 41: case 42: case 43:
-    case 44: case 45: case 46: case 47:
-    case 48: case 49: case 50: case 51:
-    case 52: case 53: case 54: case 55:
-    case 56: case 57: case 58: case 59:
-    case ARC_RESERVED_REGNUM:
-    case ARC_LIMM_REGNUM:
-    case ARC_ILINK1_REGNUM:
-    case ARC_ILINK2_REGNUM:
-    case ARC_AUX_STATUS32_L1_REGNUM:
-    case ARC_AUX_STATUS32_L2_REGNUM:
-    case ARC_AUX_AUX_IRQ_LV12_REGNUM:
-    case ARC_AUX_AUX_IRQ_LEV_REGNUM:
-    case ARC_AUX_AUX_IRQ_HINT_REGNUM:
-    case ARC_AUX_ERET_REGNUM:
-    case ARC_AUX_ERBTA_REGNUM:
-    case ARC_AUX_ERSTATUS_REGNUM:
-    case ARC_AUX_ECR_REGNUM:
-    case ARC_AUX_ICAUSE1_REGNUM:
-    case ARC_AUX_ICAUSE2_REGNUM:
-    case ARC_AUX_AUX_IENABLE_REGNUM:
-    case ARC_AUX_AUX_ITRIGGER_REGNUM:
-    case ARC_AUX_BTA_REGNUM:
-    case ARC_AUX_BTA_L1_REGNUM:
-    case ARC_AUX_BTA_L2_REGNUM:
-    case ARC_AUX_AUX_IRQ_PULSE_CANCEL_REGNUM:
-    case ARC_AUX_AUX_IRQ_PENDING_REGNUM:
-      return 1;				/* Privileged/debugger read only. */
+  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
 
-    default:
-      /* Only Aux regs available are LP_START, LP_END, STATUS32 and EFA. The
-	 last being odd, because it is a priviledged register, but the kernel
-	 gives it to us to read anyway. */
-      return 0;				/* Always readable. */
-    }
-}	/* arc_linux_cannot_fetch_register () */
-
+  /* Assume that register is readable if there is no information. */
+  if (regnum < tdep->reginfo_sz)
+    return !tdep->reginfo[regnum].user_readable;
+  else
+    return FALSE;
+}	/* arc_linux_cannot_store_register () */
 
 /*! Determine whether a register can be written.
 
-    A Linux target can only write registers writable in user space and for now
-    only sees a small subset of aux registers and no core extension registers.
+    This function relies on tdep->reginfo, since numbers of individual
+    registers are not globally same and can change from one run to another.
+
+    A Linux target can only read registers writable in user space and only sees
+    a small subset of aux registers and no core extension registers.  This
+    information is stored in the tdep->reginfo, but since availability is
+    different with baremetal case, this function relies on
+    user_readable/user_writable functions.
 
     @todo We'll need a more complex interface once the aux registers are
           defined via XML.
@@ -538,48 +515,13 @@ arc_linux_cannot_fetch_register (struct gdbarch *gdbarch, int regnum)
 static int
 arc_linux_cannot_store_register (struct gdbarch *gdbarch, int regnum)
 {
-  /* Default is to be able to write regs, pick out the others explicitly. */
-  switch (regnum)
-    {
-    case ARC_ILINK1_REGNUM:
-    case ARC_ILINK2_REGNUM:
-    case 32: case 33: case 34: case 35:	/* Extension core registers */
-    case 36: case 37: case 38: case 39:
-    case 40: case 41: case 42: case 43:
-    case 44: case 45: case 46: case 47:
-    case 48: case 49: case 50: case 51:
-    case 52: case 53: case 54: case 55:
-    case 56: case 57: case 58: case 59:
-    case ARC_RESERVED_REGNUM:
-    case ARC_LIMM_REGNUM:
-    case ARC_PCL_REGNUM:
-    case ARC_AUX_STATUS32_REGNUM:
-    case ARC_AUX_STATUS32_L1_REGNUM:
-    case ARC_AUX_STATUS32_L2_REGNUM:
-    case ARC_AUX_AUX_IRQ_LV12_REGNUM:
-    case ARC_AUX_AUX_IRQ_LEV_REGNUM:
-    case ARC_AUX_AUX_IRQ_HINT_REGNUM:
-    case ARC_AUX_ERET_REGNUM:
-    case ARC_AUX_ERBTA_REGNUM:
-    case ARC_AUX_ERSTATUS_REGNUM:
-    case ARC_AUX_ECR_REGNUM:
-    case ARC_AUX_EFA_REGNUM:
-    case ARC_AUX_ICAUSE1_REGNUM:
-    case ARC_AUX_ICAUSE2_REGNUM:
-    case ARC_AUX_AUX_IENABLE_REGNUM:
-    case ARC_AUX_AUX_ITRIGGER_REGNUM:
-    case ARC_AUX_BTA_REGNUM:
-    case ARC_AUX_BTA_L1_REGNUM:
-    case ARC_AUX_BTA_L2_REGNUM:
-    case ARC_AUX_AUX_IRQ_PULSE_CANCEL_REGNUM:
-    case ARC_AUX_AUX_IRQ_PENDING_REGNUM:
-      return 1;				/* Privileged/debugger write only. */
+  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
 
-    default:
-      /* Only Aux regs available are LP_START, LP_END, STATUS32. Unlike fetch,
-	 we cannot store the privileged EFA register. */
-      return 0;				/* Always writable. */
-    }
+  /* Assume that register is writable if there is no info. */
+  if (regnum < tdep->reginfo_sz)
+    return !tdep->reginfo[regnum].user_writable;
+  else
+    return FALSE;
 }	/* arc_linux_cannot_store_register () */
 
 
@@ -736,7 +678,7 @@ arc_linux_supply_gregset (const struct regset *regset,
   const bfd_byte *buf = gregs;
   unsigned int reg;
 
-  for (reg = 0; reg < ARC_NUM_RAW_REGS; reg++)
+  for (reg = 0; reg < ARRAY_SIZE (arc_linux_core_reg_offsets); reg++)
     {
       if (arc_linux_core_reg_offsets[reg] != REGISTER_NOT_PRESENT)
 	regcache_raw_supply (regcache,
@@ -757,7 +699,7 @@ arc_linux_collect_gregset ( const struct regset *regset,
   gdb_byte *buf = gregs;
   int reg;
 
-  for (reg = 0; reg < ARC_NUM_RAW_REGS; reg++)
+  for (reg = 0; reg < ARRAY_SIZE (arc_linux_core_reg_offsets); reg++)
     {
       /* Skip unexisting registers. regnum == -1 means writing all regs. */
       if ((arc_linux_core_reg_offsets[reg] != REGISTER_NOT_PRESENT) &&
@@ -772,10 +714,10 @@ arc_linux_collect_gregset ( const struct regset *regset,
            * GDB, otherwise program will continue at address after the current
            * instruction, which might not be a valid instruction at all. In
            * GDBserver this handled internally, invisible to the GDB client. */
-          if (tdep->pc_regnum == reg)
+          if (gdbarch_pc_regnum (gdbarch) == reg)
             regcache_raw_collect (regcache, reg,
-                buf + arc_linux_core_reg_offsets[ARC_AUX_ERET_REGNUM]);
-          else if (reg != ARC_AUX_ERET_REGNUM)
+                buf + arc_linux_core_reg_offsets[ARC_COMPATIBLE_ERET_REGNUM]);
+          else if (reg != ARC_COMPATIBLE_ERET_REGNUM)
             regcache_raw_collect (regcache, reg,
                 buf + arc_linux_core_reg_offsets[reg]);
           /* reg == ARC_AUX_ERET_REGNUM is ignored. */
@@ -846,7 +788,7 @@ arc_gdbarch_osabi_init (struct gdbarch *gdbarch)
   tdep->is_sigtramp = arc_linux_is_sigtramp;
   tdep->sigcontext_addr = arc_linux_sigcontext_addr;
   tdep->sc_reg_offset = arc_linux_sc_reg_offset;
-  tdep->sc_num_regs = ARC_NUM_RAW_REGS;
+  tdep->sc_num_regs = ARRAY_SIZE (arc_linux_core_reg_offsets);
 
   /* Set up target dependent GDB architecture entries. */
   set_gdbarch_cannot_fetch_register (gdbarch, arc_linux_cannot_fetch_register);
@@ -867,5 +809,5 @@ arc_gdbarch_osabi_init (struct gdbarch *gdbarch)
 
 }	/* arc_gdbarch_osabi_init () */
 
-/* vim: set expandtab: */
+/* vim: set sts=2 shiftwidth=2 ts=8: */
 
