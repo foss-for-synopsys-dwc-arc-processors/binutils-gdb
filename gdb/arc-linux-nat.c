@@ -215,3 +215,4 @@ _initialize_arc_linux_nat (void)
   linux_nat_set_prepare_to_resume(t, arc_linux_prepare_to_resume);
 }
 
+/* vim: set sts=2 shiftwidth=2 ts=8: */
