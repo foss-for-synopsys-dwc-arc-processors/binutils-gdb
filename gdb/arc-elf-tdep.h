@@ -50,4 +50,5 @@ struct gdbarch *arc_jtag_initialize (struct gdbarch *gdbarch,
 void _initialize_arc_jtag_tdep (void);
 
 #endif /* ARC_JTAG_TDEP_H */
-/******************************************************************************/
+
+/* vim: set sts=2 shiftwidth=2 ts=8: */

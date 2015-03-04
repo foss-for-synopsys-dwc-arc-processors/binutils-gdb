@@ -47,3 +47,4 @@ void arc_linux_collect_gregset (const struct regset *regset,
 
 #endif // ARC_LINUX_TDEP_H
 
+/* vim: set sts=2 shiftwidth=2 ts=8: */
