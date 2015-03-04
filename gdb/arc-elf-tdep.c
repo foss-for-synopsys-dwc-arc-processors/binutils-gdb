@@ -88,10 +88,8 @@ typedef struct
 
 /*! Determine whether a register can be read.
 
-    An ELF target can see any register visible via the JTAG debug interface.
-
-    @todo We'll need a more complex interface once the aux registers are
-          defined via XML.
+    This function relies on tdep->reginfo, since numbers of individual
+    registers are not globally same and can change from one run to another.
 
     @param[in] gdbarch  The current GDB architecture.
     @param[in] regnum   The register of interest.
@@ -102,74 +100,18 @@ arc_elf_cannot_fetch_register (struct gdbarch *gdbarch, int regnum)
 {
   struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
 
-  /* What we can read is target specific. */
-  switch (tdep->opella_target)
-    {
-    case ARC600:
-      switch (regnum)
-	{
-	case OA6_AUX_IC_IVIC:
-	case OA6_AUX_DC_IVDC:
-	  /* Write only registers. */
-	  return TRUE;
-
-	default:
-	  return FALSE;
-	}
-
-    case ARC700:
-      switch (regnum)
-	{
-	case OA7_AUX_AUX_IRQ_PULSE_CANCEL:
-	case OA7_AUX_IC_IVIC:
-	case OA7_AUX_DC_IVDC:
-	  /* Write only registers. */
-	  return TRUE;
-
-	default:
-	  return FALSE;
-	}
-
-    case ARCEM:
-      switch (regnum)
-        {
-        case OAEM_AUX_IC_IVIC:
-        case OAEM_AUX_IC_LIL:
-        case OAEM_AUX_IC_IVIL:
-        case OAEM_AUX_DC_IVDC:
-        case OAEM_AUX_DC_FLSH:
-        case OAEM_AUX_DC_LDL:
-        case OAEM_AUX_DC_IVDL:
-        case OAEM_AUX_DC_FLDL:
-        case OAEM_AUX_IRQ_PULSE_CANCEL:
-            /* Write only registers. */
-            return TRUE;
-
-        default:
-            return FALSE;
-        }
-
-    default:
-      /* Default has a couple of invisible registers. */
-      switch (regnum)
-	{
-	case ARC_RESERVED_REGNUM:
-	case ARC_LIMM_REGNUM:
-	  return TRUE;				/* Never readable. */
-	  
-	default:
-	  return FALSE;				/* Readable via JTAG. */
-	}
-    }
-}	/* arc_elf_cannot_fetch_register () */
+  /* Assume that register is readable if there is no information. */
+  if (regnum < tdep->reginfo_sz)
+    return !tdep->reginfo[regnum].readable;
+  else
+    return FALSE;
+}	/* arc_elf_cannot_store_register () */
 
 
 /*! Determine whether a register can be written.
 
-    An ELF target can see any register visible via the JTAG debug interface.
-
-    @todo We'll need a more complex interface once the aux registers are
-          defined via XML.
+    This function relies on tdep->reginfo, since numbers of individual
+    registers are not globally same and can change from one run to another.
 
     @param[in] gdbarch  The current GDB architecture.
     @param[in] regnum   The register of interest.
@@ -180,64 +122,11 @@ arc_elf_cannot_store_register (struct gdbarch *gdbarch, int regnum)
 {
   struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
 
-  /* What we can read is target specific. */
-  switch (tdep->opella_target)
-    {
-    case ARC600:
-      switch (regnum)
-	{
-	case OA6_AUX_STATUS:
-	case OA6_AUX_IDENTITY:
-	  /* Read only registers. */
-	  return TRUE;
-
-	default:
-	  return FALSE;
-	}
-
-    case ARC700:
-      switch (regnum)
-	{
-	case OA7_AUX_STATUS:
-	case OA7_AUX_IDENTITY:
-	case OA7_AUX_ICAUSE1:
-	case OA7_AUX_ICAUSE2:
-	case OA7_AUX_AUX_IRQ_PENDING:
-	  /* Read only registers. */
-	  return TRUE;
-
-	default:
-	  return FALSE;
-	}
-
-    case ARCEM:
-      switch (regnum)
-        {
-        case OAEM_AUX_IDENTITY:
-        case OAEM_AUX_SMART_DATA:
-        case OAEM_AUX_IRQ_PENDING:
-        case OAEM_AUX_IRQ_STATUS:
-        case OAEM_AUX_ICAUSE:
-            /* Read only registers */
-            return TRUE;
-
-        default:
-            return FALSE;
-        }
-
-    default:
-      /* Default has a couple of invisible registers. */
-      switch (regnum)
-	{
-	case ARC_RESERVED_REGNUM:
-	case ARC_LIMM_REGNUM:
-	case ARC_PCL_REGNUM:
-	  return TRUE;				/* Never readable. */
-	  
-	default:
-	  return FALSE;				/* Readable via JTAG. */
-	}
-    }
+  /* Assume that register is writable if there is no info. */
+  if (regnum < tdep->reginfo_sz)
+    return !tdep->reginfo[regnum].writable;
+  else
+    return FALSE;
 }	/* arc_elf_cannot_store_register () */
 
 
@@ -311,6 +200,12 @@ arc_elf_breakpoint_from_pc (struct gdbarch *gdbarch, CORE_ADDR * pcptr,
     The simulator does not have a simple numbering. Rather registers are known
     by a class and a number.
 
+    That function will work properly only with ARCompact compatible register
+    set. gdbarch is not part of argument list, so it's not possible to get
+    information for current architecture (other that horrific global variables.
+    Just don't 'set tdesc filename' with 'target sim' and everything should be
+    fine.
+
     @param[in]  gdb_regnum  The GDB register number to map
     @param[out] sim_regnum  The corresponding simulator register
     @param[out] reg_class   The corresponding ARC register class */
@@ -343,112 +238,112 @@ arc_elf_sim_map (int                gdb_regnum,
 	  *reg_class = ARC_PROGRAM_COUNTER;
 	  break;
 
-	case ARC_AUX_LP_START_REGNUM:
+	case ARC_LP_START_REGNUM:
 	  *sim_regnum = ARC_AUX_LP_START_SIM_REGNUM;
 	  *reg_class  = ARC_AUX_REGISTER;
 	  break;
 
-	case ARC_AUX_LP_END_REGNUM:
+	case ARC_LP_END_REGNUM:
 	  *sim_regnum = ARC_AUX_LP_END_SIM_REGNUM;
 	  *reg_class  = ARC_AUX_REGISTER;
 	  break;
 
-	case ARC_AUX_STATUS32_REGNUM:
+	case ARC_STATUS32_REGNUM:
 	  *sim_regnum = ARC_AUX_STATUS32_SIM_REGNUM;
 	  *reg_class  = ARC_AUX_REGISTER;
 	  break;
 
-	case ARC_AUX_STATUS32_L1_REGNUM:
+	case ARC_COMPATIBLE_STATUS32_L1_REGNUM:
 	  *sim_regnum = ARC_AUX_STATUS32_L1_SIM_REGNUM;
 	  *reg_class  = ARC_AUX_REGISTER;
 	  break;
 
-	case ARC_AUX_STATUS32_L2_REGNUM:
+	case ARC_COMPATIBLE_STATUS32_L2_REGNUM:
 	  *sim_regnum = ARC_AUX_STATUS32_L2_SIM_REGNUM;
 	  *reg_class  = ARC_AUX_REGISTER;
 	  break;
 
-	case ARC_AUX_AUX_IRQ_LV12_REGNUM:
+	case ARC_COMPATIBLE_AUX_IRQ_LV12_REGNUM:
 	  *sim_regnum = ARC_AUX_AUX_IRQ_LV12_SIM_REGNUM;
 	  *reg_class  = ARC_AUX_REGISTER;
 	  break;
 
-	case ARC_AUX_AUX_IRQ_LEV_REGNUM:
+	case ARC_COMPATIBLE_AUX_IRQ_LEV_REGNUM:
 	  *sim_regnum = ARC_AUX_AUX_IRQ_LEV_SIM_REGNUM;
 	  *reg_class  = ARC_AUX_REGISTER;
 	  break;
 
-	case ARC_AUX_AUX_IRQ_HINT_REGNUM:
+	case ARC_COMPATIBLE_AUX_IRQ_HINT_REGNUM:
 	  *sim_regnum = ARC_AUX_AUX_IRQ_HINT_SIM_REGNUM;
 	  *reg_class  = ARC_AUX_REGISTER;
 	  break;
 
-	case ARC_AUX_ERET_REGNUM:
+	case ARC_COMPATIBLE_ERET_REGNUM:
 	  *sim_regnum = ARC_AUX_ERET_SIM_REGNUM;
 	  *reg_class  = ARC_AUX_REGISTER;
 	  break;
 
-	case ARC_AUX_ERBTA_REGNUM:
+	case ARC_COMPATIBLE_ERBTA_REGNUM:
 	  *sim_regnum = ARC_AUX_ERBTA_SIM_REGNUM;
 	  *reg_class  = ARC_AUX_REGISTER;
 	  break;
 
-	case ARC_AUX_ERSTATUS_REGNUM:
+	case ARC_COMPATIBLE_ERSTATUS_REGNUM:
 	  *sim_regnum = ARC_AUX_ERSTATUS_SIM_REGNUM;
 	  *reg_class  = ARC_AUX_REGISTER;
 	  break;
 
-	case ARC_AUX_ECR_REGNUM:
+	case ARC_COMPATIBLE_ECR_REGNUM:
 	  *sim_regnum = ARC_AUX_ECR_SIM_REGNUM;
 	  *reg_class  = ARC_AUX_REGISTER;
 	  break;
 
-	case ARC_AUX_EFA_REGNUM:
+	case ARC_COMPATIBLE_EFA_REGNUM:
 	  *sim_regnum = ARC_AUX_EFA_SIM_REGNUM;
 	  *reg_class  = ARC_AUX_REGISTER;
 	  break;
 
-	case ARC_AUX_ICAUSE1_REGNUM:
+	case ARC_COMPATIBLE_ICAUSE1_REGNUM:
 	  *sim_regnum = ARC_AUX_ICAUSE1_SIM_REGNUM;
 	  *reg_class  = ARC_AUX_REGISTER;
 	  break;
 
-	case ARC_AUX_ICAUSE2_REGNUM:
+	case ARC_COMPATIBLE_ICAUSE2_REGNUM:
 	  *sim_regnum = ARC_AUX_ICAUSE2_SIM_REGNUM;
 	  *reg_class  = ARC_AUX_REGISTER;
 	  break;
 
-	case ARC_AUX_AUX_IENABLE_REGNUM:
+	case ARC_COMPATIBLE_AUX_IENABLE_REGNUM:
 	  *sim_regnum = ARC_AUX_AUX_IENABLE_SIM_REGNUM;
 	  *reg_class  = ARC_AUX_REGISTER;
 	  break;
 
-	case ARC_AUX_AUX_ITRIGGER_REGNUM:
+	case ARC_COMPATIBLE_AUX_ITRIGGER_REGNUM:
 	  *sim_regnum = ARC_AUX_AUX_ITRIGGER_SIM_REGNUM;
 	  *reg_class  = ARC_AUX_REGISTER;
 	  break;
 
-	case ARC_AUX_BTA_REGNUM:
+	case ARC_COMPATIBLE_BTA_REGNUM:
 	  *sim_regnum = ARC_AUX_BTA_SIM_REGNUM;
 	  *reg_class  = ARC_AUX_REGISTER;
 	  break;
 
-	case ARC_AUX_BTA_L1_REGNUM:
+	case ARC_COMPATIBLE_BTA_L1_REGNUM:
 	  *sim_regnum = ARC_AUX_BTA_L1_SIM_REGNUM;
 	  *reg_class  = ARC_AUX_REGISTER;
 	  break;
 
-	case ARC_AUX_BTA_L2_REGNUM:
+	case ARC_COMPATIBLE_BTA_L2_REGNUM:
 	  *sim_regnum = ARC_AUX_BTA_L2_SIM_REGNUM;
 	  *reg_class  = ARC_AUX_REGISTER;
 	  break;
 
-	case ARC_AUX_AUX_IRQ_PULSE_CANCEL_REGNUM:
+	case ARC_COMPATIBLE_AUX_IRQ_PULSE_CANCEL_REGNUM:
 	  *sim_regnum = ARC_AUX_AUX_IRQ_PULSE_CANCEL_SIM_REGNUM;
 	  *reg_class  = ARC_AUX_REGISTER;
 	  break;
 
-	case ARC_AUX_AUX_IRQ_PENDING_REGNUM:
+	case ARC_COMPATIBLE_AUX_IRQ_PENDING_REGNUM:
 	  *sim_regnum = ARC_AUX_AUX_IRQ_PENDING_SIM_REGNUM;
 	  *reg_class  = ARC_AUX_REGISTER;
 	  break;
@@ -575,3 +470,5 @@ arc_gdbarch_osabi_init (struct gdbarch *gdbarch)
 #endif
 
 }	/* arc_gdbarch_osabi_init () */
+
+/* vim: set sts=2 shiftwidth=2 ts=8: */
