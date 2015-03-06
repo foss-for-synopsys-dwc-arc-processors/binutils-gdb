@@ -4101,8 +4101,14 @@ elf_arc_size_dynamic_sections (bfd *output_bfd,
 	  continue;
 	}
 
-      /* Allocate memory for the section contents.  */
-      s->contents = (bfd_byte *) bfd_alloc (dynobj, s->size);
+      /* Allocate memory for the section contents.  The memory is zero
+         initialised during initialisation as zero content represents an
+         R_ARC_NONE relocation.  Due to issues with how the sizes of
+         dynamic sections are managed we currently fail to remove dynamic
+         sections that are completely unneeded, the result is that
+         uninitialised dynamic sections would be merged into the final
+         binary.  Except that we now initialise the sections here.  */
+      s->contents = (bfd_byte *) bfd_zalloc (dynobj, s->size);
       if (s->contents == NULL && s->size != 0)
 	return FALSE;
     }
