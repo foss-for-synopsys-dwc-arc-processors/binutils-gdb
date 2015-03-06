@@ -1,3 +1,8 @@
+2015-03-06  Andrew Burgess  <andrew.burgess@embecosm.com>
+
+	* elf32-arc.c (elf_arc_size_dynamic_sections): Zero initialise
+	dynamic section content.
+
 2015-02-20  Andrew Burgess  <andrew.burgess@embecosm.com>
 
 	* elf32-arc.c (arc_tls_transition): Don't assume register
