@@ -1,3 +1,8 @@
+2014-03-10  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* scripttempl/arclinux.sc: PROVIDE_HIDDEN .tdata (in case the
+	section won't be included).
+
 2014-12-17: Claudiu Zissulescu <claziss@synopsys.com>
 
 	* scripttempl/elfarcv2.sc: Update .startup section.

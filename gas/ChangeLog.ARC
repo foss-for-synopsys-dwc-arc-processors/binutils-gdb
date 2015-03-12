@@ -1,3 +1,115 @@
+2014-05-19  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* config/tc-arc.c (md_apply_fix) <BFD_RELOC_ARC_TLS_LE_32>:
+	Handle like BFD_RELOC_ARC_TLS_DTPOFF.
+	<BFD_RELOC_ARC_TLS_LE_S9>: Handle like BFD_RELOC_ARC_TLS_DTPOFF_S9.
+
+2014-02-14  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* tc-arc.c (md_apply_fix) <BFD_RELOC_ARC_TLS_DTPOFF{,_S9}>:
+	Install addend in code segment.  Allow relocation to be done.
+	(tc_gen_reloc) <BFD_RELOC_ARC_TLS_DTPOFF{,_S9}>: Store fx_subsy
+	in addend.
+	(md_assemble) <@dtpoff{,9}>: Parse optional base symbol.
+	* config/tc-arc.h (TC_VALIDATE_FIX_SUB): Allow
+	BFD_RELOC_ARC_TLS_DTPOFF{,_S9}.
+
+2014-02-11  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* config/arc/tc-arc.c (arc700_special_symtype): Add DTPOFF_TYPE and
+	DTPOFF9_TYPE.
+	(md_apply_fix): Handle BFD_RELOC_ARC_TLS_DTPOFF and
+	BFD_RELOC_ARC_TLS_DTPOFF_S9.
+	(md_assemble): Handle @dtpoff{,9}.  Handle DTPOFF9_TYPE and
+	DTPOFF_TYPE.
+
+2014-02-05  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* config/tc-arc.c (md_apply_fix): Leave fx_subsy alones
+	for BFD_RELOC_ARC_TLS_GD_LD in general processing.
+	<BFD_RELOC_ARC_TLS_GD_LD>: Process fx_subsy.
+	(rc_extra_reloc): For BFD_RELOC_ARC_TLS_GD_LD, process an optional
+	second argument.
+	* config/tc-arc.h (TC_FORCE_RELOCATION_SUB_LOCAL): Define.
+	(TC_VALIDATE_FIX_SUB): Likewise.
+
+2014-01-22  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* config/tc-arc.c (md_assemble) <TPOFF9_TYPE>:
+	Use BFD_RELOC_ARC_TLS_LE_32 if insn requires a LIMM.
+
+2014-01-22  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* config/tc-arc.c (md_apply_fix): Use S_SET_THREAD_LOCAL on symbols
+	that are subject to TLS relocations.
+
+2014-01-21  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* config/tc-arc.c (arc_extra_reloc): New function.
+	(md_apply_fix): Handle BFD_RELOC_ARC_TLS_GD_LD and
+	BFD_RELOC_ARC_TLS_GD_CALL.
+	(md_pseudo_table): Add tls_gd_ld and tls_gd_call.
+
+2014-01-19  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* config/tc-arc.c (md_assemble) <@tlsgd,@tlsie>: Set needGOTSymbol.
+
+2014-01-16  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* config/tc-arc.c (arc700_special_symtype): Add TLSGD_TYPE,
+	TLSIE_TYPE, TPOFF_TYPE and TPOFF9_TYPE.
+	(md_apply_fix): Handle TLS relocations.
+	(md_assemble): Handle tls suffixes.
+
+	* config/tc-arc.c (md_apply_fix): Remove unused variable.
+
+2014-01-14  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* config/tc-arc.c (assert_arc_pic_support): New function.
+	(md_assemble): Clean up some of the operand processing.
+
+2014-01-14  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* config/tc-arc.c (arc_parse_cons_expression): Add FIXME
+        comment.
+        (md_assemble): Add two FIXME comments.
+
+2013-12-14  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* config/tc-arc.c (tc_gen_reloc): Translate BFD_RELOC_32_PCREL
+	to BFD_RELOC_ARC_PC32.
+
+2013-12-14  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* config/tc-arc.c (arc_cons_fix_new): Use BFD_RELOC_32_PCREL.
+	(md_apply_fix): Mark unused argument.
+	BFD_RELOC_ARC_PC32 uses middle-endian insertion.
+	(tc_gen_reloc): Remove comment on non-existent issue.
+	(md_assemble): Remove unused variable.
+	For PCL_TYPE, use BFD_RELOC_ARC_PC32 and make limm adjustment
+	to addend.
+
+2013-12-14  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* config/tc-arc.c (md_pcrel_from_section): Use generic_force_reloc.
+
+2013-12-10  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* doc/c-arc.texi (@pcl): Document.
+	* config/tc-arc.c (arc700_special_symtype): Add PCL_TYPE tag.
+	(md_assemble): Add code to handle @pcl.
+	(arc_optimize_expr): Add debug printfs.
+	(get_arc_exp_reloc_type): Trim Arctangent-A4 code.
+	Changed all callers.
+	(md_pcrel_from): Replace with ..
+	(md_pcrel_from_section): .. this.
+	(md_apply_fix): Remove code obsoleted by md_pcrel_from_section.
+	* config/tc-arc.h (md_optimize_expr): Don't define.
+	(arc_optimize_expr): Don't declare.
+	(md_apply_fix): Handle BFD_RELOC_32_PCREL.
+	(md_pcrel_from_section): Declare.
+	(MD_PCREL_FROM_SECTION): Define.
+
 2015-02-18  Andrew Burgess  <andrew.burgess@embecosm.com>
 
 	* config/tc-arc.c (md_begin): No longer set arc_mach_a4.

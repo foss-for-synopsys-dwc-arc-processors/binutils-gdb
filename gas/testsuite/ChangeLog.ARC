@@ -1,3 +1,23 @@
+2014-02-05  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* gas/arc/tls-3.s, gas/arc/tls-3.d: New test.
+	* gas/arc/arc700.exp: Run it.
+
+2014-01-22  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* gas/arc/tls-2.s, gas/arc/tls-2.d: New test.
+	* gas/arc/arc700.exp: Run it.
+
+2014-01-16  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* gas/arc/tls.s, gas/arc/tls.d: New test.
+	* gas/arc/arc700.exp: Run it.
+
+2013-12-14  Joern Rennecke  <joern.rennecke@embecosm.com>
+
+	* gas/arc/pcl.s, gas/arc/pcl.d: New test.
+	* gas/arc/arc700.exp: Run it.
+
 2015-02-18  Andrew Burgess  <andrew.burgess@embecosm.com>
 
 	* gas/arc/warn.s: Update error message to reflect change in

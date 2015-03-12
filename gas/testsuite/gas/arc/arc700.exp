@@ -166,6 +166,10 @@ if [istarget arc*-*-*] then {
     run_dump_test "gen_simd"
     run_dump_test "pltfun"
     run_dump_test "h30fun"
+    run_dump_test "pcl"
+    run_dump_test "tls"
+    run_dump_test "tls-2"
+    run_dump_test "tls-3"
  
     # START ARC LOCAL   
     # ARC700 v4.10 extension instructions

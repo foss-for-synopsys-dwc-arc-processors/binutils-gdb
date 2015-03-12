@@ -71,6 +71,7 @@ static int  arc_get_sda_reloc (arc_insn, int);
 
 static void init_opcode_tables (int);
 static void arc_ac_extinst (int);
+static void arc_extra_reloc (int);
 
 /* fields for extended instruction format in extmap section */
 static int use_extended_instruction_format=0;
@@ -305,6 +306,13 @@ typedef enum
     PLT_TYPE,
     GOTOFF_TYPE,
     SDA_REF_TYPE,
+    PCL_TYPE,
+    TLSGD_TYPE,
+    TLSIE_TYPE,
+    TPOFF_TYPE,
+    TPOFF9_TYPE,
+    DTPOFF_TYPE,
+    DTPOFF9_TYPE,
     NO_TYPE
   } arc700_special_symtype;
 
@@ -1387,31 +1395,21 @@ struct arc_fixup
 
 #define MAX_SUFFIXES 5
 
-/* Compute the reloc type of an expression.
-   The possibly modified expression is stored in EXPNEW.
+/* Compute the reloc type of an expression EXP.
 
-   DEFAULT_TYPE is the type to use if no special processing is required.
-
-   DATA_P is non-zero for data or limm values, zero for insn operands.
-   Remember that the opcode "insertion fns" cannot be used on data, they're
-   only for inserting operands into insns.  They also can't be used for limm
-   values as the insertion routines don't handle limm values.  When called for
-   insns we return fudged reloc types (real_value - BFD_RELOC_UNUSED).  When
-   called for data or limm values we use real reloc types.  */
+   DEFAULT_TYPE is the type to use if no special processing is required,
+   and PCREL_TYPE the one for pc-relative relocations.  */
 
 static int
-get_arc_exp_reloc_type (int data_p ATTRIBUTE_UNUSED,
-			int default_type,
-			expressionS *exp,
-			expressionS *expnew)
+get_arc_exp_reloc_type (int default_type,
+			int pcrel_type,
+			expressionS *exp)
 {
   if (default_type == BFD_RELOC_32
       && exp->X_op == O_subtract
       && exp->X_op_symbol != NULL
       && exp->X_op_symbol->bsym->section == now_seg)
-    default_type = BFD_RELOC_ARC_PC32;
-
-  *expnew = *exp;
+    return pcrel_type;
   return default_type;
 }
 
@@ -4355,6 +4353,11 @@ arc_parse_cons_expression (expressionS *exp,
   char *p = input_line_pointer;
   int code_symbol_fix = 0;
 
+  /* FIXME: Is this function still needed?  Was/Is the @h30 construct
+     something that was left over from the Arctangent-A4 days?  Should it
+     be removed?  If it is, then how does this function differ from the
+     default TC_CONS_EXPRESSION function?  */
+
   for (; ! is_end_of_line[(unsigned char) *p]; p++)
     if (*p == '@' && !strncmp (p, "@h30", 4) && p != input_line_pointer)
       {
@@ -4380,12 +4383,9 @@ arc_cons_fix_new (fragS *frag,
 {
   if (nbytes == 4)
     {
-      int reloc_type;
-      expressionS exptmp;
-
-      /* This may be a special ARC reloc (eg: %st()).  */
-      reloc_type = get_arc_exp_reloc_type (1, BFD_RELOC_32 , exp, &exptmp);
-      fix_new_exp (frag, where, nbytes, &exptmp, 0, reloc_type);
+      int reloc_type
+	= get_arc_exp_reloc_type (BFD_RELOC_32, BFD_RELOC_32_PCREL, exp);
+      fix_new_exp (frag, where, nbytes, exp, 0, reloc_type);
     }
   else
     {
@@ -4402,10 +4402,11 @@ arc_cons_fix_new (fragS *frag,
    given a PC relative reloc.  */
 
 long
-md_pcrel_from (fixS *fixP)
+md_pcrel_from_section (fixS *fixP, segT sec)
 {
   if (fixP->fx_addsy != (symbolS *) NULL
-      && ! S_IS_DEFINED (fixP->fx_addsy))
+      && (generic_force_reloc (fixP)
+	  || (S_GET_SEGMENT (fixP->fx_addsy) != sec)))
     {
       /* The symbol is undefined.  Let the linker figure it out.  */
       return 0;
@@ -4466,8 +4467,11 @@ arc_get_sda_reloc (arc_insn insn, int compact_insn_16)
    that, we determine the correct reloc code and put it back in the fixup.  */
 
 void
-md_apply_fix (fixS *fixP, valueT *valueP, segT seg)
+md_apply_fix (fixS *fixP, valueT *valueP, segT seg ATTRIBUTE_UNUSED)
 {
+  /* In bfd/elf32-arc.c .  */
+  extern unsigned long arc_plugin_one_reloc
+    (unsigned long, enum elf_arc_reloc_type, int, short *, bfd_boolean);
   char *buf = fixP->fx_where + fixP->fx_frag->fr_literal;
   valueT value;
 
@@ -4490,19 +4494,14 @@ md_apply_fix (fixS *fixP, valueT *valueP, segT seg)
   else if (fixP->fx_pcrel)
     {
       value = *valueP;
-      /* ELF relocations are against symbols.
-	 If this symbol is in a different section then we need to leave it for
-	 the linker to deal with.  Unfortunately, md_pcrel_from can't tell,
-	 so we have to undo it's effects here.  */
-      if ( (S_IS_DEFINED (fixP->fx_addsy) &&
-	    S_GET_SEGMENT (fixP->fx_addsy) != seg) ||
-	   S_IS_WEAK(fixP->fx_addsy))
-	value += md_pcrel_from (fixP);
     }
   else
     {
       value = fixP->fx_offset;
-      if (fixP->fx_subsy != (symbolS *) NULL)
+      if (fixP->fx_subsy != (symbolS *) NULL
+	  && fixP->fx_r_type != BFD_RELOC_ARC_TLS_DTPOFF
+	  && fixP->fx_r_type != BFD_RELOC_ARC_TLS_DTPOFF_S9
+	  && fixP->fx_r_type != BFD_RELOC_ARC_TLS_GD_LD)
 	{
 	  if (S_GET_SEGMENT (fixP->fx_subsy) == absolute_section)
 	    value -= S_GET_VALUE (fixP->fx_subsy);
@@ -4519,7 +4518,6 @@ md_apply_fix (fixS *fixP, valueT *valueP, segT seg)
     {
       int opindex;
       const struct arc_operand *operand;
-      char *where;
       arc_insn insn = 0;
 
       opindex = (int) fixP->fx_r_type - (int) BFD_RELOC_UNUSED;
@@ -4533,7 +4531,6 @@ md_apply_fix (fixS *fixP, valueT *valueP, segT seg)
 
 	  /* Fetch the instruction, insert the fully resolved operand
 	     value, and stuff the instruction back again.  */
-	  where = fixP->fx_frag->fr_literal + fixP->fx_where;
 	  switch (fixP->fx_size)
 	    {
 	      case 2:
@@ -4652,18 +4649,72 @@ md_apply_fix (fixS *fixP, valueT *valueP, segT seg)
 	  break;
 
 	case BFD_RELOC_32:
-	case BFD_RELOC_ARC_PC32:
+	case BFD_RELOC_32_PCREL:
 	  md_number_to_chars (fixP->fx_frag->fr_literal + fixP->fx_where,
 			      value, 4);
 	  break;
 
+	case BFD_RELOC_ARC_TLS_DTPOFF:
+	case BFD_RELOC_ARC_TLS_LE_32:
+	  if (fixP->fx_done)
+	    {
+	      gas_assert (!fixP->fx_addsy);
+	      gas_assert (!fixP->fx_subsy);
+	      goto apply32_me;
+	    }
+	  value = fixP->fx_offset;
+	  fixP->fx_offset = 0;
+	case BFD_RELOC_ARC_TLS_GD_GOT:
+	case BFD_RELOC_ARC_TLS_IE_GOT:
+	  S_SET_THREAD_LOCAL (fixP->fx_addsy);
+	  /* Fall through.  */
+	apply32_me:
 	case BFD_RELOC_ARC_GOTPC32:
 	case BFD_RELOC_ARC_GOTOFF:
 	case BFD_RELOC_ARC_32_ME:
+	case BFD_RELOC_ARC_PC32:
 	  md_number_to_chars (fixP->fx_frag->fr_literal + fixP->fx_where,
 			      value, -4);
 
 	  break;
+
+	case BFD_RELOC_ARC_TLS_GD_LD:
+	  gas_assert (!fixP->fx_offset);
+	  if (fixP->fx_subsy)
+	    fixP->fx_offset
+	      = (S_GET_VALUE (fixP->fx_subsy)
+		 - fixP->fx_frag->fr_address- fixP->fx_where);
+	  fixP->fx_subsy = NULL;
+	  /* Fall through.  */
+	case BFD_RELOC_ARC_TLS_GD_CALL:
+	  /* These two relocs are there just to allow ld to change the tls
+	     model for this symbol, by patching the code.  */
+	  /* Fall through.  */
+	  /* The offset - and scale, if any - will be installed by the
+	     linker.  */
+	  gas_assert (!fixP->fx_done);
+	  S_SET_THREAD_LOCAL (fixP->fx_addsy);
+	  break;
+	case BFD_RELOC_ARC_TLS_LE_S9:
+	  gas_assert (!fixP->fx_done);
+	  /* Fall through.  */
+	case BFD_RELOC_ARC_TLS_DTPOFF_S9:
+	  if (!fixP->fx_done)
+	    S_SET_THREAD_LOCAL (fixP->fx_addsy);
+	  else
+	    {
+	      gas_assert (!fixP->fx_addsy);
+	      gas_assert (!fixP->fx_subsy);
+	      fixP->fx_offset = value;
+	    }
+	  short overflow_detected = 0;
+	  char *contents = fixP->fx_frag->fr_literal + fixP->fx_where;
+	  value = md_chars_to_number (contents, -4);
+	  value
+	    = arc_plugin_one_reloc (value, R_ARC_TLS_LE_S9, fixP->fx_offset,
+				    &overflow_detected, TRUE);
+          fixP->fx_offset = 0;
+	  goto apply32_me;
 
 	case BFD_RELOC_ARC_B26:
 	  /* If !fixP->fx_done then `value' is an implicit addend.
@@ -4713,6 +4764,11 @@ tc_gen_reloc (asection *section ATTRIBUTE_UNUSED,
   bfd_reloc_code_real_type code;
   code = fixP->fx_r_type;
 
+  /* FIXME: This should really be BFD_RELOC_32_PCREL, but the linker crashes
+     on that.  */
+  if (code == BFD_RELOC_32_PCREL)
+    code = BFD_RELOC_ARC_PC32;
+
   if (code == BFD_RELOC_ARC_GOTPC32
       && GOT_symbol
       && fixP->fx_addsy == GOT_symbol)
@@ -4726,9 +4782,6 @@ tc_gen_reloc (asection *section ATTRIBUTE_UNUSED,
 	 the address of the instruction, not to the address of the LIMM.
 	 The linker will just know where to put the relocated value, so
 	 make it relative to that address.  */
-      /* ??? There might have been more of an addend that has been munged
-	 into value, and then cleared in md_apply_fix.  How do we recover
-	 that?  Or is it already in fx_offset?  */
       fixP->fx_offset
 	+= fixP->fx_frag->fr_address + fixP->fx_where - fixP->fx_dot_value;
     }
@@ -4753,7 +4806,27 @@ tc_gen_reloc (asection *section ATTRIBUTE_UNUSED,
 
   gas_assert (!fixP->fx_pcrel == !reloc->howto->pc_relative);
 
-  reloc->addend = fixP->fx_offset;
+  if (fixP->fx_r_type == BFD_RELOC_ARC_TLS_DTPOFF
+      || fixP->fx_r_type == BFD_RELOC_ARC_TLS_DTPOFF_S9)
+    {
+      asymbol *sym
+	= fixP->fx_subsy ? symbol_get_bfdsym (fixP->fx_subsy) : NULL;
+      /* We just want to store a 24 bit index, but we have to wait till
+	 after write_contents has been called via bfd_map_over_sections
+	 before we can get the index from _bfd_elf_symbol_from_bfd_symbol.
+	 Thus, the write_relocs function is elf32-arc.c has to pick up
+	 the slack.  Unfortunately, this leads to problems with hosts
+	 that have pointers wider than long (bfd_vma).  There would
+	 be various ways to handle this, all error-prone :-(  */
+      reloc->addend = (bfd_vma) sym;
+      if ((asymbol *) reloc->addend != sym)
+	{
+	  as_bad ("Can't store pointer\n");
+	  return NULL;
+	}
+    }
+  else
+    reloc->addend = fixP->fx_offset;
 
   return reloc;
 }
@@ -4778,6 +4851,8 @@ const pseudo_typeS md_pseudo_table[] =
   { "extcoreregister", arc_extoper, 1 },
   { "extauxregister", arc_extoper, 2 },
   { "extinstruction", arc_handle_extinst, 0 },
+  { "tls_gd_ld",   arc_extra_reloc, BFD_RELOC_ARC_TLS_GD_LD },
+  { "tls_gd_call", arc_extra_reloc, BFD_RELOC_ARC_TLS_GD_CALL },
   { NULL, 0, 0 },
 };
 
@@ -4952,6 +5027,18 @@ parseEnterLeaveMnemonic(char **str,
   input_line_pointer = old_input_line_pointer;
   return -1;
 
+}
+
+/* Verify that we may use pic; warn if we may not.  */
+
+static bfd_boolean
+assert_arc_pic_support (void)
+{
+  if (arc_mach_type == bfd_mach_arc_arc700
+      || arc_mach_type == bfd_mach_arc_arcv2)
+    return TRUE;
+  as_warn (_("PIC not supported for processors prior to ARC 700\n"));
+  return FALSE;
 }
 
 /* This routine is called for each instruction to be assembled.  */
@@ -5600,6 +5687,7 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 	      char *hold;
 	      const struct arc_operand_value *reg = NULL;
 	      int match_failed = 0;
+	      const char *match_str;
 	      long value = 0;
 	      expressionS exp;
 	      exp.X_op = O_illegal;
@@ -5613,93 +5701,33 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		break;
 
 	      /* Verify the input for the special operands for ARCompact ISA */
-		  switch (operand->fmt)
-		    {
-		    case '4':
-		      if (*str == '%')
-			str++;
-		      if (strncmp (str, "r0", 2))
-			match_failed = 1;
-		      else if (ISALNUM (*(str + 2)))
-			match_failed = 1;
-		      break;
-		    case '5':
-		      if (*str == '%')
-			str++;
-		      if (strncmp (str, "gp", 2))
-			match_failed = 1;
-		      else if (ISALNUM (*(str + 2)))
-			match_failed = 1;
-		      break;
-		    case '6':
-		      if (*str == '%')
-			str++;
-		      if (strncmp (str, "sp", 2))
-			match_failed = 1;
-		      else if (ISALNUM (*(str + 2)))
-			match_failed = 1;
-		      break;
-		    case '7':
-		      if (*str == '%')
-			str++;
-		      if (strncmp (str, "ilink1", 6))
-			match_failed = 1;
-		      else if (ISALNUM (*(str + 6)))
-			match_failed = 1;
-		      break;
-		    case '8':
-		      if (*str == '%')
-			str++;
-		      if (strncmp (str, "ilink2", 6))
-			match_failed = 1;
-		      else if (ISALNUM (*(str + 6)))
-			match_failed = 1;
-		      break;
-		    case '9':
-		      if (*str == '%')
-			str++;
-		      if (strncmp (str, "blink", 5))
-			match_failed = 1;
-		      else if (ISALNUM (*(str + 5)))
-			match_failed = 1;
-		      break;
-		    case '!':
-		      if (*str == '%')
-			str++;
-		      if (strncmp (str, "pcl", 3))
-			match_failed = 1;
-		      else if (ISALNUM (*(str + 3)))
-			match_failed = 1;
-		      break;
-		      /*ARCv2 special registers*/
-		    case 129: /* R1*/
-		      if (*str == '%')
-			str++;
-		      if (strncmp(str, "r1", 2))
-			match_failed = 1;
-		      else if (ISALNUM (*(str + 2)))
-			match_failed = 1;
-		      break;
-		    case 130: /* R2 */
-		      if (*str == '%')
-			str++;
-		      if (strncmp(str, "r2", 2))
-			match_failed = 1;
-		      else if (ISALNUM (*(str + 2)))
-			match_failed = 1;
-		      break;
-		    case 131: /* R3 */
-		      if (*str == '%')
-			str++;
-		      if (strncmp(str, "r3", 2))
-			match_failed = 1;
-		      else if (ISALNUM (*(str + 2)))
-			match_failed = 1;
-		      break;
-		    } /* end switch(operand->fmt) */
+	      switch (operand->fmt)
+		{
+		case '4': match_str = "r0"; break;
+		case '5': match_str = "gp"; break;
+		case '6': match_str = "sp"; break;
+		case '7': match_str = "ilink1"; break;
+		case '8': match_str = "ilink2"; break;
+		case '9': match_str = "blink"; break;
+		case '!': match_str = "pcl"; break;
+		/*ARCv2 special registers*/
+		case 129: match_str = "r1"; break;
+		case 130: match_str = "r2"; break;
+		case 131: match_str = "r3"; break;
+		default: match_str = NULL; break;
+		}
+	      if (match_str)
+		{
+		  int len = strlen (match_str);
+		  if (*str == '%')
+		    str++;
+		  if (strncmp (str, match_str, len))
+		    match_failed = 1;
+		  else if (ISALNUM (*(str + len)))
+		    match_failed = 1;
 		  if (match_failed)
 		    break;
-
+		}
 	      {
 		/* Parse the operand.  */
 		/* If there is any PIC / small data / etc. related suffix
@@ -6022,9 +6050,15 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 
 	      /* For ARCompact ISA, try next insn syntax if "%st" operand is
 		 not being matched with long-immediate operand */
+	      /* FIXME: just as bad (and essentially the same) as the next
+		 hack, even though triggered less often.  */
 	      else if ((exp.X_op == O_right_shift)
 		       && (operand->fmt != 'L'))
 		break;
+	      /* FIXME: This is an atrocious hack.
+		 We reject add insn variants for forward references if they
+		 can't accomodate a LIMM.  We should instead use a variable
+		 size fragment and relax this insn.  */
 	      else if ((exp.X_op != O_register)
 		       && (operand->fmt != 'L')
 		       && ( (insn_name[0] == 'a' || insn_name[0] == 'A') &&
@@ -6193,112 +6227,139 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		    }
 		  else
 		    {
-		      int needGOTSymbol = 0;
+		      bfd_boolean needGOTSymbol = FALSE;
+		      bfd_boolean try_addend = FALSE;
 		      if (strchr (str, '@'))
 			{
-			  if (!strncmp (str, "@gotpc", 6))
-			    {
-			      str += 6;
-			      if ((arc_mach_type != bfd_mach_arc_arc700) &&
-				  (arc_mach_type != bfd_mach_arc_arcv2))
-				as_warn ("PIC not supported for processors prior to ARC 700\n");
-			      else
-				current_special_sym_flag = GOT_TYPE;
+		      bfd_boolean force_ld_limm = TRUE;
 
-				  needGOTSymbol = 1;
-			    }
-			  else if (!strncmp (str, "@plt", 4))
-			    {
-			      str += 4;
-			      if ((arc_mach_type != bfd_mach_arc_arc700) &&
-				  (arc_mach_type != bfd_mach_arc_arcv2))
-				as_warn ("PIC not supported for processors prior to ARC 700\n");
-			      else
-				current_special_sym_flag = PLT_TYPE;
-				  needGOTSymbol = 1;
-			    }
-			  else if (!strncmp (str, "@gotoff", 7))
-			    {
-			      if ((arc_mach_type != bfd_mach_arc_arc700) &&
-				  (arc_mach_type != bfd_mach_arc_arcv2))
-				as_warn ("PIC not supported for processors prior to ARC 700\n");
-			      else
-				current_special_sym_flag = GOTOFF_TYPE;
-
-			      /* Now check for identifier@gotoff+constant */
-			      if (*(str + 7) == '-' || *(str + 7) == '+')
-				{
-				  char *orig_line = input_line_pointer;
-				  expressionS new_exp;
-
-				  input_line_pointer = str + 7;
-				  expression (&new_exp);
-				  if (new_exp.X_op == O_constant)
-				    {
-				      exp.X_add_number += new_exp.X_add_number;
-				      str = input_line_pointer;
-				    }
-				  if (input_line_pointer != str)
-				    input_line_pointer = orig_line;
-				}
-			      else
-				str += 7;
-				needGOTSymbol = 1;
-			    }
-			  else
-			    {
-			      if (!strncmp (str, "@sda", 4))
-				{
-				  //	 	  fprintf (stderr, "sda seen\n");
-				  if (!(mods & ARC_MOD_SDASYM))
-				    {
-				      //  fprintf (stderr, "Error: failed to match\n");
-				      break;
-				    }
-
-				  /* sda_seen_p = 1; */
-				  current_special_sym_flag = SDA_REF_TYPE;
-				  str += 4;
-
-				  /* Now check for identifier@sda+constant */
-				  if (*(str) == '-' || *(str) == '+')
-				    {
-				      char *orig_line = input_line_pointer;
-				      expressionS new_exp;
-
-/* START ARC LOCAL */
-/*				      input_line_pointer = str + (*(str) == '+'); */
-				      char savedchar;
-
-				      savedchar = *(str - 1);
-				      *(str - 1) = '0';
-				      input_line_pointer = str - 1;
-				      expression (&new_exp);
-				      *(str - 1) = savedchar;
-/* END ARC LOCAL */
-				      if (new_exp.X_op == O_constant)
-					{
-					  exp.X_add_number
-					      += (new_exp.X_add_number);
-					  str = input_line_pointer;
-					}
-				      //     if (input_line_pointer != str)
-				      input_line_pointer = orig_line;
-				    }
-					needGOTSymbol = 1;
-				}
-			    }
-
-			/* Force GOT symbols to be limm in case of ld (@gotpc & @gotoff) instruction: 	workaround*/
-
-			if (arc_cond_p ==0 &&
-			current_special_sym_flag != SDA_REF_TYPE &&
-			 needGOTSymbol == 1 &&
-			(insn_name[0] == 'l' || insn_name[0] == 'L') &&
-			 (insn_name[1] == 'd' || insn_name[1] == 'D') &&
-			 (!(insn_name[2] == '_')) ) {
-				break;
+		      if (!strncmp (str, "@gotpc", 6))
+			{
+			  str += 6;
+			  if (assert_arc_pic_support ())
+			    current_special_sym_flag = GOT_TYPE;
+			  needGOTSymbol = TRUE;
 			}
+		      else if (!strncmp (str, "@plt", 4))
+			{
+			  str += 4;
+			  if (assert_arc_pic_support ())
+			    current_special_sym_flag = PLT_TYPE;
+			  needGOTSymbol = TRUE;
+			}
+		      else if (!strncmp (str, "@gotoff", 7))
+			{
+			  str += 7;
+			  if (assert_arc_pic_support ())
+			    current_special_sym_flag = GOTOFF_TYPE;
+			  try_addend = TRUE;
+			  needGOTSymbol = TRUE;
+			}
+		      else if (!strncmp (str, "@pcl", 4))
+			{
+			  str += 4;
+			  current_special_sym_flag = PCL_TYPE;
+			  try_addend = TRUE;
+			}
+		      else if (!strncmp (str, "@sda", 4))
+			{
+			  if (!(mods & ARC_MOD_SDASYM))
+			    {
+			      //  fprintf (stderr, "Error: failed to match\n");
+			      break;
+			    }
+
+			  str += 4;
+			  current_special_sym_flag = SDA_REF_TYPE;
+			  try_addend = TRUE;
+			  needGOTSymbol = TRUE;
+			  force_ld_limm = FALSE;
+			}
+		      else if (!strncmp (str, "@tlsgd", 6))
+			{
+			  str += 6;
+			  current_special_sym_flag = TLSGD_TYPE;
+			  needGOTSymbol = TRUE;
+			}
+		      else if (!strncmp (str, "@tlsie", 6))
+			{
+			  str += 6;
+			  current_special_sym_flag = TLSIE_TYPE;
+			  needGOTSymbol = TRUE;
+			}
+		      else if (!strncmp (str, "@tpoff", 6))
+			{
+			  str += 6;
+			  current_special_sym_flag = TPOFF_TYPE;
+			  if (*str == '9')
+			    {
+			      str++;
+			      current_special_sym_flag = TPOFF9_TYPE;
+			      force_ld_limm = FALSE;
+			    }
+			  try_addend = TRUE;
+			}
+		      else if (!strncmp (str, "@dtpoff", 7))
+			{
+			  str += 7;
+			  current_special_sym_flag = DTPOFF_TYPE;
+			  if (*str == '9')
+			    {
+			      str++;
+			      current_special_sym_flag = DTPOFF9_TYPE;
+			      force_ld_limm = FALSE;
+			    }
+			  gas_assert (exp.X_op == O_symbol);
+			  gas_assert (exp.X_op_symbol == NULL);
+			  if (*str == '@')
+			    {
+			      char *orig_line = input_line_pointer;
+			      char c;
+			      symbolS *base;
+			      input_line_pointer = ++str;
+			      c = get_symbol_end ();
+			      base = symbol_find_or_make (str);
+			      exp.X_op = O_subtract;
+			      exp.X_op_symbol = base;
+			      str = input_line_pointer;
+			      *str = c;
+			      input_line_pointer = orig_line;
+			    }
+			  try_addend = TRUE;
+			}
+		      else
+			force_ld_limm = FALSE;
+
+		      if (try_addend)
+			{
+			  /* Now check for identifier@XXX+constant */
+			  if (*(str) == '-' || *(str) == '+')
+			    {
+			      char *orig_line = input_line_pointer;
+			      expressionS new_exp;
+
+			      input_line_pointer = str;
+			      expression (&new_exp);
+			      if (new_exp.X_op == O_constant)
+				{
+				  exp.X_add_number += new_exp.X_add_number;
+				  str = input_line_pointer;
+				}
+			      input_line_pointer = orig_line;
+			    }
+			}
+
+		      /* Force GOT symbols to be limm in case of pcl-relative
+			 and large offset tpoff ld instructions.
+			 If we had link-time relaxation, we'd want to defer
+			 the decision till then - at least for tpoff.  */
+		      if (arc_cond_p ==0
+			  && force_ld_limm
+			  && (insn_name[0] == 'l' || insn_name[0] == 'L')
+			  && (insn_name[1] == 'd' || insn_name[1] == 'D')
+			  && (!(insn_name[2] == '_')) )
+			break;
+
 			  /*
 			     In any of the above PIC related cases we would
 			     have to make a GOT symbol if it is NULL
@@ -6375,7 +6436,9 @@ printf(" syn=%s str=||%s||insn=%x\n",syn,str,insn);//ejm
 		}
 
 	      /* The sda modifier is allowed only with symbols */
-	      if ((mods & ARC_MOD_SDASYM) && exp.X_op != O_symbol)
+	      if ((mods & ARC_MOD_SDASYM) && exp.X_op != O_symbol
+		  /* ??? But it appears also for ordinary load?  */
+		  && current_special_sym_flag != DTPOFF9_TYPE)
 		break;
 
 	      /* Insert the register or expression into the instruction.  */
@@ -6674,7 +6737,6 @@ fprintf (stdout, "Matched syntax %s\n", opcode->syntax);
 				 the fixup occurs. */
 	      int size = 4;   /* size of the fixup; mostly used for error
 				 checking */
-	      expressionS exptmp;
 	      const struct arc_operand *operand2;
 
 	      /* Create a fixup for this operand.
@@ -6701,34 +6763,75 @@ fprintf (stdout, "Matched syntax %s\n", opcode->syntax);
 		  }
 		  else
 		      abort ();
-		  reloc_type = get_arc_exp_reloc_type (1, reloc_type,
-						       &fixups[i].exp,
-						       &exptmp);
+		  reloc_type = get_arc_exp_reloc_type (reloc_type,
+						       BFD_RELOC_ARC_PC32,
+						       &fixups[i].exp);
 		  GAS_DEBUG_PIC (reloc_type);
 	      }
 	      else
 		{
-		  op_type = get_arc_exp_reloc_type (0, fixups[i].opindex,
-						    &fixups[i].exp, &exptmp);
+		  op_type = get_arc_exp_reloc_type (fixups[i].opindex,
+						    BFD_RELOC_ARC_PC32,
+						    &fixups[i].exp);
 		  reloc_type = op_type + (int) BFD_RELOC_UNUSED;
 		}
 	      switch (current_special_sym_flag)
-	      {
-	      case SDA_REF_TYPE:
-		reloc_type = arc_get_sda_reloc (insn, compact_insn_16);
-		break;
-	      case GOT_TYPE:
-		reloc_type = BFD_RELOC_ARC_GOTPC32;
-		break;
-	      case PLT_TYPE:
-		reloc_type = BFD_RELOC_ARC_PLT32;
-		break;
-	      case GOTOFF_TYPE:
-		reloc_type = BFD_RELOC_ARC_GOTOFF;
-		break;
-	      default:
-		break;
-	      }
+		{
+		case SDA_REF_TYPE:
+		  reloc_type = arc_get_sda_reloc (insn, compact_insn_16);
+		  break;
+		case GOT_TYPE:
+		  reloc_type = BFD_RELOC_ARC_GOTPC32;
+		  break;
+		case PLT_TYPE:
+		  reloc_type = BFD_RELOC_ARC_PLT32;
+		  break;
+		case GOTOFF_TYPE:
+		  reloc_type = BFD_RELOC_ARC_GOTOFF;
+		  break;
+		case PCL_TYPE:
+		  reloc_type = BFD_RELOC_ARC_PC32;
+		  /* The hardware calculates relative to the start of the insn
+		     (actually, pcl, but that part is sorted out later), but
+		     this relocation is relative to the location of the LIMM.
+		     When tc_gen_reloc translates BFD_RELOC_ARC_32_ME to
+		     BFD_RELOC_ARC_PC32, to can use the full addresses, but
+		     we can't use these here.  Setting the reloc type here
+		     to BFD_RELOC_ARC_32_ME doesn't have the desired effect,
+		     since tc_gen_reloc won't see fixups that have been
+		     resolved locally.
+		     Expressions with . have in principle the same problem,
+		     but they don't force a LIMM - except for add.
+		     FIXME: should probably remove the add special case and
+		     make gcc use -. instead of @pcl in cases that don't need
+		     a LIMM.  */
+		  fixups[i].exp.X_add_number += 4;
+		  break;
+		case TLSGD_TYPE:
+		  reloc_type = BFD_RELOC_ARC_TLS_GD_GOT;
+		  break;
+		case TLSIE_TYPE:
+		  reloc_type = BFD_RELOC_ARC_TLS_IE_GOT;
+		  break;
+		case TPOFF9_TYPE:
+		  reloc_type = BFD_RELOC_ARC_TLS_LE_S9;
+		  if (!arc_cond_p)
+		    break;
+		  /* Fall through.  */
+		case TPOFF_TYPE:
+		  reloc_type = BFD_RELOC_ARC_TLS_LE_32;
+		  break;
+		case DTPOFF9_TYPE:
+		  reloc_type = BFD_RELOC_ARC_TLS_DTPOFF_S9;
+		  if (!arc_cond_p)
+		    break;
+		  /* Fall through.  */
+		case DTPOFF_TYPE:
+		  reloc_type = BFD_RELOC_ARC_TLS_DTPOFF;
+		  break;
+		default:
+		  break;
+		}
 	      operand2 = &arc_operands[op_type];
 
 	      /* Calculate appropriate offset and size for the fixup */
@@ -6757,9 +6860,10 @@ fprintf (stdout, "Matched syntax %s\n", opcode->syntax);
 			   ((f - frag_now->fr_literal) + offset),
 			   /* + (operand2->flags & ARC_OPERAND_LIMM ? 4 : 0)),*/
 			   size,
-			   &exptmp,
+			   &fixups[i].exp,
 			   (current_special_sym_flag == PLT_TYPE)?0:
-			   (operand2->flags & ARC_OPERAND_RELATIVE_BRANCH) != 0,
+			   (operand2->flags & ARC_OPERAND_RELATIVE_BRANCH) != 0
+			   || current_special_sym_flag == PCL_TYPE,
 			   (bfd_reloc_code_real_type) reloc_type);
 	    }
 	  assembling_instruction = 0;
@@ -6845,6 +6949,37 @@ arc_handle_align (fragS* fragP)
         }
       md_number_to_chars (dest, 0x78e0, 2);  /*writing nop_s */
     }
+}
+
+
+static void
+arc_extra_reloc (int r_type)
+{
+  char *sym_name, c;
+  symbolS *sym, *lab = NULL;
+
+  if (*input_line_pointer == '@')
+    input_line_pointer++;
+  sym_name = input_line_pointer;
+  c = get_symbol_end ();
+  sym = symbol_find_or_make (sym_name);
+  *input_line_pointer = c;
+  if (c == ',' && r_type == BFD_RELOC_ARC_TLS_GD_LD)
+    {
+      char *lab_name = ++input_line_pointer;
+      c = get_symbol_end ();
+      lab = symbol_find_or_make (lab_name);
+      *input_line_pointer = c;
+    }
+  fixS *fixP
+    = fix_new (frag_now,	/* Which frag?  */
+	       frag_now_fix (),	/* Where in that frag?  */
+               2,		/* size: 1, 2, or 4 usually.  */
+	       sym,		/* X_add_symbol.  */
+	       0,		/* X_add_number.  */
+	       FALSE,		/* TRUE if PC-relative relocation.  */
+	       r_type		/* Relocation type.  */);
+  fixP->fx_subsy = lab;
 }
 
 int

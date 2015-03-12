@@ -26,6 +26,19 @@ if {![istarget arc-*-*]} {
     return
 }
 
+# Create an empty shared library that can be linked into some of these
+# tests.
+run_ld_link_tests [list \
+    [list \
+         "Build ARC700 (EA) dummy shared library" \
+         "-shared" \
+         "-mARC700 -mEA" \
+         { dummy-lib.s } \
+         {} \
+         "libdummy.so.0" \
+    ] \
+]
+
 set arc_test_list [lsort [glob -nocomplain $srcdir/$subdir/*.d]]
 foreach arc_test $arc_test_list {
     verbose [file rootname $arc_test]
