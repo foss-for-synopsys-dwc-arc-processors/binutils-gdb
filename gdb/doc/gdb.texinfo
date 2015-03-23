@@ -40487,6 +40487,7 @@ registers using the capitalization used in the description.
 
 @menu
 * AArch64 Features::
+* ARC Features::
 * ARM Features::
 * i386 Features::
 * MicroBlaze Features::
@@ -40510,6 +40511,77 @@ targets.  It should contain registers @samp{x0} through @samp{x30},
 The @samp{org.gnu.gdb.aarch64.fpu} feature is optional.  If present,
 it should contain registers @samp{v0} through @samp{v31}, @samp{fpsr},
 and @samp{fpcr}.
+
+@node ARC Features
+@subsection ARC Features
+@cindex target descriptions, ARC Features
+
+ARC processors are highly configurable, so even core registers and their amount
+are not completely predetermined. In addition flags and PC registers which are
+important to GDB are not "core" registers in ARC. To simplify internal GDB
+design some requirements are applied to ARC target descriptions:
+
+@itemize @bullet
+@item
+One of the core registers features must be present. At all occasions GDB
+register number must be equal to architectural number of that register, so for
+example regnum of @samp{blink} is always 31.
+
+@item @samp{org.gnu.gdb.arc.aux-minimal} is mandatory and registers in it has
+fixed GDB register numbers.
+
+@item All other features are optional and cannot have registers with register
+number less then 68.
+
+@end itemize
+
+The @samp{org.gnu.gdb.arc.core.v2} feature is required for ARC v2 targets with
+a normal register file. It should contain registers @samp{r0} through
+@samp{r25}, @samp{gp}, @samp{fp}, @samp{sp}, @samp{ilink}, @samp{r30},
+@samp{blink}, @samp{lp_count} and @samp{pcl}. This feature may contain any of
+extension core registers @samp{r32} through @samp{r59/acch}. That feature may
+contain @samp{reserved} and @samp{limm} registers, however since those are not
+real registers, so it is not possible to write or read them. @samp{ilink} and
+extension core registers are not available when debugging Linux applications.
+
+The @samp{org.gnu.gdb.arc.core-reduced.v2} feature is required for ARC v2
+targets with a reduced register file. It should contain registers @samp{r0}
+through @samp{r3}, @samp{r10} through @samp{r15}, @samp{gp}, @samp{fp},
+@samp{sp}, @samp{ilink}, @samp{r30}, @samp{blink}, @samp{lp_count} and
+@samp{pcl}.  This feature may contain any of extension core registers
+@samp{r32} through @samp{r59/acch}. That feature may contain @samp{reserved}
+and @samp{limm} registers, however since those are not real registers, so it is
+not possible to write or read them. @samp{ilink} and extension core registers
+are not available when debugging Linux applications.
+
+The @samp{org.gnu.gdb.arc.core.arcompact} feature is required for ARCompact
+targets with a normal register file. It should contain registers @samp{r0}
+through @samp{r25}, @samp{gp}, @samp{fp}, @samp{sp}, @samp{ilink1},
+@samp{ilink2}, @samp{r30}, @samp{blink}, @samp{lp_count} and @samp{pcl}.  This
+feature may contain any of extension core registers @samp{r32} through
+@samp{r59/acch}. That feature may contain @samp{reserved} and @samp{limm}
+registers, however since those are not real registers, so it is not possible to
+write or read them.  @samp{ilink1} and @samp{ilink2} and extension core
+registers are not available when debugging Linux applications. The only
+difference with @samp{org.gnu.gdb.arc.core.v2} feature is in the names of
+@samp{ilink1} and @samp{ilink2} registers.
+
+The @samp{org.gnu.gdb.arc.aux-minimal} feature is required for all ARC targets.
+It should contain registers @samp{pc} and @samp{status32}. It may contain
+registers @samp{lp_start} and @samp{lp_end}. For compatibility reasons regnums
+in this feature are fixed: @samp{pc} is always 64, @samp{lp_start} and
+@samp{lp_end} are 65 and 66 respectively if present, @samp{status32} is always
+67.
+
+The @samp{org.gnu.gdb.arc.aux-compatible} feature is an optional feature, that
+feature is required when communicating with older GDB servers that do not
+support XML target descriptions and use a fixed register set. This feature
+should contain registers @samp{status32_l1}, @samp{status32_l2},
+@samp{aux_irq_lv12}, @samp{aux_irq_lev}, @samp{aux_irq_hint}, @samp{eret},
+@samp{erbta}, @samp{erstatus}, @samp{ecr}, @samp{efa}, @samp{icause1},
+@samp{icause2}, @samp{aux_ienable}, @samp{aux_itrigger}, @samp{bta},
+@samp{bta_l1}, @samp{bta_l2}, @samp{aux_irq_pulse_cancel} and
+@samp{aux_irq_pending}.
 
 @node ARM Features
 @subsection ARM Features
