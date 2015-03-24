@@ -2560,8 +2560,17 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
       valid_p = tdesc_numbered_register (feature, tdesc_data, i,
           core_reginfo[i].name);
 
-      /* Ignore errors in extension registers - they are optional. */
-      if (!valid_p && (i <= 31 || i == 60 || i == 63))
+      /* - Ignore errors in extension registers - they are optional.
+       * - Ignore missing ILINK because it doesn't make sense for Linux targets.
+       * - Ignore missing ILINK2 when architecture is ARCompact, because it
+       *   doesn't make sense for Linux targets.
+       * In theory those optional registers should be in separate features, but
+       * that's just crazy - features would be tiny and numerous and would be
+       * make for complex maintanence, especially since regnums of different
+       * features would interleve.
+       *   */
+      if (!valid_p && (i <= 28 || i == 31 || i == 60 || i == 63 ||
+	    (i == 30 && is_arcv2)))
         {
           fprintf_unfiltered (gdb_stdlog, "Error: Cannot find required "
 	  "register `%s' in feature `%s'.\n",
