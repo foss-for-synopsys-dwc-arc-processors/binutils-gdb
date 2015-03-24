@@ -40537,18 +40537,19 @@ number less then 68.
 
 The @samp{org.gnu.gdb.arc.core.v2} feature is required for ARC v2 targets with
 a normal register file. It should contain registers @samp{r0} through
-@samp{r25}, @samp{gp}, @samp{fp}, @samp{sp}, @samp{ilink}, @samp{r30},
-@samp{blink}, @samp{lp_count} and @samp{pcl}. This feature may contain any of
-extension core registers @samp{r32} through @samp{r59/acch}. That feature may
-contain @samp{reserved} and @samp{limm} registers, however since those are not
-real registers, so it is not possible to write or read them. @samp{ilink} and
-extension core registers are not available when debugging Linux applications.
+@samp{r25}, @samp{gp}, @samp{fp}, @samp{sp}, @samp{r30}, @samp{blink},
+@samp{lp_count} and @samp{pcl}. This feature may contain register @samp{ilink}
+and any of extension core registers @samp{r32} through @samp{r59/acch}. That
+feature may contain @samp{reserved} and @samp{limm} registers, however since
+those are not real registers, so it is not possible to write or read them.
+@samp{ilink} and extension core registers are not available to read/write, when
+debugging Linux applications, thus ilink is made optional.
 
 The @samp{org.gnu.gdb.arc.core-reduced.v2} feature is required for ARC v2
 targets with a reduced register file. It should contain registers @samp{r0}
 through @samp{r3}, @samp{r10} through @samp{r15}, @samp{gp}, @samp{fp},
-@samp{sp}, @samp{ilink}, @samp{r30}, @samp{blink}, @samp{lp_count} and
-@samp{pcl}.  This feature may contain any of extension core registers
+@samp{sp}, @samp{r30}, @samp{blink}, @samp{lp_count} and @samp{pcl}.  This
+feature may contain register @samp{ilink} and any of extension core registers
 @samp{r32} through @samp{r59/acch}. That feature may contain @samp{reserved}
 and @samp{limm} registers, however since those are not real registers, so it is
 not possible to write or read them. @samp{ilink} and extension core registers
@@ -40556,15 +40557,16 @@ are not available when debugging Linux applications.
 
 The @samp{org.gnu.gdb.arc.core.arcompact} feature is required for ARCompact
 targets with a normal register file. It should contain registers @samp{r0}
-through @samp{r25}, @samp{gp}, @samp{fp}, @samp{sp}, @samp{ilink1},
-@samp{ilink2}, @samp{r30}, @samp{blink}, @samp{lp_count} and @samp{pcl}.  This
-feature may contain any of extension core registers @samp{r32} through
-@samp{r59/acch}. That feature may contain @samp{reserved} and @samp{limm}
-registers, however since those are not real registers, so it is not possible to
-write or read them.  @samp{ilink1} and @samp{ilink2} and extension core
-registers are not available when debugging Linux applications. The only
+through @samp{r25}, @samp{gp}, @samp{fp}, @samp{sp}, @samp{r30}, @samp{blink},
+@samp{lp_count} and @samp{pcl}.  This feature may contain registers
+@samp{ilink1}, @samp{ilink2} and any of extension core registers @samp{r32}
+through @samp{r59/acch}. That feature may contain @samp{reserved} and
+@samp{limm} registers, however since those are not real registers, so it is not
+possible to write or read them.  @samp{ilink1} and @samp{ilink2} and extension
+core registers are not available when debugging Linux applications. The only
 difference with @samp{org.gnu.gdb.arc.core.v2} feature is in the names of
-@samp{ilink1} and @samp{ilink2} registers.
+@samp{ilink1} and @samp{ilink2} registers and that @samp{r30} is mandatory in
+ARC v2, but @samp{ilink2} is optional on ARCompact.
 
 The @samp{org.gnu.gdb.arc.aux-minimal} feature is required for all ARC targets.
 It should contain registers @samp{pc} and @samp{status32}. It may contain
