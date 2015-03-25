@@ -1,8 +1,9 @@
 /* Target dependent code for ARC processor family, for GDB, the GNU debugger.
 
    Copyright 2005 Free Software Foundation, Inc.
-   Copyright 2009-2014 Synopsys Inc.
+   Copyright 2009-2015 Synopsys Inc.
 
+   Contributor Anton Kolesov <Anton.Kolesov@synopsys.com>
    Contributor Jeremy Bennett <jeremy.bennett@embecosm.com> on behalf of
    Synopsys Inc.
    Contributed by Codito Technologies Pvt. Ltd. (www.codito.com) on behalf of
