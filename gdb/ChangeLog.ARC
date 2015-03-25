@@ -1,3 +1,7 @@
+2015-03-25  Anton Kolesov  <Anton.Kolesov@synopsys.com>
+
+	* arc-elf-tdep.h: Remove unused file.
+
 2014-11-21  Anton Kolesov  <Anton.Kolesov@synopsys.com>
 
 	* arc-tdep.c (arc_register_type): LP_START and LP_END are instruction
