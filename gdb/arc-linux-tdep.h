@@ -1,6 +1,6 @@
 /* Target dependent code for ARC processor family, for GDB, the GNU debugger.
 
-   Copyright 2014 Synopsys Inc.
+   Copyright 2014-2015 Synopsys Inc.
 
    Authors:
       Anton Kolesov <Anton.Kolesov@synopsys.com>
