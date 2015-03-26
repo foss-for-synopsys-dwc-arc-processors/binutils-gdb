@@ -1,3 +1,9 @@
+2015-03-26 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* arc-opc-old.c (ac_get_load_sdasym_insn_type): Return correct
+	value for ARCv2 code density GP related instruction.
+	(ac_get_store_sdasym_insn_type): Likewise.
+
 2015-02-18  Andrew Burgess  <andrew.burgess@embecosm.com>
 
 	* arc-opc-old.c (arc_mach_a4): Remove.

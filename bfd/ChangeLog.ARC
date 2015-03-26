@@ -1,3 +1,11 @@
+2015-03-26  Claudiu Zissulescu  <claziss@synopsys.com>
+
+	* elf32-arc.c: Add R_ARC_SDA16_ST2, R_ARC_SDA_12,
+	R_ARC_S21W_PCREL_PLT, R_ARC_S25H_PCREL_PLT,
+	R_ARC_S25W_PCREL_PLT, R_ARC_S21H_PCREL_PLT relocations.
+	* reloc.c: Likewise.
+	* bfd-in2.h, libbfd.h: Regenerate.
+
 2015-03-06  Andrew Burgess  <andrew.burgess@embecosm.com>
 
 	* elf32-arc.c (elf_arc_size_dynamic_sections): Zero initialise

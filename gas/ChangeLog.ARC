@@ -1,3 +1,9 @@
+2015-03-26 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* config/tc-arc.c (arc_get_sda_reloc): Generate
+	BFD_RELOC_ARC_SDA16_ST2.  (md_apply_fix)
+	<BFD_RELOC_ARC_SDA16_ST2>: Handle like other SDA relocs.
+
 2014-05-19  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* config/tc-arc.c (md_apply_fix) <BFD_RELOC_ARC_TLS_LE_32>:

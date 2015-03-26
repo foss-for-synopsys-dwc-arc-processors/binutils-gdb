@@ -4441,6 +4441,9 @@ arc_get_sda_reloc (arc_insn insn, int compact_insn_16)
       return BFD_RELOC_ARC_SDA16_LD;
     case 12:
       return BFD_RELOC_ARC_SDA16_LD1;
+
+    case 13:
+      return BFD_RELOC_ARC_SDA16_ST2;
     }
 
   /* Refer to opcodes/arc-opc.c for 'insn to return value' mappings for this
@@ -4453,6 +4456,8 @@ arc_get_sda_reloc (arc_insn insn, int compact_insn_16)
       return BFD_RELOC_ARC_SDA_LDST;
     case 2:
       return BFD_RELOC_ARC_SDA_LDST1;
+    case 3:
+      return BFD_RELOC_ARC_SDA16_ST2;
     }
 
   abort();
@@ -4743,6 +4748,7 @@ md_apply_fix (fixS *fixP, valueT *valueP, segT seg ATTRIBUTE_UNUSED)
 	case BFD_RELOC_ARC_SDA16_LD1:
 	case BFD_RELOC_ARC_SDA16_LD2:
 	case BFD_RELOC_ARC_SDA32_ME:
+	case BFD_RELOC_ARC_SDA16_ST2:
 	  break;
 
 	default:

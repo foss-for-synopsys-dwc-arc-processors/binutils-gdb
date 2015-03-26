@@ -471,7 +471,10 @@ static reloc_howto_type elf_arc_howto_table[] =
   ARC_UNSUPPORTED_HOWTO (R_ARC_SECTOFF_ME_2,"R_ARC_SECTOFF_ME_2"),
   ARC_UNSUPPORTED_HOWTO (R_ARC_SECTOFF_1,"R_ARC_SECTOFF_1"),
   ARC_UNSUPPORTED_HOWTO (R_ARC_SECTOFF_2,"R_ARC_SECTOFF_2"),
-  #define R_ARC_hole_base 0x2d
+
+  ARC_RELA_HOWTO (R_ARC_SDA_12, 0, 2, 12, FALSE, 0, arcompact_elf_me_reloc,
+			"R_ARC_SDA_12", 0x0FFF),
+  #define R_ARC_hole_base 0x2e
 #if 0 /* not yet.  */
   /* There is a gap here of 4.  */
   #define R_ARC_reloc_hole_gap 4
@@ -480,9 +483,14 @@ static reloc_howto_type elf_arc_howto_table[] =
   ARC_RELA_HOWTO (R_ARC_32_PCREL, 0, 2, 32, TRUE, 0, bfd_elf_generic_reloc,
                   "R_ARC_32_PCREL",-1),
 #else
-  /* There is a gap here of 5.  */
-  #define R_ARC_reloc_hole_gap 5
+  /* There is a gap here of 2.  */
+  #define R_ARC_reloc_hole_gap 2
 #endif
+  /* The same as R_ARC_SDA16_LD2 except the bits are laid out differently.  */
+  ARC_RELA_HOWTO (R_ARC_SDA16_ST2, 2, 2, 11, FALSE, 0, arcompact_elf_me_reloc,
+		  "R_ARC_SDA16_ST2", 0x01FF),
+
+  ARC_UNSUPPORTED_HOWTO (R_ARC_32_PCREL, "R_ARC_32_PCREL"),
 
   ARC_RELA_HOWTO (R_ARC_PC32, 0, 2, 32, TRUE, 0, arcompact_elf_me_reloc,
 		  "R_ARC_PC32",-1),
@@ -511,8 +519,15 @@ static reloc_howto_type elf_arc_howto_table[] =
   ARC_RELA_HOWTO (R_ARC_GOTPC, 0, 2, 32, FALSE,0 , arcompact_elf_me_reloc,
 		  "R_ARC_GOTPC",-1),
   ARC_UNSUPPORTED_HOWTO (R_ARC_GOT32,"R_ARC_GOT32"),
-  ARC_UNSUPPORTED_HOWTO (0x3C,"0x3C"),
-  ARC_UNSUPPORTED_HOWTO (0x3D,"0x3D"),
+
+  /* Implements bl<cc> printf@plt */
+  ARC_RELA_HOWTO (R_ARC_S21W_PCREL_PLT, 2, 2, 21, FALSE, 0, arcompact_elf_me_reloc,
+		  "R_ARC_S21W_PCREL_PLT",-1),
+
+  /* Implements b printf@plt */
+  ARC_RELA_HOWTO (R_ARC_S25H_PCREL_PLT, 1, 2, 25, FALSE, 0, arcompact_elf_me_reloc,
+		  "R_ARC_S25H_PCREL_PLT",-1),
+
   ARC_UNSUPPORTED_HOWTO (R_ARC_SPE_SECTOFF,"R_ARC_SPE_SECTOFF"),
   ARC_UNSUPPORTED_HOWTO (R_ARC_JLI_SECTOFF,"R_ARC_JLI_SECTOFF"),
   ARC_UNSUPPORTED_HOWTO (R_ARC_AOM_TOKEN_ME,"R_ARC_AOM_TOKEN_ME"),
@@ -533,6 +548,14 @@ static reloc_howto_type elf_arc_howto_table[] =
 		  "R_ARC_TLS_LE_S9",-1),
   ARC_RELA_HOWTO (R_ARC_TLS_LE_32, 0, 2, 32, FALSE, 0, arcompact_elf_me_reloc,
 		  "R_ARC_TLS_LE_32",-1),
+
+  /* Implements bl printf@plt */
+  ARC_RELA_HOWTO (R_ARC_S25W_PCREL_PLT, 2, 2, 25, FALSE, 0, arcompact_elf_me_reloc,
+		  "R_ARC_S25W_PCREL_PLT",-1),
+
+  /* Implements b<cc> printf@plt */
+  ARC_RELA_HOWTO (R_ARC_S21H_PCREL_PLT, 1, 2, 21, FALSE, 0, arcompact_elf_me_reloc,
+		  "R_ARC_S21H_PCREL_PLT",-1),
 };
 
 /*Indicates whether the value contained in
@@ -598,10 +621,10 @@ short arc_signed_reloc_type[] =
   -1, // R_ARC_SECTOFF_1
   -1, // R_ARC_SECTOFF_2         0x2c
 
-  -1, // R_ARC_hole_base starts here 0x2d
-  -1, // 0x2e
-  -1, // 0x2f
-  -1, // ends here               0x30
+  1, // R_ARC_SDA_12             0x2D
+  -1, // R_ARC_hole_base starts here 0x2e
+  -1, // ends here               0x2f
+  1, // R_ARC_SDA16_ST2          0x30
   0, //  R_ARC_32_PCREL		 0x31
 
   0, //  R_ARC_PC32              0x32
@@ -615,8 +638,8 @@ short arc_signed_reloc_type[] =
   0, //  R_ARC_GOTPC             0x3a
   0, //  R_ARC_GOT32             0x3b
 
-  -1, // R_ARC_hole_base starts here 0x3c
-  -1, // 0x3d
+  0, //  R_ARC_S21W_PCREL_PLT   0x3c
+  0, //  R_ARC_S25H_PCREL_PLT   0x3d
 
   0, //  R_ARC_SPE_SECTOFF	0x3e
   0, //  R_ARC_JLI_SECTOFF	0x3f
@@ -633,6 +656,9 @@ short arc_signed_reloc_type[] =
   1, //  R_ARC_TLS_DTPOFF_S9	0x49
   1, //  R_ARC_TLS_LE_S9	0x4a
   1, //  R_ARC_TLS_LE_32	0x4b
+
+  0, //  R_ARC_S25W_PCREL_PLT   0x4c
+  0, //  R_ARC_S21H_PCREL_PLT   0x4d
 };
 
 
@@ -696,6 +722,9 @@ static const struct arc_reloc_map arc_reloc_map[] =
   { BFD_RELOC_ARC_SDA16_LD, R_ARC_SDA16_LD },
   { BFD_RELOC_ARC_SDA16_LD1, R_ARC_SDA16_LD1 },
   { BFD_RELOC_ARC_SDA16_LD2, R_ARC_SDA16_LD2 },
+  { BFD_RELOC_ARC_SDA_12,    R_ARC_SDA_12 },
+  { BFD_RELOC_ARC_SDA16_ST2, R_ARC_SDA16_ST2 },
+
   { BFD_RELOC_ARC_TLS_DTPOFF, R_ARC_TLS_DTPOFF },
   { BFD_RELOC_ARC_TLS_GD_GOT, R_ARC_TLS_GD_GOT },
   { BFD_RELOC_ARC_TLS_GD_LD,  R_ARC_TLS_GD_LD },
@@ -704,6 +733,11 @@ static const struct arc_reloc_map arc_reloc_map[] =
   { BFD_RELOC_ARC_TLS_DTPOFF_S9, R_ARC_TLS_DTPOFF_S9 },
   { BFD_RELOC_ARC_TLS_LE_S9,  R_ARC_TLS_LE_S9 },
   { BFD_RELOC_ARC_TLS_LE_32,  R_ARC_TLS_LE_32 },
+
+  { BFD_RELOC_ARC_S21W_PCREL_PLT, R_ARC_S21W_PCREL_PLT },
+  { BFD_RELOC_ARC_S25H_PCREL_PLT, R_ARC_S25H_PCREL_PLT },
+  { BFD_RELOC_ARC_S25W_PCREL_PLT, R_ARC_S25W_PCREL_PLT },
+  { BFD_RELOC_ARC_S21H_PCREL_PLT, R_ARC_S21H_PCREL_PLT },
 };
 
 static reloc_howto_type *
@@ -1136,6 +1170,11 @@ arcompact_elf_me_reloc (bfd *abfd ,
 	       | (((sym_value >> 1) & 0xffc00) >> 4)
 	       | (((sym_value >> 1) & 0xf00000) >> 20));
       break;
+
+    case R_ARC_S21W_PCREL_PLT:
+    case R_ARC_S25H_PCREL_PLT:
+    case R_ARC_S25W_PCREL_PLT:
+    case R_ARC_S21H_PCREL_PLT:
     case R_ARC_PLT32:
       break;
     case R_ARC_S25W_PCREL:
@@ -1669,6 +1708,29 @@ arc_plugin_one_reloc (unsigned long insn, enum elf_arc_reloc_type r_type,
     insn |= ((((value >> 2) & 0x1ff) << 18)
 	     | (((value >> 2) & 0x7fe00) >> 3));
     break;
+
+    /* bl   00001sssssssss10SSSSSSSSSSNRtttt */
+  case R_ARC_S25W_PCREL_PLT:
+    insn |= ((value >> 2) & 0x01ff) << 18;
+    insn |= ((value >> 11) & 0x03ff) << 6;
+    insn |= ((value >> 21) & 0x000f) << 0;
+    break;
+    /* b    00000ssssssssss1SSSSSSSSSSNRtttt */
+  case R_ARC_S25H_PCREL_PLT:
+    insn |= ((value >> 1) & 0x03ff) << 17;
+    insn |= ((value >> 11) & 0x03ff) << 6;
+    insn |= ((value >> 21) & 0x000f) << 0;
+    break;
+    /* blcc 00001sssssssss00SSSSSSSSSSNQQQQQ */
+  case R_ARC_S21W_PCREL_PLT:
+    insn |= ((value >> 2) & 0x01ff) << 18;
+    insn |= ((value >> 11) & 0x03ff) << 6;
+    break;
+    /* bcc  00000ssssssssss0SSSSSSSSSSNQQQQQ */
+  case R_ARC_S21H_PCREL_PLT:
+    insn |= ((value >> 1) & 0x03ff) << 17;
+    insn |= ((value >> 11) & 0x03ff) << 6;
+    break;
   case R_ARC_S25W_PCREL:
 
        /* Retrieve the offset from the instruction, if any */
@@ -1786,6 +1848,16 @@ arc_plugin_one_reloc (unsigned long insn, enum elf_arc_reloc_type r_type,
       {
 	insn |= ((value >> 2) & 0x1ff) <<16;
       }
+    break;
+
+  case R_ARC_SDA16_ST2:
+    insn |= ((value >> 2) & 0x1F8) << 18;
+    insn |= ((value >> 2) & 0x07) << 16;
+    break;
+
+  case R_ARC_SDA_12:
+    insn |= ((value >> 0) & 0x003f) << 6;
+    insn |= ((value >> 6) & 0x003f) << 0;
     break;
 
   case R_ARC_TLS_LE_S9:
@@ -2238,6 +2310,10 @@ elf_arc_check_relocs (bfd *abfd,
 
 	  break;
 
+	case R_ARC_S21W_PCREL_PLT:
+	case R_ARC_S25H_PCREL_PLT:
+	case R_ARC_S25W_PCREL_PLT:
+	case R_ARC_S21H_PCREL_PLT:
 	case R_ARC_PLT32:
 	  /* This symbol requires a procedure linkage table entry.  We
 	     actually build the entry in adjust_dynamic_symbol,
@@ -2565,7 +2641,11 @@ elf_arc_relocate_section (bfd *output_bfd,
 	    {
 	      sec = h->root.u.def.section;
 	      if (r_type == R_ARC_GOTPC
-		  || (r_type == R_ARC_PLT32
+		  || ((r_type == R_ARC_PLT32
+		       || r_type == R_ARC_S21W_PCREL_PLT
+		       || r_type == R_ARC_S25H_PCREL_PLT
+		       || r_type == R_ARC_S25W_PCREL_PLT
+		       || r_type == R_ARC_S21H_PCREL_PLT)
 		      && h->plt.offset != (bfd_vma) -1)
 		  || (((r_type == R_ARC_GOTPC32
 			&& h != NULL && !SYMBOL_REFERENCES_LOCAL (info, h))
@@ -2576,7 +2656,16 @@ elf_arc_relocate_section (bfd *output_bfd,
 		      && elf_hash_table (info)->dynamic_sections_created
 		      && (! info->shared
 			  || !(_bfd_elf_symbol_refs_local_p
-				(h, info, r_type == R_ARC_PLT32))))
+				(h, info, r_type == R_ARC_PLT32))
+			  || !(_bfd_elf_symbol_refs_local_p
+			       (h, info, r_type == R_ARC_S21W_PCREL_PLT))
+			  || !(_bfd_elf_symbol_refs_local_p
+			       (h, info, r_type == R_ARC_S25H_PCREL_PLT))
+			  || !(_bfd_elf_symbol_refs_local_p
+			       (h, info, r_type == R_ARC_S25W_PCREL_PLT))
+			  || !(_bfd_elf_symbol_refs_local_p
+			       (h, info, r_type == R_ARC_S21H_PCREL_PLT))
+			  ))
 		  || (info->shared
 		      && ((! info->symbolic && h->dynindx != -1)
 			  || !h->def_regular)
@@ -2803,6 +2892,10 @@ elf_arc_relocate_section (bfd *output_bfd,
 	  offset_in_insn = 4;
 	  break;
 
+	case R_ARC_S21W_PCREL_PLT:
+	case R_ARC_S25H_PCREL_PLT:
+	case R_ARC_S25W_PCREL_PLT:
+	case R_ARC_S21H_PCREL_PLT:
 	case R_ARC_PLT32:
 	  /* Relocation is to the entry for this symbol in the
 	     procedure linkage table.  */
@@ -2951,6 +3044,9 @@ elf_arc_relocate_section (bfd *output_bfd,
 	case R_ARC_SDA16_LD:
 	case R_ARC_SDA16_LD1:
 	case R_ARC_SDA16_LD2:
+
+	case R_ARC_SDA16_ST2:
+	case R_ARC_SDA_12:
 	  {
 	    /* Get the base of .sdata section */
 	    struct elf_link_hash_entry *h2;
@@ -3051,7 +3147,11 @@ elf_arc_relocate_section (bfd *output_bfd,
 	relocation -= ((input_section->output_section->vma + input_section->output_offset + rel->r_offset) - offset_in_insn );
       else if (r_type==R_ARC_PLT32 || r_type==R_ARC_GOTPC || r_type==R_ARC_GOTPC32
 	       || r_type == R_ARC_TLS_IE_GOT || r_type == R_ARC_TLS_GD_GOT
-	       || howto->pc_relative)
+	       || howto->pc_relative
+	       || r_type == R_ARC_S21W_PCREL_PLT
+	       || r_type == R_ARC_S25H_PCREL_PLT
+	       || r_type == R_ARC_S25W_PCREL_PLT
+	       || r_type == R_ARC_S21H_PCREL_PLT)
 	{
 	  /* For branches we need to find the offset from pcl rounded
 	     down to 4 byte boundary.Hence the (& ~3) */

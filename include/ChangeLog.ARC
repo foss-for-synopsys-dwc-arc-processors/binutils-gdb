@@ -1,3 +1,9 @@
+2015-03-26  Claudiu Zissulescu <claziss@synopsys.com>
+
+	* elf/arc.h: Add R_ARC_SDA16_ST2, R_ARC_SDA_12,
+	R_ARC_S21W_PCREL_PLT, R_ARC_S25H_PCREL_PLT,
+	R_ARC_S25W_PCREL_PLT, R_ARC_S21H_PCREL_PLT relocations.
+
 2015-02-18  Andrew Burgess  <andrew.burgess@embecosm.com>
 
 	* opcode/arc.h (arc_mach_a4): Remove declaration.
