@@ -1909,12 +1909,6 @@ arc_skip_prologue (struct gdbarch *gdbarch, CORE_ADDR pc)
 
   ARC_ENTRY_DEBUG ("")
 
-  /* If we're in a dummy frame, don't even try to skip the prologue. */
-  if (deprecated_pc_in_call_dummy (gdbarch, pc))
-    {
-      return pc;
-    }
-
   /* See what the symbol table says. */
   if (find_pc_partial_function (pc, &func_name, &func_addr, &func_end))
     {
