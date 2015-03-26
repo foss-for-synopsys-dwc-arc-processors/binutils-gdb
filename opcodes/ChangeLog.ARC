@@ -2,7 +2,9 @@
 
 	* arc-opc-old.c (ac_get_load_sdasym_insn_type): Return correct
 	value for ARCv2 code density GP related instruction.
-	(ac_get_store_sdasym_insn_type): Likewise.
+	(ac_get_store_sdasym_insn_type): Likewise.  (arc_opcode
+	arc_opcodes[]): Fix opcode ld.as instructions when used for
+	SDA.
 
 2015-02-18  Andrew Burgess  <andrew.burgess@embecosm.com>
 
