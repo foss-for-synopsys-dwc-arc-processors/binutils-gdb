@@ -636,9 +636,9 @@ arc_print_frame_info (struct gdbarch *gdbarch,
   fprintf_unfiltered (gdb_stdlog, "-------------------\n");
   fprintf_unfiltered (gdb_stdlog, "%s (info = %p)\n", message, info);
   fprintf_unfiltered (gdb_stdlog, "prev_sp               = %s\n",
-		      print_core_address (target_gdbarch, info->prev_sp));
+		      print_core_address (gdbarch, info->prev_sp));
   fprintf_unfiltered (gdb_stdlog, "frame_base            = %s\n",
-		      print_core_address (target_gdbarch, info->frame_base));
+		      print_core_address (gdbarch, info->frame_base));
   fprintf_unfiltered (gdb_stdlog, "blink offset          = %d\n",
 		      info->blink_save_offset_from_prev_sp);
   fprintf_unfiltered (gdb_stdlog, "delta_sp              = %d\n",
