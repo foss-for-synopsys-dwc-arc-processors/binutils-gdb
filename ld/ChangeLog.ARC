@@ -1,3 +1,9 @@
+2015-03-26: Claudiu Zissulescu <claziss@synopsys.com>
+
+	* testsuite/ld-arc/sda_relocs.d: New file.
+	* testsuite/ld-arc/sda_relocs.ld: Likewise.
+	* testsuite/ld-arc/sda_relocs.s: Likewise.
+
 2014-03-10  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* scripttempl/arclinux.sc: PROVIDE_HIDDEN .tdata (in case the
