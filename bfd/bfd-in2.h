@@ -3746,6 +3746,24 @@ of the GOT to the symbol's global offset table entry.  */
   BFD_RELOC_ARC_TLS_DTPOFF_S9,
   BFD_RELOC_ARC_TLS_DTPOFF,
 
+/* ARC plt relocation. Used by bl<cc> func@plt type of instructions.  */
+  BFD_RELOC_ARC_S21W_PCREL_PLT,
+
+/* ARC plt relocation. Used by b func@plt type of instructions.  */
+  BFD_RELOC_ARC_S25H_PCREL_PLT,
+
+/* ARC plt relocation. Used by bl func@plt type of instructions.  */
+  BFD_RELOC_ARC_S25W_PCREL_PLT,
+
+/* ARC plt relocation. Used by b<cc> func@plt type of instructions.  */
+  BFD_RELOC_ARC_S21H_PCREL_PLT,
+
+/* For 32-bit Small Data Area address load when "s12" encoding is possible.
+Ex: add r0, r0, var@sda  */
+  BFD_RELOC_ARC_SDA_12,
+
+/* The same as BFD_RELOC_ARC_SDA16_LD2 except the bits are laid out differently.  */
+  BFD_RELOC_ARC_SDA16_ST2,
 
 /* ADI Blackfin 16 bit immediate absolute reloc.  */
   BFD_RELOC_BFIN_16_IMM,
