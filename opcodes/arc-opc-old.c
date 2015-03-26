@@ -5009,7 +5009,7 @@ ac_get_load_sdasym_insn_type (arc_insn insn, int compact_insn_16)
 	}
      if ((insn & 0xF818) == 0x5000)
 	{
-	  load_type = 10;
+	  load_type = 13;
 	}
     }
   else
@@ -5067,7 +5067,7 @@ ac_get_store_sdasym_insn_type (arc_insn insn,
     {
       if ((insn &  0xF818) == 0x5010)
 	{
-	  store_type = 0;
+	  store_type = 3;
 	}
     }
   else

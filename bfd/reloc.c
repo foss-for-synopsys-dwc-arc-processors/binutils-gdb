@@ -3658,7 +3658,31 @@ ENUMX
 ENUMDOC
   ARC tls relocations.
 COMMENT
-
+ENUM
+  BFD_RELOC_ARC_S21W_PCREL_PLT
+ENUMDOC
+  ARC plt relocation. Used by bl<cc> func@plt type of instructions.
+ENUM
+  BFD_RELOC_ARC_S25H_PCREL_PLT
+ENUMDOC
+  ARC plt relocation. Used by b func@plt type of instructions.
+ENUM
+  BFD_RELOC_ARC_S25W_PCREL_PLT
+ENUMDOC
+  ARC plt relocation. Used by bl func@plt type of instructions.
+ENUM
+  BFD_RELOC_ARC_S21H_PCREL_PLT
+ENUMDOC
+  ARC plt relocation. Used by b<cc> func@plt type of instructions.
+ENUM
+  BFD_RELOC_ARC_SDA_12
+ENUMDOC
+  For 32-bit Small Data Area address load when "s12" encoding is possible.
+  Ex: add r0, r0, var@sda
+ENUM
+  BFD_RELOC_ARC_SDA16_ST2
+ENUMDOC
+  The same as BFD_RELOC_ARC_SDA16_LD2 except the bits are laid out differently.
 
 ENUM
   BFD_RELOC_BFIN_16_IMM
