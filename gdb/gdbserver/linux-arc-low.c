@@ -44,7 +44,7 @@
    ARC GNU Toolchain 4.8-R3 release.
 
    ptrace returns regsets in a struct, "user_regs_struct", defined in the
-   asm/ptrace.h header. The implementation uses the target_regsets
+   asm/ptrace.h header. The implementation uses the arc_regsets
    functionality to control the access to registers. */
 /* -------------------------------------------------------------------------- */
 
@@ -57,6 +57,109 @@
 #include <asm/ptrace.h>
 #include <sys/ptrace.h>
 
+/* From include/uapi/asm/ptrace.h in the ARC Linux sources.
+ * See user_regs_struct.
+ *
+ * @todo This is shared with arc-linux-tdep.h, so should be moved to common/
+ * directory.
+ */
+#define BYTES_IN_REGISTER (4)
+#define REGISTER_NOT_PRESENT (-1)
+#define ARC_NUM_REGS (87)
+static int arc_regmap[] =
+{
+  22 * BYTES_IN_REGISTER,	/* r0       */
+  21 * BYTES_IN_REGISTER,	/* r1       */
+  20 * BYTES_IN_REGISTER,	/* r2       */
+  19 * BYTES_IN_REGISTER,	/* r3       */
+  18 * BYTES_IN_REGISTER,	/* r4       */
+  17 * BYTES_IN_REGISTER,	/* r5       */
+  16 * BYTES_IN_REGISTER,	/* r6       */
+  15 * BYTES_IN_REGISTER,	/* r7       */
+  14 * BYTES_IN_REGISTER,	/* r8       */
+  13 * BYTES_IN_REGISTER,	/* r9       */
+  12 * BYTES_IN_REGISTER,	/* r10      */
+  11 * BYTES_IN_REGISTER,	/* r11      */
+  10 * BYTES_IN_REGISTER,	/* r12      */
+  37 * BYTES_IN_REGISTER,	/* r13      */
+  36 * BYTES_IN_REGISTER,	/* r14      */
+  35 * BYTES_IN_REGISTER,	/* r15      */
+  34 * BYTES_IN_REGISTER,	/* r16      */
+  33 * BYTES_IN_REGISTER,	/* r17      */
+  32 * BYTES_IN_REGISTER,	/* r18      */
+  31 * BYTES_IN_REGISTER,	/* r19      */
+  30 * BYTES_IN_REGISTER,	/* r20      */
+  29 * BYTES_IN_REGISTER,	/* r21      */
+  28 * BYTES_IN_REGISTER,	/* r22      */
+  27 * BYTES_IN_REGISTER,	/* r23      */
+  26 * BYTES_IN_REGISTER,	/* r24      */
+  25 * BYTES_IN_REGISTER,	/* r25      */
+  9 * BYTES_IN_REGISTER,	/* r26 (gp) */
+  8 * BYTES_IN_REGISTER,	/* fp       */
+  23 * BYTES_IN_REGISTER,	/* sp       */
+  REGISTER_NOT_PRESENT,  	/* ilink1   */
+  REGISTER_NOT_PRESENT,  	/* ilink2   */
+  7 * BYTES_IN_REGISTER,	/* blink    */
+
+  REGISTER_NOT_PRESENT,  	/* r32      */
+  REGISTER_NOT_PRESENT,  	/* r33      */
+  REGISTER_NOT_PRESENT,  	/* r34      */
+  REGISTER_NOT_PRESENT,  	/* r35      */
+  REGISTER_NOT_PRESENT,  	/* r36      */
+  REGISTER_NOT_PRESENT,  	/* r37      */
+  REGISTER_NOT_PRESENT,  	/* r38      */
+  REGISTER_NOT_PRESENT,  	/* r39      */
+  REGISTER_NOT_PRESENT,  	/* r40      */
+  REGISTER_NOT_PRESENT,  	/* r41      */
+  REGISTER_NOT_PRESENT,  	/* r42      */
+  REGISTER_NOT_PRESENT,  	/* r43      */
+  REGISTER_NOT_PRESENT,  	/* r44      */
+  REGISTER_NOT_PRESENT,  	/* r45      */
+  REGISTER_NOT_PRESENT,  	/* r46      */
+  REGISTER_NOT_PRESENT,  	/* r47      */
+  REGISTER_NOT_PRESENT,  	/* r48      */
+  REGISTER_NOT_PRESENT,  	/* r49      */
+  REGISTER_NOT_PRESENT,  	/* r50      */
+  REGISTER_NOT_PRESENT,  	/* r51      */
+  REGISTER_NOT_PRESENT,  	/* r52      */
+  REGISTER_NOT_PRESENT,  	/* r53      */
+  REGISTER_NOT_PRESENT,  	/* r54      */
+  REGISTER_NOT_PRESENT,  	/* r55      */
+  REGISTER_NOT_PRESENT,  	/* r56      */
+  REGISTER_NOT_PRESENT,  	/* r57      */
+  REGISTER_NOT_PRESENT,  	/* r58      */
+  REGISTER_NOT_PRESENT,  	/* r59      */
+  4 * BYTES_IN_REGISTER,	/* lp_count */
+  REGISTER_NOT_PRESENT,  	/* reserved */
+  REGISTER_NOT_PRESENT,  	/* limm     */
+  REGISTER_NOT_PRESENT,  	/* pcl      */
+
+  39 * BYTES_IN_REGISTER,	/* stop_pc  */
+  2 * BYTES_IN_REGISTER,	/* lp_start */
+  3 * BYTES_IN_REGISTER,	/* lp_end   */
+  5 * BYTES_IN_REGISTER,	/* status32 */
+  REGISTER_NOT_PRESENT,  	/* st32_l1  */
+  REGISTER_NOT_PRESENT,  	/* st32_l2  */
+  REGISTER_NOT_PRESENT,  	/* irq_lv12 */
+  REGISTER_NOT_PRESENT,  	/* irq_lev  */
+  REGISTER_NOT_PRESENT,  	/* irq_hint */
+  6 * BYTES_IN_REGISTER,	/* ret      */
+  REGISTER_NOT_PRESENT,  	/* erbta    */
+  REGISTER_NOT_PRESENT,  	/* erstatus */
+  REGISTER_NOT_PRESENT,  	/* ecr      */
+  38 * BYTES_IN_REGISTER,	/* efa      */
+  REGISTER_NOT_PRESENT,  	/* icause1  */
+  REGISTER_NOT_PRESENT,  	/* icause2  */
+  REGISTER_NOT_PRESENT,  	/* ienable  */
+  REGISTER_NOT_PRESENT,  	/* itrigger */
+  1 * BYTES_IN_REGISTER,	/* bta      */
+  REGISTER_NOT_PRESENT,  	/* bta_l1   */
+  REGISTER_NOT_PRESENT,  	/* bta_l2   */
+  REGISTER_NOT_PRESENT,  	/* irq pulse*/
+  REGISTER_NOT_PRESENT,  	/* irq pend */
+
+  /* 24 * BYTES_IN_REGISTER,	orig_r8  */
+};
 
 /* -------------------------------------------------------------------------- */
 /*			Externally defined functions.			      */
@@ -64,6 +167,7 @@
 
 /*! Defined in auto-generated file arc-reg.c. */
 extern void init_registers_arc (void);
+extern const struct target_desc *tdesc_arc;
 
 
 /* -------------------------------------------------------------------------- */
@@ -72,25 +176,23 @@ extern void init_registers_arc (void);
 /* Presented in the order they are used in the_low_target.		      */
 /* -------------------------------------------------------------------------- */
 
-/*! Set up the ARC architecture.
+/*! Return target description.
+ *
+ *  @todo This function should return appropriate tdesc (ARCompact or ARC v2),
+ *  depending on what target it is run on.
+ */
+static const struct target_desc *
+arc_read_description (void)
+{
+  return tdesc_arc;
+}	/* arc_read_description () */
 
-    New function for GDB 7.x. Initialize the ARC architecture.
 
-    For now it does the following:
-    - initializes the register cache
-    - initializes the number of registers.
-    - initializes the register map.
-
-    @todo In the future expect this function to configure the aux registers
-          from the XML file. */
 static void
 arc_arch_setup (void)
 {
-  /* The auto generated register initialization. */
-  init_registers_arc ();
-  /* Work out how many 32-bit registers we have. */
-  the_low_target.num_regs = register_cache_size() / sizeof (uint32_t);
-}	/* arc_arch_setup () */
+  current_process ()->tdesc = arc_read_description ();
+}
 
 
 /*! Can a register be read?
@@ -112,32 +214,7 @@ arc_arch_setup (void)
 static int
 arc_cannot_fetch_register (int regno)
 {
-  return (regno < 0)
-    || (regno == find_regno ("ilink1"))
-    || (regno == find_regno ("ilink2"))
-    || ((32 <= regno) && (regno <= 59))		/* Extension core registers. */
-    || (regno == find_regno ("reserved"))
-    || (regno == find_regno ("limm"))
-    || (regno == find_regno ("status32_l1"))
-    || (regno == find_regno ("status32_l2"))
-    || (regno == find_regno ("aux_irq_lv12"))
-    || (regno == find_regno ("aux_irq_lev"))
-    || (regno == find_regno ("aux_irq_hint"))
-    || (regno == find_regno ("eret"))
-    || (regno == find_regno ("erbta"))
-    || (regno == find_regno ("erstatus"))
-    || (regno == find_regno ("ecr"))
-    || (regno == find_regno ("icause1"))
-    || (regno == find_regno ("icause2"))
-    || (regno == find_regno ("aux_ienable"))
-    || (regno == find_regno ("aux_itrigger"))
-    || (regno == find_regno ("bta"))
-    || (regno == find_regno ("bta_l1"))
-    || (regno == find_regno ("bta_l2"))
-    || (regno == find_regno ("aux_irq_pulse_cancel"))
-    || (regno == find_regno ("aux_irq_pending"))
-    || (regno >= the_low_target.num_regs);
-
+  return (regno >= ARC_NUM_REGS || regno < 0 || arc_regmap[regno] == -1);
 }	/* arc_cannot_fetch_register () */
 
 
@@ -157,35 +234,7 @@ arc_cannot_fetch_register (int regno)
 static int
 arc_cannot_store_register (int regno)
 {
-  return (regno < 0)
-    || (regno == find_regno ("ilink1"))
-    || (regno == find_regno ("ilink2"))
-    || ((32 <= regno) && (regno <= 59))		/* Extension core registers. */
-    || (regno == find_regno ("reserved"))
-    || (regno == find_regno ("limm"))
-    || (regno == find_regno ("pcl"))
-    || (regno == find_regno ("status32"))
-    || (regno == find_regno ("status32_l1"))
-    || (regno == find_regno ("status32_l2"))
-    || (regno == find_regno ("aux_irq_lv12"))
-    || (regno == find_regno ("aux_irq_lev"))
-    || (regno == find_regno ("aux_irq_hint"))
-    || (regno == find_regno ("eret"))
-    || (regno == find_regno ("erbta"))
-    || (regno == find_regno ("erstatus"))
-    || (regno == find_regno ("ecr"))
-    || (regno == find_regno ("efa"))
-    || (regno == find_regno ("icause1"))
-    || (regno == find_regno ("icause2"))
-    || (regno == find_regno ("aux_ienable"))
-    || (regno == find_regno ("aux_itrigger"))
-    || (regno == find_regno ("bta"))
-    || (regno == find_regno ("bta_l1"))
-    || (regno == find_regno ("bta_l2"))
-    || (regno == find_regno ("aux_irq_pulse_cancel"))
-    || (regno == find_regno ("aux_irq_pending"))
-    || (regno >= the_low_target.num_regs);
-
+  return (regno >= ARC_NUM_REGS || regno < 0 || arc_regmap[regno] == -1);
 }	/* arc_cannot_store_register () */
 
 
@@ -245,7 +294,7 @@ arc_breakpoint_at (CORE_ADDR where)
 /*			Register set access functions.			      */
 /*									      */
 /* Only for ARC ABI v3. Presented in the order they are used in		      */
-/* target_regsets.							      */
+/* arc_regsets.							      */
 /* -------------------------------------------------------------------------- */
 
 /*! Populate a ptrace NT_PRSTATUS regset from a regcache.
@@ -448,7 +497,8 @@ ps_get_thread_area (const struct ps_prochandle *ph, lwpid_t lwpid, int idx,
     For ARC ABI v3 we only have support for NT_PRSTATUS, which will return all
     the registers in struct user_regs_struct. For ARC ABI v2, we must still
     define target_regsets, but with no entries. */
-struct regset_info target_regsets[] = {
+static struct regset_info arc_regsets[] =
+{
   { .get_request    = PTRACE_GETREGSET,
     .set_request    = PTRACE_SETREGSET,
     .nt_type        = NT_PRSTATUS,
@@ -465,6 +515,31 @@ struct regset_info target_regsets[] = {
     .store_function = NULL }
 };
 
+static struct regsets_info arc_regsets_info =
+{
+  arc_regsets, /* regsets */
+  0, /* num_regsets */
+  NULL, /* disabled regsets */
+};
+
+static struct usrregs_info arc_usrregs_info =
+{
+  ARC_NUM_REGS,
+  arc_regmap, /* arc_regmap is empty for now. */
+};
+
+static struct regs_info regs_info =
+{
+  NULL, /* regset_bitmap */
+  &arc_usrregs_info,
+  &arc_regsets_info
+};
+
+static const struct regs_info *
+arc_regs_info (void)
+{
+  return &regs_info;
+}
 
 /*! Define all the ARC specific interface functions.
 
@@ -485,9 +560,7 @@ struct regset_info target_regsets[] = {
            read/write. So we do not need the breakpoint functions. */
 struct linux_target_ops the_low_target = {
   .arch_setup                       = arc_arch_setup,
-  .num_regs                         = 0,	/* Set during init. */
-  .regmap                           = NULL,	/* May be set during init. */
-  .regset_bitmap                    = NULL,
+  .regs_info                        = arc_regs_info,
   .cannot_fetch_register            = arc_cannot_fetch_register,
   .cannot_store_register            = arc_cannot_store_register,
   .fetch_register                   = NULL,
@@ -515,3 +588,11 @@ struct linux_target_ops the_low_target = {
   .emit_ops                         = NULL,
   .get_min_fast_tracepoint_insn_len = NULL
 };
+
+void
+initialize_low_arch (void)
+{
+  init_registers_arc ();
+
+  initialize_regsets_info (&arc_regsets_info);
+}
