@@ -23,7 +23,6 @@
 */
 
 #include "defs.h"
-#include "gdb_string.h"
 #include "frame.h"
 #include "inferior.h"
 #include "gdbcore.h"
@@ -65,9 +64,9 @@ static void arc_linux_prepare_to_resume (struct lwp_info *lwp);
 static int
 get_thread_id (ptid_t ptid)
 {
-  int tid = TIDGET (ptid);
+  int tid = ptid_get_lwp (ptid);
   if (0 == tid)
-    tid = PIDGET (ptid);
+    tid = ptid_get_pid (ptid);
   return tid;
 }
 
