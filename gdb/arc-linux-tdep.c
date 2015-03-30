@@ -55,6 +55,12 @@
 #include "opcode/arc.h"
 #include "opcodes/arc-dis-old.h"
 #include "exceptions.h"
+/* lookup_minimal_symbol */
+#include "minsyms.h"
+/* Not used directly, but BMSYMBOL_VALUE_ADDRESS macro expansion depends on it. */
+#include "objfiles.h"
+/* BMSYMBOL_VALUE_ADDRESS */
+#include "symtab.h"
 
 /* ARC header files */
 #include "arc-tdep.h"
@@ -636,14 +642,14 @@ arc_linux_skip_solib_resolver (struct gdbarch *gdbarch, CORE_ADDR pc)
    
      So we look for the symbol `_dl_linux_resolver', and if we are there, gdb
      sets a breakpoint at the return address, and continues. */
-  struct minimal_symbol *resolver = lookup_minimal_symbol("_dl_linux_resolver",
+  struct bound_minimal_symbol resolver = lookup_minimal_symbol("_dl_linux_resolver",
           NULL, NULL);
 
   if (arc_debug)
     {
-      if (resolver)
+      if (resolver.minsym)
 	{
-	  CORE_ADDR res_addr = SYMBOL_VALUE_ADDRESS(resolver);
+	  CORE_ADDR res_addr = BMSYMBOL_VALUE_ADDRESS (resolver);
 	  fprintf_unfiltered (gdb_stdlog, "--- %s : pc = %s, resolver at %s\n",
 			      __FUNCTION__, print_core_address (gdbarch, pc),
 			      print_core_address (gdbarch, res_addr));
@@ -655,7 +661,7 @@ arc_linux_skip_solib_resolver (struct gdbarch *gdbarch, CORE_ADDR pc)
 	}
     }
 
-  if (resolver && SYMBOL_VALUE_ADDRESS(resolver) == pc)
+  if (resolver.minsym && BMSYMBOL_VALUE_ADDRESS (resolver) == pc)
     {
       /* find the return address */
       return  gdbarch_unwind_pc (gdbarch, get_current_frame());
