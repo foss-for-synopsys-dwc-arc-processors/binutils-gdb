@@ -835,7 +835,7 @@ sim_create_inferior (SIM_DESC sd, struct bfd *abfd, char **argv, char **envp)
 
 
 void
-sim_do_command (SIM_DESC sd, char* cmd)
+sim_do_command (SIM_DESC sd, const char *cmd)
 {
   char **argv;
 
