@@ -1250,7 +1250,7 @@ bfd_put_32_me (bfd *abfd, bfd_vma value,unsigned char *data)
 #define TARGET_BIG_NAME	    "elf32-bigarc"
 #define ELF_ARCH            bfd_arch_arc
 #define ELF_MACHINE_CODE    EM_ARC
-#define ELF_MAXPAGESIZE     0x1000
+#define ELF_MAXPAGESIZE     0x2000
 
 /* ******************************************
  * PIC-related routines for the arc backend
@@ -4310,16 +4310,9 @@ const struct elf_size_info arc_elf32_size_info =
   bfd_elf32_swap_reloca_out
 };
 
-#define TARGET_LITTLE_SYM	bfd_elf32_littlearc_vec
-#define TARGET_LITTLE_NAME	"elf32-littlearc"
-#define TARGET_BIG_SYM		bfd_elf32_bigarc_vec
-#define TARGET_BIG_NAME		"elf32-bigarc"
-#define ELF_ARCH		bfd_arch_arc
-#define ELF_MACHINE_CODE	EM_ARC
 #define ELF_MACHINE_ALT1	EM_ARCOMPACT
 #define ELF_MACHINE_ALT2	EM_ARCV2
 #define ELF_TARGET_ID           ARC_ELF_DATA
-#define ELF_MAXPAGESIZE		0x2000
 
 #define elf_info_to_howto                       arc_info_to_howto_rel
 #define elf_info_to_howto_rel                   arc_info_to_howto_rel
