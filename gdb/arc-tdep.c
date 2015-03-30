@@ -1619,7 +1619,7 @@ arc_push_dummy_call (struct gdbarch *gdbarch,
 	}
 
       /* Allocate a buffer to hold a memory image of the arguments. */
-      memory_image = XCALLOC (total_space, gdb_byte);
+      memory_image = XCNEWVEC (gdb_byte, total_space);
       if (memory_image == NULL)
 	{
 	  /* could not do the call! */
