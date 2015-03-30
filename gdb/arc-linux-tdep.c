@@ -748,10 +748,7 @@ arc_linux_regset_from_core_section (struct gdbarch *core_arch,
     .descr          = NULL,
     .supply_regset  = arc_linux_supply_gregset,
     .collect_regset = NULL,
-    .arch           = NULL,
   };
-
-  arc_linux_gregset.arch = core_arch;	/* Not const, so not in initializer */
 
   if (strcmp (sect_name, ".reg") == 0)
     {
