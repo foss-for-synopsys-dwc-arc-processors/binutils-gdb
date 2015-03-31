@@ -278,11 +278,11 @@ arc_syscall (host_callback *cb, CB_SYSCALL *s)
 	    s->errcode = cb_host_to_target_errno (cb, errcode);
 	    break;
 	  }
-	retval = cb->stat (cb, path, &st);
+	retval = cb->to_stat (cb, path, &st);
 	free (path);
 	goto do_stat;
       case TARGET_SYS_fstat:
-	retval = cb->fstat (cb, s->arg1, &st);
+	retval = cb->to_fstat (cb, s->arg1, &st);
       do_stat:
 
 	s->result = retval;
