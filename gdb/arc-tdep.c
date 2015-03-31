@@ -164,8 +164,6 @@
 
 /* system header files */
 #include <string.h>
-#include <stdio.h>
-#include <ctype.h>
 
 /* gdb header files */
 #include "defs.h"
