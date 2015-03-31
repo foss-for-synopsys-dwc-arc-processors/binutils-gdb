@@ -1,3 +1,10 @@
+2015-03-31  Mike Frysinger  <vapier@gentoo.org>
+
+	Cherry pick commit 5a394431deb3745c04a74d2a109aca075f79afd6 from
+	upstream.
+	* cgen-mem.h (MEMOPS_INLINE): Change to EXTERN_INLINE.
+	* cgen-ops.h (SEMOPS_INLINE): Likewise.
+
 2015-03-29  Mike Frysinger  <vapier@gentoo.org>
 
 	Cherry pick commit 92fc6153a6fdf2a027d9780f5945712aafad4a9e from
