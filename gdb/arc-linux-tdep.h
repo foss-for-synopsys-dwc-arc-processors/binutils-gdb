@@ -31,6 +31,11 @@
 #include "gdbarch.h"
 #include "regset.h"
 
+/* There are 40 registers in Linux user_regs_struct, although some of them are
+ * now just a mere paddings, kept to maintain binary compatibility with older
+ * tools. */
+#define ARC_LINUX_SIZEOF_GREGSET (40 * BYTES_IN_REGISTER)
+
 /* Reads registers from NT_PRSTATUS data array into the regcache. */
 void arc_linux_supply_gregset (	const struct regset *regset,
 				struct regcache *regcache,
