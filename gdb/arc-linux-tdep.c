@@ -73,11 +73,6 @@
 /*                               local data                                   */
 /* -------------------------------------------------------------------------- */
 
-
-
-
-
-
 /*! Mapping between the general-purpose registers in `struct sigcontext' format
     and GDB's register cache layout. It should match current target
     description, currently it is aligned to the "compatible" register layout.
@@ -735,32 +730,22 @@ arc_linux_collect_gregset ( const struct regset *regset,
     }
 } /* arc_linux_collect_gregset () */
 
+/* Linux regset definitions. */
+static struct regset arc_linux_gregset = {
+  .regmap         = NULL,
+  .supply_regset  = arc_linux_supply_gregset,
+  .collect_regset = NULL,
+};
 
-/*! Identify functions for handling core files.
-
-    The first element is a parameter to pass the rest of the functions.  We
-    don't need it.
-    - supply_gregset is for reading the core file.
-    - collect_regset, which we haven't defined, would be for writing the core
-      file. */
-static const struct regset *
-arc_linux_regset_from_core_section (struct gdbarch *core_arch,
-				    const char *sect_name, size_t sect_size)
+/* Implement the `iterate_over_regset_sections` gdbarch method.  */
+static void
+arc_linux_iterate_over_regset_sections (struct gdbarch *gdbarch,
+                                        iterate_over_regset_sections_cb *cb,
+                                        void *cb_data,
+                                        const struct regcache *regcache)
 {
-  static struct regset arc_linux_gregset = {
-    .regmap         = NULL,
-    .supply_regset  = arc_linux_supply_gregset,
-    .collect_regset = NULL,
-  };
-
-  if (strcmp (sect_name, ".reg") == 0)
-    {
-      return &arc_linux_gregset;
-    }
-
-  return NULL;
-
-}	/* arc_linux_regset_from_core_section () */
+  cb (".reg", ARC_LINUX_SIZEOF_GREGSET, &arc_linux_gregset, NULL, cb_data);
+}
 
 
 /* -------------------------------------------------------------------------- */
@@ -805,8 +790,8 @@ arc_gdbarch_osabi_init (struct gdbarch *gdbarch)
                                              svr4_fetch_objfile_link_map);
   set_gdbarch_software_single_step (gdbarch, arc_linux_software_single_step);
   set_gdbarch_skip_solib_resolver (gdbarch, arc_linux_skip_solib_resolver);
-  set_gdbarch_regset_from_core_section (gdbarch,
-					arc_linux_regset_from_core_section);
+  set_gdbarch_iterate_over_regset_sections
+    (gdbarch, arc_linux_iterate_over_regset_sections);
   /* No need for any other GDB architecture core file functions. */
 
   /* GNU/Linux uses SVR4-style shared libraries, with 32-bit ints, longs and
