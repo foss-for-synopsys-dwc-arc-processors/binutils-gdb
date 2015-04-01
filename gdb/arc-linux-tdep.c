@@ -61,6 +61,8 @@
 #include "objfiles.h"
 /* BMSYMBOL_VALUE_ADDRESS */
 #include "symtab.h"
+/* delete_single_step_breakpoints */
+#include "gdbthread.h"
 
 /* ARC header files */
 #include "arc-tdep.h"
@@ -607,11 +609,12 @@ arc_linux_software_single_step (struct frame_info *frame)
               insert_single_step_breakpoint (gdbarch, aspace, branch_target);
             }
 
-          if (ex.reason < 0 && single_step_breakpoints_inserted()) {
-              remove_single_step_breakpoints();
-		      /* There is nothing else we can do. Pass exception further. */
-              throw_exception(ex);
-		  }
+          if (ex.reason < 0)
+	    {
+	      /* Pass exception further after cleanup. */
+	      delete_single_step_breakpoints (inferior_thread ());
+	      throw_exception(ex);
+	    }
         }
     }
 
