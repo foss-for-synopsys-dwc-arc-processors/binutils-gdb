@@ -748,7 +748,7 @@ arc_linux_regset_from_core_section (struct gdbarch *core_arch,
 				    const char *sect_name, size_t sect_size)
 {
   static struct regset arc_linux_gregset = {
-    .descr          = NULL,
+    .regmap         = NULL,
     .supply_regset  = arc_linux_supply_gregset,
     .collect_regset = NULL,
   };
