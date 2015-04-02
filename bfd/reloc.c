@@ -3661,24 +3661,24 @@ COMMENT
 ENUM
   BFD_RELOC_ARC_S21W_PCREL_PLT
 ENUMDOC
-  ARC plt relocation. Used by bl<cc> func@plt type of instructions.
+  ARC plt relocation. Used by bl<cc> func@@plt type of instructions.
 ENUM
   BFD_RELOC_ARC_S25H_PCREL_PLT
 ENUMDOC
-  ARC plt relocation. Used by b func@plt type of instructions.
+  ARC plt relocation. Used by b func@@plt type of instructions.
 ENUM
   BFD_RELOC_ARC_S25W_PCREL_PLT
 ENUMDOC
-  ARC plt relocation. Used by bl func@plt type of instructions.
+  ARC plt relocation. Used by bl func@@plt type of instructions.
 ENUM
   BFD_RELOC_ARC_S21H_PCREL_PLT
 ENUMDOC
-  ARC plt relocation. Used by b<cc> func@plt type of instructions.
+  ARC plt relocation. Used by b<cc> func@@plt type of instructions.
 ENUM
   BFD_RELOC_ARC_SDA_12
 ENUMDOC
   For 32-bit Small Data Area address load when "s12" encoding is possible.
-  Ex: add r0, r0, var@sda
+  Ex: add r0, r0, var@@sda
 ENUM
   BFD_RELOC_ARC_SDA16_ST2
 ENUMDOC
