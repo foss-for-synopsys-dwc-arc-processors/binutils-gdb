@@ -1777,23 +1777,53 @@ get_prev_frame_if_no_cycle (struct frame_info *this_frame)
      linked onto THIS_FRAME.  */
   prev_frame_cleanup = make_cleanup (remove_prev_frame, this_frame);
 
-  compute_frame_id (prev_frame);
-  if (!frame_stash_add (prev_frame))
+  if (get_frame_type (prev_frame) == INLINE_FRAME)
     {
-      /* Another frame with the same id was already in the stash.  We just
-	 detected a cycle.  */
-      if (frame_debug)
-	{
-	  fprintf_unfiltered (gdb_stdlog, "-> ");
-	  fprint_frame (gdb_stdlog, NULL);
-	  fprintf_unfiltered (gdb_stdlog, " // this frame has same ID }\n");
-	}
-      this_frame->stop_reason = UNWIND_SAME_ID;
-      /* Unlink.  */
-      prev_frame->next = NULL;
-      this_frame->prev = NULL;
-      prev_frame = NULL;
+      /* This creates a recursion since get_prev_frame_always will eventually
+         call this function as well. Recursion will stops as soon as prev_frame
+         will be non-inlined (regardless of whether it will pass or fail the
+         further check for frame_id equality. */
+      struct frame_info *prev_prev_frame = get_prev_frame_always (prev_frame);
+      if (!prev_prev_frame) {
+	/* Previous frame is inline, however for some reason we cannot get a
+	   frame that be previous to it, and as a result it wouldn't be
+	   possible to evaluate frame_id of prev_frame. Some parts of GDB code
+	   assume that frame always have valid frame_id, so this function
+	   shouldn't return frame for which we know it will not be possible to
+	   evalute frame_id. */
+	if (frame_debug)
+	  {
+	    fprintf_unfiltered (gdb_stdlog, "-> ");
+	    fprint_frame (gdb_stdlog, NULL);
+	    fprintf_unfiltered (gdb_stdlog,
+				" // inline frame without previous frame }\n");
+	  }
+	this_frame->stop_reason = UNWIND_INNER_ID;
+	prev_frame->next = NULL;
+	this_frame->prev = NULL;
+	prev_frame = NULL;
+      }
     }
+
+  if (prev_frame) {
+    compute_frame_id (prev_frame);
+    if (!frame_stash_add (prev_frame))
+      {
+        /* Another frame with the same id was already in the stash.  We just
+	   detected a cycle.  */
+	if (frame_debug)
+	  {
+	    fprintf_unfiltered (gdb_stdlog, "-> ");
+	    fprint_frame (gdb_stdlog, NULL);
+	    fprintf_unfiltered (gdb_stdlog, " // this frame has same ID }\n");
+	  }
+	this_frame->stop_reason = UNWIND_SAME_ID;
+	/* Unlink.  */
+	prev_frame->next = NULL;
+	this_frame->prev = NULL;
+	prev_frame = NULL;
+      }
+  }
 
   discard_cleanups (prev_frame_cleanup);
   return prev_frame;
