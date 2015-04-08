@@ -1985,6 +1985,34 @@ get_prev_frame_if_no_cycle (struct frame_info *this_frame)
   if (prev_frame->level == 0)
     return prev_frame;
 
+  if (get_frame_type (prev_frame) == INLINE_FRAME)
+    {
+      /* This creates a recursion since get_prev_frame_always will eventually
+         call this function as well. Recursion will stops as soon as prev_frame
+         will be non-inlined (regardless of whether it will pass or fail the
+         further check for frame_id equality. */
+      struct frame_info *prev_prev_frame = get_prev_frame_always (prev_frame);
+      if (!prev_prev_frame) {
+	/* Previous frame is inline, however for some reason we cannot get a
+	   frame that be previous to it, and as a result it wouldn't be
+	   possible to evaluate frame_id of prev_frame. Some parts of GDB code
+	   assume that frame always have valid frame_id, so this function
+	   shouldn't return frame for which we know it will not be possible to
+	   evalute frame_id. */
+	if (frame_debug)
+	  {
+	    fprintf_unfiltered (gdb_stdlog, "-> ");
+	    fprint_frame (gdb_stdlog, NULL);
+	    fprintf_unfiltered (gdb_stdlog,
+				" // inline frame without previous frame }\n");
+	  }
+	this_frame->stop_reason = UNWIND_INNER_ID;
+	prev_frame->next = NULL;
+	this_frame->prev = NULL;
+	prev_frame = NULL;
+      }
+    }
+
   unsigned int entry_generation = get_frame_cache_generation ();
 
   try
@@ -2106,7 +2134,7 @@ get_prev_frame_always_1 (struct frame_info *this_frame)
       CORE_ADDR this_pc_in_block;
       struct minimal_symbol *morestack_msym;
       const char *morestack_name = NULL;
-      
+
       /* gcc -fsplit-stack __morestack can continue the stack anywhere.  */
       this_pc_in_block = get_frame_address_in_block (this_frame);
       morestack_msym = lookup_minimal_symbol_by_pc (this_pc_in_block).minsym;
@@ -2350,7 +2378,7 @@ get_prev_frame (struct frame_info *this_frame)
      something should be calling get_selected_frame() or
      get_current_frame().  */
   gdb_assert (this_frame != NULL);
-  
+
   /* If this_frame is the current frame, then compute and stash
      its frame id prior to fetching and computing the frame id of the
      previous frame.  Otherwise, the cycle detection code in
@@ -2369,9 +2397,9 @@ get_prev_frame (struct frame_info *this_frame)
      pcsqh register (space register for the instruction at the head of the
      instruction queue) cannot be written directly; the only way to set it
      is to branch to code that is in the target space.  In order to implement
-     frame dummies on HPUX, the called function is made to jump back to where 
-     the inferior was when the user function was called.  If gdb was inside 
-     the main function when we created the dummy frame, the dummy frame will 
+     frame dummies on HPUX, the called function is made to jump back to where
+     the inferior was when the user function was called.  If gdb was inside
+     the main function when we created the dummy frame, the dummy frame will
      point inside the main function.  */
   if (this_frame->level >= 0
       && get_frame_type (this_frame) == NORMAL_FRAME
@@ -2416,7 +2444,7 @@ get_prev_frame (struct frame_info *this_frame)
      That should provide a far better stopper than the current
      heuristics.  */
   /* NOTE: tausq/2004-10-09: this is needed if, for example, the compiler
-     applied tail-call optimizations to main so that a function called 
+     applied tail-call optimizations to main so that a function called
      from main returns directly to the caller of main.  Since we don't
      stop at main, we should at least stop at the entry point of the
      application.  */
@@ -2451,7 +2479,7 @@ get_prev_frame_id_by_id (struct frame_id id)
 {
   struct frame_id prev_id;
   struct frame_info *frame;
-  
+
   frame = frame_find_by_id (id);
 
   if (frame != NULL)
