@@ -1172,6 +1172,7 @@ arc_is_in_prologue (struct gdbarch *gdbarch,
 
     This function is called with:
        entrypoint : the address of the functon entry point
+       prologue_end : Maximum possible end of prologue.
        this_frame : THIS frame to be filled in (if need be)
        info       : the existing cached info.
 
@@ -1217,10 +1218,13 @@ arc_is_in_prologue (struct gdbarch *gdbarch,
        mov  fp , sp              ; set the current frame up correctly
        sub  sp , sp , #immediate ; create space for local vars on the stack
 
-    @note This function has changed from GDB 6.8. It now takes a reference to
-          THIS frame, not the NEXT frame.
-
     @param[in] entrypoint  Function entry point where prologue starts
+    @param[in] prologue_end Maksimum possible end address of prologue. If
+                            prologue is described in debug information, then
+                            this value is exact. If there is no debug info for
+                            that, than this value will represent maksimum
+                            amount of bytes to anylyze for prologue. If 0,
+                            then will be estimated internally.
     @param[in] gdbarch     Current architecture. May be NULL in which case
                            this_frame _must_ be defined.
     @param[in] this_frame  Frame info for THIS frame. May be NULL, in which
@@ -1228,7 +1232,8 @@ arc_is_in_prologue (struct gdbarch *gdbarch,
     @param[in] info        Frame cache
     @return                Address of first instruction after prologue. */
 static CORE_ADDR
-arc_scan_prologue (CORE_ADDR entrypoint,
+arc_scan_prologue (const CORE_ADDR entrypoint,
+		   const CORE_ADDR prologue_end,
 		   struct gdbarch *gdbarch,
 		   struct frame_info *this_frame,
 		   struct arc_unwind_cache *info)
@@ -1265,9 +1270,12 @@ arc_scan_prologue (CORE_ADDR entrypoint,
           that pc, as the instructions at the pc and after have not been
           executed yet, so have had no effect! */
   prologue_ends_pc = entrypoint;
-  final_pc = (this_frame)
-    ? get_frame_pc (this_frame)
-    : entrypoint + 4 * (6 + ARC_LAST_CALLEE_SAVED_REGNUM -
+  if (prologue_end)
+    final_pc = prologue_end;
+  else
+    final_pc = (this_frame)
+      ? get_frame_pc (this_frame)
+      : entrypoint + 4 * (6 + ARC_LAST_CALLEE_SAVED_REGNUM -
 	ARC_FIRST_CALLEE_SAVED_REGNUM + 2);
 
   if (info)
@@ -1902,25 +1910,32 @@ arc_return_value (struct gdbarch *gdbarch,
 static CORE_ADDR
 arc_skip_prologue (struct gdbarch *gdbarch, CORE_ADDR pc)
 {
-  CORE_ADDR func_addr, func_end = 0;
+  CORE_ADDR func_addr, limit_pc = 0;
   const char *func_name;
 
   ARC_ENTRY_DEBUG ("")
 
   /* See what the symbol table says. */
-  if (find_pc_partial_function (pc, &func_name, &func_addr, &func_end))
+  if (find_pc_partial_function (pc, &func_name, &func_addr, NULL))
     {
       /* Found a function. */
       CORE_ADDR postprologue_pc = skip_prologue_using_sal(gdbarch, func_addr);
 
       if (postprologue_pc)
-          return postprologue_pc;
+          return max (pc, postprologue_pc);
     }
+
+  /* No prologue info in symbol table, have to analyze prologue. */
+
+  /* Find an upper limit on the function prologue using the debug
+     information.  If the debug information could not be used to provide that
+     bound, then pass 0 and arc_scan_prologue will estimate value itself.*/
+  limit_pc = skip_prologue_using_sal (gdbarch, pc);
 
   /* Find the address of the first instruction after the prologue by scanning
      through it - no other information is needed, so pass NULL for the other
      parameters.  */
-  return arc_scan_prologue (pc, gdbarch, NULL, NULL);
+  return arc_scan_prologue (pc, limit_pc, gdbarch, NULL, NULL);
 
 }	/* arc_skip_prologue () */
 
@@ -2008,39 +2023,50 @@ arc_skip_trampoline_code (struct frame_info *frame, CORE_ADDR pc)
 
 /*! Frame unwinder for normal frames.
 
-    @note This function has changed from GDB 6.8. It now takes a reference to
-          THIS frame, not the NEXT frame.
-
-    @param[in]     this_frame  Frame info for THIS frame.
-    @param[in,out] this_cache  Frame cache for THIS frame, created if necessary.
-    @return                    The frame cache (new or existing) */
+    @param[in] this_frame  Frame info for THIS frame.
+    @return                New  frame cache (new or existing) */
 static struct arc_unwind_cache *
-arc_frame_cache (struct frame_info *this_frame, void **this_cache)
+arc_frame_cache (struct frame_info *this_frame)
 {
   struct gdbarch *gdbarch;
-  struct gdbarch_tdep *tdep;
+  struct arc_unwind_cache *cache;
+  CORE_ADDR entrypoint;
+  CORE_ADDR prologue_end;
+  CORE_ADDR prev_pc;
+  CORE_ADDR block_addr;
 
   ARC_ENTRY_DEBUG ("")
 
   gdbarch = get_frame_arch (this_frame);
-  tdep = gdbarch_tdep (gdbarch);
 
-  if ((*this_cache) == NULL)
+  cache = arc_create_cache (this_frame);
+
+  block_addr = get_frame_address_in_block (this_frame);
+  prev_pc = get_frame_pc (this_frame);
+  if (find_pc_partial_function (block_addr, NULL, &entrypoint, &prologue_end))
     {
-        CORE_ADDR  entrypoint =
-	  (CORE_ADDR) get_frame_register_unsigned (this_frame, gdbarch_pc_regnum (gdbarch));
-        struct arc_unwind_cache *cache = arc_create_cache (this_frame);
+      struct symtab_and_line sal = find_pc_line (entrypoint, 0);
+      if (!sal.line)
+	/* No line info so use current PC. */
+	prologue_end = prev_pc;
+      else if (sal.end < prologue_end)
+	/* The next line begins after the function end. */
+	prologue_end = sal.end;
 
-        /* return the newly-created cache */
-        *this_cache = cache;
-
-        /* Prologue analysis does the rest... Currently our prologue scanner
-	   does not support getting input for the frame unwinder. */
-        (void) arc_scan_prologue (entrypoint, NULL, this_frame, cache);
+      prologue_end = min (prologue_end, prev_pc);
+    }
+  else
+    {
+      entrypoint = get_frame_register_unsigned (this_frame,
+	  gdbarch_pc_regnum (gdbarch));
+      prologue_end = 0;
     }
 
-    return *this_cache;
+  /* Prologue analysis does the rest... Currently our prologue scanner
+     does not support getting input for the frame unwinder. */
+  arc_scan_prologue (entrypoint, prologue_end, NULL, this_frame, cache);
 
+  return cache;
 }	/* arc_frame_cache () */
 
 
@@ -2062,6 +2088,7 @@ arc_frame_this_id (struct frame_info *this_frame,
 {
   struct gdbarch *gdbarch;
   struct gdbarch_tdep *tdep;
+  struct arc_unwind_cache *cache;
   CORE_ADDR stack_addr;
   CORE_ADDR code_addr;
   ARC_ENTRY_DEBUG ("")
@@ -2069,7 +2096,11 @@ arc_frame_this_id (struct frame_info *this_frame,
   gdbarch = get_frame_arch (this_frame);
   tdep = gdbarch_tdep (gdbarch);
 
-  stack_addr = arc_frame_cache (this_frame, this_cache)->frame_base;
+  if (*this_cache == NULL)
+    *this_cache = arc_frame_cache (this_frame);
+  cache = (struct arc_unwind_cache *)(*this_cache);
+
+  stack_addr = cache->frame_base;
 
   /* There are 4 possible situation which decide how frame_id->code_addr is
    * evaluated:
@@ -2118,9 +2149,13 @@ arc_frame_prev_register (struct frame_info *this_frame,
 {
   struct gdbarch *gdbarch = get_frame_arch (this_frame);
   struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
-  struct arc_unwind_cache *info = arc_frame_cache (this_frame, this_cache);
+  struct arc_unwind_cache *cache;
 
   ARC_ENTRY_DEBUG ("regnum %d", regnum)
+
+  if (*this_cache == NULL)
+    *this_cache = arc_frame_cache (this_frame);
+  cache = (struct arc_unwind_cache *)(*this_cache);
 
   /* @todo The old GDB 6.8 code noted that if we are asked to unwind the PC,
            then we need to return blink instead: the saved value of PC points
@@ -2145,7 +2180,7 @@ arc_frame_prev_register (struct frame_info *this_frame,
 
             The old code explicitly set *lvalp to not_lval and stored a value
             in the buffer . Do we need to do something special for SP? */
-  return trad_frame_get_prev_register (this_frame, info->saved_regs, regnum);
+  return trad_frame_get_prev_register (this_frame, cache->saved_regs, regnum);
 
 }	/* arc_frame_prev_register () */
 
