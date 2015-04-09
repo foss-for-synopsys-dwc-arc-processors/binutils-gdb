@@ -804,87 +804,82 @@ arc_find_this_sp (struct arc_unwind_cache * info,
 {
   struct gdbarch *gdbarch;
   struct gdbarch_tdep *tdep;
+  unsigned int i;
 
   ARC_ENTRY_DEBUG ("this_frame = %p", this_frame)
 
   gdbarch = get_frame_arch (this_frame);
   tdep = gdbarch_tdep (gdbarch);
 
-  /* if the frame has a frame pointer */
-  if (info->uses_fp)
+  {
+    /* The previous SP is this frame's SP plus the known difference between
+     * the previous SP and this frame's SP (the delta_sp is negated as it is
+     * a negative quantity).
+     *
+     * Previous SP is always assumed to be "frame_base". Previously this code
+     * has been assuming FP to be a frame_base, however that is wrong, because
+     * FP points between saved register and space reserved for auto-variable,
+     * but frame base should be before saved regs as well:
+     *
+     *   this SP ->
+     *              auto variables (via sub sp, sp, limm)
+     *   this FP ->
+     *              saved registers (via push_s r13, push_s blink, etc)
+     *   prev SP & frame base ->
+     *              overflow arguments, etc, previous frame
+     *
+     * Note that overflow arguments (arg9, arg10, etc), are part of a previous
+     * frame.
+     */
+    int sp_regnum = gdbarch_sp_regnum (gdbarch);
+    CORE_ADDR this_sp = get_frame_register_unsigned (this_frame, gdbarch_sp_regnum (gdbarch));
+    info->prev_sp = this_sp + (ULONGEST) (-info->delta_sp);
+    info->frame_base = info->prev_sp;
+    if (info->uses_fp)
+      info->saved_regs[ARC_FP_REGNUM].addr = info->prev_sp - info->old_sp_offset_from_fp;
+  }
+
+
+  /* That code used to be executed only `if (uses_fp)`, however that seems to be
+   * an excessive limitation - prev_sp is a frame base, regardless if whether
+   * it has been stored in FP or not. */
+  for (i = ARC_FIRST_CALLEE_SAVED_REGNUM; i <= ARC_LAST_CALLEE_SAVED_REGNUM;
+      i++)
     {
-      ULONGEST this_base;
-      unsigned int i;
-
-      /* The SP was moved to the FP. This indicates that a new frame
-       * was created. Get THIS frame's FP value by unwinding it from
-       * the next frame. The old contents of FP were saved in the location
-       * at the base of this frame, so this also gives us the address of
-       * the FP save location.
+      /* If this register has been saved, add the previous stack pointer
+       * to the offset from the previous stack pointer at which the
+       * register was saved, so giving the address at which it was saved.
        */
-      this_base = arc_frame_base_address (this_frame, NULL);
-      info->frame_base = (CORE_ADDR) this_base;
-      info->saved_regs[ARC_FP_REGNUM].addr = (LONGEST) this_base;
-
-      /* The previous SP is the current frame base + the difference between
-       * that frame base and the previous SP.
-       */
-      info->prev_sp =
-	info->frame_base + (CORE_ADDR) info->old_sp_offset_from_fp;
-
-      for (i = ARC_FIRST_CALLEE_SAVED_REGNUM; i <= ARC_LAST_CALLEE_SAVED_REGNUM; i++)
+      if (info->saved_regs_mask & (1 << i))
 	{
-	  /* If this register has been saved, add the previous stack pointer
-	   * to the offset from the previous stack pointer at which the
-	   * register was saved, so giving the address at which it was saved.
-	   */
-	  if (info->saved_regs_mask & (1 << i))
+	  info->saved_regs[i].addr += info->prev_sp;
+
+	  if (arc_debug)
 	    {
-	      info->saved_regs[i].addr += info->prev_sp;
+	      /* This is a really useful debugging aid: we can debug a
+		 test program which loads known values into the
+		 callee-saved registers, then calls another function
+		 which uses those registers (and hence must save them)
+		 then hits a breakpoint; traversing the stack chain
+		 (e.g. with the 'where' command) should then execute
+		 this code, and we should see those known values being
+		 dumped, so showing that we have got the right addresses
+		 for the save locations! */
+	      unsigned int contents;
+	      fprintf_unfiltered (gdb_stdlog, "saved R%02d is at %s\n", i,
+				  phex (info->saved_regs[i].addr,
+					BYTES_IN_ADDRESS));
 
-	      if (arc_debug)
+	      if (target_read_memory
+		  ((CORE_ADDR) info->saved_regs[i].addr,
+		   (gdb_byte *) & contents, BYTES_IN_REGISTER) == 0)
 		{
-		  /* This is a really useful debugging aid: we can debug a
-		     test program which loads known values into the
-		     callee-saved registers, then calls another function
-		     which uses those registers (and hence must save them)
-		     then hits a breakpoint; traversing the stack chain
-		     (e.g. with the 'where' command) should then execute
-		     this code, and we should see those known values being
-		     dumped, so showing that we have got the right addresses
-		     for the save locations! */
-		  unsigned int contents;
-		  fprintf_unfiltered (gdb_stdlog, "saved R%02d is at %s\n", i,
-				      phex (info->saved_regs[i].addr,
-					    BYTES_IN_ADDRESS));
-				   
-
-		  if (target_read_memory
-		      ((CORE_ADDR) info->saved_regs[i].addr,
-		       (gdb_byte *) & contents, BYTES_IN_REGISTER) == 0)
-		    {
-		      fprintf_unfiltered (gdb_stdlog,
-					  "saved R%02d contents: 0x%0x\n", i,
-					  contents);
-		    }
+		  fprintf_unfiltered (gdb_stdlog,
+				      "saved R%02d contents: 0x%0x\n", i,
+				      contents);
 		}
 	    }
 	}
-    }
-  else
-    {
-      int sp_regnum = gdbarch_sp_regnum (gdbarch);
-      CORE_ADDR this_sp =
-	(CORE_ADDR) get_frame_register_unsigned (this_frame, sp_regnum);
-
-      /* The previous SP is this frame's SP plus the known difference between
-       * the previous SP and this frame's SP (the delta_sp is negated as it is
-       * a negative quantity).
-       */
-      info->prev_sp = (CORE_ADDR) (this_sp + (ULONGEST) (-info->delta_sp));
-
-      /* Assume that the FP is this frame's SP */
-      info->frame_base = (CORE_ADDR) this_sp;
     }
 
   /* if the function owning this frame is not a leaf function */
@@ -1338,9 +1333,9 @@ arc_scan_prologue (const CORE_ADDR entrypoint,
 
       arc_find_this_sp (info, this_frame);
 
-      /* The PC is found in blink (the actual register or located on the
-	 stack). */
-      info->saved_regs[ARC_PC_REGNUM] = info->saved_regs[ARC_BLINK_REGNUM];
+      /* We used to save BLINK value into PC here, however that is unnecessary
+       * because arc_frame_prev_register() already returns BLINKS value instead
+       * of PC. */
 
       if (arc_debug)
 	{
@@ -2132,16 +2127,12 @@ arc_frame_this_id (struct frame_info *this_frame,
     Given a pointer to the THIS frame, return the details of a register in the
     PREVIOUS frame.
 
-    @note This function has changed from GDB 6.8. It now takes a reference to
-          THIS frame, not the NEXT frame. It returns it results via a
-          structure, not its argument list.
-
     @param[in] this_frame  The stack frame under consideration
     @param[in] this_cache  Any cached prologue associated with THIS frame,
                            which may therefore tell us about registers in the
 			   PREVIOUS frame. 
     @param[in] regnum      The register of interest in the PREVIOUS frame
-    @return                 A value structure representing the register. */
+    @return                A value structure representing the register. */
 static struct value *
 arc_frame_prev_register (struct frame_info *this_frame,
 			 void **this_cache,
@@ -2157,29 +2148,43 @@ arc_frame_prev_register (struct frame_info *this_frame,
     *this_cache = arc_frame_cache (this_frame);
   cache = (struct arc_unwind_cache *)(*this_cache);
 
-  /* @todo The old GDB 6.8 code noted that if we are asked to unwind the PC,
-           then we need to return blink instead: the saved value of PC points
-           into this frame's function's prologue, not the next frame's
-           function's resume location.
-
-           Is this still true? Do we need the following code. */
+  /* If we are asked to unwind the PC, then we need to return BLINK instead:
+   * the saved value of PC points into this frame's function's prologue, not
+   * the next frame's function's resume location. `frame_unwind_got_constant`
+   * is used to return non_lvalue, because it is not possible to modify PC
+   * directly (one can modify BLINK, if they wish). If
+   * trad_frame_get_prev_register(ARC_BLINK_REGNUM) would be used here, than it
+   * would be possible to modify PC of frame via altering BLINK of next_frame,
+   * or at least I believe that should be possible technically, however
+   * sematically could be confusing, so better to avoid this, like other arches
+   * do.
+   *
+   * As of note, old ARC GDB 6.8 used to have this "not_lvalue" logic, which
+   * got lost in 6.8 -> 7.5 migration. Old code however had to do that
+   * manually, as frame_unwind_got_constant was added later. */
   if (regnum == gdbarch_pc_regnum (gdbarch))
     {
-      regnum = ARC_BLINK_REGNUM;
-    }
-  
-  if (arc_debug)
-    {
-      fprintf_unfiltered (gdb_stdlog, "-*-*-*\n Regnum = %d\n", regnum);
+      CORE_ADDR blink;
+      blink = frame_unwind_register_unsigned (this_frame, ARC_BLINK_REGNUM);
+      return frame_unwind_got_constant (this_frame, regnum, blink);
     }
 
-  /* @todo. The old GDB 6.8 code noted that SP is generally not saved to the
-            stack, but this frame is identified by next_frame's stack pointer
-            at the time of the call. The value was already reconstructed into
-            prev_sp.
+  /* SP is a special case - we should return prev_sp, because
+   * trad_frame_get_prev_register will return _current_ SP value. Alternatively
+   * we could have stored cache->prev_sp in the cache->saved regs, but here we
+   * follow the lead of AArch64, ARM and Xtensa and will leave that logic in
+   * this function, instead of prologue analyzers. That I think is a bit more
+   * clear as `saved_regs` should contain saved regis, not computable.
+   *
+   * Similiar to PC, constant value is returned, since it is "computable" thus
+   * not editable.
+   *
+   * As of note, old ARC GDB 6.8 used to have "constatn" logic for SP, which
+   * got lost in 6.8 -> 7.5 migration. Old code however had to do that
+   * manually, as frame_unwind_got_constant was added later. */
+  if (regnum == gdbarch_sp_regnum (gdbarch))
+    return frame_unwind_got_constant (this_frame, regnum, cache->prev_sp);
 
-            The old code explicitly set *lvalp to not_lval and stored a value
-            in the buffer . Do we need to do something special for SP? */
   return trad_frame_get_prev_register (this_frame, cache->saved_regs, regnum);
 
 }	/* arc_frame_prev_register () */
