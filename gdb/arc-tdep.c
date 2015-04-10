@@ -1110,6 +1110,7 @@ arc_is_in_prologue (struct gdbarch *gdbarch,
 	}
     }
 
+  /* Several store-in-stack instructions. */
   else if (instr->_opcode == 0x18)
     {
       /* sub_s sp,sp,constant */
@@ -1148,6 +1149,57 @@ arc_is_in_prologue (struct gdbarch *gdbarch,
 		   delta_sp */
 		return TRUE;
 	    }
+	}
+      else if (strcmp (instr->instrBuffer, "enter_s") == 0)
+        {
+	  if (info)
+	    {
+	      /* enter_s {r13-...,blink[,fp]} stores registers in following order:
+	       *
+	       * new SP ->
+	       *           blink
+	       *           r13
+	       *           r14
+	       *           r15
+	       *           ...
+	       *           [fp]
+	       * old SP ->
+	       */
+	      int is_blink_saved = 0;
+	      int is_fp_saved = 0;
+	      int regs_saved = 0;
+	      int i;
+
+	      is_blink_saved = (strstr (instr->operandBuffer, "blink") != 0);
+	      is_fp_saved = (strstr (instr->operandBuffer, "fp") != 0);
+	      regs_saved = (instr->words[0] & 0b11110) >> 1;
+
+	      if (is_fp_saved)
+		{
+		  /* Can't call arc_is_push_fp_fi() because it expects
+		   * operandBuffer to start with fp. */
+		  info->delta_sp -= BYTES_IN_REGISTER;
+		  info->old_sp_offset_from_fp = -info->delta_sp;
+		  info->uses_fp = TRUE;
+		}
+
+	      /* Registers are stored in backward order: from R25 to R13. */
+	      for (i = ARC_FIRST_CALLEE_SAVED_REGNUM + regs_saved - 1;
+		   i >= ARC_FIRST_CALLEE_SAVED_REGNUM;
+		   i--)
+	        {
+		  if (arc_is_callee_saved (gdbarch, i, -BYTES_IN_REGISTER, info))
+		    {
+		      /* This is a push onto the stack, so change delta_sp */
+		      info->delta_sp -= BYTES_IN_REGISTER;
+		    }
+		}
+
+	      if (is_blink_saved)
+		arc_push_blink (info, -BYTES_IN_REGISTER);
+	    }
+
+	  return TRUE;
 	}
     }
 
