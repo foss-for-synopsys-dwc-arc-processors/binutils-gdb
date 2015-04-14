@@ -215,11 +215,6 @@ struct arc_unwind_cache
       frame. */
   CORE_ADDR prev_sp;
 
-  /*! The frame base (as held in FP).
-
-      @note This is NOT the address of the lowest word in the frame! */
-  CORE_ADDR frame_base;
-
   /*! Change in SP from previous SP (-ve value)
 
       This is computed by scanning the prologue of the function: initially 0,
@@ -635,8 +630,6 @@ arc_print_frame_info (struct gdbarch *gdbarch,
   fprintf_unfiltered (gdb_stdlog, "%s (info = %p)\n", message, info);
   fprintf_unfiltered (gdb_stdlog, "prev_sp               = %s\n",
 		      print_core_address (gdbarch, info->prev_sp));
-  fprintf_unfiltered (gdb_stdlog, "frame_base            = %s\n",
-		      print_core_address (gdbarch, info->frame_base));
   fprintf_unfiltered (gdb_stdlog, "blink offset          = %d\n",
 		      info->blink_save_offset_from_prev_sp);
   fprintf_unfiltered (gdb_stdlog, "delta_sp              = %d\n",
@@ -753,7 +746,6 @@ arc_create_cache (struct frame_info *this_frame)
   /* Zero all fields.  */
   cache->blink_save_offset_from_prev_sp = 0;
   cache->prev_sp = 0;
-  cache->frame_base = 0;
   cache->delta_sp = 0;
   cache->old_sp_offset_from_fp = 0;
   cache->is_leaf = FALSE;
@@ -834,7 +826,6 @@ arc_find_this_sp (struct arc_unwind_cache * info,
     int sp_regnum = gdbarch_sp_regnum (gdbarch);
     CORE_ADDR this_sp = get_frame_register_unsigned (this_frame, gdbarch_sp_regnum (gdbarch));
     info->prev_sp = this_sp + (ULONGEST) (-info->delta_sp);
-    info->frame_base = info->prev_sp;
     if (info->uses_fp)
       info->saved_regs[ARC_FP_REGNUM].addr = info->prev_sp - info->old_sp_offset_from_fp;
   }
@@ -2147,7 +2138,7 @@ arc_frame_this_id (struct frame_info *this_frame,
     *this_cache = arc_frame_cache (this_frame);
   cache = (struct arc_unwind_cache *)(*this_cache);
 
-  stack_addr = cache->frame_base;
+  stack_addr = cache->prev_sp;
 
   /* There are 4 possible situation which decide how frame_id->code_addr is
    * evaluated:
@@ -2287,7 +2278,7 @@ arc_sigtramp_frame_cache (struct frame_info *this_frame, void **this_cache)
       *this_cache = cache;
 
       /* get the stack pointer and use it as the frame base */
-      cache->frame_base = arc_frame_base_address (this_frame, NULL);
+      cache->prev_sp = arc_frame_base_address (this_frame, NULL);
 
       /* If the ARC-private target-dependent info has a table of offsets of
          saved register contents within a O/S signal context structure. */
@@ -2336,7 +2327,7 @@ arc_sigtramp_frame_this_id (struct frame_info *this_frame,
   gdbarch = get_frame_arch (this_frame);
   tdep = gdbarch_tdep (gdbarch);
 
-  stack_addr = arc_sigtramp_frame_cache (this_frame, this_cache)->frame_base;
+  stack_addr = arc_sigtramp_frame_cache (this_frame, this_cache)->prev_sp;
   code_addr = get_frame_register_unsigned (this_frame, gdbarch_pc_regnum (gdbarch));
   *this_id = frame_id_build (stack_addr, code_addr);
 
