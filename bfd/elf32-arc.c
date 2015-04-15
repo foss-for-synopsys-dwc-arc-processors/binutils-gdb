@@ -989,7 +989,8 @@ arc_elf_object_p (bfd *abfd)
 	  mach = bfd_mach_arc_arcv2;
 	  break;
 	default:
-	  mach = bfd_mach_arc_arc700;
+	  mach = (e_machine == EM_ARCV2) ?
+	    bfd_mach_arc_arcv2 : bfd_mach_arc_arc700;
 	  break;
 	}
     }
