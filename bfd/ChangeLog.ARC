@@ -1,3 +1,8 @@
+2015-04-15  Claudiu Zissulescu  <claziss@synopsys.com>
+
+	* elf32-arc.c (arc_elf_merge_private_bfd_data): Don't bail out
+          if eflags is not set.
+
 2015-03-26  Claudiu Zissulescu  <claziss@synopsys.com>
 
 	* elf32-arc.c: Add R_ARC_SDA16_ST2, R_ARC_SDA_12,
