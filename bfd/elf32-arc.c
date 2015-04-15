@@ -938,7 +938,11 @@ with a binary %s of different architecture"),
 	  (*_bfd_error_handler)
 	    (_("%s: uses different e_flags (0x%lx) fields than previous modules (0x%lx)"),
 	     bfd_get_filename (ibfd), (long)new_flags, (long)old_flags);
-	  return FALSE;
+	  if (!new_flags && !old_flags)
+	    return FALSE;
+	  /* MWDT doesnt set the eflags hence make sure we choose the
+	     eflags set by gcc.  */
+	  new_flags = new_flags > old_flags ? new_flags : old_flags;
 	}
 
     }
