@@ -1,7 +1,9 @@
 2015-04-15  Claudiu Zissulescu  <claziss@synopsys.com>
 
 	* elf32-arc.c (arc_elf_merge_private_bfd_data): Don't bail out
-          if eflags is not set.
+	if eflags is not set.
+	(arc_elf_object_p): Default to bfd_mach_arc_arcv2 when
+	e_machine is EM_ARCV2.
 
 2015-03-26  Claudiu Zissulescu  <claziss@synopsys.com>
 
