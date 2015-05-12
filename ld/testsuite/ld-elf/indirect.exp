@@ -1,5 +1,5 @@
 # Expect script for various indirect symbol tests.
-#   Copyright 2012 Free Software Foundation, Inc.
+#   Copyright (C) 2012-2014 Free Software Foundation, Inc.
 #
 # This file is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,8 +26,19 @@ if ![is_elf_format] {
     return
 }
 
+# Skip target where -shared is not supported
+
+if ![check_shared_lib_support] {
+    return
+}
+
 # Check if compiler works
 if { [which $CC] == 0 } {
+    return
+}
+
+# Some bare-metal targets don't support shared libs or PIC.
+if { ![run_host_cmd_yesno $CC "-shared -fPIC $srcdir/$subdir/dummy.c -o tmpdir/t.so"] } {
     return
 }
 
