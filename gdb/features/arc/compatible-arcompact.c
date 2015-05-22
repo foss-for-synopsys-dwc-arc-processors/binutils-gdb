@@ -1,4 +1,5 @@
-/* THIS FILE IS GENERATED.  Original: compatible-arcompact.xml */
+/* THIS FILE IS GENERATED.  -*- buffer-read-only: t -*- vi:set ro:
+  Original: compatible-arcompact.xml */
 
 #include "defs.h"
 #include "osabi.h"
@@ -81,10 +82,10 @@ initialize_tdesc_compatible_arcompact (void)
   feature = tdesc_create_feature (result, "org.gnu.gdb.arc.aux-minimal");
   field_type = tdesc_create_flags (feature, "status32_type", 4);
   tdesc_add_flag (field_type, 0, "H");
-  tdesc_add_flag (field_type, 1, "E0");
-  tdesc_add_flag (field_type, 2, "E1");
-  tdesc_add_flag (field_type, 3, "E2");
-  tdesc_add_flag (field_type, 4, "E3");
+  tdesc_add_flag (field_type, 1, "E1");
+  tdesc_add_flag (field_type, 2, "E2");
+  tdesc_add_flag (field_type, 3, "A1");
+  tdesc_add_flag (field_type, 4, "A2");
   tdesc_add_flag (field_type, 5, "AE");
   tdesc_add_flag (field_type, 6, "DE");
   tdesc_add_flag (field_type, 7, "U");
@@ -93,15 +94,8 @@ initialize_tdesc_compatible_arcompact (void)
   tdesc_add_flag (field_type, 10, "N");
   tdesc_add_flag (field_type, 11, "Z");
   tdesc_add_flag (field_type, 12, "L");
-  tdesc_add_flag (field_type, 13, "DZ");
-  tdesc_add_flag (field_type, 14, "SC");
-  tdesc_add_flag (field_type, 15, "ES");
-  tdesc_add_flag (field_type, 16, "RB0");
-  tdesc_add_flag (field_type, 17, "RB1");
-  tdesc_add_flag (field_type, 18, "RB2");
-  tdesc_add_flag (field_type, 19, "AD");
-  tdesc_add_flag (field_type, 20, "US");
-  tdesc_add_flag (field_type, 31, "IE");
+  tdesc_add_flag (field_type, 13, "R");
+  tdesc_add_flag (field_type, 14, "SE");
 
   tdesc_create_reg (feature, "pc", 64, 1, "general", 32, "code_ptr");
   tdesc_create_reg (feature, "lp_start", 65, 1, "general", 32, "code_ptr");
