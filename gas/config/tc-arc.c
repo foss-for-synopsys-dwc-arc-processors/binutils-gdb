@@ -4312,9 +4312,10 @@ arc_cons_fix_new (fragS *frag,
     }
   else
     {
-      static int bfd_reloc_map[] = {BFD_RELOC_NONE,BFD_RELOC_8,BFD_RELOC_16,
-				BFD_RELOC_24,BFD_RELOC_32,BFD_RELOC_NONE,
-				BFD_RELOC_NONE,BFD_RELOC_64 };
+      static int bfd_reloc_map[] = { BFD_RELOC_NONE, BFD_RELOC_8, BFD_RELOC_16,
+				     BFD_RELOC_24, BFD_RELOC_32, BFD_RELOC_NONE,
+				     BFD_RELOC_NONE, BFD_RELOC_NONE, BFD_RELOC_64 };
+      gas_assert (nbytes <= 8);
       fix_new_exp (frag, where, nbytes, exp, 0, bfd_reloc_map[nbytes]);
     }
 }
@@ -4580,6 +4581,11 @@ md_apply_fix (fixS *fixP, valueT *valueP, segT seg ATTRIBUTE_UNUSED)
 	case BFD_RELOC_32_PCREL:
 	  md_number_to_chars (fixP->fx_frag->fr_literal + fixP->fx_where,
 			      value, 4);
+	  break;
+
+	case BFD_RELOC_64:
+	  md_number_to_chars (fixP->fx_frag->fr_literal + fixP->fx_where,
+			      value, 8);
 	  break;
 
 	case BFD_RELOC_ARC_TLS_DTPOFF:

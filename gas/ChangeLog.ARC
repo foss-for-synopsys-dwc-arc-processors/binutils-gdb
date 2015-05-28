@@ -3,8 +3,11 @@
 	* config/tc-arc.c (arc_common): Removed.
 	(arc_lcomm_internal): New function.
 	(arc_lcomm): Likewise.
-	(md_pseudo_table): Use it for lcomm and lcommon. comm and
-	common handled by generic handler.
+	(md_pseudo_table): Use arc_lcomm for lcomm and lcommon. comm
+	and common handled by generic handler.
+	(arc_cons_fix_new): Generate BFD_RELOC_64 for 8 byte
+	constants.
+	(md_apply_fix): Handle BFD_RELOC_64.
 	* doc/c-arc.texi (.lcomm): Document.
 	(.lcommon): Likewise.
 
