@@ -385,7 +385,7 @@ The word aligned program counter.
 @end table
 
 In addition the ARC processor has a large number of @emph{auxiliary
-registers}. The precise set depends on the extensions being supported, 
+registers}. The precise set depends on the extensions being supported,
 but the following baseline set are always defined:
 
 @table @code
@@ -455,7 +455,7 @@ Build Configuration Registers Version.  Auxiliary register address 0x60.
 @cindex ARC Build configuration for: BTA Registers
 Build configuration for: BTA Registers.  Auxiliary register address 0x63.
 
-@item vecbase_ac_build 
+@item vecbase_ac_build
 @cindex Build configuration for: Interrupts, ARC
 @cindex ARC Build configuration for: Interrupts
 Build configuration for: Interrupts.  Auxiliary register address 0x68.
@@ -465,7 +465,7 @@ Build configuration for: Interrupts.  Auxiliary register address 0x68.
 @cindex ARC Build configuration for: Core Registers
 Build configuration for: Core Registers.  Auxiliary register address 0x6e.
 
-@item dccm_build 
+@item dccm_build
 @cindex DCCM RAM Configuration Register, ARC
 @cindex ARC DCCM RAM Configuration Register
 DCCM RAM Configuration Register.  Auxiliary register address 0xc1.
@@ -501,6 +501,26 @@ machine directives:
 
 @table @code
 
+@cindex @code{lcomm} directive
+@item .lcomm @var{symbol} , @var{length}[, @var{alignment}]
+Reserve @var{length} (an absolute expression) bytes for a local common
+denoted by @var{symbol}.  The section and value of @var{symbol} are
+those of the new local common.  The addresses are allocated in the bss
+section, so that at run-time the bytes start off zeroed.  Since
+@var{symbol} is not declared global, it is normally not visible to
+@code{@value{LD}}.  The optional third parameter, @var{alignment},
+specifies the desired alignment of the symbol in the bss section,
+specified as a byte boundary (for example, an alignment of 16 means
+that the least significant 4 bits of the address should be zero).  The
+alignment must be an absolute expression, and it must be a power of
+two.  If no alignment is specified, as will set the alignment to the
+largest power of two less than or equal to the size of the symbol, up
+to a maximum of 16.
+
+@cindex @code{lcommon} directive
+@item .lcommon @var{symbol} , @var{length}[, @var{alignment}]
+The same as @code{lcomm} directive.
+
 @item .extAuxRegister @var{name}, @var{addr}, @var{mode}
 @cindex @code{extAuxRegister} directive, ARC
 Auxiliary registers can be defined in the assembler source code by
@@ -508,10 +528,10 @@ using this directive.  The first parameter, @var{name}, is the name of the
 new auxiliary register.  The second parameter, @var{addr}, is
 address the of the auxiliary register.  The third parameter,
 @var{mode}, specifies whether the register is readable and/or writable
-and is one of: 
+and is one of:
 @table @code
 @item r
-Read only 
+Read only
 
 @item w
 Write only
@@ -523,7 +543,7 @@ Read and write
 
 For example:
 @example
-        .extAuxRegister mulhi, 0x12, w
+	.extAuxRegister mulhi, 0x12, w
 @end example
 specifies a write only extension auxiliary register, @var{mulhi} at
 address 0x12.
@@ -536,8 +556,8 @@ depend on the value, @var{val} in the condition code.
 
 For example:
 @example
-        .extCondCode is_busy,0x14
-        add.is_busy  r1,r2,r3
+	.extCondCode is_busy,0x14
+	add.is_busy  r1,r2,r3
 @end example
 will only execute the @code{add} instruction if the condition code
 value is 0x14.
@@ -550,7 +570,7 @@ between 32 and 59. The third argument, @var{mode}, indicates whether the
 register is readable and/or writable and is one of:
 @table @code
 @item r
-Read only 
+Read only
 
 @item w
 Write only
@@ -572,7 +592,7 @@ The register does not have a short cut in the pipeline.
 
 For example:
 @example
-        .extCoreRegister mlo, 57, r , can_shortcut
+	.extCoreRegister mlo, 57, r , can_shortcut
 @end example
 defines a read only extension core register, @code{mlo}, which is
 register 57, and can short cut the pipeline.
@@ -637,7 +657,7 @@ syntax.
 
 For example, if the source code contains an instruction like:
 @example
-inst r1,r2 
+inst r1,r2
 @end example
 the first argument is an implied immediate (that is, the result is
 discarded).  This is the same as though the source code were: inst
@@ -647,8 +667,8 @@ discarded).  This is the same as though the source code were: inst
 
 For example, defining a 64-bit multiplier with immediate operands:
 @example
-        .extInstruction  mp64, 0x14, 0x0, SUFFIX_COND|SUFFIX_FLAG,
-                         SYNTAX_3OP|OP1_MUST_BE_IMM
+	.extInstruction  mp64, 0x14, 0x0, SUFFIX_COND|SUFFIX_FLAG,
+			 SYNTAX_3OP|OP1_MUST_BE_IMM
 @end example
 which specifies an extension instruction named @code{mp64} with 3
 operands.  It sets the flags and can be used with a condition code,
@@ -657,7 +677,7 @@ discarding the result of the operation.
 
 A 2-instruction variant would be:
 @example
-        .extInstruction mul64,0x14,0x00,SUFFIX_COND, SYNTAX_2OP|OP1_IMM_IMPLIED
+	.extInstruction mul64,0x14,0x00,SUFFIX_COND, SYNTAX_2OP|OP1_IMM_IMPLIED
 @end example
 which describes a 2 operand instruction with an implicit first
 immediate operand.  The result of this operation would be discarded.

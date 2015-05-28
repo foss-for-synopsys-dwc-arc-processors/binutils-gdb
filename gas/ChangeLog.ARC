@@ -5,6 +5,8 @@
 	(arc_lcomm): Likewise.
 	(md_pseudo_table): Use it for lcomm and lcommon. comm and
 	common handled by generic handler.
+	* doc/c-arc.texi (.lcomm): Document.
+	(.lcommon): Likewise.
 
 2015-03-26 Claudiu Zissulescu <claziss@synopsys.com>
 
