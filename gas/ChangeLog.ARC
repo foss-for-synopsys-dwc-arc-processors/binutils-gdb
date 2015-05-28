@@ -1,3 +1,11 @@
+2015-05-28 Claudiu Zissulescu <claziss@synopsys.com>
+
+	* config/tc-arc.c (arc_common): Removed.
+	(arc_lcomm_internal): New function.
+	(arc_lcomm): Likewise.
+	(md_pseudo_table): Use it for lcomm and lcommon. comm and
+	common handled by generic handler.
+
 2015-03-26 Claudiu Zissulescu <claziss@synopsys.com>
 
 	* config/tc-arc.c (arc_get_sda_reloc): Generate

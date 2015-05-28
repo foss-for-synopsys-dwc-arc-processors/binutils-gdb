@@ -65,7 +65,6 @@ static arc_insn arc_insert_operand (arc_insn, long *,
 				    offsetT, char *, unsigned int);
 static valueT md_chars_to_number (char *, int);
 
-static void arc_common (int);
 static void arc_option (int);
 static int  arc_get_sda_reloc (arc_insn, int);
 
@@ -3824,123 +3823,47 @@ arc_ac_extinst (ignore)
 
 /* Here ends all the ARCompact extension instruction assembling stuff.  */
 
-static void
-arc_common (int localScope)
+static symbolS *
+arc_lcomm_internal (int ignore ATTRIBUTE_UNUSED,
+		    symbolS *symbolP, addressT size)
 {
-  char *name;
-  char c;
-  char *p;
-  int align, size;
-  symbolS *symbolP;
-
-  name = input_line_pointer;
-  c = get_symbol_end ();
-  /* just after name is now '\0'  */
-  p = input_line_pointer;
-  *p = c;
+  addressT align = 0;
   SKIP_WHITESPACE ();
 
-  if (*input_line_pointer != ',')
-    {
-      as_bad ("expected comma after symbol name");
-      ignore_rest_of_line ();
-      return;
-    }
-
-  input_line_pointer++;		/* skip ','  */
-  size = get_absolute_expression ();
-
-  if (size < 0)
-    {
-      as_bad ("negative symbol length");
-      ignore_rest_of_line ();
-      return;
-    }
-
-  *p = 0;
-  symbolP = symbol_find_or_make (name);
-  *p = c;
-
-  if (S_IS_DEFINED (symbolP) && ! S_IS_COMMON (symbolP))
-    {
-      as_bad ("ignoring attempt to re-define symbol");
-      ignore_rest_of_line ();
-      return;
-    }
-  if (((int) S_GET_VALUE (symbolP) != 0) \
-      && ((int) S_GET_VALUE (symbolP) != size))
-    {
-      as_warn ("length of symbol \"%s\" already %ld, ignoring %d",
-	       S_GET_NAME (symbolP), (long) S_GET_VALUE (symbolP), size);
-    }
-  gas_assert (symbolP->sy_frag == &zero_address_frag);
-
-  /* Now parse the alignment field.  This field is optional for
-     local and global symbols. Default alignment is zero.  */
   if (*input_line_pointer == ',')
     {
-      input_line_pointer++;
-      align = get_absolute_expression ();
-      if (align < 0)
-	{
-	  align = 0;
-	  as_warn ("assuming symbol alignment of zero");
-	}
-    }
-  else if (localScope == 0)
-    align = 0;
+      align = parse_align (1);
 
-  else
-    {
-      as_bad ("Expected comma after length for lcomm directive");
-      ignore_rest_of_line ();
-      return;
-    }
-
-
-  if (localScope != 0)
-    {
-      segT old_sec;
-      int old_subsec;
-      char *pfrag;
-
-      old_sec    = now_seg;
-      old_subsec = now_subseg;
-      record_alignment (bss_section, align);
-      subseg_set (bss_section, 0);  /* ??? subseg_set (bss_section, 1); ???  */
-
-      if (align)
-	/* Do alignment.  */
-	frag_align (align, 0, 0);
-
-      /* Detach from old frag.  */
-      if (S_GET_SEGMENT (symbolP) == bss_section)
-	symbolP->sy_frag->fr_symbol = NULL;
-
-      symbolP->sy_frag = frag_now;
-      pfrag = frag_var (rs_org, 1, 1, (relax_substateT) 0, symbolP,
-			(offsetT) size, (char *) 0);
-      *pfrag = 0;
-
-      S_SET_SIZE       (symbolP, size);
-      S_SET_SEGMENT    (symbolP, bss_section);
-      S_CLEAR_EXTERNAL (symbolP);
-      symbol_get_obj (symbolP)->local = 1;
-      subseg_set (old_sec, old_subsec);
+      if (align == (addressT) -1)
+	return NULL;
     }
   else
     {
-      S_SET_VALUE    (symbolP, (valueT) size);
-      S_SET_ALIGN    (symbolP, align);
-      S_SET_EXTERNAL (symbolP);
-      S_SET_SEGMENT  (symbolP, bfd_com_section_ptr);
+      if (size >= 8)
+	align = 3;
+      else if (size >= 4)
+	align = 2;
+      else if (size >= 2)
+	align = 1;
+      else
+	align = 0;
     }
 
-  symbolP->bsym->flags |= BSF_OBJECT;
+  bss_alloc (symbolP, size, align);
+  S_CLEAR_EXTERNAL (symbolP);
 
-  demand_empty_rest_of_line ();
+  return symbolP;
 }
-
+
+static void
+arc_lcomm (int ignore)
+{
+  symbolS *symbolP = s_comm_internal (ignore, arc_lcomm_internal);
+
+  if (symbolP)
+    symbol_get_bfdsym (symbolP)->flags |= BSF_OBJECT;
+}
+
 /* Select the cpu we're assembling for.  */
 
 static void
@@ -4840,10 +4763,8 @@ tc_gen_reloc (asection *section ATTRIBUTE_UNUSED,
 const pseudo_typeS md_pseudo_table[] =
 {
   { "align", s_align_bytes, 0 }, /* Defaulting is invalid (0).  */
-  { "comm", arc_common, 0 },
-  { "common", arc_common, 0 },
-  { "lcomm", arc_common, 1 },
-  { "lcommon", arc_common, 1 },
+  { "lcomm",   arc_lcomm, 0 },
+  { "lcommon", arc_lcomm, 0 },
   { "2byte", cons, 2 },
   { "half", cons, 2 },
   { "short", cons, 2 },
