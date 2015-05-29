@@ -1,4 +1,11 @@
-2015-03-26 Claudiu Zissulescu <claziss@synopsys.com>
+2015-05-29  Claudiu Zissulescu  <claziss@synopsys.com>
+
+	* arc-opc-old.c (ac_sdasym_limm_p): New function.
+	(insert_reg): Use it.
+	(arc_opcodes): New mnemonic fit for sda symbol.
+	* arc-em.h (mov_s): Likewise.
+
+2015-03-26  Claudiu Zissulescu  <claziss@synopsys.com>
 
 	* arc-opc-old.c (ac_get_load_sdasym_insn_type): Return correct
 	value for ARCv2 code density GP related instruction.
