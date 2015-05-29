@@ -91,8 +91,6 @@ extern int arc_parse_name (const char *, struct expressionS *);
  * the @ character.  */
 /* #define ENFORCE_AT_PREFIX */
 
-#define DWARF2_LINE_MIN_INSN_LENGTH (2)
-
 /* Values passed to md_apply_fix don't include the symbol value.  */
 #define MD_APPLY_SYM_VALUE(FIX) 0
 

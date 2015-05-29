@@ -3,6 +3,7 @@
 	* config/tc-arc.c (arc_get_sda_reloc): Default return
         BFD_RELOC_ARC_SDA32_ME.
 	(md_assemble): Use BFD_RELOC_ARC_SDA32_ME.
+	* config/tc-arc.h (DWARF2_LINE_MIN_INSN_LENGTH): Undefine.
 
 2015-05-28  Claudiu Zissulescu  <claziss@synopsys.com>
 
