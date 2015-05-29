@@ -4382,6 +4382,8 @@ arc_get_sda_reloc (arc_insn insn, int compact_insn_16)
       return BFD_RELOC_ARC_SDA_LDST1;
     case 3:
       return BFD_RELOC_ARC_SDA16_ST2;
+    default:
+      return BFD_RELOC_ARC_SDA32_ME;
     }
 
   abort();
@@ -6772,7 +6774,10 @@ fprintf (stdout, "Matched syntax %s\n", opcode->syntax);
 		{
 		  /* If limm is needed */
 		  if ((operand2->flags & ARC_OPERAND_LIMM)
-		      && (!(fixups[i].modifier_flags & ARC_MOD_SDASYM) || ac_add_reg_sdasym_insn (insn) || reloc_type == BFD_RELOC_ARC_GOTPC32))
+		      && (!(fixups[i].modifier_flags & ARC_MOD_SDASYM)
+			  || ac_add_reg_sdasym_insn (insn) /* Needed by add @pcl */
+			  || reloc_type == BFD_RELOC_ARC_SDA32_ME
+			  || reloc_type == BFD_RELOC_ARC_GOTPC32))
 		    {
 		      offset = 2;
 		    }
@@ -6785,7 +6790,10 @@ fprintf (stdout, "Matched syntax %s\n", opcode->syntax);
 		{
 		  /* If limm is needed */
 		  if ((operand2->flags & ARC_OPERAND_LIMM)
-		      && (!(fixups[i].modifier_flags & ARC_MOD_SDASYM) || ac_add_reg_sdasym_insn (insn) || reloc_type == BFD_RELOC_ARC_GOTPC32))
+		      && (!(fixups[i].modifier_flags & ARC_MOD_SDASYM)
+			  || ac_add_reg_sdasym_insn (insn) /* Needed by add @pcl */
+			  || reloc_type == BFD_RELOC_ARC_SDA32_ME
+			  || reloc_type == BFD_RELOC_ARC_GOTPC32))
 		    offset = 4;
 		}
 

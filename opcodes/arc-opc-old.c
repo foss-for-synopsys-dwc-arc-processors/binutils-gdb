@@ -115,6 +115,7 @@ EXTRACT_FN (extract_jumpflags);
 EXTRACT_FN (extract_unopmacro);
 
 
+static int ac_sdasym_limm_p (arc_insn);
 /* -------------------------------------------------------------------------- */
 /*                               local data                                   */
 /* -------------------------------------------------------------------------- */
@@ -1381,7 +1382,7 @@ insert_reg (arc_insn insn,long *ex ATTRIBUTE_UNUSED,
 	 field.  Handle these by updating the register field and saving the
 	 value for later handling by either %S (shimm) or %L (limm).  */
 
-      if ((mods & ARC_MOD_SDASYM) && !ac_add_reg_sdasym_insn (insn))
+      if ((mods & ARC_MOD_SDASYM) && !ac_sdasym_limm_p (insn))
 	{
 	  /* Check if this insn is a prefetch that needs a limm */
 	  if ((insn & 0xFFFFF87F) == 0x1600703E)
@@ -3384,6 +3385,7 @@ static struct arc_opcode arc_opcodes[] = {
   { (unsigned char *) "rsub%.f %A,%B,%u%F", 0xf8ff0000, 0x204e0000, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "rsub%.f %#,%B,%K%F", 0xf8ff0000, 0x208e0000, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "rsub%.f%Q %A,%B,%L%F", 0xf8ff0fc0, 0x200e0f80, ARCOMPACT, 0, 0 ,0,0},
+  { (unsigned char *) "rsub%.f%Q %A,%B,%[L%F", 0xf8ff0fc0, 0x200e0f80, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "rsub%.f%Q %A,%L,%C%F", 0xffff7000, 0x260e7000, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "rsub%.f%Q %A,%L,%u%F", 0xffff7000, 0x264e7000, ARCOMPACT, 0, 0 ,0,0},
   { (unsigned char *) "rsub%.f%Q %A,%L,%L%F", 0xffff7000, 0x260e7f80, ARCOMPACT, 0, 0 ,0,0},
@@ -5101,6 +5103,23 @@ ac_get_store_sdasym_insn_type (arc_insn insn,
   return store_type;
 }
 
+static int
+ac_sdasym_limm_p (arc_insn insn)
+{
+  int short_insn = 0;
+
+  if (ac_add_reg_sdasym_insn (insn))
+    return 1;
+
+  /* A crude way to check for short instructions.  */
+  short_insn = (insn & 0xFFFF0000) ? 0 : 1;
+
+  if ((ac_get_load_sdasym_insn_type (insn, short_insn) == -1)
+      && (ac_get_store_sdasym_insn_type (insn, short_insn) == -1))
+    return 1;
+
+  return 0;
+}
 
 /* Returns 1 if the given operand is a valid constant operand for
    ARCompact ISA. It can be used only for ARCompact architecture */

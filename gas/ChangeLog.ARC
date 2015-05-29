@@ -1,4 +1,10 @@
-2015-05-28 Claudiu Zissulescu <claziss@synopsys.com>
+2015-05-29  Claudiu Zissulescu  <claziss@synopsys.com>
+
+	* config/tc-arc.c (arc_get_sda_reloc): Default return
+        BFD_RELOC_ARC_SDA32_ME.
+	(md_assemble): Use BFD_RELOC_ARC_SDA32_ME.
+
+2015-05-28  Claudiu Zissulescu  <claziss@synopsys.com>
 
 	* config/tc-arc.c (arc_common): Removed.
 	(arc_lcomm_internal): New function.
@@ -11,7 +17,7 @@
 	* doc/c-arc.texi (.lcomm): Document.
 	(.lcommon): Likewise.
 
-2015-03-26 Claudiu Zissulescu <claziss@synopsys.com>
+2015-03-26  Claudiu Zissulescu  <claziss@synopsys.com>
 
 	* config/tc-arc.c (arc_get_sda_reloc): Generate
 	BFD_RELOC_ARC_SDA16_ST2.  (md_apply_fix)
