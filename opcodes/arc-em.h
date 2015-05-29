@@ -770,6 +770,8 @@
 { (unsigned char *) "mov_s %Œ,%€",                           0xF804, 0x4000, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* mov_s    g,limm      	0100 0ggg 110G G011  */
 { (unsigned char *) "mov_s%Q %Œ,%L",                         0xF8E7, 0x40C3, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* mov_s    g,limm@sda      	0100 0ggg 110G G011  */
+{ (unsigned char *) "mov_s%Q %Œ,%[L",                         0xF8E7, 0x40C3, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* mov_s    0,h         	0100 0110 hhh1 10HH  */
 { (unsigned char *) "mov_s 0,%€",                            0xFF1C, 0x4618, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* mov_s    0,limm      	0100 0110 1101 1011  */
