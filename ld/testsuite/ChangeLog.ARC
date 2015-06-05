@@ -1,3 +1,9 @@
+2015-06-06  Andrew Burgess  <andrew.burgess@embecosm.com>
+
+	* ld-arc/unaligned-pc32.d: New file.
+	* ld-arc/unaligned-pc32.s: New file.
+	* ld-arc/arc.exp: Run new test.
+
 2014-09-12  Andrew Burgess  <andrew.burgess@embecosm.com>
 
 	* ld-arc/arc.exp: New file.
