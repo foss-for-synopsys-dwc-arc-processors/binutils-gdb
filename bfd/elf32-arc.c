@@ -3155,9 +3155,15 @@ elf_arc_relocate_section (bfd *output_bfd,
       BFD_DEBUG_PIC(fprintf(stderr,"addend = 0x%x\n",rel->r_addend));
 
       if (r_type == R_ARC_32_PCREL)
-	relocation -= ((input_section->output_section->vma + input_section->output_offset + rel->r_offset) - offset_in_insn );
-      else if (r_type==R_ARC_PLT32 || r_type==R_ARC_GOTPC || r_type==R_ARC_GOTPC32
-	       || r_type == R_ARC_TLS_IE_GOT || r_type == R_ARC_TLS_GD_GOT
+	relocation -= (input_section->output_section->vma
+		       + input_section->output_offset
+		       + rel->r_offset
+                       - offset_in_insn);
+      else if (r_type==R_ARC_PLT32
+               || r_type==R_ARC_GOTPC
+               || r_type==R_ARC_GOTPC32
+	       || r_type == R_ARC_TLS_IE_GOT
+               || r_type == R_ARC_TLS_GD_GOT
 	       || howto->pc_relative
 	       || r_type == R_ARC_S21W_PCREL_PLT
 	       || r_type == R_ARC_S25H_PCREL_PLT
@@ -3166,9 +3172,10 @@ elf_arc_relocate_section (bfd *output_bfd,
 	{
 	  /* For branches we need to find the offset from pcl rounded
 	     down to 4 byte boundary.Hence the (& ~3) */
-	  relocation -= (((input_section->output_section->vma +
-			   input_section->output_offset + rel->r_offset) & ~3)
-			 - offset_in_insn );
+	  relocation -= (((input_section->output_section->vma
+			   + input_section->output_offset
+			   + rel->r_offset) & ~3)
+			 - offset_in_insn);
 	}
 
       BFD_DEBUG_PIC(fprintf(stderr, "relocation AFTER the pc relative handling = %d[0x%x]\n", relocation, relocation));

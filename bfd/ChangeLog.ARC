@@ -1,3 +1,8 @@
+2015-06-05  Andrew Burgess  <andrew.burgess@embecosm.com>
+
+	* elf32-arc.c (elf_arc_relocate_section): Clean up whitespace and
+	indentation.
+
 2015-04-15  Claudiu Zissulescu  <claziss@synopsys.com>
 
 	* elf32-arc.c (arc_elf_merge_private_bfd_data): Don't bail out
