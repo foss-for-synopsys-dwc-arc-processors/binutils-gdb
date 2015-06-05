@@ -341,7 +341,7 @@ The frame pointer and a synonym for @code{r27}.
 @item sp
 @cindex stack pointer, ARC
 @cindex ARC stack pointer
-The stack pointer and a synonym for @code{28}.
+The stack pointer and a synonym for @code{r28}.
 
 @item ilink1
 @cindex level 1 interrupt link register, ARC
