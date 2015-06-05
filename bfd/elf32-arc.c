@@ -2484,6 +2484,37 @@ elf_arc_check_relocs (bfd *abfd,
   return TRUE;
 }
 
+/* Return the byte alignment for a relocation of type R_TYPE and
+   PC_RELATIVE in section INPUT_SECTION.  The returned value should be at
+   least 1, indicating any byte alignment is acceptable, otherwise it
+   should be the byte alignment number, so 4 indicates alignment to 4
+   bytes.  */
+
+static bfd_vma
+arc_relocation_byte_alignment (asection *input_section,
+                               enum elf_arc_reloc_type r_type,
+                               bfd_boolean pc_relative)
+{
+  BFD_ASSERT (input_section != NULL);
+
+  if (r_type == R_ARC_32)
+    return 1;
+  else if (r_type==R_ARC_PLT32
+           || r_type==R_ARC_GOTPC
+           || r_type==R_ARC_GOTPC32
+           || r_type == R_ARC_TLS_IE_GOT
+           || r_type == R_ARC_TLS_GD_GOT
+           || r_type == R_ARC_S21W_PCREL_PLT
+           || r_type == R_ARC_S25H_PCREL_PLT
+           || r_type == R_ARC_S25W_PCREL_PLT
+           || r_type == R_ARC_S21H_PCREL_PLT)
+    return 4;
+  else if (pc_relative
+           && (input_section->flags & SEC_CODE) != 0)
+    return 4;
+  else
+    return 1;
+}
 
 /* Relocate an arc ELF section.  */
 /* Function : elf_arc_relocate_section
@@ -2544,6 +2575,7 @@ elf_arc_relocate_section (bfd *output_bfd,
       bfd_vma relocation;
       bfd_reloc_status_type r;
       bfd_boolean symbol_defined = TRUE;
+      bfd_vma byte_alignment;
 
       /* Distance of the relocation slot in the insn .This value is used for
 	 handling relative relocations. */
@@ -3154,29 +3186,27 @@ elf_arc_relocate_section (bfd *output_bfd,
 
       BFD_DEBUG_PIC(fprintf(stderr,"addend = 0x%x\n",rel->r_addend));
 
-      if (r_type == R_ARC_32_PCREL)
-	relocation -= (input_section->output_section->vma
-		       + input_section->output_offset
-		       + rel->r_offset
+      /* Some pc-relative relocations patch the relocation assuming a pc
+         value rounded down to a particular byte boundary.  */
+      byte_alignment =
+        arc_relocation_byte_alignment (input_section, r_type,
+                                       howto->pc_relative);
+      BFD_ASSERT (byte_alignment >= 1);
+      /* In the following `if` check, it should be enough to check that the
+         relocation is pc-relative.  However, not all of the relocations
+         that need to be handled here are correctly marked as pc-relative
+         in their howto structure.  Due to an upcoming deadline (June 2015)
+         and the possible risk of changing several relocations to be
+         pc-relative I have added in the additional check of BYTE_ALIGNMENT
+         here, however, this should be considered a temporary hack.  At
+         some point in the near future we should correctly mark the
+         required relocations as pc-relative and remove the extra check of
+         BYTE_ALIGNMENT here.  */
+      if (howto->pc_relative || byte_alignment > 1)
+        relocation -= (((input_section->output_section->vma
+                         + input_section->output_offset
+                         + rel->r_offset) & ~(byte_alignment - 1))
                        - offset_in_insn);
-      else if (r_type==R_ARC_PLT32
-               || r_type==R_ARC_GOTPC
-               || r_type==R_ARC_GOTPC32
-	       || r_type == R_ARC_TLS_IE_GOT
-               || r_type == R_ARC_TLS_GD_GOT
-	       || howto->pc_relative
-	       || r_type == R_ARC_S21W_PCREL_PLT
-	       || r_type == R_ARC_S25H_PCREL_PLT
-	       || r_type == R_ARC_S25W_PCREL_PLT
-	       || r_type == R_ARC_S21H_PCREL_PLT)
-	{
-	  /* For branches we need to find the offset from pcl rounded
-	     down to 4 byte boundary.Hence the (& ~3) */
-	  relocation -= (((input_section->output_section->vma
-			   + input_section->output_offset
-			   + rel->r_offset) & ~3)
-			 - offset_in_insn);
-	}
 
       BFD_DEBUG_PIC(fprintf(stderr, "relocation AFTER the pc relative handling = %d[0x%x]\n", relocation, relocation));
 

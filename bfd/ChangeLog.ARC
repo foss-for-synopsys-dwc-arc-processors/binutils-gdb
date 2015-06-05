@@ -1,3 +1,8 @@
+2015-06-08  Andrew Burgess  <andrew.burgess@embecosm.com>
+
+	* elf32-arc.c (arc_relocation_byte_alignment): New function.
+	(elf_arc_relocate_section): Use new function.
+
 2015-06-05  Andrew Burgess  <andrew.burgess@embecosm.com>
 
 	* elf32-arc.c (elf_arc_relocate_section): Clean up whitespace and
