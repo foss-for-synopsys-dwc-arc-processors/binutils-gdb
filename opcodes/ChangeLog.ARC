@@ -1,3 +1,7 @@
+2015-06-12  Claudiu Zissulescu  <claziss@synopsys.com>
+
+	* arc-opc-old.c (arc_opcodes): New mnemonic suited for sda.
+
 2015-05-29  Claudiu Zissulescu  <claziss@synopsys.com>
 
 	* arc-opc-old.c (ac_sdasym_limm_p): New function.

@@ -3814,6 +3814,8 @@ static struct arc_opcode arc_opcodes[] = {
   { (unsigned char *) "mov_s %b,%J", 0xf800, 0xd800, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 /* mov_s b,limm;                01110 bbb 110 01 111 [L] */
   { (unsigned char *) "mov_s%Q %b,%L", 0xf8ff, 0x70cf, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
+/* mov_s b,limm@sda;            01110 bbb 110 01 111 [L] */
+  { (unsigned char *) "mov_s%Q %b,%[L", 0xf8ff, 0x70cf, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 /* mov_s h,b;                   01110 bbb hhh 11 hhh */
   { (unsigned char *) "mov_s %U,%b", 0xf818, 0x7018, ARCOMPACT & (~ARC_MACH_ARCV2), 0, 0 ,0,0},
 /* mov_s 0,b;                   01110 bbb 110 11 111 */
