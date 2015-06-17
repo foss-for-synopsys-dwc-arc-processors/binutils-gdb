@@ -1027,7 +1027,7 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 		  else
 		    {
 		       if (BITS(state->words[0],12,13))
-			 instrName = "dysnc";
+			 instrName = "dsync";
 		       else
 			 instrName = "swi";
                     }
