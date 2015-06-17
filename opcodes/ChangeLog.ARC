@@ -1,3 +1,7 @@
+2015-06-17 Vineet Gupta <vgupta@synopsys.com>
+
+	* arcompact-dis.c: Fix wrong mnemonic for DSYNC
+
 2015-06-12  Claudiu Zissulescu  <claziss@synopsys.com>
 
 	* arc-opc-old.c (arc_opcodes): New mnemonic suited for sda.
