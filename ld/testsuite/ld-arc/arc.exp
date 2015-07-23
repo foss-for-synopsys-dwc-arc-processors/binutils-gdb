@@ -47,3 +47,4 @@ if {[check_shared_lib_support]} {
 
 run_dump_test "sda_relocs"
 run_dump_test "unaligned-pc32"
+run_dump_test "tls-data-sections"

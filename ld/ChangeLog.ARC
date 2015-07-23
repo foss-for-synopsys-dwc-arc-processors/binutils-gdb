@@ -1,3 +1,7 @@
+2015-07-23  Andrew Burgess  <andrew.burgess@embecosm.com>
+
+	* scripttempl/arclinux.sc (.tdata): Provide the .tdata symbol.
+
 2015-03-26: Claudiu Zissulescu <claziss@synopsys.com>
 
 	* testsuite/ld-arc/sda_relocs.d: New file.

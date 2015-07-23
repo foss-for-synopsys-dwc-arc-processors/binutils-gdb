@@ -1,3 +1,9 @@
+2015-07-23  Andrew Burgess  <andrew.burgess@embecosm.com>
+
+	* ld/testsuite/ld-arc/arc.exp: Run new test.
+	* ld/testsuite/ld-arc/tls-data-sections.d: New file.
+	* ld/testsuite/ld-arc/tls-data-sections.s: New file.
+
 2015-06-06  Andrew Burgess  <andrew.burgess@embecosm.com>
 
 	* ld-arc/unaligned-pc32.d: New file.
