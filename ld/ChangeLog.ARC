@@ -1,8 +1,12 @@
+2015-07-28  Claudiu Zissulescu  <claziss@synopsys.com>
+
+	* scripttempl/arclinux.sc (.tbss): Provide the .tbss symbol.
+
 2015-07-23  Andrew Burgess  <andrew.burgess@embecosm.com>
 
 	* scripttempl/arclinux.sc (.tdata): Provide the .tdata symbol.
 
-2015-03-26: Claudiu Zissulescu <claziss@synopsys.com>
+2015-03-26  Claudiu Zissulescu <claziss@synopsys.com>
 
 	* testsuite/ld-arc/sda_relocs.d: New file.
 	* testsuite/ld-arc/sda_relocs.ld: Likewise.
@@ -13,21 +17,21 @@
 	* scripttempl/arclinux.sc: PROVIDE_HIDDEN .tdata (in case the
 	section won't be included).
 
-2014-12-17: Claudiu Zissulescu <claziss@synopsys.com>
+2014-12-17  Claudiu Zissulescu  <claziss@synopsys.com>
 
 	* scripttempl/elfarcv2.sc: Update .startup section.
 
-2014-12-08: Claudiu Zissulescu <claziss@synopsys.com>
+2014-12-08  Claudiu Zissulescu  <claziss@synopsys.com>
 
 	* emulparams/arcv2elf.sh :Add discarded sections.
 	* emulparams/arcv2elfb.sh: Likewise
 	* scripttempl/elfarcv2.sc: New sections.
 
-2014-12-01: Claudiu Zissulescu <claziss@synopsys.com>
+2014-12-01  Claudiu Zissulescu  <claziss@synopsys.com>
 
 	* scripttempl/elfarcv2.sc: Align the start of the stack.
 
-2014-11-27: Claudiu Zissulescu <claziss@synopsys.com>
+2014-11-27  Claudiu Zissulescu  <claziss@synopsys.com>
 
 	* Makefile.am: Add two new emulation scripts for ARCv2.
 	* configure.tgt: Likewise.

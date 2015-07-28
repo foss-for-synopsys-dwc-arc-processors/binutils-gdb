@@ -327,7 +327,7 @@ cat <<EOF
   /* TLS local dynamic uses .tdata as a reference point.  */
   ${RELOCATING+${CREATE_SHLIB+PROVIDE_HIDDEN (.tdata = .);}}
   .tdata	${RELOCATING-0} : { PROVIDE_HIDDEN(.tdata = .); *(.tdata${RELOCATING+ .tdata.* .gnu.linkonce.td.*}) }
-  .tbss		${RELOCATING-0} : { *(.tbss${RELOCATING+ .tbss.* .gnu.linkonce.tb.*})${RELOCATING+ *(.tcommon)} }
+  .tbss		${RELOCATING-0} : { PROVIDE_HIDDEN(.tbss = .); *(.tbss${RELOCATING+ .tbss.* .gnu.linkonce.tb.*})${RELOCATING+ *(.tcommon)} }
   .eh_frame     ${RELOCATING-0} : { KEEP (*(.eh_frame)) }
   .gcc_except_table ${RELOCATING-0} : { *(.gcc_except_table) }
   ${WRITABLE_RODATA+${RODATA}}
