@@ -3117,17 +3117,18 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
       if (fieldCisReg) state->ea_reg2 = fieldC; else state->_offset += fieldC;
       state->_mem_load = 1;
 
-      directMem     = BIT(state->words[0],15);
       if(FIELDA(state->words[0]) == 62)
        {
-	 if (directMem)
+	int d = BIT(state->words[0],15);
+	int x = BIT(state->words[0],16);
+
+	if (d && !x)
 	   {
 	     instrName = "prefetchw";
-	     directMem = 0;
 	   }
-	 else if (BITS (state->words[0], 17, 21) == 25)
-	   instrName = "prefetch.l2";
-	 else
+	else if (!d && x)
+	   instrName = "prealloc";
+	else if (!d && !x)
 	   instrName = "prefetch";
 	}
 

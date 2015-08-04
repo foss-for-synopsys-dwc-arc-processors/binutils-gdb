@@ -1,3 +1,8 @@
+2015-08-04 Vineet Gupta <vgupta@synopsys.com>
+
+	* arcompact-dis.c (dsmOneArcInst): Fix decoding of prealloc.
+	Remove prefetch.l2 which was long removed
+
 2015-06-17 Vineet Gupta <vgupta@synopsys.com>
 
 	* arcompact-dis.c: Fix wrong mnemonic for DSYNC
