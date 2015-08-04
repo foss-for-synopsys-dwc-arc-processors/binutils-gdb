@@ -1,3 +1,12 @@
+2015-08-04  Claudiu Zissulescu  <claziss@synopsys.com>
+
+	* elf32-arc.c (arc_elf_merge_private_bfd_data): Check to see
+        if the input BFD actually contains any sections.  If not, its
+        flags may not have been initialised either, but it cannot
+        actually cause any incompatiblity.  Do not short-circuit
+        dynamic objects; their section list may be emptied by
+        elf_link_add_object_symbols.
+
 2015-06-08  Andrew Burgess  <andrew.burgess@embecosm.com>
 
 	* elf32-arc.c (arc_relocation_byte_alignment): New function.
