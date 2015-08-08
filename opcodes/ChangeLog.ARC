@@ -1,3 +1,7 @@
+2015-08-08 Vineet Gupta <vgupta@synopsys.com>
+
+	* arcompact-dis.c (dsmOneArcInst): Handle LLOCKD,SCONDD
+
 2015-08-04 Vineet Gupta <vgupta@synopsys.com>
 
 	* arcompact-dis.c (dsmOneArcInst): Fix decoding of prealloc.
