@@ -1014,6 +1014,8 @@ dsmOneArcInst (bfd_vma addr, struct arcDisState *state, disassemble_info * info)
 	      /* START ARC LOCAL */
 	    case 16: instrName = "llock"; decodingClass = 34; break;
 	    case 17: instrName = "scond"; decodingClass = 34; break;
+	    case 18: instrName = "llockd"; decodingClass = 34; break;
+	    case 19: instrName = "scondd"; decodingClass = 34; break;
 	      /* END ARC LOCAL */
 
 	    case 63:
