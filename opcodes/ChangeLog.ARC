@@ -1,3 +1,7 @@
+2015-08-11 Vineet Gupta <vgupta@synopsys.com>
+
+	* arc-em.h: Handle LLOCKD,SCONDD
+
 2015-08-08 Vineet Gupta <vgupta@synopsys.com>
 
 	* arcompact-dis.c (dsmOneArcInst): Handle LLOCKD,SCONDD
