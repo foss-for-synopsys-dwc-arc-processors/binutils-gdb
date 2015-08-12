@@ -1114,10 +1114,10 @@
 /*LLOCKD */
 /* LLOCKD<.di> b,[c]    0010 0bbb 0010 1111 DBBB CCCC CC01 0010 */
 { (unsigned char *) "llockd%.V %B,[%C]",                       0xF8FF003F, 0x202F0012, ARC_MACH_ARCV2, 0, 0, 0, 0},
+/* LLOCKD<.di> b,[u6]   0010 0bbb 0110 1111 DBBB uuuu uu01 0010 */
+{ (unsigned char *) "llockd%.V %B,[%u]",                       0xF8FF003F, 0x206F0012, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* LLOCKD<.di> b,[limm] 0010 0bbb 0010 1111 DBBB 1111 1001 0010 */
 { (unsigned char *) "llockd%.V%Q %B,[%L]",                     0xF8FF0FFF, 0x202F0F92, ARC_MACH_ARCV2, 0, 0, 0, 0},
-/* LLOCKD<.di> b,[u6]   0010 0bbb 0110 1111 DBBB uuuu uu01 0010 */
-{ (unsigned char *) "llockd%.V B,[%u]",                        0xF8FF003F, 0x262F0012, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* LLOCKD<.di> 0,[c]    0010 0110 0010 1111 D111 CCCC CC01 0010 */
 { (unsigned char *) "llockd%.V 0,[%C]",                        0xFFFF703F, 0x262F7012, ARC_MACH_ARCV2, 0, 0, 0, 0},
 /* LLOCKD<.di> 0,[limm] 0010 0110 0010 1111 D111 1111 1001 00108 */

@@ -1,3 +1,7 @@
+2015-08-12  Claudiu Zissulescu  <claziss@synopsys.com>
+
+	* arc-em.h: Fix LLOCKD encodings
+
 2015-08-11 Vineet Gupta <vgupta@synopsys.com>
 
 	* arc-em.h: Handle LLOCKD,SCONDD
