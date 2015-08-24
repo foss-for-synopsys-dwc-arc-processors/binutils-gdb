@@ -1,3 +1,11 @@
+2015-03-29  Mike Frysinger  <vapier@gentoo.org>
+
+	Cherry pick commit 92fc6153a6fdf2a027d9780f5945712aafad4a9e from
+	upstream.
+	* sim-arange.h (SIM_ARANGE_INLINE): Move above sim_addr_range_hit_p.
+	(sim_addr_range_hit_p): Change INLINE to SIM_ARANGE_INLINE.
+	* sim-inline.h (INLINE2): Define to gnu_inline when available.
+
 2013-03-17  Joern Rennecke  <joern.rennecke@embecosm.com>
 
 	* cgen-trace.c: Merge from;
