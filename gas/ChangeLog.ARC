@@ -1,3 +1,8 @@
+2015-08-28  Andrew Burgess  <andrew.burgess@embecosm.com>
+
+        * config/tc-arc.c (arc_extra_reloc): Extend comment.  Change size
+	of relocation to 0 bytes.
+
 2015-05-29  Claudiu Zissulescu  <claziss@synopsys.com>
 
 	* config/tc-arc.c (arc_get_sda_reloc): Default return
