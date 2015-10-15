@@ -1,0 +1,15 @@
+
+.*:     file format .*
+
+
+Disassembly of section .plt:
+
+0000024c <.plt>:
+ 24c:	30 27 8b 7f 00 00 d0 20 	ld         r11,\[pcl,0x20d0\]
+ 254:	30 27 8a 7f 00 00 cc 20 	ld         r10,\[pcl,0x20cc\]
+ 25c:	20 20 80 02             	j          \[r10\]
+ 260:	18 23 00 00             	sub2       r0,r3,r0
+	...
+ 26c:	30 27 8c 7f 00 00 b8 20 	ld         r12,\[pcl,0x20b8\]
+ 274:	21 20 00 03             	j.d        \[r12\]
+ 278:	0a 24 c0 1f             	mov        r12,pcl

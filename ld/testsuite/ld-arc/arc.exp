@@ -26,20 +26,53 @@ if {![istarget "arc*-*-*"]} {
     return
 }
 
+# List contains test-items with 3 items followed by 2 lists:
+# 0:name 1:ld options 2:assembler options
+# 3:filenames of assembler files 4: action and options. 5: name of output file
+
+# Actions:
+# objdump: Apply objdump options on result.  Compare with regex (last arg).
+# nm: Apply nm options on result.  Compare with regex (last arg).
+# readelf: Apply readelf options on result.  Compare with regex (last arg).
 
 if {[check_shared_lib_support]} {
     # Create an empty shared library that can be linked into
     # some of these tests.
-    run_ld_link_tests [list \
-	[list \
-	    "Build ARC700 (EA) dummy shared library" \
-	    "-shared" \
-	    "-mARC700 -mEA" \
-	    { dummy-lib.s } \
-	    {} \
-	    "libdummy.so.0" \
-	] \
-    ]
+    set arcshared_tests {
+	{ "Build ARC700 (EA) dummy shared library"
+	    "-shared" "-mARC700 -mEA" {dummy-lib.s}
+	    {}
+	    "libdummy.so.0" }
+	{ "Indirect cross-library function reference (set-up)"
+	    "-shared" "-mcpu=archs" {arc-lib-plt-2a.s}
+	    {}
+	    "arc-lib-plt-2a.so"}
+	{ "Indirect cross-library function reference"
+	    "-shared tmpdir/arc-lib-plt-2a.so" "-mcpu=archs" {arc-lib-plt-2b.s}
+	    {{objdump -dr arc-lib-plt-2.dd} {readelf --relocs arc-lib-plt-2.rd}}
+	    "arc-lib-plt-2b.so" }
+	{"arc-rel32" "-shared -T arc-dyn.ld" "-mcpu=archs" {arc-rel32.s}
+	    {{objdump -Rsj.data arc-rel32.d}}
+	    "arc-rel32"}
+	{"GOT relocations in executables (setup)" "-shared"
+	    "-mcpu=archs" {exec-got-1a.s}
+	    {}
+	    "exec-got-1.so"}
+	{"GOT relocations in executables" "tmpdir/exec-got-1.so"
+	    "-mcpu=archs" {exec-got-1b.s}
+	    {{readelf --relocs exec-got-1.d}}
+	    "exec-got-1"}
+	{"Simple non-PIC shared library (no PLT check)" "-shared" "-mcpu=archs" {arc-lib.s}
+	    {{objdump -Rw arc-lib.r}}
+	    "arc-lib.so"}
+	{"TLS shared library" "-shared -marclinux -q" "-mcpu=archs" {tls-lib.s}
+	    {{objdump -fdw tls-lib.d} {objdump -Rw tls-lib.r}}
+	    "tls-lib.so"}
+    }
+
+    run_ld_link_tests $arcshared_tests
+
+    #Other tests
     run_dump_test "gc-sections1"
     run_dump_test "gotpc1"
     run_dump_test "gotpc2"
