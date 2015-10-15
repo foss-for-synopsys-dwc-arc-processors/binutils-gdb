@@ -1,3 +1,7 @@
+2015-10-15  Claudiu Zissulescu  <claziss@synopsys.com>
+
+	* testsuite/ld-arc/tls-data-sections.d: Add arclinux emulation.
+
 2015-07-28  Claudiu Zissulescu  <claziss@synopsys.com>
 
 	* scripttempl/arclinux.sc (.tbss): Provide the .tbss symbol.

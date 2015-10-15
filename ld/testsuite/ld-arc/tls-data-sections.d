@@ -1,5 +1,5 @@
 #source: tls-data-sections.s
-#ld: --entry=main
+#ld: --entry=main -marclinux
 #objdump: -rd
 
 
