@@ -1,3 +1,22 @@
+2015-10-15  Claudiu Zissulescu <claziss@synopsys.com>
+
+	* ld-arc/arc.exp: Add new tests.
+	* ld-arc/arc-dyn.ld: New file.
+	* ld-arc/arc-lib-plt-2.dd: Likewise.
+	* ld-arc/arc-lib-plt-2.rd: Likewise.
+	* ld-arc/arc-lib-plt-2a.s: Likewise.
+	* ld-arc/arc-lib-plt-2b.s: Likewise.
+	* ld-arc/arc-lib.r: Likewise.
+	* ld-arc/arc-lib.s: Likewise.
+	* ld-arc/arc-rel32.d: Likewise.
+	* ld-arc/arc-rel32.s: Likewise.
+	* ld-arc/exec-got-1.d: Likewise.
+	* ld-arc/exec-got-1a.s: Likewise.
+	* ld-arc/exec-got-1b.s: Likewise.
+	* ld-arc/tls-lib.d: Likewise.
+	* ld-arc/tls-lib.r: Likewise.
+	* ld-arc/tls-lib.s: Likewise.
+
 2015-07-23  Andrew Burgess  <andrew.burgess@embecosm.com>
 
 	* ld/testsuite/ld-arc/arc.exp: Run new test.
