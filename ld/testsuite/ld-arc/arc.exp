@@ -1,4 +1,4 @@
-#   Copyright (C) 2014 Free Software Foundation
+#   Copyright (C) 2015 Free Software Foundation
 #
 # This file is part of the GNU Binutils.
 #
@@ -77,6 +77,27 @@ if {[check_shared_lib_support]} {
     run_dump_test "gotpc1"
     run_dump_test "gotpc2"
 }
+
+set arccommon_tests {
+    { "Linking against an empty archive"
+	"-r -lempty" "-mcpu=archs" {only-data.s}
+	{{objdump -f empty-lib.dd}}
+	"empty-lib.o"}
+    { "Linking against an empty archive and data only object (set-up)"
+	"-r -lempty" "" {}
+	{}
+	"empty-lib-1.o"}
+    { "Linking against an empty archive and data only object (take 1)"
+	"-r tmpdir/empty-lib.o tmpdir/empty-lib-1.o" "" {}
+	{{objdump -f empty-lib.dd}}
+	"empty-lib-2.o"}
+    { "Linking against an empty archive and data only object (take 2)"
+	"-r tmpdir/empty-lib-1.o tmpdir/empty-lib.o" "" {}
+	{{objdump -f empty-lib.dd}}
+	"empty-lib-3.o"}
+}
+
+run_ld_link_tests $arccommon_tests
 
 run_dump_test "sda_relocs"
 run_dump_test "unaligned-pc32"

@@ -1,0 +1,6 @@
+
+.*:     file format .*
+architecture: ARCv2, flags 0x00000011:
+HAS_RELOC, HAS_SYMS
+start address .*
+
