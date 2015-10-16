@@ -1,3 +1,8 @@
+2015-10-16  Claudiu Zissulescu  <claziss@synopsys.com>
+
+	* elf32-arc.c (arc_elf_merge_private_bfd_data): Check the entire
+	object if only contains data sections.
+
 2015-08-04  Claudiu Zissulescu  <claziss@synopsys.com>
 
 	* elf32-arc.c (arc_elf_merge_private_bfd_data): Check to see
