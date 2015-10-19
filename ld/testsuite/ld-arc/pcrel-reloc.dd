@@ -1,0 +1,17 @@
+
+.*:     file format .*
+
+
+Disassembly of section .text:
+
+00010054 <.text>:
+   10054:	00 00 04 00.*
+
+
+Disassembly of section .data:
+
+00010058 <__SDATA_BEGIN__>:
+   10058:	fc ff.*
+
+   1005a:	ff ff.*
+

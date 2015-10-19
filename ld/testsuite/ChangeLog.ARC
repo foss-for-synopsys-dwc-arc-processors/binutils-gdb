@@ -1,10 +1,18 @@
+2015-10-19  Claudiu Zissulescu <claziss@synopsys.com>
+
+	* ld-arc/arc.exp: Add 32 bit pc-relative test.
+	* ld-arc/pcrel-reloc.dd: New file.
+	* ld-arc/pcrel-reloc.ld: Likewise.
+	* ld-arc/pcrel-reloc.rd: Likewise.
+	* ld-arc/pcrel-reloc.s: Likewise.
+
 2015-10-16  Claudiu Zissulescu <claziss@synopsys.com>
 
 	* ld-arc/arc.exp: Add new tests.
 	* ld-arc/libempty.a: New file.
 	* ld-arc/only-data.s: Likewise.
 	* ld-arc/empty-lib.dd: Likewise.
-	
+
 2015-10-15  Claudiu Zissulescu <claziss@synopsys.com>
 
 	* ld-arc/arc.exp: Add new tests.

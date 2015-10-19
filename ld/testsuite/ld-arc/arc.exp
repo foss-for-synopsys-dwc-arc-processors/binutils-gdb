@@ -95,6 +95,10 @@ set arccommon_tests {
 	"-r tmpdir/empty-lib-1.o tmpdir/empty-lib.o" "" {}
 	{{objdump -f empty-lib.dd}}
 	"empty-lib-3.o"}
+    { "Test text/data 32 bit pc-relative relocs"
+	"-q -T pcrel-reloc.ld" "-mcpu=archs" {pcrel-reloc.s}
+	{{objdump -D pcrel-reloc.dd} {readelf --relocs pcrel-reloc.rd}}
+	"pcrel-reloc"}
 }
 
 run_ld_link_tests $arccommon_tests
