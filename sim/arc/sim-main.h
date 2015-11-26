@@ -5,9 +5,6 @@
 #ifndef SIM_MAIN_H
 #define SIM_MAIN_H
 
-struct _sim_cpu; /* FIXME: should be in sim-basics.h */
-typedef struct _sim_cpu SIM_CPU;
-
 #include "symcat.h"
 #include "sim-basics.h"
 #include "cgen-types.h"
