@@ -51,7 +51,6 @@ SIM_OBJS = \
 	sim-watch.o \
 	\
 	$(SIM_HW_OBJS) \
-	sim-cpu.o \
 	sim-hload.o \
 	sim-hrw.o \
 	sim-model.o \
