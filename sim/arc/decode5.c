@@ -9861,7 +9861,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
 
 
   /* Record the fields for the semantic handler.  */
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_empty", (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_empty", (char *) 0));
 
 #undef FLD
     return idesc;
@@ -9881,7 +9881,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_cond_i2) = f_cond_i2;
   FLD (i_label10) = f_rel10;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_b_s", "f_cond_i2 0x%x", 'x', f_cond_i2, "label10 0x%x", 'x', f_rel10, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_b_s", "f_cond_i2 0x%x", 'x', f_cond_i2, "label10 0x%x", 'x', f_rel10, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -9907,7 +9907,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_cond_i3) = f_cond_i3;
   FLD (i_label7) = f_rel7;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_bcc_s", "f_cond_i3 0x%x", 'x', f_cond_i3, "label7 0x%x", 'x', f_rel7, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_bcc_s", "f_cond_i3 0x%x", 'x', f_cond_i3, "label7 0x%x", 'x', f_rel7, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -9936,7 +9936,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op__b) = f_op__b;
   FLD (f_brscond) = f_brscond;
   FLD (i_label8) = f_rel8;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_brcc_s", "f_op__b 0x%x", 'x', f_op__b, "f_brscond 0x%x", 'x', f_brscond, "label8 0x%x", 'x', f_rel8, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_brcc_s", "f_op__b 0x%x", 'x', f_op__b, "f_brscond 0x%x", 'x', f_brscond, "label8 0x%x", 'x', f_rel8, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -9968,7 +9968,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_cond_Q) = f_cond_Q;
   FLD (i_label21) = f_rel21;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_bcc_l", "f_cond_Q 0x%x", 'x', f_cond_Q, "label21 0x%x", 'x', f_rel21, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_bcc_l", "f_cond_Q 0x%x", 'x', f_cond_Q, "label21 0x%x", 'x', f_rel21, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -9999,7 +9999,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
 
   /* Record the fields for the semantic handler.  */
   FLD (i_label25) = f_rel25;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_b_l", "label25 0x%x", 'x', f_rel25, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_b_l", "label25 0x%x", 'x', f_rel25, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -10043,7 +10043,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_C) = f_op_C;
   FLD (f_brcond) = f_brcond;
   FLD (i_label9) = f_rel9;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_brcc_RC", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_brcond 0x%x", 'x', f_brcond, "label9 0x%x", 'x', f_rel9, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_brcc_RC", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_brcond 0x%x", 'x', f_brcond, "label9 0x%x", 'x', f_rel9, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -10087,7 +10087,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_brcond) = f_brcond;
   FLD (f_u6) = f_u6;
   FLD (i_label9) = f_rel9;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_brcc_U6", "f_op_B 0x%x", 'x', f_op_B, "f_brcond 0x%x", 'x', f_brcond, "f_u6 0x%x", 'x', f_u6, "label9 0x%x", 'x', f_rel9, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_brcc_U6", "f_op_B 0x%x", 'x', f_op_B, "f_brcond 0x%x", 'x', f_brcond, "f_u6 0x%x", 'x', f_u6, "label9 0x%x", 'x', f_rel9, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -10110,7 +10110,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
 
   /* Record the fields for the semantic handler.  */
   FLD (i_label13a) = f_rel13bl;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_bl_s", "label13a 0x%x", 'x', f_rel13bl, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_bl_s", "label13a 0x%x", 'x', f_rel13bl, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -10142,7 +10142,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_cond_Q) = f_cond_Q;
   FLD (i_label21a) = f_rel21bl;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_blcc", "f_cond_Q 0x%x", 'x', f_cond_Q, "label21a 0x%x", 'x', f_rel21bl, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_blcc", "f_cond_Q 0x%x", 'x', f_cond_Q, "label21a 0x%x", 'x', f_rel21bl, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -10174,7 +10174,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_cond_Q) = f_cond_Q;
   FLD (i_label21a) = f_rel21bl;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_blcc_d", "f_cond_Q 0x%x", 'x', f_cond_Q, "label21a 0x%x", 'x', f_rel21bl, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_blcc_d", "f_cond_Q 0x%x", 'x', f_cond_Q, "label21a 0x%x", 'x', f_rel21bl, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -10205,7 +10205,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
 
   /* Record the fields for the semantic handler.  */
   FLD (i_label25a) = f_rel25bl;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_bl", "label25a 0x%x", 'x', f_rel25bl, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_bl", "label25a 0x%x", 'x', f_rel25bl, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -10236,7 +10236,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
 
   /* Record the fields for the semantic handler.  */
   FLD (i_label25a) = f_rel25bl;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_bl_d", "label25a 0x%x", 'x', f_rel25bl, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_bl_d", "label25a 0x%x", 'x', f_rel25bl, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -10277,7 +10277,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_s9) = f_s9;
   FLD (f_op_A) = f_op_A;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ld_abs", "f_op_B 0x%x", 'x', f_op_B, "f_s9 0x%x", 'x', f_s9, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ld_abs", "f_op_B 0x%x", 'x', f_op_B, "f_s9 0x%x", 'x', f_s9, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -10318,7 +10318,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_s9) = f_s9;
   FLD (f_op_A) = f_op_A;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ld__AW_abs", "f_op_B 0x%x", 'x', f_op_B, "f_s9 0x%x", 'x', f_s9, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ld__AW_abs", "f_op_B 0x%x", 'x', f_op_B, "f_s9 0x%x", 'x', f_s9, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -10353,7 +10353,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
   FLD (f_op_A) = f_op_A;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ld_abc", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ld_abc", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -10388,7 +10388,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
   FLD (f_op_A) = f_op_A;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ld__AW_abc", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ld__AW_abc", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -10417,7 +10417,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op__b) = f_op__b;
   FLD (f_op__c) = f_op__c;
   FLD (f_op__a) = f_op__a;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ld_s_abc", "f_op__b 0x%x", 'x', f_op__b, "f_op__c 0x%x", 'x', f_op__c, "f_op__a 0x%x", 'x', f_op__a, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ld_s_abc", "f_op__b 0x%x", 'x', f_op__b, "f_op__c 0x%x", 'x', f_op__c, "f_op__a 0x%x", 'x', f_op__a, (char *) 0));
 
 #undef FLD
     return idesc;
@@ -10440,7 +10440,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op__b) = f_op__b;
   FLD (f_u5x4) = f_u5x4;
   FLD (f_op__c) = f_op__c;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ld_s_abu", "f_op__b 0x%x", 'x', f_op__b, "f_u5x4 0x%x", 'x', f_u5x4, "f_op__c 0x%x", 'x', f_op__c, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ld_s_abu", "f_op__b 0x%x", 'x', f_op__b, "f_u5x4 0x%x", 'x', f_u5x4, "f_op__c 0x%x", 'x', f_op__c, (char *) 0));
 
 #undef FLD
     return idesc;
@@ -10460,7 +10460,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_u5x4) = f_u5x4;
   FLD (f_op__b) = f_op__b;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ld_s_absp", "f_u5x4 0x%x", 'x', f_u5x4, "f_op__b 0x%x", 'x', f_op__b, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ld_s_absp", "f_u5x4 0x%x", 'x', f_u5x4, "f_op__b 0x%x", 'x', f_op__b, (char *) 0));
 
 #undef FLD
     return idesc;
@@ -10477,7 +10477,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
 
   /* Record the fields for the semantic handler.  */
   FLD (f_s9x4) = f_s9x4;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ld_s_gprel", "f_s9x4 0x%x", 'x', f_s9x4, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ld_s_gprel", "f_s9x4 0x%x", 'x', f_s9x4, (char *) 0));
 
 #undef FLD
     return idesc;
@@ -10497,7 +10497,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_u8x4) = f_u8x4;
   FLD (f_op__b) = f_op__b;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ld_s_pcrel", "f_u8x4 0x%x", 'x', f_u8x4, "f_op__b 0x%x", 'x', f_op__b, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ld_s_pcrel", "f_u8x4 0x%x", 'x', f_u8x4, "f_op__b 0x%x", 'x', f_op__b, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -10538,7 +10538,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_s9) = f_s9;
   FLD (f_op_A) = f_op_A;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ldb_abs", "f_op_B 0x%x", 'x', f_op_B, "f_s9 0x%x", 'x', f_s9, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ldb_abs", "f_op_B 0x%x", 'x', f_op_B, "f_s9 0x%x", 'x', f_s9, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -10579,7 +10579,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_s9) = f_s9;
   FLD (f_op_A) = f_op_A;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ldb__AW_abs", "f_op_B 0x%x", 'x', f_op_B, "f_s9 0x%x", 'x', f_s9, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ldb__AW_abs", "f_op_B 0x%x", 'x', f_op_B, "f_s9 0x%x", 'x', f_s9, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -10611,7 +10611,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_op_B) = f_op_B;
   FLD (f_op_A) = f_op_A;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ldb_as_abs", "f_op_B 0x%x", 'x', f_op_B, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ldb_as_abs", "f_op_B 0x%x", 'x', f_op_B, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -10646,7 +10646,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
   FLD (f_op_A) = f_op_A;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ldb_abc", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ldb_abc", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -10681,7 +10681,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
   FLD (f_op_A) = f_op_A;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ldb__AW_abc", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ldb__AW_abc", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -10716,7 +10716,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
   FLD (f_op_A) = f_op_A;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ldb_as_abc", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ldb_as_abc", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -10745,7 +10745,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op__b) = f_op__b;
   FLD (f_op__c) = f_op__c;
   FLD (f_op__a) = f_op__a;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ldb_s_abc", "f_op__b 0x%x", 'x', f_op__b, "f_op__c 0x%x", 'x', f_op__c, "f_op__a 0x%x", 'x', f_op__a, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ldb_s_abc", "f_op__b 0x%x", 'x', f_op__b, "f_op__c 0x%x", 'x', f_op__c, "f_op__a 0x%x", 'x', f_op__a, (char *) 0));
 
 #undef FLD
     return idesc;
@@ -10768,7 +10768,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op__b) = f_op__b;
   FLD (f_u5) = f_u5;
   FLD (f_op__c) = f_op__c;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ldb_s_abu", "f_op__b 0x%x", 'x', f_op__b, "f_u5 0x%x", 'x', f_u5, "f_op__c 0x%x", 'x', f_op__c, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ldb_s_abu", "f_op__b 0x%x", 'x', f_op__b, "f_u5 0x%x", 'x', f_u5, "f_op__c 0x%x", 'x', f_op__c, (char *) 0));
 
 #undef FLD
     return idesc;
@@ -10788,7 +10788,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_u5x4) = f_u5x4;
   FLD (f_op__b) = f_op__b;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ldb_s_absp", "f_u5x4 0x%x", 'x', f_u5x4, "f_op__b 0x%x", 'x', f_op__b, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ldb_s_absp", "f_u5x4 0x%x", 'x', f_u5x4, "f_op__b 0x%x", 'x', f_op__b, (char *) 0));
 
 #undef FLD
     return idesc;
@@ -10805,7 +10805,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
 
   /* Record the fields for the semantic handler.  */
   FLD (f_s9x1) = f_s9x1;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ldb_s_gprel", "f_s9x1 0x%x", 'x', f_s9x1, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ldb_s_gprel", "f_s9x1 0x%x", 'x', f_s9x1, (char *) 0));
 
 #undef FLD
     return idesc;
@@ -10840,7 +10840,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_s9) = f_s9;
   FLD (f_op_A) = f_op_A;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ldw_abs", "f_op_B 0x%x", 'x', f_op_B, "f_s9 0x%x", 'x', f_s9, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ldw_abs", "f_op_B 0x%x", 'x', f_op_B, "f_s9 0x%x", 'x', f_s9, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -10881,7 +10881,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_s9) = f_s9;
   FLD (f_op_A) = f_op_A;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ldw__AW_abs", "f_op_B 0x%x", 'x', f_op_B, "f_s9 0x%x", 'x', f_s9, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ldw__AW_abs", "f_op_B 0x%x", 'x', f_op_B, "f_s9 0x%x", 'x', f_s9, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -10916,7 +10916,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
   FLD (f_op_A) = f_op_A;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ldw_abc", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ldw_abc", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -10951,7 +10951,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
   FLD (f_op_A) = f_op_A;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ldw__AW_abc", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ldw__AW_abc", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -10980,7 +10980,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op__b) = f_op__b;
   FLD (f_op__c) = f_op__c;
   FLD (f_op__a) = f_op__a;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ldw_s_abc", "f_op__b 0x%x", 'x', f_op__b, "f_op__c 0x%x", 'x', f_op__c, "f_op__a 0x%x", 'x', f_op__a, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ldw_s_abc", "f_op__b 0x%x", 'x', f_op__b, "f_op__c 0x%x", 'x', f_op__c, "f_op__a 0x%x", 'x', f_op__a, (char *) 0));
 
 #undef FLD
     return idesc;
@@ -11003,7 +11003,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op__b) = f_op__b;
   FLD (f_u5x2) = f_u5x2;
   FLD (f_op__c) = f_op__c;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ldw_s_abu", "f_op__b 0x%x", 'x', f_op__b, "f_u5x2 0x%x", 'x', f_u5x2, "f_op__c 0x%x", 'x', f_op__c, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ldw_s_abu", "f_op__b 0x%x", 'x', f_op__b, "f_u5x2 0x%x", 'x', f_u5x2, "f_op__c 0x%x", 'x', f_op__c, (char *) 0));
 
 #undef FLD
     return idesc;
@@ -11020,7 +11020,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
 
   /* Record the fields for the semantic handler.  */
   FLD (f_s9x2) = f_s9x2;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ldw_s_gprel", "f_s9x2 0x%x", 'x', f_s9x2, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_ldw_s_gprel", "f_s9x2 0x%x", 'x', f_s9x2, (char *) 0));
 
 #undef FLD
     return idesc;
@@ -11055,7 +11055,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
   FLD (f_s9) = f_s9;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_st_abs", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_s9 0x%x", 'x', f_s9, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_st_abs", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_s9 0x%x", 'x', f_s9, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -11096,7 +11096,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
   FLD (f_s9) = f_s9;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_st__AW_abs", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_s9 0x%x", 'x', f_s9, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_st__AW_abs", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_s9 0x%x", 'x', f_s9, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -11125,7 +11125,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op__b) = f_op__b;
   FLD (f_op__c) = f_op__c;
   FLD (f_u5x4) = f_u5x4;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_st_s_abu", "f_op__b 0x%x", 'x', f_op__b, "f_op__c 0x%x", 'x', f_op__c, "f_u5x4 0x%x", 'x', f_u5x4, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_st_s_abu", "f_op__b 0x%x", 'x', f_op__b, "f_op__c 0x%x", 'x', f_op__c, "f_u5x4 0x%x", 'x', f_u5x4, (char *) 0));
 
 #undef FLD
     return idesc;
@@ -11145,7 +11145,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_op__b) = f_op__b;
   FLD (f_u5x4) = f_u5x4;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_st_s_absp", "f_op__b 0x%x", 'x', f_op__b, "f_u5x4 0x%x", 'x', f_u5x4, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_st_s_absp", "f_op__b 0x%x", 'x', f_op__b, "f_u5x4 0x%x", 'x', f_u5x4, (char *) 0));
 
 #undef FLD
     return idesc;
@@ -11180,7 +11180,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
   FLD (f_s9) = f_s9;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_stb_abs", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_s9 0x%x", 'x', f_s9, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_stb_abs", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_s9 0x%x", 'x', f_s9, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -11221,7 +11221,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
   FLD (f_s9) = f_s9;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_stb__AW_abs", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_s9 0x%x", 'x', f_s9, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_stb__AW_abs", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_s9 0x%x", 'x', f_s9, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -11253,7 +11253,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_stb_as_abs", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_stb_as_abs", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -11282,7 +11282,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op__b) = f_op__b;
   FLD (f_op__c) = f_op__c;
   FLD (f_u5) = f_u5;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_stb_s_abu", "f_op__b 0x%x", 'x', f_op__b, "f_op__c 0x%x", 'x', f_op__c, "f_u5 0x%x", 'x', f_u5, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_stb_s_abu", "f_op__b 0x%x", 'x', f_op__b, "f_op__c 0x%x", 'x', f_op__c, "f_u5 0x%x", 'x', f_u5, (char *) 0));
 
 #undef FLD
     return idesc;
@@ -11302,7 +11302,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_op__b) = f_op__b;
   FLD (f_u5x4) = f_u5x4;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_stb_s_absp", "f_op__b 0x%x", 'x', f_op__b, "f_u5x4 0x%x", 'x', f_u5x4, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_stb_s_absp", "f_op__b 0x%x", 'x', f_op__b, "f_u5x4 0x%x", 'x', f_u5x4, (char *) 0));
 
 #undef FLD
     return idesc;
@@ -11337,7 +11337,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
   FLD (f_s9) = f_s9;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_stw_abs", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_s9 0x%x", 'x', f_s9, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_stw_abs", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_s9 0x%x", 'x', f_s9, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -11378,7 +11378,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
   FLD (f_s9) = f_s9;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_stw__AW_abs", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_s9 0x%x", 'x', f_s9, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_stw__AW_abs", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_s9 0x%x", 'x', f_s9, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -11407,7 +11407,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op__b) = f_op__b;
   FLD (f_op__c) = f_op__c;
   FLD (f_u5x2) = f_u5x2;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_stw_s_abu", "f_op__b 0x%x", 'x', f_op__b, "f_op__c 0x%x", 'x', f_op__c, "f_u5x2 0x%x", 'x', f_u5x2, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_stw_s_abu", "f_op__b 0x%x", 'x', f_op__b, "f_op__c 0x%x", 'x', f_op__c, "f_u5x2 0x%x", 'x', f_u5x2, (char *) 0));
 
 #undef FLD
     return idesc;
@@ -11442,7 +11442,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_F) = f_F;
   FLD (f_op_B) = f_op_B;
   FLD (f_s12) = f_s12;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_add_L_s12__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_add_L_s12__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -11480,7 +11480,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_op_B) = f_op_B;
   FLD (f_u6) = f_u6;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_add_ccu6__RA_", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_add_ccu6__RA_", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -11518,7 +11518,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_u6) = f_u6;
   FLD (f_op_A) = f_op_A;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_add_L_u6__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_add_L_u6__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -11556,7 +11556,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
   FLD (f_op_A) = f_op_A;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_add_L_r_r__RA__RC", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_add_L_r_r__RA__RC", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -11594,7 +11594,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_add_cc__RA__RC", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_add_cc__RA__RC", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -11623,7 +11623,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op__b) = f_op__b;
   FLD (f_op__c) = f_op__c;
   FLD (f_op__a) = f_op__a;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_add_s_abc", "f_op__b 0x%x", 'x', f_op__b, "f_op__c 0x%x", 'x', f_op__c, "f_op__a 0x%x", 'x', f_op__a, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_add_s_abc", "f_op__b 0x%x", 'x', f_op__b, "f_op__c 0x%x", 'x', f_op__c, "f_op__a 0x%x", 'x', f_op__a, (char *) 0));
 
 #undef FLD
     return idesc;
@@ -11646,7 +11646,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op__b) = f_op__b;
   FLD (f_u3) = f_u3;
   FLD (f_op__c) = f_op__c;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_add_s_cbu3", "f_op__b 0x%x", 'x', f_op__b, "f_u3 0x%x", 'x', f_u3, "f_op__c 0x%x", 'x', f_op__c, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_add_s_cbu3", "f_op__b 0x%x", 'x', f_op__b, "f_u3 0x%x", 'x', f_u3, "f_op__c 0x%x", 'x', f_op__c, (char *) 0));
 
 #undef FLD
     return idesc;
@@ -11672,7 +11672,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_op__b) = f_op__b;
   FLD (f_op_h) = f_op_h;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_add_s_mcah", "f_op__b 0x%x", 'x', f_op__b, "f_op_h 0x%x", 'x', f_op_h, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_add_s_mcah", "f_op__b 0x%x", 'x', f_op__b, "f_op_h 0x%x", 'x', f_op_h, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -11698,7 +11698,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_u5x4) = f_u5x4;
   FLD (f_op__b) = f_op__b;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_add_s_absp", "f_u5x4 0x%x", 'x', f_u5x4, "f_op__b 0x%x", 'x', f_op__b, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_add_s_absp", "f_u5x4 0x%x", 'x', f_u5x4, "f_op__b 0x%x", 'x', f_op__b, (char *) 0));
 
 #undef FLD
     return idesc;
@@ -11715,7 +11715,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
 
   /* Record the fields for the semantic handler.  */
   FLD (f_u5x4) = f_u5x4;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_add_s_asspsp", "f_u5x4 0x%x", 'x', f_u5x4, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_add_s_asspsp", "f_u5x4 0x%x", 'x', f_u5x4, (char *) 0));
 
 #undef FLD
     return idesc;
@@ -11732,7 +11732,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
 
   /* Record the fields for the semantic handler.  */
   FLD (f_s9x4) = f_s9x4;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_add_s_gp", "f_s9x4 0x%x", 'x', f_s9x4, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_add_s_gp", "f_s9x4 0x%x", 'x', f_s9x4, (char *) 0));
 
 #undef FLD
     return idesc;
@@ -11752,7 +11752,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_op__b) = f_op__b;
   FLD (f_u7) = f_u7;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_add_s_r_u7", "f_op__b 0x%x", 'x', f_op__b, "f_u7 0x%x", 'x', f_u7, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_add_s_r_u7", "f_op__b 0x%x", 'x', f_op__b, "f_u7 0x%x", 'x', f_u7, (char *) 0));
 
 #undef FLD
     return idesc;
@@ -11787,7 +11787,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_F) = f_F;
   FLD (f_op_B) = f_op_B;
   FLD (f_s12) = f_s12;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_adc_L_s12__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_adc_L_s12__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -11825,7 +11825,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_op_B) = f_op_B;
   FLD (f_u6) = f_u6;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_adc_ccu6__RA_", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_adc_ccu6__RA_", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -11863,7 +11863,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_u6) = f_u6;
   FLD (f_op_A) = f_op_A;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_adc_L_u6__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_adc_L_u6__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -11901,7 +11901,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
   FLD (f_op_A) = f_op_A;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_adc_L_r_r__RA__RC", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_adc_L_r_r__RA__RC", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -11939,7 +11939,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_adc_cc__RA__RC", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_adc_cc__RA__RC", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -11965,7 +11965,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_op__b) = f_op__b;
   FLD (f_op__c) = f_op__c;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_I16_GO_SUB_s_go", "f_op__b 0x%x", 'x', f_op__b, "f_op__c 0x%x", 'x', f_op__c, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_I16_GO_SUB_s_go", "f_op__b 0x%x", 'x', f_op__b, "f_op__c 0x%x", 'x', f_op__c, (char *) 0));
 
 #undef FLD
     return idesc;
@@ -11982,7 +11982,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
 
   /* Record the fields for the semantic handler.  */
   FLD (f_op__b) = f_op__b;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_sub_s_go_sub_ne", "f_op__b 0x%x", 'x', f_op__b, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_sub_s_go_sub_ne", "f_op__b 0x%x", 'x', f_op__b, (char *) 0));
 
 #undef FLD
     return idesc;
@@ -12002,7 +12002,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_op__b) = f_op__b;
   FLD (f_u5) = f_u5;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_sub_s_ssb", "f_op__b 0x%x", 'x', f_op__b, "f_u5 0x%x", 'x', f_u5, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_sub_s_ssb", "f_op__b 0x%x", 'x', f_op__b, "f_u5 0x%x", 'x', f_u5, (char *) 0));
 
 #undef FLD
     return idesc;
@@ -12037,7 +12037,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_F) = f_F;
   FLD (f_op_B) = f_op_B;
   FLD (f_s12) = f_s12;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_and_L_s12__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_and_L_s12__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -12075,7 +12075,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_op_B) = f_op_B;
   FLD (f_u6) = f_u6;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_and_ccu6__RA_", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_and_ccu6__RA_", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -12113,7 +12113,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_u6) = f_u6;
   FLD (f_op_A) = f_op_A;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_and_L_u6__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_and_L_u6__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -12151,7 +12151,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
   FLD (f_op_A) = f_op_A;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_and_L_r_r__RA__RC", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_and_L_r_r__RA__RC", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -12189,7 +12189,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_and_cc__RA__RC", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_and_cc__RA__RC", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -12230,7 +12230,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_F) = f_F;
   FLD (f_s12) = f_s12;
   FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mov_L_s12_", "f_F 0x%x", 'x', f_F, "f_s12 0x%x", 'x', f_s12, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mov_L_s12_", "f_F 0x%x", 'x', f_F, "f_s12 0x%x", 'x', f_s12, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
 
 #undef FLD
     return idesc;
@@ -12262,7 +12262,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_u6) = f_u6;
   FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mov_ccu6_", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mov_ccu6_", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
 
 #undef FLD
     return idesc;
@@ -12291,7 +12291,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_F) = f_F;
   FLD (f_u6) = f_u6;
   FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mov_L_u6_", "f_F 0x%x", 'x', f_F, "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mov_L_u6_", "f_F 0x%x", 'x', f_F, "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
 
 #undef FLD
     return idesc;
@@ -12320,7 +12320,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_F) = f_F;
   FLD (f_op_C) = f_op_C;
   FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mov_L_r_r__RC", "f_F 0x%x", 'x', f_F, "f_op_C 0x%x", 'x', f_op_C, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mov_L_r_r__RC", "f_F 0x%x", 'x', f_F, "f_op_C 0x%x", 'x', f_op_C, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -12358,7 +12358,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_op_C) = f_op_C;
   FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mov_cc__RC", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_C 0x%x", 'x', f_op_C, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mov_cc__RC", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_C 0x%x", 'x', f_op_C, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -12390,7 +12390,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_op_h) = f_op_h;
   FLD (f_op__b) = f_op__b;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mov_s_mcah", "f_op_h 0x%x", 'x', f_op_h, "f_op__b 0x%x", 'x', f_op__b, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mov_s_mcah", "f_op_h 0x%x", 'x', f_op_h, "f_op__b 0x%x", 'x', f_op__b, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -12422,7 +12422,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_op__b) = f_op__b;
   FLD (f_op_h) = f_op_h;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mov_s_mcahb", "f_op__b 0x%x", 'x', f_op__b, "f_op_h 0x%x", 'x', f_op_h, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mov_s_mcahb", "f_op__b 0x%x", 'x', f_op__b, "f_op_h 0x%x", 'x', f_op_h, (char *) 0));
 
 #undef FLD
     return idesc;
@@ -12442,7 +12442,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_u8) = f_u8;
   FLD (f_op__b) = f_op__b;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mov_s_r_u7", "f_u8 0x%x", 'x', f_u8, "f_op__b 0x%x", 'x', f_op__b, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mov_s_r_u7", "f_u8 0x%x", 'x', f_u8, "f_op__b 0x%x", 'x', f_op__b, (char *) 0));
 
 #undef FLD
     return idesc;
@@ -12474,7 +12474,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_op_B) = f_op_B;
   FLD (f_s12) = f_s12;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_tst_L_s12_", "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_tst_L_s12_", "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -12509,7 +12509,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_op_B) = f_op_B;
   FLD (f_u6) = f_u6;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_tst_ccu6_", "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_tst_ccu6_", "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -12541,7 +12541,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_op_B) = f_op_B;
   FLD (f_u6) = f_u6;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_tst_L_u6_", "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_tst_L_u6_", "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -12573,7 +12573,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_tst_L_r_r__RC", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_tst_L_r_r__RC", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -12608,7 +12608,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_tst_cc__RC", "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_tst_cc__RC", "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -12634,7 +12634,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_op__b) = f_op__b;
   FLD (f_op__c) = f_op__c;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_tst_s_go", "f_op__b 0x%x", 'x', f_op__b, "f_op__c 0x%x", 'x', f_op__c, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_tst_s_go", "f_op__b 0x%x", 'x', f_op__b, "f_op__c 0x%x", 'x', f_op__c, (char *) 0));
 
 #undef FLD
     return idesc;
@@ -12666,7 +12666,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_op_B) = f_op_B;
   FLD (f_s12) = f_s12;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_cmp_L_s12_", "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_cmp_L_s12_", "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -12701,7 +12701,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_op_B) = f_op_B;
   FLD (f_u6) = f_u6;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_cmp_ccu6_", "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_cmp_ccu6_", "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -12733,7 +12733,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_op_B) = f_op_B;
   FLD (f_u6) = f_u6;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_cmp_L_u6_", "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_cmp_L_u6_", "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -12765,7 +12765,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_cmp_L_r_r__RC", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_cmp_L_r_r__RC", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -12800,7 +12800,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_cmp_cc__RC", "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_cmp_cc__RC", "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -12832,7 +12832,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_op__b) = f_op__b;
   FLD (f_op_h) = f_op_h;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_cmp_s_mcah", "f_op__b 0x%x", 'x', f_op__b, "f_op_h 0x%x", 'x', f_op_h, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_cmp_s_mcah", "f_op__b 0x%x", 'x', f_op__b, "f_op_h 0x%x", 'x', f_op_h, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -12858,7 +12858,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_op__b) = f_op__b;
   FLD (f_u7) = f_u7;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_cmp_s_r_u7", "f_op__b 0x%x", 'x', f_op__b, "f_u7 0x%x", 'x', f_u7, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_cmp_s_r_u7", "f_op__b 0x%x", 'x', f_op__b, "f_u7 0x%x", 'x', f_u7, (char *) 0));
 
 #undef FLD
     return idesc;
@@ -12878,7 +12878,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_op__b) = f_op__b;
   FLD (f_u5) = f_u5;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_btst_s_ssb", "f_op__b 0x%x", 'x', f_op__b, "f_u5 0x%x", 'x', f_u5, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_btst_s_ssb", "f_op__b 0x%x", 'x', f_op__b, "f_u5 0x%x", 'x', f_u5, (char *) 0));
 
 #undef FLD
     return idesc;
@@ -12913,7 +12913,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_F) = f_F;
   FLD (f_op_B) = f_op_B;
   FLD (f_s12) = f_s12;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mpy_L_s12__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mpy_L_s12__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -12951,7 +12951,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_op_B) = f_op_B;
   FLD (f_u6) = f_u6;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mpy_ccu6__RA_", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mpy_ccu6__RA_", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -12989,7 +12989,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_u6) = f_u6;
   FLD (f_op_A) = f_op_A;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mpy_L_u6__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mpy_L_u6__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -13027,7 +13027,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
   FLD (f_op_A) = f_op_A;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mpy_L_r_r__RA__RC", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mpy_L_r_r__RA__RC", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -13065,7 +13065,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mpy_cc__RA__RC", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mpy_cc__RA__RC", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -13103,7 +13103,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_Cj) = f_op_Cj;
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_j_L_r_r___RC_noilink_", "f_F 0x%x", 'x', f_F, "f_op_Cj 0x%x", 'x', f_op_Cj, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_j_L_r_r___RC_noilink_", "f_F 0x%x", 'x', f_F, "f_op_Cj 0x%x", 'x', f_op_Cj, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -13144,7 +13144,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_Cj) = f_op_Cj;
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_j_cc___RC_noilink_", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_Cj 0x%x", 'x', f_op_Cj, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_j_cc___RC_noilink_", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_Cj 0x%x", 'x', f_op_Cj, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -13182,7 +13182,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_Cj) = f_op_Cj;
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_j_L_r_r___RC_ilink_", "f_F 0x%x", 'x', f_F, "f_op_Cj 0x%x", 'x', f_op_Cj, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_j_L_r_r___RC_ilink_", "f_F 0x%x", 'x', f_F, "f_op_Cj 0x%x", 'x', f_op_Cj, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -13223,7 +13223,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_Cj) = f_op_Cj;
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_j_cc___RC_ilink_", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_Cj 0x%x", 'x', f_op_Cj, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_j_cc___RC_ilink_", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_Cj 0x%x", 'x', f_op_Cj, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -13264,7 +13264,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_F) = f_F;
   FLD (f_op_B) = f_op_B;
   FLD (f_s12) = f_s12;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_j_L_s12_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_j_L_s12_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -13302,7 +13302,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_u6) = f_u6;
   FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_j_ccu6_", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_j_ccu6_", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -13337,7 +13337,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_F) = f_F;
   FLD (f_u6) = f_u6;
   FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_j_L_u6_", "f_F 0x%x", 'x', f_F, "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_j_L_u6_", "f_F 0x%x", 'x', f_F, "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -13360,7 +13360,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
 
   /* Record the fields for the semantic handler.  */
   FLD (f_op__b) = f_op__b;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_j_s", "f_op__b 0x%x", 'x', f_op__b, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_j_s", "f_op__b 0x%x", 'x', f_op__b, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -13379,7 +13379,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
 
 
   /* Record the fields for the semantic handler.  */
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_j_s__S", (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_j_s__S", (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -13398,7 +13398,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
 
 
   /* Record the fields for the semantic handler.  */
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_j_seq__S", (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_j_seq__S", (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -13436,7 +13436,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_op_B) = f_op_B;
   FLD (f_s12) = f_s12;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_j_L_s12_d_", "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_j_L_s12_d_", "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -13471,7 +13471,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_u6) = f_u6;
   FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_j_ccu6_d_", "f_cond_Q 0x%x", 'x', f_cond_Q, "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_j_ccu6_d_", "f_cond_Q 0x%x", 'x', f_cond_Q, "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -13503,7 +13503,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_u6) = f_u6;
   FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_j_L_u6_d_", "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_j_L_u6_d_", "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -13535,7 +13535,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_op_C) = f_op_C;
   FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_j_L_r_r_d___RC_", "f_op_C 0x%x", 'x', f_op_C, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_j_L_r_r_d___RC_", "f_op_C 0x%x", 'x', f_op_C, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -13570,7 +13570,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_op_C) = f_op_C;
   FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_j_cc_d___RC_", "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_C 0x%x", 'x', f_op_C, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_j_cc_d___RC_", "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_C 0x%x", 'x', f_op_C, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -13608,7 +13608,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_op_B) = f_op_B;
   FLD (f_s12) = f_s12;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_jl_L_s12_", "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_jl_L_s12_", "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -13643,7 +13643,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_u6) = f_u6;
   FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_jl_ccu6_", "f_cond_Q 0x%x", 'x', f_cond_Q, "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_jl_ccu6_", "f_cond_Q 0x%x", 'x', f_cond_Q, "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -13675,7 +13675,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_u6) = f_u6;
   FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_jl_L_u6_", "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_jl_L_u6_", "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -13698,7 +13698,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
 
   /* Record the fields for the semantic handler.  */
   FLD (f_op__b) = f_op__b;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_jl_s", "f_op__b 0x%x", 'x', f_op__b, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_jl_s", "f_op__b 0x%x", 'x', f_op__b, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -13733,7 +13733,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_Cj) = f_op_Cj;
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_jl_L_r_r___RC_noilink_", "f_op_Cj 0x%x", 'x', f_op_Cj, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_jl_L_r_r___RC_noilink_", "f_op_Cj 0x%x", 'x', f_op_Cj, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -13771,7 +13771,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_Cj) = f_op_Cj;
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_jl_cc___RC_noilink_", "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_Cj 0x%x", 'x', f_op_Cj, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_jl_cc___RC_noilink_", "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_Cj 0x%x", 'x', f_op_Cj, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -13803,7 +13803,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_op_C) = f_op_C;
   FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_jl_L_r_r_d___RC_", "f_op_C 0x%x", 'x', f_op_C, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_jl_L_r_r_d___RC_", "f_op_C 0x%x", 'x', f_op_C, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -13838,7 +13838,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_op_C) = f_op_C;
   FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_jl_cc_d___RC_", "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_C 0x%x", 'x', f_op_C, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_jl_cc_d___RC_", "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_C 0x%x", 'x', f_op_C, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -13861,7 +13861,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
 
   /* Record the fields for the semantic handler.  */
   FLD (f_op__b) = f_op__b;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_jl_s_d", "f_op__b 0x%x", 'x', f_op__b, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_jl_s_d", "f_op__b 0x%x", 'x', f_op__b, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -13899,7 +13899,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_op_B) = f_op_B;
   FLD (f_s12x2) = f_s12x2;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_lp_L_s12_", "f_op_B 0x%x", 'x', f_op_B, "f_s12x2 0x%x", 'x', f_s12x2, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_lp_L_s12_", "f_op_B 0x%x", 'x', f_op_B, "f_s12x2 0x%x", 'x', f_s12x2, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -13934,7 +13934,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_u6x2) = f_u6x2;
   FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_lpcc_ccu6", "f_cond_Q 0x%x", 'x', f_cond_Q, "f_u6x2 0x%x", 'x', f_u6x2, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_lpcc_ccu6", "f_cond_Q 0x%x", 'x', f_cond_Q, "f_u6x2 0x%x", 'x', f_u6x2, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -13972,7 +13972,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_op_B) = f_op_B;
   FLD (f_s12) = f_s12;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_flag_L_s12_", "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_flag_L_s12_", "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -14007,7 +14007,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_u6) = f_u6;
   FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_flag_ccu6_", "f_cond_Q 0x%x", 'x', f_cond_Q, "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_flag_ccu6_", "f_cond_Q 0x%x", 'x', f_cond_Q, "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -14039,7 +14039,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_u6) = f_u6;
   FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_flag_L_u6_", "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_flag_L_u6_", "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -14071,7 +14071,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_op_C) = f_op_C;
   FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_flag_L_r_r__RC", "f_op_C 0x%x", 'x', f_op_C, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_flag_L_r_r__RC", "f_op_C 0x%x", 'x', f_op_C, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -14106,7 +14106,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_op_C) = f_op_C;
   FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_flag_cc__RC", "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_C 0x%x", 'x', f_op_C, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_flag_cc__RC", "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_C 0x%x", 'x', f_op_C, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -14138,7 +14138,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_op_C) = f_op_C;
   FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_lr_L_r_r___RC_", "f_op_C 0x%x", 'x', f_op_C, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_lr_L_r_r___RC_", "f_op_C 0x%x", 'x', f_op_C, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -14176,7 +14176,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_op_B) = f_op_B;
   FLD (f_s12) = f_s12;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_lr_L_s12_", "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_lr_L_s12_", "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -14208,7 +14208,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_u6) = f_u6;
   FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_lr_L_u6_", "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_lr_L_u6_", "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -14240,7 +14240,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_sr_L_r_r___RC_", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_sr_L_r_r___RC_", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -14278,7 +14278,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_op_B) = f_op_B;
   FLD (f_s12) = f_s12;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_sr_L_s12_", "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_sr_L_s12_", "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -14310,7 +14310,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_op_B) = f_op_B;
   FLD (f_u6) = f_u6;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_sr_L_u6_", "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_sr_L_u6_", "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -14345,7 +14345,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_F) = f_F;
   FLD (f_op_C) = f_op_C;
   FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_asl_L_r_r__RC", "f_F 0x%x", 'x', f_F, "f_op_C 0x%x", 'x', f_op_C, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_asl_L_r_r__RC", "f_F 0x%x", 'x', f_F, "f_op_C 0x%x", 'x', f_op_C, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -14380,7 +14380,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_F) = f_F;
   FLD (f_u6) = f_u6;
   FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_asl_L_u6_", "f_F 0x%x", 'x', f_F, "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_asl_L_u6_", "f_F 0x%x", 'x', f_F, "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -14415,7 +14415,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_F) = f_F;
   FLD (f_op_C) = f_op_C;
   FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_asr_L_r_r__RC", "f_F 0x%x", 'x', f_F, "f_op_C 0x%x", 'x', f_op_C, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_asr_L_r_r__RC", "f_F 0x%x", 'x', f_F, "f_op_C 0x%x", 'x', f_op_C, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -14450,7 +14450,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_F) = f_F;
   FLD (f_u6) = f_u6;
   FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_asr_L_u6_", "f_F 0x%x", 'x', f_F, "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_asr_L_u6_", "f_F 0x%x", 'x', f_F, "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -14485,7 +14485,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_F) = f_F;
   FLD (f_op_C) = f_op_C;
   FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_rrc_L_r_r__RC", "f_F 0x%x", 'x', f_F, "f_op_C 0x%x", 'x', f_op_C, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_rrc_L_r_r__RC", "f_F 0x%x", 'x', f_F, "f_op_C 0x%x", 'x', f_op_C, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -14520,7 +14520,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_F) = f_F;
   FLD (f_u6) = f_u6;
   FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_rrc_L_u6_", "f_F 0x%x", 'x', f_F, "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_rrc_L_u6_", "f_F 0x%x", 'x', f_F, "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -14555,7 +14555,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_F) = f_F;
   FLD (f_op_C) = f_op_C;
   FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_sexb_L_r_r__RC", "f_F 0x%x", 'x', f_F, "f_op_C 0x%x", 'x', f_op_C, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_sexb_L_r_r__RC", "f_F 0x%x", 'x', f_F, "f_op_C 0x%x", 'x', f_op_C, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -14590,7 +14590,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_F) = f_F;
   FLD (f_u6) = f_u6;
   FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_sexb_L_u6_", "f_F 0x%x", 'x', f_F, "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_sexb_L_u6_", "f_F 0x%x", 'x', f_F, "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -14625,7 +14625,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_F) = f_F;
   FLD (f_op_C) = f_op_C;
   FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_abs_L_r_r__RC", "f_F 0x%x", 'x', f_F, "f_op_C 0x%x", 'x', f_op_C, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_abs_L_r_r__RC", "f_F 0x%x", 'x', f_F, "f_op_C 0x%x", 'x', f_op_C, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -14660,7 +14660,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_F) = f_F;
   FLD (f_u6) = f_u6;
   FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_abs_L_u6_", "f_F 0x%x", 'x', f_F, "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_abs_L_u6_", "f_F 0x%x", 'x', f_F, "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -14679,7 +14679,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
 
 
   /* Record the fields for the semantic handler.  */
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_swi", (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_swi", (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -14702,7 +14702,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
 
   /* Record the fields for the semantic handler.  */
   FLD (f_trapnum) = f_trapnum;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_trap_s", "f_trapnum 0x%x", 'x', f_trapnum, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_trap_s", "f_trapnum 0x%x", 'x', f_trapnum, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -14721,7 +14721,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
 
 
   /* Record the fields for the semantic handler.  */
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_brk", (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_brk", (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -14762,7 +14762,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_F) = f_F;
   FLD (f_op_B) = f_op_B;
   FLD (f_s12) = f_s12;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_asl_L_s12__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_asl_L_s12__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -14800,7 +14800,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_op_B) = f_op_B;
   FLD (f_u6) = f_u6;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_asl_ccu6__RA_", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_asl_ccu6__RA_", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -14838,7 +14838,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_u6) = f_u6;
   FLD (f_op_A) = f_op_A;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_asl_L_u6__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_asl_L_u6__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -14876,7 +14876,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
   FLD (f_op_A) = f_op_A;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_asl_L_r_r__RA__RC", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_asl_L_r_r__RA__RC", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -14914,7 +14914,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_asl_cc__RA__RC", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_asl_cc__RA__RC", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -14952,7 +14952,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_op_B) = f_op_B;
   FLD (f_s12) = f_s12;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mul64_L_s12_", "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mul64_L_s12_", "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -14987,7 +14987,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_op_B) = f_op_B;
   FLD (f_u6) = f_u6;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mul64_ccu6_", "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mul64_ccu6_", "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -15019,7 +15019,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_op_B) = f_op_B;
   FLD (f_u6) = f_u6;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mul64_L_u6_", "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mul64_L_u6_", "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -15051,7 +15051,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mul64_L_r_r__RC", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mul64_L_r_r__RC", "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -15086,7 +15086,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mul64_cc__RC", "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mul64_cc__RC", "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -15112,7 +15112,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   /* Record the fields for the semantic handler.  */
   FLD (f_op__b) = f_op__b;
   FLD (f_op__c) = f_op__c;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mul64_s_go", "f_op__b 0x%x", 'x', f_op__b, "f_op__c 0x%x", 'x', f_op__c, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mul64_s_go", "f_op__b 0x%x", 'x', f_op__b, "f_op__c 0x%x", 'x', f_op__c, (char *) 0));
 
 #undef FLD
     return idesc;
@@ -15147,7 +15147,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_F) = f_F;
   FLD (f_op_B) = f_op_B;
   FLD (f_s12) = f_s12;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_adds_L_s12__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_adds_L_s12__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -15185,7 +15185,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_op_B) = f_op_B;
   FLD (f_u6) = f_u6;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_adds_ccu6__RA_", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_adds_ccu6__RA_", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -15223,7 +15223,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_u6) = f_u6;
   FLD (f_op_A) = f_op_A;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_adds_L_u6__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_adds_L_u6__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -15261,7 +15261,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
   FLD (f_op_A) = f_op_A;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_adds_L_r_r__RA__RC", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_adds_L_r_r__RA__RC", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -15299,7 +15299,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_adds_cc__RA__RC", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_adds_cc__RA__RC", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -15340,7 +15340,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_F) = f_F;
   FLD (f_op_B) = f_op_B;
   FLD (f_s12) = f_s12;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_divaw_L_s12__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_divaw_L_s12__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -15378,7 +15378,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_op_B) = f_op_B;
   FLD (f_u6) = f_u6;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_divaw_ccu6__RA_", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_divaw_ccu6__RA_", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -15416,7 +15416,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_u6) = f_u6;
   FLD (f_op_A) = f_op_A;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_divaw_L_u6__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_divaw_L_u6__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -15454,7 +15454,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
   FLD (f_op_A) = f_op_A;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_divaw_L_r_r__RA__RC", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_divaw_L_r_r__RA__RC", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -15492,7 +15492,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_divaw_cc__RA__RC", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_divaw_cc__RA__RC", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -15533,7 +15533,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_F) = f_F;
   FLD (f_op_B) = f_op_B;
   FLD (f_s12) = f_s12;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_asls_L_s12__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_asls_L_s12__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -15571,7 +15571,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_op_B) = f_op_B;
   FLD (f_u6) = f_u6;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_asls_ccu6__RA_", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_asls_ccu6__RA_", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -15609,7 +15609,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_u6) = f_u6;
   FLD (f_op_A) = f_op_A;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_asls_L_u6__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_asls_L_u6__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -15647,7 +15647,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
   FLD (f_op_A) = f_op_A;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_asls_L_r_r__RA__RC", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_asls_L_r_r__RA__RC", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -15685,7 +15685,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_asls_cc__RA__RC", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_asls_cc__RA__RC", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -15720,7 +15720,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_F) = f_F;
   FLD (f_op_C) = f_op_C;
   FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_swap_L_r_r__RC", "f_F 0x%x", 'x', f_F, "f_op_C 0x%x", 'x', f_op_C, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_swap_L_r_r__RC", "f_F 0x%x", 'x', f_F, "f_op_C 0x%x", 'x', f_op_C, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -15755,7 +15755,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_F) = f_F;
   FLD (f_u6) = f_u6;
   FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_swap_L_u6_", "f_F 0x%x", 'x', f_F, "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_swap_L_u6_", "f_F 0x%x", 'x', f_F, "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -15790,7 +15790,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_F) = f_F;
   FLD (f_op_C) = f_op_C;
   FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_rnd16_L_r_r__RC", "f_F 0x%x", 'x', f_F, "f_op_C 0x%x", 'x', f_op_C, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_rnd16_L_r_r__RC", "f_F 0x%x", 'x', f_F, "f_op_C 0x%x", 'x', f_op_C, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -15825,7 +15825,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_F) = f_F;
   FLD (f_u6) = f_u6;
   FLD (f_op_B) = f_op_B;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_rnd16_L_u6_", "f_F 0x%x", 'x', f_F, "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_rnd16_L_u6_", "f_F 0x%x", 'x', f_F, "f_u6 0x%x", 'x', f_u6, "f_op_B 0x%x", 'x', f_op_B, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -15844,7 +15844,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
 
 
   /* Record the fields for the semantic handler.  */
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_nop_s", (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_nop_s", (char *) 0));
 
 #undef FLD
     return idesc;
@@ -15861,7 +15861,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
 
   /* Record the fields for the semantic handler.  */
   FLD (f_op__b) = f_op__b;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_pop_s_b", "f_op__b 0x%x", 'x', f_op__b, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_pop_s_b", "f_op__b 0x%x", 'x', f_op__b, (char *) 0));
 
 #undef FLD
     return idesc;
@@ -15874,7 +15874,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
 
 
   /* Record the fields for the semantic handler.  */
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_pop_s_blink", (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_pop_s_blink", (char *) 0));
 
 #undef FLD
     return idesc;
@@ -15891,7 +15891,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
 
   /* Record the fields for the semantic handler.  */
   FLD (f_op__b) = f_op__b;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_push_s_b", "f_op__b 0x%x", 'x', f_op__b, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_push_s_b", "f_op__b 0x%x", 'x', f_op__b, (char *) 0));
 
 #undef FLD
     return idesc;
@@ -15904,7 +15904,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
 
 
   /* Record the fields for the semantic handler.  */
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_push_s_blink", (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_push_s_blink", (char *) 0));
 
 #undef FLD
     return idesc;
@@ -15939,7 +15939,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_F) = f_F;
   FLD (f_op_B) = f_op_B;
   FLD (f_s12) = f_s12;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mullw_L_s12__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mullw_L_s12__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -15977,7 +15977,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_op_B) = f_op_B;
   FLD (f_u6) = f_u6;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mullw_ccu6__RA_", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mullw_ccu6__RA_", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -16015,7 +16015,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_u6) = f_u6;
   FLD (f_op_A) = f_op_A;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mullw_L_u6__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mullw_L_u6__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -16053,7 +16053,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
   FLD (f_op_A) = f_op_A;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mullw_L_r_r__RA__RC", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mullw_L_r_r__RA__RC", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -16091,7 +16091,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mullw_cc__RA__RC", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_mullw_cc__RA__RC", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -16132,7 +16132,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_F) = f_F;
   FLD (f_op_B) = f_op_B;
   FLD (f_s12) = f_s12;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_maclw_L_s12__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_maclw_L_s12__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -16170,7 +16170,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_op_B) = f_op_B;
   FLD (f_u6) = f_u6;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_maclw_ccu6__RA_", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_maclw_ccu6__RA_", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -16208,7 +16208,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_u6) = f_u6;
   FLD (f_op_A) = f_op_A;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_maclw_L_u6__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_maclw_L_u6__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -16246,7 +16246,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
   FLD (f_op_A) = f_op_A;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_maclw_L_r_r__RA__RC", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_maclw_L_r_r__RA__RC", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -16284,7 +16284,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_maclw_cc__RA__RC", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_maclw_cc__RA__RC", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -16325,7 +16325,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_F) = f_F;
   FLD (f_op_B) = f_op_B;
   FLD (f_s12) = f_s12;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_machulw_L_s12__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_machulw_L_s12__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_s12 0x%x", 'x', f_s12, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -16363,7 +16363,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_op_B) = f_op_B;
   FLD (f_u6) = f_u6;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_machulw_ccu6__RA_", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_machulw_ccu6__RA_", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -16401,7 +16401,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_u6) = f_u6;
   FLD (f_op_A) = f_op_A;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_machulw_L_u6__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_machulw_L_u6__RA_", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_u6 0x%x", 'x', f_u6, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -16439,7 +16439,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
   FLD (f_op_A) = f_op_A;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_machulw_L_r_r__RA__RC", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_machulw_L_r_r__RA__RC", "f_F 0x%x", 'x', f_F, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, "f_op_A 0x%x", 'x', f_op_A, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -16477,7 +16477,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
   FLD (f_cond_Q) = f_cond_Q;
   FLD (f_op_B) = f_op_B;
   FLD (f_op_C) = f_op_C;
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_machulw_cc__RA__RC", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_machulw_cc__RA__RC", "f_F 0x%x", 'x', f_F, "f_cond_Q 0x%x", 'x', f_cond_Q, "f_op_B 0x%x", 'x', f_op_B, "f_op_C 0x%x", 'x', f_op_C, (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -16496,7 +16496,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
 
 
   /* Record the fields for the semantic handler.  */
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_current_loop_end", (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_current_loop_end", (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
@@ -16515,7 +16515,7 @@ a5f_decode (SIM_CPU *current_cpu, IADDR pc,
 
 
   /* Record the fields for the semantic handler.  */
-  TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_current_loop_end_after_branch", (char *) 0));
+  CGEN_TRACE_EXTRACT (current_cpu, abuf, (current_cpu, pc, "sfmt_current_loop_end_after_branch", (char *) 0));
 
 #if WITH_PROFILE_MODEL_P
   /* Record the fields for profiling.  */
