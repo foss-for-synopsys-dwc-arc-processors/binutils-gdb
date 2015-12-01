@@ -9,6 +9,7 @@ NATDEPFILES= \
 	linux-fork.o \
 	linux-nat.o \
 	linux-osdata.o \
+	linux-personality.o \
 	linux-procfs.o \
 	linux-ptrace.o \
 	linux-thread-db.o \
