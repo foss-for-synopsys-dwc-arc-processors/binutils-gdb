@@ -595,22 +595,21 @@ arc_linux_software_single_step (struct frame_info *frame)
   if (two_breakpoints)
     {
       if ((pc != branch_target) && (fall_thru != branch_target))
-        {
-          /* If second insert fails, first breakpoint has to be removed
-           * manually. */
-          volatile struct gdb_exception ex;
-          TRY_CATCH(ex, RETURN_MASK_ERROR)
-            {
-              insert_single_step_breakpoint (gdbarch, aspace, branch_target);
-            }
-
-          if (ex.reason < 0)
+	{
+	  /* If second insert fails, first breakpoint has to be removed
+	   * manually. */
+	  TRY
+	    {
+	      insert_single_step_breakpoint (gdbarch, aspace, branch_target);
+	    }
+	  CATCH(ex, RETURN_MASK_ERROR)
 	    {
 	      /* Pass exception further after cleanup. */
 	      delete_single_step_breakpoints (inferior_thread ());
 	      throw_exception(ex);
 	    }
-        }
+	  END_CATCH
+	}
     }
 
   return 1;			/* returns always true for now */
