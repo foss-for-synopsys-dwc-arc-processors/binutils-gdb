@@ -2,10 +2,19 @@
 
 NAT_FILE= config/nm-linux.h
 
-NATDEPFILES= inf-ptrace.o fork-child.o arc-linux-nat.o \
-	linux-thread-db.o proc-service.o \
-	linux-nat.o linux-osdata.o linux-fork.o linux-procfs.o \
-	linux-ptrace.o linux-waitpid.o
+NATDEPFILES= \
+	arc-linux-nat.o \
+	fork-child.o \
+	inf-ptrace.o \
+	linux-fork.o \
+	linux-nat.o \
+	linux-osdata.o \
+	linux-procfs.o \
+	linux-ptrace.o \
+	linux-thread-db.o \
+	linux-waitpid.o \
+	proc-service.o
+
 NAT_CDEPS = $(srcdir)/proc-service.list
 
 LOADLIBES = -ldl $(RDYNAMIC)
