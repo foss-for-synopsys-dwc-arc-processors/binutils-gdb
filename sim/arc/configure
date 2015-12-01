@@ -12881,14 +12881,6 @@ _ACEOF
 sim_link_files=
 sim_link_links=
 
-sim_link_links=tconfig.h
-if test -f ${srcdir}/tconfig.in
-then
-  sim_link_files=tconfig.in
-else
-  sim_link_files=../common/tconfig.in
-fi
-
 # targ-vals.def points to the libc macro description file.
 case "${target}" in
 *-*-*) TARG_VALS_DEF=../common/nltvals.def ;;
