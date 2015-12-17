@@ -431,7 +431,7 @@ cat <<EOF
   .debug_varnames  0 : { *(.debug_varnames) }
 
   /* ARC Extension Sections */
-  .arcextmap	  0 : { *(.gnu.linkonce.arcextmap.*) }
+  .arcextmap	  0 : { *(.gnu.linkonce.arcextmap.* .arcextmap.*) }
 
   ${STACK_ADDR+${STACK}}
   ${OTHER_SECTIONS}

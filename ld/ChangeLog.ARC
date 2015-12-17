@@ -1,3 +1,10 @@
+2015-12-17  Claudiu Zissulescu  <claziss@synopsys.com>
+
+	* scripttempl/arclinux.sc: Handle mwdt specific ARC extension
+	sections.
+	* scripttempl/elfarc.sc: Likewise.
+	* scripttempl/elfarcv2.sc: Likewise.
+
 2015-10-15  Claudiu Zissulescu  <claziss@synopsys.com>
 
 	* testsuite/ld-arc/tls-data-sections.d: Add arclinux emulation.

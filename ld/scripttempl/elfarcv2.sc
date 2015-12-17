@@ -309,6 +309,6 @@ SECTIONS
   .debug_macro    0 : { *(.debug_macro) }
 
   /* ARC Extension Sections */
-  .arcextmap	  0 : { *(.gnu.linkonce.arcextmap.*) }
+  .arcextmap	  0 : { *(.gnu.linkonce.arcextmap.* .arcextmap.*) }
 }
 EOF
