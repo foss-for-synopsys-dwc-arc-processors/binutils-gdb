@@ -290,6 +290,12 @@
 	.extInstruction fadd, 0x6, 0x1, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
 	.extInstruction fmul, 0x6, 0x0, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
 	.extInstruction fsub, 0x6, 0x2, SUFFIX_COND|SUFFIX_FLAG, SYNTAX_3OP
+	;; Quark SE extensions
+	.extInstruction dsp_fp_div,   0x07, 0x2a, SUFFIX_NONE, SYNTAX_3OP
+	.extInstruction dsp_fp_cmp,   0x07, 0x2b, SUFFIX_NONE, SYNTAX_3OP
+	.extInstruction dsp_fp_flt2i, 0x07, 0x2b, SUFFIX_NONE, SYNTAX_2OP
+	.extInstruction dsp_fp_i2flt, 0x07, 0x2c, SUFFIX_NONE, SYNTAX_2OP
+	.extInstruction dsp_fp_sqrt,  0x07, 0x2d, SUFFIX_NONE, SYNTAX_2OP
 .endif
 .endif
 
