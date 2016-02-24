@@ -1163,7 +1163,8 @@ arc_is_in_prologue (struct gdbarch *gdbarch,
 
 	      is_blink_saved = (strstr (instr->operandBuffer, "blink") != 0);
 	      is_fp_saved = (strstr (instr->operandBuffer, "fp") != 0);
-	      regs_saved = (instr->words[0] & 0b11110) >> 1;
+	      /* Amount of saved regs is stored in bits [1:4] (0b11110). */
+	      regs_saved = (instr->words[0] & 0x1E) >> 1;
 
 	      if (is_fp_saved)
 		{
