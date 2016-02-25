@@ -375,6 +375,29 @@ static const struct arc_reloc_map arc_reloc_map[] =
 };
 #undef ARC_RELOC_HOWTO
 
+typedef bfd_vma (*replace_func) (unsigned, int);
+
+#define ARC_RELOC_HOWTO(TYPE, VALUE, SIZE, BITSIZE, RELOC_FUNCTION, OVERFLOW, FORMULA) \
+  case TYPE: \
+    func = &RELOC_FUNCTION; \
+    break;
+static replace_func
+get_replace_function (bfd *abfd, unsigned int r_type)
+{
+  replace_func func = NULL;
+
+  switch(r_type)
+    {
+      #include "elf/arc-reloc.def"
+    }
+
+  if(func == replace_bits24 && bfd_big_endian(abfd))
+    return replace_bits24_be;
+
+  return func;
+}
+#undef ARC_RELOC_HOWTO
+
 static reloc_howto_type *
 arc_elf32_bfd_reloc_type_lookup (bfd * abfd ATTRIBUTE_UNUSED,
 				 bfd_reloc_code_real_type code)
@@ -382,6 +405,7 @@ arc_elf32_bfd_reloc_type_lookup (bfd * abfd ATTRIBUTE_UNUSED,
   unsigned int i;
 
   for (i = ARRAY_SIZE (arc_reloc_map); i--;)
+
     {
       if (arc_reloc_map[i].bfd_reloc_val == code)
 	return arc_elf_howto (arc_reloc_map[i].elf_reloc_val);
@@ -864,7 +888,7 @@ middle_endian_convert (bfd_vma insn, bfd_boolean do_it)
       relocation = FORMULA  ; \
       PRINT_DEBUG_RELOC_INFO_BEFORE(FORMULA) \
       insn = middle_endian_convert (insn, IS_ME (#FORMULA, abfd)); \
-      insn = RELOC_FUNCTION (insn, relocation); \
+      insn = (* get_replace_function(abfd, TYPE)) (insn, relocation); \
       insn = middle_endian_convert (insn, IS_ME (#FORMULA, abfd)); \
       PRINT_DEBUG_RELOC_INFO_AFTER \
     } \
