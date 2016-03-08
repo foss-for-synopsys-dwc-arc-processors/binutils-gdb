@@ -64,6 +64,7 @@ name_for_global_symbol (struct elf_link_hash_entry *h)
     _rel.r_addend = ADDEND;						\
     _rel.r_offset = (_htab->s##SECTION)->output_section->vma		\
       + (_htab->s##SECTION)->output_offset + OFFSET;			\
+    BFD_ASSERT (SYM_IDX != -1);						\
     _rel.r_info = ELF32_R_INFO (SYM_IDX, TYPE);				\
     bfd_elf32_swap_reloca_out (BFD, &_rel, _loc);			\
   }
@@ -1499,11 +1500,13 @@ elf_arc_relocate_section (bfd *		   output_bfd,
 		else if (r_type == R_ARC_PC32
 			 || r_type == R_ARC_32_PCREL)
 		  {
-		    BFD_ASSERT (h != NULL && h->dynindx != -1);
+		    BFD_ASSERT (h != NULL);
 		    if ((input_section->flags & SEC_ALLOC) != 0)
 		      relocate = FALSE;
 		    else
 		      relocate = TRUE;
+
+		    BFD_ASSERT (h->dynindx != -1);
 		    outrel.r_info = ELF32_R_INFO (h->dynindx, r_type);
 		  }
 		else
@@ -1539,6 +1542,8 @@ elf_arc_relocate_section (bfd *		   output_bfd,
 			  relocate = FALSE;
 			else
 			  relocate = TRUE;
+
+			BFD_ASSERT (h->dynindx != -1);
 			outrel.r_info = ELF32_R_INFO (h->dynindx, R_ARC_32);
 		      }
 		  }
@@ -2005,6 +2010,8 @@ GOT_ENTRY_OFFSET = 0x%x, GOT_ENTRY_VMA = 0x%x, for symbol %s\n",
 		    + htab->sgotplt->output_offset
 		    + got_offset);
     rel.r_addend = 0;
+
+    BFD_ASSERT (h->dynindx != -1);
     rel.r_info = ELF32_R_INFO (h->dynindx, R_ARC_JMP_SLOT);
 
     loc = htab->srelplt->contents;
@@ -2203,7 +2210,10 @@ elf_arc_finish_dynamic_symbol (bfd * output_bfd,
 		{
 		  ADD_RELA (output_bfd, got, got_offset, 0, R_ARC_RELATIVE, 0);
 		}
-	      else
+	      /* Do not fully understand the side effects of this condition. 
+	         The relocation space might still being reserved. Perhaps 
+		 I should clear its value.  */
+	      else if(h->dynindx != -1)
 		{
 		  ADD_RELA (output_bfd, got, got_offset, h->dynindx,
 			  R_ARC_GLOB_DAT, 0);
@@ -2278,6 +2288,8 @@ GOT_OFFSET = 0x%x, GOT_VMA = 0x%x, INDEX = %d, ADDEND = 0x%x\n",
       Elf_Internal_Rela rel;
       rel.r_addend = 0;
       rel.r_offset = rel_offset;
+
+      BFD_ASSERT (h->dynindx != -1);
       rel.r_info = ELF32_R_INFO (h->dynindx, R_ARC_COPY);
 
       bfd_elf32_swap_reloca_out (output_bfd, &rel, loc);
