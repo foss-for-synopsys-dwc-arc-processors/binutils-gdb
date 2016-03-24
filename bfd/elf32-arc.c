@@ -1969,7 +1969,7 @@ plt_do_relocs_for_symbol (bfd *abfd,
 
       /* TODO: being ME is not a property of the relocation but of the
 	 section of which is applying the relocation. */
-      if (IS_MIDDLE_ENDIAN (reloc->symbol) || bfd_big_endian (abfd))
+      if (IS_MIDDLE_ENDIAN (reloc->symbol) && !bfd_big_endian (abfd))
 	{
 	  relocation =
 	      ((relocation & 0xffff0000) >> 16) |
@@ -2013,9 +2013,19 @@ GOT_ENTRY_OFFSET = 0x%x, GOT_ENTRY_VMA = 0x%x, for symbol %s\n",
 	     + got_offset,
 	     h->root.root.string);
 
-  memcpy (htab->splt->contents + h->plt.offset,
-	  plt_data->elem,
-	  plt_data->elem_size);
+
+  {
+    int i = 0;
+    uint16_t *ptr = (uint16_t *) plt_data->elem;
+    for(i = 0; i < plt_data->elem_size/2; i++)
+      {
+	uint16_t data = ptr[i];
+	bfd_put_16(output_bfd,
+	           (bfd_vma) data,
+	           htab->splt->contents + h->plt.offset + (i*2));
+      }
+  }
+
   plt_do_relocs_for_symbol (output_bfd, htab,
 			    plt_data->elem_relocs,
 			    h->plt.offset,
@@ -2053,8 +2063,17 @@ relocate_plt_for_entry (bfd *abfd,
   struct plt_version_t *plt_data = arc_get_plt_version (info);
   struct elf_link_hash_table *htab = elf_hash_table (info);
 
-  memcpy (htab->splt->contents, plt_data->entry,
-	  plt_data->entry_size);
+  {
+    int i = 0;
+    uint16_t *ptr = (uint16_t *) plt_data->entry;
+    for(i = 0; i < plt_data->entry_size/2; i++)
+      {
+	uint16_t data = ptr[i];
+	bfd_put_16(abfd,
+	           (bfd_vma) data,
+	           htab->splt->contents + (i*2));
+      }
+  }
   PLT_DO_RELOCS_FOR_ENTRY (abfd, htab, plt_data->entry_relocs);
 }
 
