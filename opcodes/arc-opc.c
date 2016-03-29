@@ -1198,6 +1198,7 @@ const unsigned arc_NToperand = FKT_NT;
 const struct arc_opcode arc_opcodes[] =
 {
 #include "arc-tbl.h"
+#include "arc-ext-tbl.h"
 };
 
 const unsigned arc_num_opcodes = ARRAY_SIZE (arc_opcodes);
