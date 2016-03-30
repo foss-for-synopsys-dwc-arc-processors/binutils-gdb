@@ -58,6 +58,8 @@ typedef enum
     CD2,
     DIV,
     DP,
+    DPA,
+    DPX,
     MPY1E,
     MPY6E,
     MPY7E,
@@ -67,7 +69,8 @@ typedef enum
     SHFT1,
     SHFT2,
     SWAP,
-    SP
+    SP,
+    SPX
   } insn_subclass_t;
 
 /* Flags class.  */
@@ -146,6 +149,7 @@ extern const unsigned arc_num_opcodes;
 #define ARC_DPFP     0x0010
 #define ARC_SPFP     0x0020
 #define ARC_FPU      0x0030
+#define ARC_FPUDA    0x0040
 
 /* NORM & SWAP.  */
 #define ARC_SWAP     0x0100
@@ -406,7 +410,10 @@ struct arc_aux_reg
   /* Register address.  */
   int address;
 
- /* Register name.  */
+  /* AUX register subclass.  */
+  insn_subclass_t subclass;
+
+  /* Register name.  */
   const char *name;
 
   /* Size of the string.  */
