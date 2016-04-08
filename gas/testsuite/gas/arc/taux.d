@@ -1,3 +1,4 @@
+#as: -mcpu=arc700
 #nm: --undefined-only
 #name: aux register test
 #source: taux.s

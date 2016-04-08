@@ -1,3 +1,4 @@
+#as: -mcpu=arc700
 #objdump: -dr
 
 .*: +file format .*arc.*
