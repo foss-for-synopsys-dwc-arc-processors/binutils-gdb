@@ -2823,7 +2823,19 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   /* Don't need to know if we are in the epilogue. */
   /* Don't need to make special msymbols for ELF of COFF. */
   set_gdbarch_cannot_step_breakpoint (gdbarch, 1);
-  set_gdbarch_have_nonsteppable_watchpoint (gdbarch, 1);
+
+  /* "nonsteppable" wachpoint means that watchpoint triggers before instruction
+     is committed, therefore it is required to remove watchpoint to step though
+     instruction that triggers it. ARC watchpoint trigger only after
+     instruction is committed, thus there is no need to remove them. In fact on
+     ARC watchpoint for memory writes may trigger with more significant delay,
+     like one or two instructions, depending on type of memory where write is
+     performed (CCM or external) and next instruction after the memory write.
+     That value used to be set to "1", but that is not correct for ARC - that
+     was causing GDB to step one additional instruction after watchpoint is
+     triggered and that is not needed. */
+  set_gdbarch_have_nonsteppable_watchpoint (gdbarch, 0);
+
   /* No special address classes. */
   /* Default gdbarch_register_reggroup_p suffices. */
   /* No need for fetch_pointer_argument (Objective C support only) */
