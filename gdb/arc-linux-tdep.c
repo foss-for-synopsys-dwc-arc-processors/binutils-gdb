@@ -283,6 +283,227 @@ static const int arc_linux_core_reg_offsets[] = {
 /*                               local functions                              */
 /* -------------------------------------------------------------------------- */
 
+
+/*! Extracts the result of the last condition checking from status32 register by
+    condition code.
+
+  @param[in] condition_code	It must be a condition code of the last
+				condition that was checked and its result was
+				stored in status32 register, otherwise this
+				function may return the wrong value.
+  @param[in] status32		Status32 register's value.
+  @return  The result of condition checking if given condition code exists,
+	   otherwise throws the assertion error.*/
+static int
+arc_linux_is_condition_true (ULONGEST status32, int condition_code)
+{
+  int z_flag, n_flag, c_flag, v_flag;
+
+  gdb_assert (condition_code >= 0 && condition_code <= 15);
+
+  z_flag = status32 & ARC_REG_STATUS32_Z;
+  n_flag = status32 & ARC_REG_STATUS32_N;
+  c_flag = status32 & ARC_REG_STATUS32_C;
+  v_flag = status32 & ARC_REG_STATUS32_V;
+
+  switch (condition_code)
+    {
+    /* Always (unconditional branch/jump instruction). */
+    case 0:
+      return TRUE;
+
+    /* Zero (equals). */
+    case 1:
+      return z_flag;
+
+    /* Non-Zero (not equals). */
+    case 2:
+      return !z_flag;
+
+    /* Positive. */
+    case 3:
+      return !n_flag;
+
+    /* Negative. */
+    case 4:
+      return n_flag;
+
+    /* carry set, lower than (unsigned). */
+    case 5:
+      return c_flag;
+
+    /* Carry clear, higher or same (unsigned). */
+    case 6:
+      return !c_flag;
+
+    /* Over-flow set. */
+    case 7:
+      return v_flag;
+
+    /* Over-flow clear. */
+    case 8:
+      return !v_flag;
+
+    /* Greater than (signed). */
+    case 9:
+      return (n_flag && v_flag && !z_flag) || (!n_flag && !v_flag && !z_flag);
+
+    /* Greater than or equal to (signed). */
+    case 10:
+      return (n_flag && v_flag) || (!n_flag && !v_flag);
+
+    /* Less than (signed). */
+    case 11:
+      return (n_flag && !v_flag) || (!n_flag && v_flag);
+
+    /* Less than or equal to (signed). */
+    case 12:
+      return (z_flag) || (n_flag && !v_flag) || (!n_flag && v_flag);
+
+    /* Higher than (unsigned). */
+    case 13:
+      return (!c_flag) && (!z_flag);
+
+    /* Lower than or same (unsigned). */
+    case 14:
+      return (c_flag) || (z_flag);
+
+    /* Positive non-zero. */
+    case 15:
+      return (!n_flag) && (!z_flag);
+
+    }
+
+  /* Next line is used to supress warning about the return value. It is
+     unreachable during normal execution which does not cause the assertion
+     error, see code above to understand why. */
+  return -1;
+
+}    /* arc_linux_is_condition_true() */
+
+/*! Checks result of brcc/bbit instruction condition by arguments and subopcode.
+
+  @param[in] subopcode	Addition to opcode allowing to determine subtype of
+			instruction with given opcode, in this case it
+			determines the kind of condition that is checked by
+			this instruction.
+  @param[in] arg1	First argument of instruction.
+  @param[in] arg2	Second argument of instruction.
+  @return  The result of condition checking if subopcode is valid, otherwise
+	   throws the assertion error. */
+static int
+arc_linux_is_brcc_taken (int subopcode, long arg1, long arg2)
+{
+  unsigned long uarg1, uarg2;
+
+  gdb_assert (subopcode >= 0 && subopcode <= 15);
+
+  /* These variables will be used for unsigned comparison. */
+  uarg1 = arg1;
+  uarg2 = arg2;
+
+  if (arc_debug)
+    {
+      fprintf_unfiltered (gdb_stdlog,
+			  " --- arc_linux_is_brcc_taken subopcode = %d,"
+			  "arg1 = %ld, arg2 = %ld, uarg1 = %lu, uarg2 = %lu\n",
+			  subopcode, arg1, arg2, uarg1, uarg2);
+    }
+
+  switch (subopcode)
+    {
+    /* BREQ */
+    case 0x0:
+    case 0x8:
+      return arg1 == arg2;
+
+    /* BRNE */
+    case 0x1:
+    case 0x9:
+      return arg1 != arg2;
+
+    /* BRLT */
+    case 0x2:
+    case 0xA:
+      return arg1 < arg2;
+
+    /* BRGE */
+    case 0x3:
+    case 0xB:
+      return arg1 >= arg2;
+
+    /* BRLO */
+    case 0x4:
+    case 0xC:
+      return uarg1 < uarg2;
+
+    /* BRHS */
+    case 0x5:
+    case 0xD:
+      return uarg1 >= uarg2;
+
+    /* BBIT0 */
+    case 0x6:
+    case 0xE:
+      return !(arg1 & (1 << arg2));
+
+    /* BBIT1 */
+    case 0x7:
+    case 0xF:
+      return (arg1 & (1 << arg2));
+    }
+
+  /* Next line is used to supress warning about the return value. It is
+     unreachable during normal execution which does not cause the assertion
+     error, see code above to understand why.*/
+  return -1;
+}    /* arc_linux_is_brcc_taken() */
+
+/*! Returns register value by register number encoded in the instruction or long
+    immediate value from the next word if given register number is 62 (long
+    immediate value indicator). Don't use this function if you really may want
+    to read 62th register value.
+
+    @param[in] register_number	      Number of register to extract value from.
+    @param[in] byte_order	      Current machine's byte order.
+    @param[in] word_after_instruction It must be the next word after instruction
+				      in which given register number is encoded,
+				      otherwise this function may return wrong
+				      value. In addition to this, word must be
+				      read from memory according to big endian
+				      byte order, use struct arcDisState for
+				      such instruction reading. */
+static long
+arc_linux_read_reg_encoded_in_insn (unsigned int register_number,
+				    enum bfd_endian byte_order,
+				    unsigned long word_after_instruction,
+				    struct regcache *regcache)
+{
+  long register_value = 0;
+  /* Long immediate value operand is indicated by register number
+     62 (ARC_LIMM_REGNUM). */
+  if (register_number == ARC_LIMM_REGNUM)
+    {
+      /* Extracting long immediate value from the next word. */
+      /* LITTLE_ENDIAN */
+      if (byte_order == BFD_ENDIAN_LITTLE)
+	{
+	  register_value = ((word_after_instruction & 0xFFFF) << 16) |
+		 ((word_after_instruction & 0xFFFF0000) >> 16);
+	}
+      /* BIG_ENDIAN */
+      else
+	{
+	  register_value = word_after_instruction;
+	}
+    }
+  else
+    {
+      regcache_cooked_read_signed (regcache, register_number, &register_value);
+    }
+  return register_value;
+}    /* arc_linux_read_reg_encoded_in_insn() */
+
 /*! Returns TRUE if the instruction at PC is a branch (of any kind).
 
     We always set a breakpoint at the next instruction, even if we have an
@@ -294,22 +515,29 @@ static const int arc_linux_core_reg_offsets[] = {
     @param[out] fall_thru  Set to the address of the next insn.
     @param[out] target     Set to the branch target. */
 static int
-arc_linux_next_pc (CORE_ADDR pc, CORE_ADDR *fall_thru, CORE_ADDR *target)
+arc_linux_next_pc (CORE_ADDR pc, CORE_ADDR * fall_thru, CORE_ADDR * target)
 {
   struct regcache *regcache = get_current_regcache ();
   struct gdbarch *gdbarch = get_regcache_arch (regcache);
   struct disassemble_info di;
   struct arcDisState instr;
-  int two_targets = FALSE;
-  ULONGEST  lp_end, lp_start, lp_count, status32;
+  struct arcDisState instr_d;
+  ULONGEST lp_end, lp_start, lp_count, status32;
+  int is_loop_enabled;
+  int is_branch_lpcc = FALSE;
+  int is_brcc_or_bbit = FALSE;
+  int is_branch_taken = FALSE;
+  int instr_subopcode = -1;
+  long arg1_reg, arg2_reg, arg1_value, arg2_value;
+  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
 
-  /* so what is the instruction at the given pc? */
+  /* So what is the instruction at the given pc? */
   arc_initialize_disassembler (gdbarch, &di);
   instr = arcAnalyzeInstr (pc, &di);
-
-  /* by default, the next instruction is the one immediately after the one at
-     pc */
+  /* By default, the next instruction is the one immediately after the one at
+     pc. */
   *fall_thru = pc + instr.instructionLen;
+  is_loop_enabled = !(status32 & ARC_REG_STATUS32_L);
 
   if (arc_debug)
     {
@@ -317,7 +545,8 @@ arc_linux_next_pc (CORE_ADDR pc, CORE_ADDR *fall_thru, CORE_ADDR *target)
 			  "--- arc_linux_next_pc (%s) = %s, isBranch = %s, "
 			  "tcnt = %d [0x%x],\n"
 			  "    flow = %s (%d), reg for indirect jump = %d, "
-			  "nullifyMode = %s\n",
+			  "nullifyMode = %s, is_loop_enabled = %d, "
+			  "byte order = %s\n",
 			  print_core_address (gdbarch, pc),
 			  print_core_address (gdbarch, *fall_thru),
 			  instr.isBranch ? "true" : "false", instr.tcnt,
@@ -327,58 +556,136 @@ arc_linux_next_pc (CORE_ADDR pc, CORE_ADDR *fall_thru, CORE_ADDR *target)
 			  ? "direct" : "indirect", instr.flow,
 			  instr.register_for_indirect_jump,
 			  ((instr.nullifyMode == (char) BR_exec_always)
-			   ? "delay slot" : "no delay"));
+			   ? "delay slot" : "no delay"),
+			  is_loop_enabled,
+			  byte_order == BFD_ENDIAN_LITTLE ? "LITTLE ENDIAN"
+			  : "BIG ENDIAN");
     }
 
-  /* OK, it's a branch */
   if (instr.isBranch)
     {
-      two_targets = TRUE;
-
-      if (instr.flow == direct_jump || instr.flow == direct_call)
+      /* Checking if instruction is brcc or bbit because there is need to
+         calculate branch condition manually then. */
+      is_brcc_or_bbit = (((instr.words[0] & 0x10000) >> 16) == 0x1)
+			&& ((instr._opcode == 0x1) || (instr._opcode == 0x1D));
+      if (arc_debug)
 	{
-	  /* It's a direct jump or call, so the destination address is encoded
-         in the instruction, so we got it by disassembling the instruction */
-	  *target = (CORE_ADDR) instr.targets[0];
+	  fprintf_unfiltered (gdb_stdlog,
+			      "--- arc_linux_next_pc is_brcc_or_bbit = %d\n",
+			      is_brcc_or_bbit);
+	}
+      if (is_brcc_or_bbit)
+	{
+	  instr_subopcode = instr.words[0] & 0xF;
+	  /* Extracting registers numbers where the arguments are stored from
+	     the instruction. */
+	  arg1_reg = ((instr.words[0] & 0x7000) >> 9)
+	             |((instr.words[0] & 0x07000000) >> 24);
+	  arg2_reg = (instr.words[0] & 0xFC0) >> 6;
+	  arg1_value =
+	    arc_linux_read_reg_encoded_in_insn (arg1_reg, byte_order,
+						instr.words[1], regcache);
+	  arg2_value =
+	    arc_linux_read_reg_encoded_in_insn (arg2_reg, byte_order,
+						instr.words[1], regcache);
+	  is_branch_taken =
+	    arc_linux_is_brcc_taken (instr_subopcode, arg1_value, arg2_value);
+
+	  if (arc_debug)
+	    {
+	      fprintf_unfiltered (gdb_stdlog,
+				  "--- arc_linux_next_pc arg1_reg = %ld, "
+				  "arg2_reg = %ld, ", arg1_reg, arg2_reg);
+	    }
+	}
+      /* If instruction is not brcc or bbit we have not calculated branch
+         condition yet and should use status32 register for calculating it. */
+      else
+	{
+	  instr_subopcode = (instr.words[0] & 0x3F0000) >> 16;
+	  is_branch_lpcc = (instr_subopcode == 0x28)
+			   && (instr._opcode == 0x4);
+	  regcache_cooked_read_unsigned (regcache,
+					 gdbarch_ps_regnum (gdbarch),
+					 &status32);
+	  is_branch_taken =
+	    arc_linux_is_condition_true (status32, instr._cond);
+	}
+      if (arc_debug)
+	{
+	  fprintf_unfiltered (gdb_stdlog,
+			      "--- arc_linux_next_pc is_brcc_or_bbit = %d, "
+			      "is_branch_taken = %d, instr._opcode = %d, "
+			      "instr subopcode = %d, instr.words[0] = %lu, "
+			      "instr.words[1] = %lu, is_branch_lpcc = %d\n",
+			      is_brcc_or_bbit, is_branch_taken, instr._opcode,
+			      instr_subopcode, instr.words[0], instr.words[1],
+			      is_branch_lpcc);
+	}
+      /* If current instruction is LP(cc) and branch is not taken, next
+         instruction must be calculated the same way as it would if instruction
+         was an another branch or jump and branch was taken. */
+      if ((is_branch_taken && !is_branch_lpcc)
+	 || (!is_branch_taken && is_branch_lpcc))
+	{
+	  if ((instr.flow == direct_jump) || (instr.flow == direct_call))
+	    {
+	      /* It's a direct jump or call, so the destination address is
+	         encoded in the instruction, so we got it by disassembling the
+	         instruction. */
+	      *fall_thru = (CORE_ADDR) instr.targets[0];
+	    }
+	  else
+	    {
+	      /* It's an indirect jump to the address held in the register
+	         named in the instruction, so we must read that register. */
+	      ULONGEST val;
+	      regcache_cooked_read_unsigned (regcache,
+					     instr.register_for_indirect_jump,
+					     &val);
+	      *fall_thru = val;
+	    }
 	}
       else
 	{
-	  /* It's an indirect jump to the address held in the register
-	     named in the instruction, so we must read that register */
-	  ULONGEST val;
-	  regcache_cooked_read_unsigned (regcache,
-					 instr.register_for_indirect_jump,
-					 &val);
-	  *target = val;
-	}
-
-      /* for instructions with delay slots, the fall thru is not the
-         instruction immediately after the branch instruction, but the one
-         after that. */
-      if (instr.nullifyMode == (char) BR_exec_always)
-	{
-	  struct arcDisState instr_d = arcAnalyzeInstr (*fall_thru, &di);
-
-	  *fall_thru += instr_d.instructionLen;
+	  /* For instructions with delay slots, the fall thru is not the
+	     instruction immediately after the branch instruction, but the one
+	     after that. */
+	  if ((instr.nullifyMode) == ((char) BR_exec_always))
+	    {
+	      instr_d = arcAnalyzeInstr (*fall_thru, &di);
+	      *fall_thru += instr_d.instructionLen;
+	    }
 	}
     }
-
-
-  /* Zero-overhead loops */
-  regcache_cooked_read_unsigned (regcache, ARC_LP_START_REGNUM, &lp_start);
-  regcache_cooked_read_unsigned (regcache, ARC_LP_END_REGNUM, &lp_end);
-  regcache_cooked_read_unsigned (regcache, ARC_LP_COUNT_REGNUM, &lp_count);
-  regcache_cooked_read_unsigned (regcache, gdbarch_pc_regnum (gdbarch), &status32);
-
-  if (!(status32 & 0x00000100) && *fall_thru == lp_end && lp_count > 1)
+  /* Is current instruction the last in a loop body? */
+  else
     {
-      /* the instruction is in effect a jump back to the start of the loop */
-      two_targets = TRUE;
-      *target = lp_start;
+      /* Zero-overhead loops. */
+      regcache_cooked_read_unsigned (regcache, ARC_LP_START_REGNUM,
+				     &lp_start);
+      regcache_cooked_read_unsigned (regcache, ARC_LP_END_REGNUM, &lp_end);
+      regcache_cooked_read_unsigned (regcache, ARC_LP_COUNT_REGNUM,
+				     &lp_count);
+
+      if (arc_debug)
+	{
+	  fprintf_unfiltered (gdb_stdlog,
+			      "---arc_linux_next_pc lp_start = %s, lp_end = %s,"
+			      " lp_count = %s, fall_thru = %s\n",
+			      pulongest (lp_start), pulongest (lp_end),
+			      pulongest (lp_count), pulongest (*fall_thru));
+	}
+      if (is_loop_enabled && *fall_thru == lp_end && lp_count > 1)
+	{
+	  /* The instruction is in effect a jump back to the start of the
+	     loop. */
+	  *fall_thru = lp_start;
+	  return FALSE;
+	}
     }
 
-  return two_targets;
-
+  return FALSE;
 }	/* arc_linux_next_pc () */
 
 

@@ -36,6 +36,17 @@
  * tools. */
 #define ARC_LINUX_SIZEOF_GREGSET (40 * BYTES_IN_REGISTER)
 
+/* STATUS32 register over-flow bit. */
+#define ARC_REG_STATUS32_V (1 << 8)
+/* STATUS32 register carry bit. */
+#define ARC_REG_STATUS32_C (1 << 9)
+/* STATUS32 register negative bit. */
+#define ARC_REG_STATUS32_N (1 << 10)
+/* STATUS32 register zero bit. */
+#define ARC_REG_STATUS32_Z (1 << 11)
+/* STATUS32 register loop disabled bit. */
+#define ARC_REG_STATUS32_L (1 << 12)
+
 /* Reads registers from NT_PRSTATUS data array into the regcache. */
 void arc_linux_supply_gregset (	const struct regset *regset,
 				struct regcache *regcache,
