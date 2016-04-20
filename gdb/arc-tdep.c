@@ -2983,6 +2983,278 @@ maintenance_print_arc_command (char *args, int from_tty)
   cmd_show_list (maintenance_print_arc_list, from_tty, "");
 }
 
+
+/* Accepts single argument - address of instruction to disassemble. */
+static void
+arc_print_disasm_info (char *args, int from_tty)
+{
+  if (args != NULL && strlen (args) > 0)
+    {
+      CORE_ADDR address;
+      struct disassemble_info di;
+      struct gdbarch* gdbarch;
+      int length;
+      const struct arc_opcode *opcode;
+      const unsigned char *opidx;
+      const unsigned char *flgidx;
+
+      address = string_to_core_addr (args);
+      gdbarch = target_gdbarch ();
+      arc_initialize_disassembler (gdbarch, &di);
+      length = arc_delayed_print_insn (address, &di);
+
+      /* Instruction type */
+      arc_print ("insn_type=");
+      switch (di.insn_type) {
+	case dis_noninsn:
+	  arc_print ("dis_noninsn");
+	  break;
+	case dis_nonbranch:
+	  arc_print ("dis_nonbranch");
+	  break;
+	case dis_branch:
+	  arc_print ("dis_branch");
+	  break;
+	case dis_condbranch:
+	  arc_print ("dis_condbranch");
+	  break;
+	case dis_jsr:
+	  arc_print ("dis_jsr");
+	  break;
+	case dis_condjsr:
+	  arc_print ("dis_condjsr");
+	  break;
+	case dis_dref:
+	  arc_print ("dis_dref");
+	  break;
+	case dis_dref2:
+	  arc_print ("dis_dref2");
+	  break;
+	default:
+	  arc_print ("<INVALID>");
+	  break;
+      }
+      arc_print ("\n");
+
+      arc_print ("length=%i\n", length);
+      arc_print ("branch_delay_insns=%hhi\n", di.branch_delay_insns);
+      arc_print ("data_size=%hhi\n", di.data_size);
+      arc_print ("target=%s\n", print_core_address (gdbarch, di.target));
+
+      if (di.target2 != 0)
+	arc_print ("target2=%s\n",
+		   print_core_address (gdbarch, di.target2));
+
+      if (di.disassembler_options)
+	arc_print ("disassembler_options=%s\n",
+	    di.disassembler_options);
+
+      /* arc_opcode */
+      gdb_assert (di.private_data);
+      opcode = (const struct arc_opcode *) di.private_data;
+      arc_print ("arc_opcode={\n");
+      arc_print ("\tname=%s\n", opcode->name);
+      arc_print ("\topcode=0x%08x\n", opcode->opcode);
+      arc_print ("\tmask=0x%08x\n", opcode->mask);
+      arc_print ("\tcpu=0x%x\n", opcode->cpu);
+
+      /* arc_opcode->insn_class */
+      arc_print ("\tclass=");
+      switch (opcode->insn_class) {
+	case ARITH:
+	  arc_print ("ARITH");
+	  break;
+	case AUXREG:
+	  arc_print ("AUXREG");
+	  break;
+	case BRANCH:
+	  arc_print ("BRANCH");
+	  break;
+	case CONTROL:
+	  arc_print ("CONTROL");
+	  break;
+	case DSP:
+	  arc_print ("DSP");
+	  break;
+	case FLOAT:
+	  arc_print ("FLOAT");
+	  break;
+	case INVALID:
+	  arc_print ("INVALID");
+	  break;
+	case JUMP:
+	  arc_print ("JUMP");
+	  break;
+	case KERNEL:
+	  arc_print ("KERNEL");
+	  break;
+	case LOGICAL:
+	  arc_print ("LOGICAL");
+	  break;
+	case MEMORY:
+	  arc_print ("MEMORY");
+	  break;
+	default:
+	  arc_print ("<UNKNOWN>");
+	  break;
+      }
+      arc_print ("\n");
+
+      /* arc_opcode->subclass */
+      arc_print ("\tsubclass=");
+      switch (opcode->subclass) {
+	case NONE:
+	  arc_print ("NONE");
+	  break;
+	case CVT:
+	  arc_print ("CVT");
+	  break;
+	case BTSCN:
+	  arc_print ("BTSCN");
+	  break;
+	case CD1:
+	  arc_print ("CD1");
+	  break;
+	case CD2:
+	  arc_print ("CD2");
+	  break;
+	case DIV:
+	  arc_print ("DIV");
+	  break;
+	case DP:
+	  arc_print ("DP");
+	  break;
+	case MPY1E:
+	  arc_print ("MPY1E");
+	  break;
+	case MPY6E:
+	  arc_print ("MPY6E");
+	  break;
+	case MPY7E:
+	  arc_print ("MPY7E");
+	  break;
+	case MPY8E:
+	  arc_print ("MPY8E");
+	  break;
+	case MPY9E:
+	  arc_print ("MPY9E");
+	  break;
+	case SHFT1:
+	  arc_print ("SHFT1");
+	  break;
+	case SHFT2:
+	  arc_print ("SHFT2");
+	  break;
+	case SWAP:
+	  arc_print ("SWAP");
+	  break;
+	case SP:
+	  arc_print ("SP");
+	  break;
+	default:
+	  arc_print ("<UNKNOWN>");
+	  break;
+      }
+      arc_print ("\n");
+
+      /* Print opcode operands. */
+      for (opidx = opcode->operands; *opidx; ++opidx)
+	{
+	  const struct arc_operand *operand = &arc_operands[*opidx];
+	  arc_print ("\toperands[]={\n");
+
+	  if (!(operand->flags & ARC_OPERAND_FAKE))
+	    {
+	      arc_print ("\t\tbits=%u\n", operand->bits);
+	      arc_print ("\t\tshift=%u\n", operand->shift);
+	    }
+
+	  if (operand->default_reloc != 0)
+	    arc_print ("\t\tdefault_reloc=%i\n", operand->default_reloc);
+
+	  arc_print ("\t\tflags=0x%x [ ", operand->flags);
+	  if (operand->flags & ARC_OPERAND_FAKE)
+	    arc_print ("FAKE ");
+	  if (operand->flags & ARC_OPERAND_IR)
+	    arc_print ("IR ");
+	  if (operand->flags & ARC_OPERAND_SIGNED)
+	    arc_print ("SIGNED ");
+	  if (operand->flags & ARC_OPERAND_UNSIGNED)
+	    arc_print ("UNSIGNED ");
+	  if (operand->flags & ARC_OPERAND_LIMM)
+	    arc_print ("LIMM ");
+	  if (operand->flags & ARC_OPERAND_DUPLICATE)
+	    arc_print ("DUPLICATE ");
+	  if (operand->flags & ARC_OPERAND_PCREL)
+	    arc_print ("PCREL ");
+	  if (operand->flags & ARC_OPERAND_TRUNCATE)
+	    arc_print ("TRUNCATE ");
+	  if (operand->flags & ARC_OPERAND_ALIGNED16)
+	    arc_print ("ALIGNED16 ");
+	  if (operand->flags & ARC_OPERAND_ALIGNED32)
+	    arc_print ("ALIGNED32 ");
+	  if (operand->flags & ARC_OPERAND_IGNORE)
+	    arc_print ("IGNORE ");
+	  if (operand->flags & ARC_OPERAND_NCHK)
+	    arc_print ("NCHK ");
+	  if (operand->flags & ARC_OPERAND_BRAKET)
+	    arc_print ("BRAKET ");
+	  arc_print ("]\n");
+
+	  arc_print ("\t}\n");
+	}
+
+      /* opcode flags */
+      for (flgidx = opcode->flags; *flgidx; ++flgidx)
+	{
+	  const struct arc_flag_class *flag;
+	  const unsigned int *flgopidx;
+
+	  flag = &arc_flag_classes[*flgidx];
+
+	  arc_print ("\tflags[]={\n");
+
+	  arc_print ("\t\tclass=");
+	  switch (flag->flag_class) {
+	    case F_CLASS_NONE:
+	      arc_print ("F_CLASS_NONE");
+	      break;
+	    case F_CLASS_OPTIONAL:
+	      arc_print ("F_CLASS_OPTIONAL");
+	      break;
+	    case F_CLASS_REQUIRED:
+	      arc_print ("F_CLASS_REQUIRED");
+	      break;
+	    case F_CLASS_EXTEND:
+	      arc_print ("F_CLASS_EXTEND");
+	      break;
+	    default:
+	      arc_print ("<UNKNOWN>");
+	      break;
+	  }
+	  arc_print ("\n");
+
+	  for (flgopidx = flag->flags; *flgopidx; ++flgopidx)
+	    {
+	      const struct arc_flag_operand *flag_operand;
+
+	      flag_operand = &arc_flag_operands[*flgopidx];
+
+	      arc_print ("\t\toperands[]={\n");
+	      arc_print ("\t\t\tname=%s\n", flag_operand->name);
+	      arc_print ("\t\t\tcode=%u\n", flag_operand->code);
+	      arc_print ("\t\t\tbits=%u\n", flag_operand->bits);
+	      arc_print ("\t\t\tshift=%u\n", flag_operand->shift);
+	      arc_print ("\t\t\tfavail=%hhu\n", flag_operand->favail);
+	      arc_print ("\t\t}\n");
+	    }
+	  arc_print ("\t\n");
+	}
+      arc_print ("}\n");
+    }
+}
+
+
 /* this function is called from gdb */
 void
 _initialize_arc_tdep (void)
@@ -3015,6 +3287,10 @@ _initialize_arc_tdep (void)
 internal state."),
 		  &maintenance_print_arc_list, "maintenance print arc ", 0,
 		  &maintenanceprintlist);
+
+  add_cmd ("disasm-info", class_maintenance, arc_print_disasm_info,
+	   _("Print disassembly_info structure for instruction at given address."),
+	   &maintenance_print_arc_list);
 
   /* Debug internals for ARC GDB.  */
   add_setshow_zinteger_cmd ("arc", class_maintenance,
