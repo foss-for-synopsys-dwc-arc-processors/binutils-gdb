@@ -744,7 +744,7 @@ debug_arc_reloc (struct arc_relocation_data reloc_data)
 	   (unsigned int) reloc_data.sym_value);
   if (reloc_data.sym_section != NULL)
     {
-      PR_DEBUG ("IN IF\n");
+      PR_DEBUG (" Symbol Section:\n");
       PR_DEBUG (
 	       "  section name = %s, output_offset 0x%08x",
 	       reloc_data.sym_section->name,
@@ -755,8 +755,8 @@ debug_arc_reloc (struct arc_relocation_data reloc_data)
 		   ", output_section->vma = 0x%08x",
 		   ((unsigned int) reloc_data.sym_section->output_section->vma));
 	}
-
       PR_DEBUG ( "\n");
+      PR_DEBUG ("  file: %s\n", reloc_data.sym_section->owner->filename);
     }
   else
     {
@@ -775,6 +775,7 @@ debug_arc_reloc (struct arc_relocation_data reloc_data)
 	       (unsigned int) (reloc_data.input_section->output_section->vma +
 	       reloc_data.input_section->output_offset +
 	       reloc_data.reloc_offset));
+      PR_DEBUG ("  file: %s\n", reloc_data.input_section->owner->filename);
     }
   else
     {
