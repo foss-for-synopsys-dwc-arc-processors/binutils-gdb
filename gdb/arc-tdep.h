@@ -255,7 +255,7 @@ enum arc_compat_regnum
                           __FUNCTION__, ##__VA_ARGS__);			\
     }
 
-#define arc_print(fmt, args...) fprintf_unfiltered (gdb_stdlog, fmt, ##args);
+#define arc_print(fmt, args...) fprintf_unfiltered (gdb_stdlog, fmt, ##args)
 
 /* -------------------------------------------------------------------------- */
 /* Globally visible datatypes                                                 */
@@ -352,6 +352,137 @@ arc_mach_is_arcv2(struct gdbarch *gdbarch)
 {
     return gdbarch_bfd_arch_info (gdbarch)->mach == bfd_mach_arc_arcv2;
 }
+
+
+/* Declarations related to instruction decoder.  */
+
+enum ldst_writeback_mode
+{
+  ARC_WRITEBACK_NO = 0,
+  ARC_WRITEBACK_AW = 1,
+  ARC_WRITEBACK_A = ARC_WRITEBACK_AW,
+  ARC_WRITEBACK_AB = 2,
+  ARC_WRITEBACK_AS = 3,
+};
+
+
+enum ldst_data_size
+{
+  ARC_SCALING_NONE = 0,
+  ARC_SCALING_B = 1,
+  ARC_SCALING_H = 2,
+  ARC_SCALING_D = 3,
+};
+
+
+enum ldst_cache_bypass_mode
+{
+  ARC_CACHE_BYPASS_NO = 0,
+  ARC_CACHE_BYPASS_DI = 1,
+};
+
+/* Container for information about instruction. Provides a higher level access
+ * to data from opcodes' struct arc_opcode.  */
+
+struct arc_instruction {
+
+  /* Address of this instruction.  */
+  CORE_ADDR address;
+
+  /* Length (without LIMM).  */
+  unsigned int length;
+
+  /* Pointer to arc_opcode struct from opcodes library.  */
+  const struct arc_opcode *opcode_data;
+
+  /* Is it a branch/jump instruction?  */
+  int is_control_flow;
+
+  /* Whether this instruction has a delay slot.  */
+  int has_delay_slot;
+
+  /* Instruction word, wth converted endianness.  */
+  uint32_t raw_word;
+
+  /* Is there a LIMM in this instruction?  */
+  int limm_p;
+
+  /* Long immediate value.  */
+  uint32_t limm_value;
+
+  /* Some ARC instructions have subopcodes nested up to 3 layers.  */
+  unsigned int opcode;
+  unsigned int subopcode1;
+  unsigned int subopcode2;
+  unsigned int subopcode3;
+
+  /* Load/store writaback mode.  */
+  enum ldst_writeback_mode writeback_mode;
+
+  /* Load/store cache mypass mode.  */
+  enum ldst_cache_bypass_mode cache_bypass_mode;
+
+  /* Load/store data size.  */
+  enum ldst_data_size data_size_mode;
+};
+
+/* Fill arc_instruction instance with data about instruction at specified
+ * address.  */
+
+extern void arc_insn_decode (struct gdbarch *gdbarch, CORE_ADDR addr,
+    struct arc_instruction* insn);
+
+extern void arc_insn_dump (const struct arc_instruction *insn);
+
+/* Count amount of operands.  Note that amount of operands reported by opcodes
+   disassembler can be different from the one encoded in the instruction.
+   Notable case is "ld a,[b,offset]", when offset == 0.  In this case opcodes
+   disassembler presents this instruction as "ld a,[b]", hence there are *two*
+   operands, not three.  */
+
+unsigned int arc_insn_count_operands (const struct arc_instruction *insn);
+
+
+/* Get address of next instruction, assuming linear execution (no branches).
+ * This is `address of instruction + instruction length with LIMM`.  */
+
+extern CORE_ADDR arc_insn_get_linear_next_pc (
+    const struct arc_instruction *insn);
+
+/* Get branch/jump target address for the `insn`. Will return linearly next
+ * instruction for the non-branch instruction. Note that this function returns
+ * branch target and doens't evaluate if this branch is taken or not. For the
+ * indirect jumps value depends in register state. */
+
+extern CORE_ADDR arc_insn_get_branch_target (
+    const struct arc_instruction *insn);
+
+/* Get register which contains specified instruction operand.  Returns -1 if
+ * operand is an immediate value, not a register.  */
+
+extern int arc_insn_get_operand_reg (const struct arc_instruction *insn,
+    unsigned int operand_num);
+
+/* Get value of the specified operand.  */
+
+extern ULONGEST arc_insn_get_operand_value (const struct arc_instruction* insn,
+    unsigned int operand_num);
+
+/* Get value of the specified operand as a signed value.  */
+
+extern LONGEST arc_insn_get_operand_value_signed (
+    const struct arc_instruction* insn, unsigned int operand_num);
+
+/* Returns TRUE if specified operand is a register, FALSE if it is an immediate
+ * value.  */
+
+extern int arc_insn_operand_is_reg (const struct arc_instruction* insn,
+    unsigned int operand_num);
+
+/* Get offset of a memory operation. */
+extern CORE_ADDR arc_insn_get_memory_offset (
+    const struct arc_instruction* insn);
+
 
 #endif /* ARC_TDEP_H */
 

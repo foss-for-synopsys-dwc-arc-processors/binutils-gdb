@@ -193,6 +193,7 @@
 #include "opcode/arc.h"
 #include "opcodes/arc-dis.h"
 #include "arc-tdep.h"
+#include "dis-asm.h"
 
 /* Default target descriptions. */
 #include "features/arc/compatible-v2.c"
@@ -441,6 +442,19 @@ static const struct arc_reginfo aux_compatible_reginfo[] =
 /* -------------------------------------------------------------------------- */
 /*                               local functions                              */
 /* -------------------------------------------------------------------------- */
+
+/* Forward declarations of disassembler decoder functions. */
+#define ARRANGE_ENDIAN(info, buf)					\
+  (info->endian == BFD_ENDIAN_LITTLE ? arc_getm32 (bfd_getl32 (buf))	\
+   : bfd_getb32 (buf))
+
+
+#define BITS(word,s,e)  (((word) << (sizeof (word) * 8 - 1 - e)) >>	\
+			 (s + (sizeof (word) * 8 - 1 - e)))
+
+
+static bfd_vma arc_getm32 (unsigned int data);
+
 
 /*! Round up a number of bytes to a whole number of words
 
@@ -1348,6 +1362,7 @@ arc_scan_prologue (const CORE_ADDR entrypoint,
       if (arc_debug)
 	{
 	  arc_print_insn_state (current_instr);
+	  arc_insn_dump (&insn);
 	}
 
       /* if this instruction is in the prologue, fields in the info will be
@@ -2494,6 +2509,581 @@ arc_delayed_print_insn (bfd_vma addr, struct disassemble_info *info)
   return print_insn (addr, info);
 }
 
+/* POP_S and PUSH_S sometimes do not contain their real operands encoded in a
+   way represented by the disassembler, instead this information is encoded
+   as values of subopcodes.  */
+
+static int
+arc_insn_is_pop_s (const struct arc_instruction* insn)
+{
+  if (insn->opcode == 0x18 && insn->subopcode1 == 0x6
+      && (insn->subopcode2 == 0x11 || insn->subopcode2 == 0x1))
+    return TRUE;
+  else
+    return FALSE;
+}
+
+
+static int
+arc_insn_is_push_s (const struct arc_instruction* insn)
+{
+  if (insn->opcode == 0x18 && insn->subopcode1 == 0x7
+      && (insn->subopcode2 == 0x11 || insn->subopcode2 == 0x1))
+    return TRUE;
+  else
+    return FALSE;
+}
+
+
+static void
+parse_arc_opcode_flags (struct arc_instruction *insn)
+{
+  const unsigned char *flag_index;
+
+  gdb_assert (insn != NULL);
+  gdb_assert (insn->opcode_data != NULL);
+  gdb_assert (insn->opcode_data->flags != NULL);
+
+  for (flag_index = insn->opcode_data->flags; *flag_index; flag_index++)
+    {
+      const struct arc_flag_class *flag_class = &arc_flag_classes[*flag_index];
+      const unsigned int *flag_operand_index;
+
+      for (flag_operand_index = flag_class->flags;
+	   *flag_operand_index; flag_operand_index++)
+	{
+	  const struct arc_flag_operand *flag_operand =
+	    &arc_flag_operands[*flag_operand_index];
+	  unsigned int value;
+
+	  if (!flag_operand->favail)
+	    continue;
+
+	  value = (insn->raw_word >> flag_operand->shift) &
+	    ((1 << flag_operand->bits) - 1);
+	  if (flag_operand->code == value)
+	    {
+	      switch (flag_operand->name[0])
+		{
+		case 'a':
+		  /* Address writeback mode. */
+		  insn->writeback_mode = (enum ldst_writeback_mode) value;
+		  break;
+		case 'b':
+		case 'h':
+		case 'w':
+		  /* Data size mode. */
+		  insn->data_size_mode = (enum ldst_data_size) value;
+		  break;
+		case 'd':
+		    if (0 == strncmp ("di", flag_operand->name, 3))
+		      insn->cache_bypass_mode =
+			(enum ldst_cache_bypass_mode) value;
+		    break;
+		}
+	    }
+	}
+    }
+}
+
+unsigned int
+arc_insn_count_operands (const struct arc_instruction *insn)
+{
+  const unsigned char *opindex;
+  unsigned int result = 0;
+
+  gdb_assert (insn != NULL);
+  gdb_assert (insn->opcode_data != NULL);
+  gdb_assert (insn->opcode_data->operands != NULL);
+
+  for (opindex = insn->opcode_data->operands; *opindex; opindex++)
+    {
+      const struct arc_operand *operand = &arc_operands[*opindex];
+
+      if (operand->flags & ARC_OPERAND_FAKE)
+	continue;
+
+      result += 1;
+    }
+
+  return result;
+}
+
+static void
+set_insn_subopcodes (struct arc_instruction *insn)
+{
+  gdb_assert (insn != NULL);
+
+  /* Find subopcode.  */
+  switch (insn->opcode)
+    {
+    case 0x00:
+      insn->subopcode1 = BITS (insn->raw_word, 16, 16);
+      break;
+    case 0x01:
+      insn->subopcode1 = BITS (insn->raw_word, 16, 16);
+      if (insn->subopcode1 == 1)
+	{
+	  insn->subopcode2 = BITS (insn->raw_word, 4, 4);
+	  insn->subopcode3 = BITS (insn->raw_word, 0, 3);
+	}
+      else
+	{
+	  insn->subopcode2 = BITS (insn->raw_word, 17, 17);
+	}
+      break;
+    /* No subopcodes for 0x02 - 0x03.  */
+    case 0x04:
+    case 0x05:
+    case 0x06:
+    case 0x07:
+      insn->subopcode1 = BITS (insn->raw_word, 16, 21);
+      if (insn->subopcode1 == 0x2F)
+	{
+	  insn->subopcode2 = BITS (insn->raw_word, 0, 5);
+	  if (insn->subopcode2 == 0x3F)
+	    insn->subopcode3 = BITS (insn->raw_word, 12, 14) << 3 |
+	      BITS (insn->raw_word, 24, 26);
+	}
+      break;
+    case 0x08:
+      insn->subopcode1 = BITS (insn->raw_word, 2, 2);
+      break;
+    case 0x09:
+    case 0x0A:
+      insn->subopcode1 = BITS (insn->raw_word, 3, 3);
+      if (insn->subopcode1 == 0)
+	insn->subopcode1 = BITS (insn->raw_word, 3, 4);
+      break;
+    case 0x0B:
+      insn->subopcode1 = BITS (insn->raw_word, 10, 10);
+      break;
+    case 0x0C:
+    case 0x0D:
+      insn->subopcode1 = BITS (insn->raw_word, 3, 4);
+      break;
+    case 0x0E:
+      insn->subopcode1 = BITS (insn->raw_word, 2, 4);
+      break;
+    case 0x0F:
+      insn->subopcode1 = BITS (insn->raw_word, 0, 4);
+      if (insn->subopcode1 == 0)
+	{
+	  insn->subopcode2 = BITS (insn->raw_word, 5, 7);
+	  if (insn->subopcode2 == 0x7)
+	    insn->subopcode3 = BITS (insn->raw_word, 8, 10);
+	}
+      break;
+    /* No subopcodes for 0x10 - 0x16.  */
+    case 0x17:
+    case 0x18:
+      insn->subopcode1 = BITS (insn->raw_word, 5, 7);
+      /* PRM doesn't put this clearly, but 0x18 effectly have subopcode2.  */
+      switch (insn->subopcode1)
+	{
+	/* ADD_S sp,sp,u7 and SUB_S sp,sp,u7.  */
+	case 0x5:
+	  insn->subopcode2 = BITS (insn->raw_word, 8, 8);
+	  break;
+	/* PUSH_S, POP_S, LEAVE_S, ENTER_S.  */
+	case 0x6:
+	case 0x7:
+	  insn->subopcode2 = BITS (insn->raw_word, 0, 0);
+	  /* If bit 0 is 0, then it is LEAVE_S, ENTER_S. Otherwise we need to
+	   * expand subopcode further.  */
+	  if (insn->subopcode2 != 0)
+	    insn->subopcode2 = BITS (insn->raw_word, 0, 4);
+	  break;
+	}
+      break;
+    case 0x19:
+      insn->subopcode1 = BITS (insn->raw_word, 9, 10);
+      break;
+    /* No subopcodes for 0x1A - 0x1B.  */
+    case 0x1C:
+      insn->subopcode1 = BITS (insn->raw_word, 7, 7);
+      break;
+    case 0x1D:
+      insn->subopcode1 = BITS (insn->raw_word, 7, 7);
+      break;
+    /* B_S, BEQ_S, BNE_S, Bcc_S.  */
+    case 0x1E:
+      insn->subopcode1 = BITS (insn->raw_word, 9, 10);
+      switch (insn->subopcode1)
+	{
+	/* Bcc_S  */
+	case 3:
+	    insn->subopcode2 = BITS (insn->raw_word, 6, 8);
+	    break;
+	}
+      break;
+    /* No subopcodes for 0x1F.  */
+    }
+}
+
+void
+arc_insn_decode (struct gdbarch* gdbarch, CORE_ADDR addr,
+    struct arc_instruction* insn)
+{
+  bfd_byte buffer[4];
+  struct disassemble_info di;
+  const struct arc_opcode *opcode;
+  size_t length_with_limm;
+
+  gdb_assert (gdbarch);
+  gdb_assert (insn);
+
+  /* Ensure that insn would be in the reset state.  */
+  memset (insn, 0, sizeof (struct arc_instruction));
+
+  arc_initialize_disassembler (gdbarch, &di);
+  length_with_limm = arc_delayed_print_insn (addr, &di);
+  if (length_with_limm == 2 || length_with_limm == 6)
+    insn->length = 2;
+  else
+    insn->length = 4;
+
+  insn->address = addr;
+
+  opcode = (const struct arc_opcode *) di.private_data;
+  insn->opcode_data = opcode;
+
+  /* Read instruction as-is from memory.  This reads only instruction, without
+   * LIMM.  */
+  di.read_memory_func (addr, buffer, 4, &di);
+  switch (insn->length)
+    {
+    case 2:
+      {
+	unsigned int lowbyte = (di.endian == BFD_ENDIAN_LITTLE) ? 1 : 0;
+	unsigned int highbyte = (di.endian == BFD_ENDIAN_LITTLE) ? 0 : 1;
+	insn->raw_word = (buffer[lowbyte] << 8) | buffer[highbyte];
+	insn->opcode = BITS (insn->raw_word, 11, 15);
+	break;
+      }
+    case 4:
+      insn->raw_word = ARRANGE_ENDIAN ((&di), buffer);
+      insn->opcode = BITS (insn->raw_word, 27, 31);
+      break;
+    }
+
+  set_insn_subopcodes (insn);
+
+  /* Read LIMM if there is one.  */
+  if (length_with_limm > 4)
+    {
+      di.read_memory_func (addr + insn->length, buffer, 4, &di);
+      insn->limm_value = ARRANGE_ENDIAN ((&di), buffer);
+      insn->limm_p = TRUE;
+    }
+
+  insn->is_control_flow = (di.insn_type == dis_branch
+			   || di.insn_type == dis_condbranch
+			   || di.insn_type == dis_jsr
+			   || di.insn_type == dis_condjsr);
+
+  /* ARC can have only one instruction in delay slot.  */
+  gdb_assert (di.branch_delay_insns <= 1);
+  insn->has_delay_slot = di.branch_delay_insns;
+
+  parse_arc_opcode_flags (insn);
+
+  /* Opcodes disassembler doesn't set writeback flags for POP_S and PUSH_S. */
+  if (arc_insn_is_push_s (insn))
+    insn->writeback_mode = ARC_WRITEBACK_AW;
+  if (arc_insn_is_pop_s (insn))
+    insn->writeback_mode = ARC_WRITEBACK_AB;
+}
+
+
+CORE_ADDR
+arc_insn_get_linear_next_pc (const struct arc_instruction *insn)
+{
+  gdb_assert (insn != NULL);
+  /* In ARC long immediate is always 4 bytes.  */
+  return insn->address + insn->length + (insn->limm_p ? 4 : 0);
+}
+
+
+CORE_ADDR
+arc_insn_get_branch_target (const struct arc_instruction * insn)
+{
+  gdb_assert (insn != NULL);
+  gdb_assert (insn->is_control_flow);
+
+  /* For BI [c]: PC = nextPC + (c << 2).  */
+  if (insn->opcode == 0x4 && insn->subopcode1 == 0x24)
+    {
+      ULONGEST reg_value;
+      reg_value = arc_insn_get_operand_value (insn, 0);
+      return arc_insn_get_linear_next_pc (insn) + (reg_value << 2);
+    }
+  /* For BIH [c]: PC = nextPC + (c << 1).  */
+  else if (insn->opcode == 0x4 && insn->subopcode1 == 0x25)
+    {
+      ULONGEST reg_value;
+      reg_value = arc_insn_get_operand_value (insn, 0);
+      return arc_insn_get_linear_next_pc (insn) + (reg_value << 1);
+    }
+  /* JLI and EI.  */
+  else if (insn->opcode == 0xB)
+    {
+      if (insn->subopcode1 == 0)
+	fprintf_unfiltered (gdb_stderr,
+	    "JLI_S instructions are not supported by the GDB.");
+      else
+	fprintf_unfiltered (gdb_stderr,
+	    "EI_S instructions are not supported by the GDB.");
+      return 0;
+    }
+  /* B, Bcc, BL, BLcc, BBIT0/1, BRcc - PC-relative operand.  */
+  else if (insn->opcode_data->insn_class == BRANCH)
+    {
+      CORE_ADDR pcrel_addr;
+
+      /* Most instructions has branch target as their sole argument.  However
+         conditional brcc/bbit has it as a third operand.  Opcode 0x1 also
+         covert simple conditional branches like Bcc.  Bit 16 is set for
+         BRcc/BBIT, not set for Bcc.  */
+      if (insn->opcode == 0x1 && insn->subopcode1 == 1)
+	pcrel_addr = arc_insn_get_operand_value (insn, 2);
+      else
+	pcrel_addr = arc_insn_get_operand_value (insn, 0);
+
+      /* Offset is relative to the 4-byte aligned address of the the current
+         instruction, hence last two bits should be truncated.  */
+      return pcrel_addr + (insn->address & (~3L));
+    }
+  else if (insn->opcode_data->insn_class == JUMP)
+    {
+      /* All jumps are single-operand.  */
+      return arc_insn_get_operand_value (insn, 0);
+    }
+
+  /* This is some new and unknown instruction.  */
+  gdb_assert (FALSE);
+  return 0;
+}
+
+
+static const struct arc_operand *
+get_arc_operand (const struct arc_instruction *insn, unsigned int operand_num)
+{
+  const unsigned char *opindex;
+  unsigned int cur_operand_index = 0;
+
+  gdb_assert (insn != NULL);
+  gdb_assert (operand_num < arc_insn_count_operands (insn));
+
+  for (opindex = insn->opcode_data->operands; *opindex; opindex++)
+    {
+      const struct arc_operand *operand = &arc_operands[*opindex];
+
+      if (operand->flags & ARC_OPERAND_FAKE)
+	continue;
+
+      if (cur_operand_index == operand_num)
+	return &arc_operands[*opindex];
+
+      cur_operand_index += 1;
+    }
+
+  /* No way we could have gotten here. If operand_num would be higher than
+     operand count, an assertion would fail earlier.  */
+  gdb_assert (FALSE);
+  return NULL;
+}
+
+
+int
+arc_insn_get_operand_reg (const struct arc_instruction* insn,
+    unsigned int operand_num)
+{
+  const struct arc_operand *operand = get_arc_operand (insn, operand_num);
+
+  if (operand->flags & ARC_OPERAND_LIMM)
+    {
+      gdb_assert (insn->limm_p);
+      return ARC_LIMM_REGNUM;
+    }
+  else if (operand->flags & ARC_OPERAND_IR)
+    {
+      ULONGEST value;
+
+      /* Some operands are encoded in a simple manner with just a shift
+         and length, but some are encoded in two non-contigious pieces,
+         so extracting them requires a special function.  */
+      if (operand->extract)
+	value = (*operand->extract) (insn->raw_word, NULL);
+      else
+	value = (insn->raw_word >> operand->shift) & ((1 << operand->bits) - 1);
+
+      return value;
+    }
+  else
+    {
+      return -1;
+    }
+}
+
+/* For branch target operands it returns a raw PC-relative value, because at
+   this stage we do not know yet *iff* this is a PC-relative value or not, so
+   cannot calculate final value against PC base. */
+
+ULONGEST
+arc_insn_get_operand_value (const struct arc_instruction* insn,
+    unsigned int operand_num)
+{
+  const struct arc_operand *operand = get_arc_operand (insn, operand_num);
+
+  if (operand->flags & ARC_OPERAND_LIMM)
+    {
+      gdb_assert (insn->limm_p);
+      return insn->limm_value;
+    }
+  else
+    {
+      ULONGEST value;
+
+      /* Some operands are encoded in a simple manner with just a shift
+         and length, but some are encoded in two non-contigious pieces,
+         so extracting them requires a special function. */
+      if (operand->extract)
+	value = (*operand->extract) (insn->raw_word, NULL);
+      else
+	value = (insn->raw_word >> operand->shift) & ((1 << operand->bits) - 1);
+
+      if (operand->flags & ARC_OPERAND_IR)
+	{
+	  /* raw_value is a register number. */
+	  struct regcache *regcache = get_current_regcache ();
+	  regcache_cooked_read_unsigned (regcache, value, &value);
+	}
+
+      /* PC-relative flag is not handled here.  It may be set for some
+         branch instructions, but not for the others.  So
+         arc_insn_get_branch_target handles pc-relativeness itself,
+         while this function returns just an offset.  */
+
+      /* No need for special treatment of 32-bit and 16-bit aligned
+         operands - that is already handled by the disassembler.  */
+
+      /* No need to handle ARC_OPERAND_SIGNED - already done by the
+         disassembler.  */
+
+      return value;
+    }
+}
+
+
+LONGEST
+arc_insn_get_operand_value_signed (const struct arc_instruction* insn,
+    unsigned int operand_num)
+{
+  const struct arc_operand *operand = get_arc_operand (insn, operand_num);
+
+  if (operand->flags & ARC_OPERAND_LIMM)
+    {
+      gdb_assert (insn->limm_p);
+      /* Convert unsigned raw value to signed one. This assumes 2's complement
+         arithmetic, but so is the INT_MIN value from generic defs.h and that
+         assumption is true for ARC. It also assumes 4-byte words.  */
+      gdb_assert (sizeof (insn->limm_value) == 4);
+      return (((LONGEST) insn->limm_value) ^ INT_MIN) - INT_MIN;
+    }
+  else
+    {
+      LONGEST value;
+
+      /* Some operands are encoded in a simple manner with just a shift
+         and length, but some are encoded in two non-contigious pieces,
+         so extracting them requires a special function. */
+      if (operand->extract)
+	value = (*operand->extract) (insn->raw_word, NULL);
+      else
+	value = (insn->raw_word >> operand->shift) & ((1 << operand->bits) - 1);
+
+      if (operand->flags & ARC_OPERAND_IR)
+	{
+	  /* raw_value is a register number. */
+	  struct regcache *regcache = get_current_regcache ();
+	  regcache_cooked_read_signed (regcache, value, &value);
+	}
+
+      /* PC-relative flag is not handled here.  It may be set for some
+         branch instructions, but not for the others.  So
+         arc_insn_get_branch_target handles pc-relativeness itself,
+         while this function returns just an offset.  */
+
+      /* No need for special treatment of 32-bit and 16-bit aligned
+         operands - that is already handled by the disassembler.  */
+
+      /* No need to handle ARC_OPERAND_SIGNED - already done by the
+         disassembler.  */
+
+      return value;
+    }
+}
+
+
+/* Return TRUE if operand is a real register, FALSE if immediate value. */
+
+int
+arc_insn_operand_is_reg (const struct arc_instruction* insn,
+    unsigned int operand_num)
+{
+  const struct arc_operand *operand = get_arc_operand (insn, operand_num);
+
+  if (operand->flags & ARC_OPERAND_LIMM)
+    {
+      gdb_assert (insn->limm_p);
+      return FALSE;
+    }
+  else if (operand->flags & ARC_OPERAND_IR)
+    return TRUE;
+  else
+    return FALSE;
+}
+
+/* Return address offset for memory operation instructions.  */
+
+CORE_ADDR
+arc_insn_get_memory_offset (const struct arc_instruction* insn)
+{
+  int has_offset;
+
+  gdb_assert (insn);
+  gdb_assert (insn->opcode_data->insn_class == MEMORY);
+
+  /* POP_S and PUSH_S do not have explicit flags in disassembler. */
+  if (arc_insn_is_pop_s (insn))
+    return 4;
+  if (arc_insn_is_push_s (insn))
+    return -4;
+
+  /* Other instructions all have at least two operands: operand 0 is data,
+     operand 1 is address.  Operand 2 is offset from address.  However, see
+     comment to arc_insn_count_operands - in some cases, third operand may be
+     missing, if it is 0.  */
+  if (arc_insn_count_operands (insn) == 3)
+    return arc_insn_get_operand_value (insn, 2);
+  else
+    return 0;
+}
+
+/* Convert litte endian to middle endian.  */
+
+static bfd_vma
+arc_getm32 (unsigned int data)
+{
+  bfd_vma value;
+
+  value = ((data & 0xff00) | (data & 0xff)) << 16;
+  value |= ((data & 0xff0000) | (data & 0xff000000)) >> 16;
+  return value;
+}
+
+
 /*! Initialize GDB
 
     The functions set here are generic to *all* versions of GDB for ARC. The
@@ -2983,6 +3573,88 @@ maintenance_print_arc_command (char *args, int from_tty)
   cmd_show_list (maintenance_print_arc_list, from_tty, "");
 }
 
+/* Dump contents of arc_instruction to stdlog.  */
+
+void
+arc_insn_dump (const struct arc_instruction *insn)
+{
+  struct gdbarch* gdbarch = target_gdbarch ();
+
+  gdb_assert (insn != NULL);
+
+  arc_print ("Dumping arc_instruction at %s\n",
+      print_core_address (gdbarch, insn->address));
+  arc_print ("length=%u\n", insn->length);
+  arc_print ("length_with_limm=%u\n",
+		      insn->length + (insn->limm_p ? 4 : 0));
+  arc_print ("limm_p=%i\n", insn->limm_p);
+  arc_print ("opcode=0x%02x\n", insn->opcode);
+  arc_print ("subopcode1=0x%02x\n", insn->subopcode1);
+  arc_print ("subopcode2=0x%x\n", insn->subopcode2);
+  arc_print ("subopcode3=0x%x\n", insn->subopcode3);
+  arc_print ("is_control_flow=%i\n", insn->is_control_flow);
+  arc_print ("has_delay_slot=%i\n", insn->has_delay_slot);
+
+  CORE_ADDR next_pc = arc_insn_get_linear_next_pc (insn);
+  arc_print ("linear_next_pc=%s\n", print_core_address (gdbarch, next_pc));
+
+  if (insn->is_control_flow)
+    {
+      CORE_ADDR t = arc_insn_get_branch_target (insn);
+      arc_print ("branch_target=%s\n", print_core_address (gdbarch, t));
+    }
+
+  if (insn->length == 2)
+    arc_print ("raw_word=0x%04x\n", insn->raw_word);
+  else
+    arc_print ("raw_word=0x%08x\n", insn->raw_word);
+
+  if (insn->limm_p)
+    arc_print ("limm_value=0x%08x\n", insn->limm_value);
+
+  unsigned int operand_count = arc_insn_count_operands (insn);
+  arc_print ("operand_count=%u\n", operand_count);
+  for (unsigned i = 0; i < operand_count; ++i)
+    {
+      int is_reg = arc_insn_operand_is_reg (insn, i);
+      arc_print ("operand[%u].is_reg=%i\n", i, is_reg);
+      if (is_reg)
+	{
+	  arc_print ("operand[%u].regnum=%i\n", i,
+		     arc_insn_get_operand_reg (insn, i));
+	}
+      arc_print ("operand[%u].value=%s, signed=%s", i,
+		 pulongest (arc_insn_get_operand_value (insn, i)),
+		 plongest (arc_insn_get_operand_value_signed (insn, i)));
+    }
+
+  if (insn->opcode_data->insn_class == MEMORY)
+    {
+      arc_print ("writeback_mode=%u\n", insn->writeback_mode);
+      arc_print ("cache_bypass_mode=%u\n", insn->cache_bypass_mode);
+      arc_print ("data_size_mode=%u\n", insn->data_size_mode);
+      arc_print ("addr_offset=%li\n", arc_insn_get_memory_offset (insn));
+    }
+}
+
+/* Accepts single argument - address of instruction to disassemble. */
+
+static void
+dump_arc_instruction_command (char *args, int from_tty)
+{
+  CORE_ADDR address;
+  struct arc_instruction insn;
+  struct gdbarch* gdbarch;
+
+  if (!(args != NULL && strlen (args) > 0))
+    return;
+
+  address = string_to_core_addr (args);
+  gdbarch = target_gdbarch ();
+  arc_insn_decode (gdbarch, address, &insn);
+
+  arc_insn_dump (&insn);
+}
 
 /* Accepts single argument - address of instruction to disassemble. */
 static void
@@ -3292,6 +3964,11 @@ internal state."),
 	   _("Print disassembly_info structure for instruction at given address."),
 	   &maintenance_print_arc_list);
 
+  add_cmd ("dump_arc_instruction", class_maintenance,
+	   dump_arc_instruction_command,
+	   _("Dump  arc_instruction structure for specified address."),
+	   &maintenance_print_arc_list);
+
   /* Debug internals for ARC GDB.  */
   add_setshow_zinteger_cmd ("arc", class_maintenance,
 			    &arc_debug,
@@ -3303,5 +3980,6 @@ internal state."),
 			    &setdebuglist,
 			    &showdebuglist);
 }	/* _initialize_arc_tdep () */
+
 
 /* vim: set sts=2 shiftwidth=2 ts=8: */
