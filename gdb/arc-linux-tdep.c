@@ -504,18 +504,12 @@ arc_linux_read_reg_encoded_in_insn (unsigned int register_number,
   return register_value;
 }    /* arc_linux_read_reg_encoded_in_insn() */
 
-/*! Returns TRUE if the instruction at PC is a branch (of any kind).
+/*! Returns the address of the next instruction or the branch
+    target if it is a branch and it is taken.
 
-    We always set a breakpoint at the next instruction, even if we have an
-    unconditional branch, which means it won't be executed.
-
-    @todo This doesn't work if we are looking at a delay slot. We need to do
-          something about that.
-
-    @param[out] fall_thru  Set to the address of the next insn.
-    @param[out] target     Set to the branch target. */
-static int
-arc_linux_next_pc (CORE_ADDR pc, CORE_ADDR * fall_thru, CORE_ADDR * target)
+    @param[in]	pc */
+static CORE_ADDR
+arc_linux_next_pc (CORE_ADDR pc)
 {
   struct regcache *regcache = get_current_regcache ();
   struct gdbarch *gdbarch = get_regcache_arch (regcache);
@@ -530,13 +524,14 @@ arc_linux_next_pc (CORE_ADDR pc, CORE_ADDR * fall_thru, CORE_ADDR * target)
   int instr_subopcode = -1;
   long arg1_reg, arg2_reg, arg1_value, arg2_value;
   enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  CORE_ADDR next_pc;
 
   /* So what is the instruction at the given pc? */
   arc_initialize_disassembler (gdbarch, &di);
   instr = arcAnalyzeInstr (pc, &di);
   /* By default, the next instruction is the one immediately after the one at
      pc. */
-  *fall_thru = pc + instr.instructionLen;
+  next_pc = pc + instr.instructionLen;
   is_loop_enabled = !(status32 & ARC_REG_STATUS32_L);
 
   if (arc_debug)
@@ -548,7 +543,7 @@ arc_linux_next_pc (CORE_ADDR pc, CORE_ADDR * fall_thru, CORE_ADDR * target)
 			  "nullifyMode = %s, is_loop_enabled = %d, "
 			  "byte order = %s\n",
 			  print_core_address (gdbarch, pc),
-			  print_core_address (gdbarch, *fall_thru),
+			  print_core_address (gdbarch, next_pc),
 			  instr.isBranch ? "true" : "false", instr.tcnt,
 			  instr.targets[0],
 			  (instr.flow == direct_jump
@@ -631,9 +626,9 @@ arc_linux_next_pc (CORE_ADDR pc, CORE_ADDR * fall_thru, CORE_ADDR * target)
 	  if ((instr.flow == direct_jump) || (instr.flow == direct_call))
 	    {
 	      /* It's a direct jump or call, so the destination address is
-	         encoded in the instruction, so we got it by disassembling the
-	         instruction. */
-	      *fall_thru = (CORE_ADDR) instr.targets[0];
+		 encoded in the instruction, so we got it by disassembling the
+		 instruction. */
+	      next_pc = (CORE_ADDR) instr.targets[0];
 	    }
 	  else
 	    {
@@ -641,9 +636,9 @@ arc_linux_next_pc (CORE_ADDR pc, CORE_ADDR * fall_thru, CORE_ADDR * target)
 	         named in the instruction, so we must read that register. */
 	      ULONGEST val;
 	      regcache_cooked_read_unsigned (regcache,
-					     instr.register_for_indirect_jump,
-					     &val);
-	      *fall_thru = val;
+		  instr.register_for_indirect_jump,
+		  &val);
+	      next_pc = val;
 	    }
 	}
       else
@@ -653,8 +648,8 @@ arc_linux_next_pc (CORE_ADDR pc, CORE_ADDR * fall_thru, CORE_ADDR * target)
 	     after that. */
 	  if ((instr.nullifyMode) == ((char) BR_exec_always))
 	    {
-	      instr_d = arcAnalyzeInstr (*fall_thru, &di);
-	      *fall_thru += instr_d.instructionLen;
+	      instr_d = arcAnalyzeInstr (next_pc, &di);
+	      next_pc += instr_d.instructionLen;
 	    }
 	}
     }
@@ -671,21 +666,24 @@ arc_linux_next_pc (CORE_ADDR pc, CORE_ADDR * fall_thru, CORE_ADDR * target)
       if (arc_debug)
 	{
 	  fprintf_unfiltered (gdb_stdlog,
-			      "---arc_linux_next_pc lp_start = %s, lp_end = %s,"
-			      " lp_count = %s, fall_thru = %s\n",
-			      pulongest (lp_start), pulongest (lp_end),
-			      pulongest (lp_count), pulongest (*fall_thru));
+			      "lp_start = %s, "
+			      "lp_end = %s, "
+			      "lp_count = %s, "
+			      "next_pc = %s\n",
+			      pulongest (lp_start),
+			      pulongest (lp_end),
+			      pulongest (lp_count),
+			      pulongest (next_pc));
 	}
-      if (is_loop_enabled && *fall_thru == lp_end && lp_count > 1)
+      if (is_loop_enabled && next_pc == lp_end && lp_count > 1)
 	{
 	  /* The instruction is in effect a jump back to the start of the
 	     loop. */
-	  *fall_thru = lp_start;
-	  return FALSE;
+	  next_pc = lp_start;
 	}
     }
 
-  return FALSE;
+  return next_pc;
 }	/* arc_linux_next_pc () */
 
 
@@ -866,25 +864,11 @@ arc_linux_breakpoint_from_pc (struct gdbarch *gdbarch, CORE_ADDR * pcptr,
 
 /*! Single step in software.
 
-    Insert breakpoints at all the locations where the program could end up
+    Inserts a breakpoint to the location where the program will end up
     after the current instruction.
 
-    One breakpoint is always the next instruction to be executed (may not be
-    the following instruction if there an unconditional branch). For a
-    conditional branch instruction, there will be a second instruction.
-
-    We don't need to worry about removing the breakpoints - GDB will tidy them
-    up for us automatically. However if first breakpoint has been inserted but
-    the second one fails to insert (for example because of invalid address)
-    then we need to cleanup first breakpoint by ourselves. Otherwise it will be
-    left there and consequent call to insert_single_step_breakpoint will result
-    in a failed assertion in GDB due to inconsistent state. This might happen
-    in there is a code gen error (like bl.d 0), and GDB can do nothing about
-    it, however if first breakpoint is not cleaned up GDB might fail due to an
-    assertion which is not user friendly.
-
     @param[in] frame  The current frame (THIS frame).
-    @return           Non-zero (TRUE) if the breakpoints are inserted
+    @return           Non-zero (TRUE) if the breakpoints are inserted.
  */
 static int
 arc_linux_software_single_step (struct frame_info *frame)
@@ -892,34 +876,11 @@ arc_linux_software_single_step (struct frame_info *frame)
   struct gdbarch *gdbarch = get_frame_arch (frame);
   struct address_space *aspace = get_frame_address_space (frame);
   CORE_ADDR pc = get_frame_pc (frame);
-  CORE_ADDR fall_thru, branch_target;
-  int two_breakpoints = arc_linux_next_pc (pc, &fall_thru, &branch_target);
+  CORE_ADDR next_pc = arc_linux_next_pc (pc);
+  insert_single_step_breakpoint (gdbarch, aspace, next_pc);
 
-  /* No need to check result. If it fails breakpoint hasn't been created and
-   * GDB's internal state will be consistent. */
-  insert_single_step_breakpoint (gdbarch, aspace, fall_thru);
-
-  if (two_breakpoints)
-    {
-      if ((pc != branch_target) && (fall_thru != branch_target))
-	{
-	  /* If second insert fails, first breakpoint has to be removed
-	   * manually. */
-	  TRY
-	    {
-	      insert_single_step_breakpoint (gdbarch, aspace, branch_target);
-	    }
-	  CATCH(ex, RETURN_MASK_ERROR)
-	    {
-	      /* Pass exception further after cleanup. */
-	      delete_single_step_breakpoints (inferior_thread ());
-	      throw_exception(ex);
-	    }
-	  END_CATCH
-	}
-    }
-
-  return 1;			/* returns always true for now */
+  /* Returns always true for now. */
+  return 1;
 
 }	/* arc_linux_software_single_step () */
 
