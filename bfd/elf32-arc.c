@@ -1492,7 +1492,7 @@ elf_arc_relocate_section (bfd *		   output_bfd,
 	  case R_ARC_32_ME:
 	  case R_ARC_PC32:
 	  case R_ARC_32_PCREL:
-	    if (bfd_link_pic (info) && !bfd_link_pie (info)
+	    if ((bfd_link_pic (info) || bfd_link_pie (info))
 		&& ((r_type != R_ARC_PC32 && r_type != R_ARC_32_PCREL)
 		    || (h != NULL
 			&& h->dynindx != -1
@@ -1774,7 +1774,7 @@ elf_arc_check_relocs (bfd *		         abfd,
 	    /* FALLTHROUGH */
 	  case R_ARC_PC32:
 	  case R_ARC_32_PCREL:
-	    if (bfd_link_pic (info) && !bfd_link_pie (info)
+	    if ((bfd_link_pic (info) || bfd_link_pie (info))
 		&& ((r_type != R_ARC_PC32 && r_type != R_ARC_32_PCREL)
 		    || (h != NULL
 			&& h->dynindx != -1
