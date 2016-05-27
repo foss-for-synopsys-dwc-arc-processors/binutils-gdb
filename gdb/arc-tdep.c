@@ -511,17 +511,19 @@ arc_push_blink (struct arc_unwind_cache *info, int offset)
     the operand starts with "blink".
 
     @param[out] info   Frame unwind cache to be updated if non-NULL.
-    @param[in]  state  Instruction state to analyse.
+    @param[in]  insn   Instruction to analyze.
     @return            Non-zero (true) if this was "push blink". Zero (false)
                        otherwise. */
 static int
-arc_is_push_blink_fi (struct arc_unwind_cache *info, struct arcDisState *state)
+arc_is_push_blink_fi (struct arc_unwind_cache *info,
+		      const struct arc_instruction *insn)
 {
-  if (strstr (state->operandBuffer, "blink") == state->operandBuffer)
+  if (arc_insn_count_operands (insn) > 0
+      && arc_insn_get_operand_reg (insn, 0) == ARC_BLINK_REGNUM)
     {
       if (info)
 	{
-	  arc_push_blink (info, state->_offset);
+	  arc_push_blink (info, arc_insn_get_memory_offset (insn));
 	}
       return TRUE;
     }
@@ -544,17 +546,19 @@ arc_is_push_blink_fi (struct arc_unwind_cache *info, struct arcDisState *state)
     delta_sp is negated to give the +ve old_sp_offset_from_fp).
 
     @param[out] info   Frame unwind cache to be updated if non-NULL.
-    @param[in]  state  Instruction state to analyse.
+    @param[in]  insn   Instruction to analyze.
     @return            Non-zero (true) if this was "push fp". Zero (false)
                        otherwise. */
 static int
-arc_is_push_fp_fi (struct arc_unwind_cache *info, struct arcDisState *state)
+arc_is_push_fp_fi (struct arc_unwind_cache *info,
+		   const struct arc_instruction *insn)
 {
-  if (strstr (state->operandBuffer, "fp") == state->operandBuffer)
+  if (arc_insn_count_operands (insn) > 0
+      && arc_insn_get_operand_reg (insn, 0) == ARC_FP_REGNUM)
     {
       if (info)
 	{
-	  info->delta_sp += state->_offset;
+	  info->delta_sp += arc_insn_get_memory_offset (insn);
 	  info->old_sp_offset_from_fp = -info->delta_sp;
 	}
       return TRUE;
@@ -569,14 +573,18 @@ arc_is_push_fp_fi (struct arc_unwind_cache *info, struct arcDisState *state)
 /*! Do we need to update frame info for "mov fp,sp".
 
     @param[out] info   Frame unwind cache to be updated if non-NULL.
-    @param[in]  state  Instruction state to analyse.
+    @param[in]  insn   Instruction to analyze.
     @return            Non-zero (true) if this was "mov[_s] fp,sp". Zero (false)
                        otherwise. */
 static int
-arc_is_update_fp_fi (struct arc_unwind_cache *info, struct arcDisState *state)
+arc_is_update_fp_fi (struct arc_unwind_cache *info,
+		     const struct arc_instruction *insn)
 {
-  if (((0 == strcmp(state->instrBuffer, "mov")) || (0 == strcmp(state->instrBuffer, "mov_s")))
-      && (strstr (state->operandBuffer, "fp,sp") == state->operandBuffer))
+  if (arc_insn_count_operands (insn) == 2
+      && ((insn->opcode == 0x04 && insn->subopcode1 == 0x0A)
+	  || (insn->opcode == 0x08 && insn->subopcode1 == 0))
+      && (arc_insn_get_operand_reg (insn, 0) == ARC_FP_REGNUM)
+      && (arc_insn_get_operand_reg (insn, 1) == ARC_SP_REGNUM))
     {
       if (info)
 	{
@@ -596,21 +604,25 @@ arc_is_update_fp_fi (struct arc_unwind_cache *info, struct arcDisState *state)
     @note Could be sub or sub.s and could be "sub.s sp,sp,const"
 
     @param[out] info   Frame unwind cache to be updated if non-NULL.
-    @param[in]  state  Instruction state to analyse.
+    @param[in]  insn   Instruction to analyze.
     @return            Non-zero (true) if this was "push fp". Zero (false)
                        otherwise. */
 static int
-arc_is_sub_sp_fi (struct arc_unwind_cache *info, struct arcDisState *state)
+arc_is_sub_sp_fi (struct arc_unwind_cache *info,
+		  const struct arc_instruction *insn)
 {
-  if (((0 == strcmp(state->instrBuffer, "sub"))
-       || (0 == strcmp(state->instrBuffer, "sub_s")))
-      && (strstr (state->operandBuffer, "sp,sp") == state->operandBuffer))
+  /* Either a 32-bit SUB or a particular SUB_S for stack operations (other
+   * SUB_S variands cannot have SP as their operand register.  */
+  if (arc_insn_count_operands (insn) == 3
+      && ((insn->opcode == 0x04 && insn->subopcode1 == 0x02)
+	  || (insn->opcode == 0x18 && insn->subopcode1 == 0x5
+	      && insn->subopcode2 == 1))
+      && arc_insn_get_operand_reg (insn, 0) == ARC_SP_REGNUM
+      && arc_insn_get_operand_reg (insn, 1) == ARC_SP_REGNUM)
     {
       if (info)
 	{
-	  /* Eat up sp,sp to just leave (possible) constant. */
-	  int immediate = atoi(state->operandBuffer + 6);
-	  info->delta_sp -= immediate;
+	  info->delta_sp -= arc_insn_get_operand_value (insn, 2);
 	}
       return TRUE;
     }
@@ -1006,20 +1018,20 @@ arc_is_callee_saved (struct gdbarch *gdbarch,
 
     @param[in] gdbarch  Current architecture.
     @param[in] info     Frame cache for THIS frame
-    @param[in] instr    Instruction to consider.
+    @param[in] insn     Instruction to analyze.
     @result Non-zero (TRUE) if instr is in prologue, zero (FALSE)
                      otherwise. */
 static int
 arc_is_in_prologue (struct gdbarch *gdbarch,
                     struct arc_unwind_cache * info,
-                    struct arcDisState *instr)
+		    const struct arc_instruction *insn)
 {
   struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
 
-  /* Might be a push or a pop */
-  if (instr->_opcode == 0x3)
+  /* Might be a push or a pop.  */
+  if (insn->opcode == 0x3)
     {
-      if (instr->_addrWriteBack != (char) 0)
+      if (insn->writeback_mode != ARC_WRITEBACK_NO)
 	{
 	  /* This is a st.a  */
 	  /* Value of ea_reg1 is an architecture register number, while
@@ -1027,36 +1039,39 @@ arc_is_in_prologue (struct gdbarch *gdbarch,
 	   * compared, however to simplify code we impose a restriction that
 	   * for core registers regnum is always equal to architectural number.
 	   * */
-	  if (instr->ea_reg1 == gdbarch_sp_regnum (gdbarch))
+	  /* opcode 0x3 must have three operands. */
+	  gdb_assert (arc_insn_count_operands (insn) == 3);
+	  if (arc_insn_get_operand_reg (insn, 1)
+	      == gdbarch_sp_regnum (gdbarch))
 	    {
-	      if (instr->_offset == -4)
+	      if (arc_insn_get_memory_offset (insn) == -4)
 		{
 		  /* This is a push something at SP */
 		  /* Is it a push of the blink? */
-		  if (arc_is_push_blink_fi (info, instr))
+		  if (arc_is_push_blink_fi (info, insn))
 		    {
 		      return TRUE;
 		    }
 
 		  /* Is it a push for fp? */
-		  if (arc_is_push_fp_fi (info, instr))
+		  if (arc_is_push_fp_fi (info, insn))
 		    {
 		      return TRUE;
 		    }
 		}
 	      else
 		{
-		  if (instr->sourceType == ARC_REGISTER)
+		  if (arc_insn_operand_is_reg (insn, 0))
 		    {
 		      /* st.a <reg>, [sp,<offset>] */
 
 		      if (arc_is_callee_saved (gdbarch,
-			   instr->source_operand.registerNum,
-                           instr->_offset, info))
+				    arc_insn_get_operand_reg (insn, 0),
+				    arc_insn_get_memory_offset (insn),
+				    info))
 			{
-			  /* this is a push onto the stack, so change
-			     delta_sp */
-			  info->delta_sp += instr->_offset;
+			  /* This is a push onto the stack.  */
+			  info->delta_sp += arc_insn_get_memory_offset (insn);
 			  return TRUE;
 			}
 		    }
@@ -1065,17 +1080,19 @@ arc_is_in_prologue (struct gdbarch *gdbarch,
 	}
       else
 	{
-	  if (instr->sourceType == ARC_REGISTER)
+	  if (arc_insn_operand_is_reg (insn, 0))
 	    {
 	      /* Is this a store of some register onto the stack using the
 	       * stack pointer?
 	       */
-	      if (instr->ea_reg1 == gdbarch_sp_regnum (gdbarch))
+	      if (arc_insn_get_operand_reg (insn, 1)
+		  == gdbarch_sp_regnum (gdbarch))
 		{
 		  /* st <reg>, [sp,offset] */
 
 		  if (arc_is_callee_saved (gdbarch,
-		       instr->source_operand.registerNum, instr->_offset,
+		       arc_insn_get_operand_reg (insn, 0),
+		       arc_insn_get_memory_offset (insn),
 		       info))
 		    /* this is NOT a push onto the stack, so do not change
 		       delta_sp */
@@ -1086,10 +1103,11 @@ arc_is_in_prologue (struct gdbarch *gdbarch,
 	       * frame pointer? We check for argument registers getting saved
 	       * and restored.
 	       */
-	      if (instr->ea_reg1 == ARC_FP_REGNUM)
+	      if (arc_insn_get_operand_reg (insn, 1) == ARC_FP_REGNUM)
 		{
-		  int regnum = instr->source_operand.registerNum;
-		  if (ARC_FIRST_ARG_REGNUM <= regnum && regnum <= ARC_LAST_ARG_REGNUM)
+		  int regnum = arc_insn_get_operand_reg (insn, 0);
+		  if (ARC_FIRST_ARG_REGNUM <= regnum
+		      && regnum <= ARC_LAST_ARG_REGNUM)
 		    {
 		      /* Saving argument registers. Don't set the bits in the
 		       * saved mask, just skip.
@@ -1101,60 +1119,52 @@ arc_is_in_prologue (struct gdbarch *gdbarch,
 	}
     }
 
-  else if (instr->_opcode == 0x4
-       || (instr->_opcode == 0x8 && arc_mach_is_arcv2(gdbarch)))
+  else if (insn->opcode == 0x4
+	   || (insn->opcode == 0x8 && arc_mach_is_arcv2 (gdbarch)))
     {
       /* A major opcode 0x4 instruction */
       /* We are usually interested in a mov or a sub */
       /* ARC v2 uses mov_s instruction in prologue, major opcode is 0x8 */
-      if (arc_is_update_fp_fi (info, instr)
-	  || arc_is_sub_sp_fi (info, instr))
+      if (arc_is_update_fp_fi (info, insn) || arc_is_sub_sp_fi (info, insn))
 	{
 	  return TRUE;
 	}
     }
 
   /* Several store-in-stack instructions. */
-  else if (instr->_opcode == 0x18)
+  else if (insn->opcode == 0x18)
     {
       /* sub_s sp,sp,constant */
-      if (arc_is_sub_sp_fi (info, instr))
+      if (arc_is_sub_sp_fi (info, insn))
 	{
 	  return TRUE;
 	}
 
       /* push_s blink */
-      if (strcmp (instr->instrBuffer, "push_s") == 0)
+      if (insn->subopcode1 == 0x7 && insn->subopcode2 == 0x11)
 	{
-	  if (strcmp (instr->operandBuffer, "blink") == 0)
+	  if (info)
 	    {
-	      if (info)
-		{
-		  /* SP is decremented by the push_s instruction (before it
-		   * stores blink at the stack location addressed by SP)
-		   */
-		  arc_push_blink (info, -BYTES_IN_REGISTER);
-		}
-	      return TRUE;
+	      /* SP is decremented by the push_s instruction (before it
+	       * stores blink at the stack location addressed by SP)
+	       */
+	      arc_push_blink (info, -BYTES_IN_REGISTER);
 	    }
+	  return TRUE;
 	}
-      else if (strcmp (instr->instrBuffer, "st_s") == 0)
+      /* st_s b, [sp, u7] */
+      else if (insn->subopcode1 == 0x2 || insn->subopcode1 == 0x3)
 	{
-	  unsigned int reg;
-	  int offset;
-
-	  if (sscanf (instr->operandBuffer, "r%u,[sp,%d]", &reg, &offset) ==
-	      2)
-	    {
-	      /* st_s <reg>,[sp,<offset>] */
-
-	      if (arc_is_callee_saved (gdbarch, reg, offset, info))
-		/* this is NOT a push onto the stack, so do not change
-		   delta_sp */
-		return TRUE;
-	    }
+	  if (arc_is_callee_saved (gdbarch,
+		arc_insn_get_operand_reg (insn, 0),
+		arc_insn_get_memory_offset (insn),
+		info))
+	    /* this is NOT a push onto the stack, so do not change
+	       delta_sp */
+	    return TRUE;
 	}
-      else if (strcmp (instr->instrBuffer, "enter_s") == 0)
+      /* enter_s */
+      else if (insn->subopcode1 == 0x3 && insn->subopcode2 == 0)
         {
 	  if (info)
 	    {
@@ -1174,10 +1184,9 @@ arc_is_in_prologue (struct gdbarch *gdbarch,
 	      int regs_saved = 0;
 	      int i;
 
-	      is_blink_saved = (strstr (instr->operandBuffer, "blink") != 0);
-	      is_fp_saved = (strstr (instr->operandBuffer, "fp") != 0);
-	      /* Amount of saved regs is stored in bits [1:4] (0b11110). */
-	      regs_saved = (instr->words[0] & 0x1E) >> 1;
+	      is_blink_saved = BITS (insn->raw_word, 9, 9);
+	      is_fp_saved = BITS (insn->raw_word, 8, 8);
+	      regs_saved = BITS (insn->raw_word, 1, 4);
 
 	      if (is_fp_saved)
 		{
@@ -1358,6 +1367,8 @@ arc_scan_prologue (const CORE_ADDR entrypoint,
     {
       struct arcDisState current_instr =
 	arcAnalyzeInstr (prologue_ends_pc, &di);
+      struct arc_instruction insn;
+      arc_insn_decode (gdbarch, prologue_ends_pc, &insn);
 
       if (arc_debug)
 	{
@@ -1368,7 +1379,7 @@ arc_scan_prologue (const CORE_ADDR entrypoint,
       /* if this instruction is in the prologue, fields in the info will be
        * updated, and the saved registers mask may be updated
        */
-      if (!arc_is_in_prologue (gdbarch, info, &current_instr))
+      if (!arc_is_in_prologue (gdbarch, info, &insn))
 	{
 	  /* Found a instruction that is not in the prologue */
 	  if (arc_debug)
@@ -1378,7 +1389,7 @@ arc_scan_prologue (const CORE_ADDR entrypoint,
 	  break;
 	}
 
-      prologue_ends_pc += current_instr.instructionLen;
+      prologue_ends_pc = arc_insn_get_linear_next_pc (&insn);
     }
 
   /* Means we were not called from arc_skip_prologue */
