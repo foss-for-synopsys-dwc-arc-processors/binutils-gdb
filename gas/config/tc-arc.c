@@ -3301,10 +3301,10 @@ md_undefined_symbol (char *name)
      GOTPC reference to _GLOBAL_OFFSET_TABLE_.  */
   if (((*name == '_')
        && (*(name+1) == 'G')
-       && (strcmp (name, GLOBAL_OFFSET_TABLE_NAME) == 0))
-      || ((*name == '_')
+       && (strcmp (name, GLOBAL_OFFSET_TABLE_NAME) == 0)))
+/*      || ((*name == '_')
 	  && (*(name+1) == 'D')
-	  && (strcmp (name, DYNAMIC_STRUCT_NAME) == 0)))
+	  && (strcmp (name, DYNAMIC_STRUCT_NAME) == 0)))*/
     {
       if (!GOT_symbol)
 	{
