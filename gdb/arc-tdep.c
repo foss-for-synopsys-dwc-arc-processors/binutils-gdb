@@ -272,7 +272,7 @@ static const char * const
   aux_compatible_feature_name = "org.gnu.gdb.arc.aux-compatible";
 
 /* XML target description known registers. */
-static const struct arc_reginfo const core_base_v2_reginfo[] =
+static const struct arc_reginfo core_base_v2_reginfo[] =
 {
   {"r0",       TRUE, TRUE, TRUE,  TRUE},
   {"r1",       TRUE, TRUE, TRUE,  TRUE},
@@ -340,7 +340,7 @@ static const struct arc_reginfo const core_base_v2_reginfo[] =
   {"pcl",      TRUE, FALSE,TRUE,  FALSE},
 };
 
-static const struct arc_reginfo const aux_base_v2_reginfo[] =
+static const struct arc_reginfo aux_base_v2_reginfo[] =
 {
   {"pc",       TRUE, TRUE, TRUE, TRUE},
   {"lp_start", TRUE, TRUE, TRUE, TRUE},
@@ -348,7 +348,7 @@ static const struct arc_reginfo const aux_base_v2_reginfo[] =
   {"status32", TRUE, TRUE, TRUE, TRUE},
 };
 
-static const struct arc_reginfo const core_base_arcompact_reginfo[] =
+static const struct arc_reginfo core_base_arcompact_reginfo[] =
 {
   {"r0",       TRUE, TRUE, TRUE,  TRUE},
   {"r1",       TRUE, TRUE, TRUE,  TRUE},
@@ -416,7 +416,7 @@ static const struct arc_reginfo const core_base_arcompact_reginfo[] =
   {"pcl",      TRUE, FALSE,TRUE,  FALSE},
 };
 
-static const struct arc_reginfo const aux_compatible_reginfo[] =
+static const struct arc_reginfo aux_compatible_reginfo[] =
 {
   {"status32_l1",          TRUE, TRUE, FALSE, FALSE},
   {"status32_l2",          TRUE, TRUE, FALSE, FALSE},
@@ -1852,7 +1852,7 @@ arc_get_longjmp_target (struct frame_info *frame, CORE_ADDR *pc)
   struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
   enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
   int  element_size = gdbarch_ptr_bit (gdbarch) / TARGET_CHAR_BIT;
-  void *buf = alloca (element_size);
+  gdb_byte *buf = (gdb_byte *) alloca (element_size);
   enum gdb_osabi osabi = gdbarch_osabi (gdbarch);
   /* todo: Either this whole function should be extracted to target-dependent
    * level, or we need to receive offset dynamically. For example from the
@@ -2301,7 +2301,7 @@ arc_sigtramp_frame_cache (struct frame_info *this_frame, void **this_cache)
 	    }
 	}
     }
-  return *this_cache;
+  return (struct arc_unwind_cache *) *this_cache;
 
 }	/* arc_sigtramp_frame_cache () */
 
@@ -2518,7 +2518,7 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   */
   const int is_arcv2 = (info.bfd_arch_info->mach == bfd_mach_arc_arcv2);
   int is_reduced_rf;
-  const struct arc_reginfo const * core_reginfo;
+  const struct arc_reginfo * core_reginfo;
   const char * core_feature_name;
 
   /* If target doesn't provide us description - use default one. */
@@ -2688,7 +2688,7 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
     }
 
   /* Copy both core and AUX reginfo at once. */
-  reginfo = xmemdup (core_reginfo,
+  reginfo = (struct arc_reginfo *) xmemdup (core_reginfo,
       sizeof (struct arc_reginfo) * num_regs,
       sizeof (struct arc_reginfo) * (num_regs + i));
   memcpy (&(reginfo[num_regs]), aux_base_v2_reginfo,
@@ -2715,7 +2715,8 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 	}
 
       /* realloc will do free (reginfo), so we shouldn't do that. */
-      reginfo = xrealloc (reginfo, sizeof (struct arc_reginfo) * (num_regs + i));
+      reginfo = (struct arc_reginfo *) xrealloc (reginfo,
+	  sizeof (struct arc_reginfo) * (num_regs + i));
       num_regs += i;
     }
 
@@ -2726,7 +2727,7 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 
   /* Allocate the ARC-private target-dependent information structure, and the
      GDB target-independent information structure. */
-  tdep = xmalloc (sizeof (struct gdbarch_tdep));
+  tdep = (struct gdbarch_tdep *) xmalloc (sizeof (struct gdbarch_tdep));
   memset (tdep, 0, sizeof (*tdep));
   tdep->reginfo = reginfo;
   tdep->reginfo_sz = num_regs;

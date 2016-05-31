@@ -947,7 +947,7 @@ arc_linux_supply_gregset (const struct regset *regset,
 			  struct regcache *regcache,
 			  int regnum, const void *gregs, size_t size)
 {
-  const bfd_byte *buf = gregs;
+  const bfd_byte *buf = (const bfd_byte *) gregs;
   unsigned int reg;
 
   for (reg = 0; reg < ARRAY_SIZE (arc_linux_core_reg_offsets); reg++)
@@ -968,7 +968,7 @@ arc_linux_collect_gregset ( const struct regset *regset,
                             void *gregs,
                             size_t size)
 {
-  gdb_byte *buf = gregs;
+  gdb_byte *buf = (gdb_byte *) gregs;
   int reg;
 
   for (reg = 0; reg < ARRAY_SIZE (arc_linux_core_reg_offsets); reg++)
