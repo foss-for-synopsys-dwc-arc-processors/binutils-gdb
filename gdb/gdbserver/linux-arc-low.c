@@ -314,7 +314,7 @@ arc_breakpoint_at (CORE_ADDR where)
 static void
 arc_fill_gregset (struct regcache *regcache, void *buf)
 {
-  struct user_regs_struct *regbuf = buf;
+  struct user_regs_struct *regbuf = (struct user_regs_struct *) buf;
 
   /* Collect all the unique registers by name. */
   collect_register_by_name (regcache, "r0", &(regbuf->scratch.r0));
@@ -398,7 +398,7 @@ arc_fill_gregset (struct regcache *regcache, void *buf)
 static void
 arc_store_gregset (struct regcache *regcache, const void *buf)
 {
-  const struct user_regs_struct *regbuf = buf;
+  const struct user_regs_struct *regbuf = (const struct user_regs_struct *) buf;
 
   /* Supply all the unique registers by name. */
   supply_register_by_name (regcache, "r0", &(regbuf->scratch.r0));
@@ -506,13 +506,7 @@ static struct regset_info arc_regsets[] =
     .type           = GENERAL_REGS,
     .fill_function  = arc_fill_gregset,
     .store_function = arc_store_gregset },
-  { .get_request    = 0,		/* End marker */
-    .set_request    = 0,
-    .nt_type        = 0,
-    .size           = -1,
-    .type           = -1,
-    .fill_function  = NULL,
-    .store_function = NULL }
+  NULL_REGSET
 };
 
 static struct regsets_info arc_regsets_info =
