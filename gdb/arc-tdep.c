@@ -676,65 +676,6 @@ arc_print_frame_info (struct gdbarch *gdbarch,
 }	/* arc_print_frame_info () */
 
 
-/*! Give name of instruction operand type.
-
-    Used for internal debugging only.
-
-    @param[in] value  The instruction type.
-    @result           Textual representation of the operand type */
-static const char *
-arc_debug_operand_type (enum ARC_Debugger_OperandType value)
-{
-  switch (value)
-    {
-    case ARC_LIMM:           return "LIMM";
-    case ARC_SHIMM:          return "SHIMM";
-    case ARC_REGISTER:       return "REGISTER";
-    case ARCOMPACT_REGISTER: return "COMPACT REGISTER";
-    case ARC_UNDEFINED:      return "UNDEFINED";
-    default:                 return "?";
-    }
-}	/*! arc_debug_operand_type () */
-
-
-/*! Dump the instruction state.
-
-    Used for internal debugging only.
-
-    @parma[in] state  Instruction state to dump. */
-static void
-arc_print_insn_state (struct arcDisState state)
-{
-  fprintf_unfiltered (gdb_stdlog, "---------------------------------\n");
-  fprintf_unfiltered (gdb_stdlog, "Instruction Length %d\n",
-		      state.instructionLen);
-  fprintf_unfiltered (gdb_stdlog, "Opcode [0x%x] : Cond [%x]\n",
-		      state._opcode, state._cond);
-  fprintf_unfiltered (gdb_stdlog, "Words 1 [%lx] : 2 [%lx]\n", state.words[0],
-		      state.words[1]);
-  fprintf_unfiltered (gdb_stdlog, "Ea present [%x] : memload [%x]\n",
-		      state._ea_present, state._mem_load);
-  fprintf_unfiltered (gdb_stdlog, "Load Length [%d]:\n", state._load_len);
-  fprintf_unfiltered (gdb_stdlog, "Address Writeback [%d]\n",
-		      state._addrWriteBack);
-  fprintf_unfiltered (gdb_stdlog, "EA reg1 is [%x] offset [%x]\n",
-		      state.ea_reg1, state._offset);
-  fprintf_unfiltered (gdb_stdlog, "EA reg2 is [%x]\n", state.ea_reg2);
-  fprintf_unfiltered (gdb_stdlog, "Instr   buffer is %s\n",
-		      state.instrBuffer);
-  fprintf_unfiltered (gdb_stdlog, "Operand buffer is %s\n",
-		      state.operandBuffer);
-  fprintf_unfiltered (gdb_stdlog, "SourceType is %s\n",
-		      arc_debug_operand_type (state.sourceType));
-  fprintf_unfiltered (gdb_stdlog, "Source operand is %u\n", state.source_operand.registerNum);	/* All fields of union
-												   have same type */
-  fprintf_unfiltered (gdb_stdlog, "Flow is %d\n", state.flow);
-  fprintf_unfiltered (gdb_stdlog, "Branch is %d\n", state.isBranch);
-  fprintf_unfiltered (gdb_stdlog, "---------------------------------\n");
-
-}	/* arc_print_insn_state () */
-
-
 /*! Wrapper for the target_read_memory function.
 
     Interface shim
@@ -1372,7 +1313,6 @@ arc_scan_prologue (const CORE_ADDR entrypoint,
 
       if (arc_debug)
 	{
-	  arc_print_insn_state (current_instr);
 	  arc_insn_dump (&insn);
 	}
 
