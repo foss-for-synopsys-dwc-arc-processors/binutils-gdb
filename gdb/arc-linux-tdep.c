@@ -53,7 +53,6 @@
 #include "regset.h"
 #include "dis-asm.h"
 #include "opcode/arc.h"
-#include "opcodes/arc-dis-old.h"
 #include "exceptions.h"
 /* lookup_minimal_symbol */
 #include "minsyms.h"

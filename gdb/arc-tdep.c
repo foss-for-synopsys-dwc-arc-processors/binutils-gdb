@@ -191,9 +191,7 @@
 
 /* ARC header files */
 #include "opcode/arc.h"
-#include "opcodes/arc-dis-old.h"
-#include "opcodes/arc-ext.h"
-#include "opcodes/arcompact-dis.h"
+#include "opcodes/arc-dis.h"
 #include "arc-tdep.h"
 
 /* Default target descriptions. */
@@ -2477,6 +2475,24 @@ arc_sigtramp_frame_base_sniffer (struct frame_info *this_frame)
 
 }	/* arc_sigtramp_frame_base_sniffer () */
 
+/* arc_get_disassembler() may return different functions depending on bfd
+   type, so it is not possible to pass print_insn directly to
+   set_gdbarch_print_insn().  Instead this wrapper function is used.  It also
+   may be used by other functions to get disassemble_info for address.  It is
+   important to note, that those print_insn from opcodes always print
+   instruction to the stream specified in the info, so if that is not desired,
+   then print_insn in the info should be set to some function that doesn't
+   print anything, like scream_to_the_void from this file.  */
+
+static int
+arc_delayed_print_insn (bfd_vma addr, struct disassemble_info *info)
+{
+  int (*print_insn) (bfd_vma, struct disassemble_info *);
+  print_insn = arc_get_disassembler (exec_bfd);
+  gdb_assert (print_insn != NULL);
+  return print_insn (addr, info);
+}
+
 /*! Initialize GDB
 
     The functions set here are generic to *all* versions of GDB for ARC. The
@@ -2817,7 +2833,8 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   /* Whether we need software single-step is target specific (yes for Linux,
      no for ELF). */
   /* We can't single step through a delay slot */
-  set_gdbarch_print_insn (gdbarch, ARCompact_decodeInstr);
+  set_gdbarch_print_insn (gdbarch, arc_delayed_print_insn);
+
   set_gdbarch_skip_trampoline_code (gdbarch, arc_skip_trampoline_code);
   /* Whether we need to skip the shared object resolver is target specific
      (yes for Linux, no for ELF). */
@@ -2907,6 +2924,15 @@ arc_dump_tdep (struct gdbarch *gdbarch, struct ui_file *file)
 }	/* arc_dump_tdep () */
 
 
+/* Dummy printf-like function. Used by arc_initialize_disassembler, see
+   explanation of its purpose there. */
+
+static int
+scream_to_the_void (void * file, const char *f, ...)
+{
+  return 0;
+}
+
 /* -------------------------------------------------------------------------- */
 /*			 Externally visible functions                         */
 /* -------------------------------------------------------------------------- */
@@ -2914,13 +2940,17 @@ arc_dump_tdep (struct gdbarch *gdbarch, struct ui_file *file)
 /*
     @param[in] gdbarch  Current GDB architecture
 */
+
 void
-arc_initialize_disassembler (struct gdbarch *gdbarch, 
+arc_initialize_disassembler (struct gdbarch *gdbarch,
 			     struct disassemble_info *info)
 {
-  /* N.B. this type cast is not strictly correct: the return types differ! */
-  init_disassemble_info (info, gdb_stderr,
-			 (fprintf_ftype) fprintf_unfiltered);
+  /* opcodes disassembler will always print instruction to the stream, which is
+   * not desired when instruction is disassembled for analysis. Stream cannot
+   * be set to NULL, because it is used unconditionally in the opcodes, so the
+   * only way is to provide dummy printf-like function which will not actually
+   * print anything anywhere. */
+  init_disassemble_info (info, gdb_stderr, scream_to_the_void);
   info->arch = gdbarch_bfd_arch_info (gdbarch)->arch;
   info->mach = gdbarch_bfd_arch_info (gdbarch)->mach;
   info->endian = gdbarch_byte_order (gdbarch);
