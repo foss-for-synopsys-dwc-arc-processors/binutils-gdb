@@ -54,7 +54,7 @@
 #include "arch-utils.h"
 #include "dis-asm.h"
 #include "opcode/arc.h"
-#include "opcodes/arc-dis-old.h"
+#include "opcodes/arc-dis.h"
 
 /* ARC header files */
 #include "arc-tdep.h"
