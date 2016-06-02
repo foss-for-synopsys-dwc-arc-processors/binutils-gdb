@@ -168,17 +168,13 @@ arc_elf_breakpoint_from_pc (struct gdbarch *gdbarch, CORE_ADDR * pcptr,
   static const unsigned char brk_le[] = { 0x6f, 0x25, 0x3f, 0x00 };
   /* Note that BRK for little endian is in middle-endian encoding. */
 
-  struct disassemble_info di;
-  struct arcDisState instr;
+  struct arc_instruction insn;
+  arc_insn_decode (gdbarch, *pcptr, &insn);
 
-  /* So what is the instruction at the given PC? */
-  arc_initialize_disassembler (gdbarch, &di);
-  instr = arcAnalyzeInstr (*pcptr, &di);
 
   /* Replace 16-bit instruction BRK_S, replace 32-bit instructions with BRK.
    * LIMM is part of instructionLen, so it can be either 4 or 8 bytes. */
-  if ((instr.instructionLen == 4 || instr.instructionLen == 8) &&
-	!arc_mach_is_arc600(gdbarch))
+  if (insn.length == 4 && !arc_mach_is_arc600(gdbarch))
     {
       *lenptr = sizeof(brk_le);
       return (gdbarch_byte_order (gdbarch) == BFD_ENDIAN_BIG)
