@@ -1226,6 +1226,10 @@ print_insn_arc (bfd_vma memaddr,
 	}
     }
 
+  /* Assign arc_opcode as a private data of disassemble_info to be used by
+     arc_insn_decode().  */
+  info->private_data = (void *) opcode;
+
   return insn_len;
 }
 
@@ -1294,6 +1298,472 @@ with -M switch (multiple options should be separated by commas):\n"));
   fpus            Recognize single precision FPU instructions.\n"));
   fprintf (stream, _("\
   fpud            Recognize double precision FPU instructions.\n"));
+}
+
+/* Read instruction as-is from memory.  This reads only instruction, without
+   LIMM.  Returned value will be in converted encoding.  */
+
+static unsigned long
+read_instruction (bfd_vma addr, unsigned int length,
+		  struct disassemble_info *info)
+{
+  bfd_byte buffer[4];
+
+  /* This function, as used by the arc_insn_decode is always called after same
+     memory has been already read by print_insn_arc, so it seems unlikely that
+     we can land here when it is not possible to read memory from this address,
+     so return value of read_memory_func is ignored.  */
+  info->read_memory_func (addr, buffer, length, info);
+
+  if (length == 2)
+    {
+      unsigned int lowbyte = (info->endian == BFD_ENDIAN_LITTLE) ? 1 : 0;
+      unsigned int highbyte = (info->endian == BFD_ENDIAN_LITTLE) ? 0 : 1;
+      return (buffer[lowbyte] << 8) | buffer[highbyte];
+    }
+
+  return ARRANGE_ENDIAN (info, buffer);
+}
+
+/* Identify instruction subopcodes.  In ARC ISA opcodes are always 5 most
+   significant bits: 27-31 for 32-bit instructions, 11-15 for 16-bit
+   instructions.  Subopcodes, however are not very unified - there lots of
+   various formats; depending on opcode, subopcode may appear at different
+   locations in instruction or may not be present at all.  On top of that many
+   subopcodes have subopcodes of their own.  Subopcode hierarhy is not always
+   symmetric, for example for [opcode=0x01 subopcode1=0x0] there is also
+   subopcode2, but for [opcode=0x01 subopcode1=0x1] there is subopcode2 and
+   subopcode3.  Perhaps, the most complex example are 16-bite stack based
+   operations with opcode 0x18.  Bits 5-7 contain subopcode1.  Subopcodes 0x0,
+   0x1, 0x2, 0x3 and 0x4 don't have any further subopcodes.  Subopcode1=0x5 has
+   an additional subopcode2 at the bit 8 (bits 9 and 10 are always zero).  And
+   subopcodes1 0x6 and 0x7 contain their subopcode2 at the bit 0.  And if and
+   only if subopcode2 is 0x1, then bits 1-4 are also a subopcode3.  */
+
+static void
+set_insn_subopcodes (struct arc_instruction *insn)
+{
+  /* Find subopcode.  */
+  switch (insn->opcode)
+    {
+    case 0x00:
+      insn->subopcode1 = BITS (insn->raw_word, 16, 16);
+      break;
+    case 0x01:
+      insn->subopcode1 = BITS (insn->raw_word, 16, 16);
+      if (insn->subopcode1 == 0x1)
+	{
+	  insn->subopcode2 = BITS (insn->raw_word, 4, 4);
+	  insn->subopcode3 = BITS (insn->raw_word, 0, 3);
+	}
+      else
+	{
+	  insn->subopcode2 = BITS (insn->raw_word, 17, 17);
+	}
+      break;
+    /* No subopcodes for 0x02 - 0x03.  */
+    case 0x04:
+    case 0x05:
+    case 0x06:
+    case 0x07:
+      insn->subopcode1 = BITS (insn->raw_word, 16, 21);
+      if (insn->subopcode1 == 0x2F)
+	{
+	  insn->subopcode2 = BITS (insn->raw_word, 0, 5);
+	  if (insn->subopcode2 == 0x3F)
+	    insn->subopcode3 = BITS (insn->raw_word, 12, 14) << 3
+	      | BITS (insn->raw_word, 24, 26);
+	}
+      break;
+    case 0x08:
+      insn->subopcode1 = BITS (insn->raw_word, 2, 2);
+      break;
+    case 0x09:
+    case 0x0A:
+      insn->subopcode1 = BITS (insn->raw_word, 3, 3);
+      if (insn->subopcode1 == 0x0)
+	insn->subopcode1 = BITS (insn->raw_word, 3, 4);
+      break;
+    case 0x0B:
+      insn->subopcode1 = BITS (insn->raw_word, 10, 10);
+      break;
+    case 0x0C:
+    case 0x0D:
+      insn->subopcode1 = BITS (insn->raw_word, 3, 4);
+      break;
+    case 0x0E:
+      insn->subopcode1 = BITS (insn->raw_word, 2, 4);
+      break;
+    case 0x0F:
+      insn->subopcode1 = BITS (insn->raw_word, 0, 4);
+      if (insn->subopcode1 == 0x0)
+	{
+	  insn->subopcode2 = BITS (insn->raw_word, 5, 7);
+	  if (insn->subopcode2 == 0x7)
+	    {
+	      insn->subopcode3 = BITS (insn->raw_word, 8, 10);
+	      if (insn->subopcode3 == 0x4)
+		insn->condition_code = ARC_CC_EQ;
+	      else if (insn->subopcode3 == 0x5)
+		insn->condition_code = ARC_CC_NE;
+	    }
+	}
+      break;
+    /* No subopcodes for 0x10 - 0x16.  */
+    case 0x17:
+    case 0x18:
+      insn->subopcode1 = BITS (insn->raw_word, 5, 7);
+      /* PRM doesn't put this clearly, but 0x18 has subopcode2.  */
+      switch (insn->subopcode1)
+	{
+	case 0x5:
+	  /* ADD_S SP,SP,u7 and SUB_S SP,SP,u7.  */
+	  insn->subopcode2 = BITS (insn->raw_word, 8, 8);
+	  break;
+	case 0x6:
+	case 0x7:
+	  /* PUSH_S, POP_S, LEAVE_S, ENTER_S.  */
+	  insn->subopcode2 = BITS (insn->raw_word, 0, 0);
+	  /* If bit 0 is 0, then it is LEAVE_S, ENTER_S.  Otherwise subopcode
+	     should be expanded further.  */
+	  if (insn->subopcode2 != 0x0)
+	    insn->subopcode2 = BITS (insn->raw_word, 0, 4);
+	  break;
+	}
+      break;
+    case 0x19:
+      insn->subopcode1 = BITS (insn->raw_word, 9, 10);
+      break;
+    /* No subopcodes for 0x1A - 0x1B.  */
+    case 0x1C:
+      insn->subopcode1 = BITS (insn->raw_word, 7, 7);
+      break;
+    case 0x1D:
+      insn->subopcode1 = BITS (insn->raw_word, 7, 7);
+      insn->condition_code = (insn->subopcode1 == 0x0 ? ARC_CC_EQ : ARC_CC_NE);
+      break;
+    case 0x1E:
+      /* B_S, BEQ_S, BNE_S, Bcc_S.  */
+      insn->subopcode1 = BITS (insn->raw_word, 9, 10);
+      switch (insn->subopcode1)
+	{
+	case 0x1:
+	  insn->condition_code = ARC_CC_EQ;
+	  break;
+	case 0x2:
+	  insn->condition_code = ARC_CC_NE;
+	  break;
+	case 0x3:
+	  /* Bcc_S  */
+	  insn->subopcode2 = BITS (insn->raw_word, 6, 8);
+	  /* In this case subopcode2 is the condition code.  */
+	  switch (insn->subopcode2)
+	    {
+	    case 0x0:
+	      insn->condition_code = ARC_CC_GT;
+	      break;
+	    case 0x1:
+	      insn->condition_code = ARC_CC_GE;
+	      break;
+	    case 0x2:
+	      insn->condition_code = ARC_CC_LT;
+	      break;
+	    case 0x3:
+	      insn->condition_code = ARC_CC_LE;
+	      break;
+	    case 0x4:
+	      insn->condition_code = ARC_CC_HI;
+	      break;
+	    case 0x5:
+	      insn->condition_code = ARC_CC_HS;
+	      break;
+	    case 0x6:
+	      insn->condition_code = ARC_CC_LO;
+	      break;
+	    case 0x7:
+	      insn->condition_code = ARC_CC_LS;
+	      break;
+	    }
+	  break;
+	}
+      break;
+    /* No subopcodes for 0x1F.  */
+    }
+}
+
+/* Parse various instruction flags that are not part of the opcode/subopcode.
+   This is mainly memory ops parameters - data size and register writeback.
+   Another instruction flag is a condition code.  Note, however, that in case
+   of BRcc instructions disassembler doesn't set respective flags, so instead
+   insn->condition_code is set based on subopcode and that is done in
+   set_insn_subopcodes.  */
+
+static void
+set_insn_flags (struct arc_instruction *insn, const struct arc_opcode *opcode)
+{
+  const unsigned char *flag_index;
+
+  for (flag_index = opcode->flags; *flag_index; flag_index++)
+    {
+      const struct arc_flag_class *flag_class
+	= &arc_flag_classes[*flag_index];
+      const unsigned int *flag_operand_index;
+
+      for (flag_operand_index = flag_class->flags; *flag_operand_index;
+	   flag_operand_index++)
+	{
+	  const struct arc_flag_operand *flag_operand
+	    = &arc_flag_operands[*flag_operand_index];
+	  unsigned int value;
+
+	  if (!flag_operand->favail)
+	    continue;
+
+	  value = ((insn->raw_word >> flag_operand->shift)
+		   & ((1 << flag_operand->bits) - 1));
+	  if (flag_operand->code == value)
+	    {
+	      switch (flag_operand->name[0])
+		{
+		case 'a':
+		  /* Address writeback mode.  */
+		  insn->writeback_mode = (enum arc_ldst_writeback_mode) value;
+		  break;
+		case 'b':
+		case 'h':
+		case 'w':
+		  /* Data size mode.  */
+		  insn->data_size_mode = (enum arc_ldst_data_size) value;
+		  break;
+		}
+
+	      /* Condition codes, which are mostly several characters.  */
+	      if (0 == strcmp (flag_operand->name, "eq")
+		  || 0 == strcmp (flag_operand->name, "z"))
+		insn->condition_code = ARC_CC_EQ;
+	      else if (0 == strcmp (flag_operand->name, "ne")
+		       || 0 == strcmp (flag_operand->name, "nz"))
+		insn->condition_code = ARC_CC_NE;
+	      else if (0 == strcmp (flag_operand->name, "p")
+		       || 0 == strcmp (flag_operand->name, "pl"))
+		insn->condition_code = ARC_CC_PL;
+	      else if (0 == strcmp (flag_operand->name, "n")
+		       || 0 == strcmp (flag_operand->name, "mi"))
+		insn->condition_code = ARC_CC_MI;
+	      else if (0 == strcmp (flag_operand->name, "c")
+		       || 0 == strcmp (flag_operand->name, "cs")
+		       || 0 == strcmp (flag_operand->name, "lo"))
+		insn->condition_code = ARC_CC_CS;
+	      else if (0 == strcmp (flag_operand->name, "cc")
+		       || 0 == strcmp (flag_operand->name, "nc")
+		       || 0 == strcmp (flag_operand->name, "hs"))
+		insn->condition_code = ARC_CC_CC;
+	      else if (0 == strcmp (flag_operand->name, "vs")
+		       || 0 == strcmp (flag_operand->name, "v"))
+		insn->condition_code = ARC_CC_VS;
+	      else if (0 == strcmp (flag_operand->name, "nv")
+		       || 0 == strcmp (flag_operand->name, "vc"))
+		insn->condition_code = ARC_CC_NV;
+	      else if (0 == strcmp (flag_operand->name, "gt"))
+		insn->condition_code = ARC_CC_GT;
+	      else if (0 == strcmp (flag_operand->name, "ge"))
+		insn->condition_code = ARC_CC_GE;
+	      else if (0 == strcmp (flag_operand->name, "lt"))
+		insn->condition_code = ARC_CC_LT;
+	      else if (0 == strcmp (flag_operand->name, "le"))
+		insn->condition_code = ARC_CC_LE;
+	      else if (0 == strcmp (flag_operand->name, "hi"))
+		insn->condition_code = ARC_CC_HI;
+	      else if (0 == strcmp (flag_operand->name, "ls"))
+		insn->condition_code = ARC_CC_LS;
+	      else if (0 == strcmp (flag_operand->name, "pnz"))
+		insn->condition_code = ARC_CC_PNZ;
+	    }
+	}
+    }
+
+  /* Disassembler doesn't set data size flags for some instructions - instead
+     each "data size" variation is a separate instruction.  */
+  if (arc_insn_match_op (insn, 0x03))
+    insn->data_size_mode
+      = (enum arc_ldst_data_size) BITS (insn->raw_word, 1, 2);
+  else if (arc_insn_match_op (insn, 0x15))
+    insn->data_size_mode = ARC_SCALING_B;
+  else if (arc_insn_match_op (insn, 0x16))
+    insn->data_size_mode = ARC_SCALING_H;
+  else if (arc_insn_match_subop1 (insn, 0x18, 3))
+    insn->data_size_mode = ARC_SCALING_B;
+
+  /* Opcodes disassembler doesn't set writeback flags for POP_S and PUSH_S.  */
+  if (arc_insn_is_push_s (insn))
+    insn->writeback_mode = ARC_WRITEBACK_AW;
+  else if (arc_insn_is_pop_s (insn))
+    insn->writeback_mode = ARC_WRITEBACK_AB;
+}
+
+static void
+set_insn_operands (struct arc_instruction *insn,
+		   const struct arc_opcode *opcode)
+{
+  unsigned int cur_operand_index;
+  const unsigned char *opindex;
+  for (opindex = opcode->operands, cur_operand_index = 0; *opindex; opindex++)
+    {
+      const struct arc_operand *operand = &arc_operands[*opindex];
+
+      if (operand->flags & ARC_OPERAND_FAKE)
+	continue;
+
+      if (operand->flags & ARC_OPERAND_LIMM)
+	{
+	  assert (insn->limm_p);
+	  insn->operands[cur_operand_index].kind = ARC_OPERAND_KIND_LIMM;
+	  insn->operands[cur_operand_index].value = 63;
+	}
+      else
+	{
+	  insn->operands[cur_operand_index].value
+	    = extract_operand_value (operand, (unsigned *)&(insn->raw_word));
+	  insn->operands[cur_operand_index].kind
+	    = (operand->flags & ARC_OPERAND_IR
+	       ? ARC_OPERAND_KIND_REG
+	       : ARC_OPERAND_KIND_SHIMM);
+	}
+
+      cur_operand_index += 1;
+      assert (cur_operand_index <= ARC_MAX_OPERAND_COUNT);
+    }
+  insn->operands_count = cur_operand_index;
+}
+
+void arc_insn_decode (bfd_vma addr,
+		      struct disassemble_info *info,
+		      disassembler_ftype disasm_func,
+		      struct arc_instruction *insn)
+{
+  int length_with_limm;
+  const struct arc_opcode *opcode;
+
+  /* Ensure that insn would be in the reset state.  */
+  memset (insn, 0, sizeof (struct arc_instruction));
+
+  length_with_limm = disasm_func (addr, info);
+
+  /* There was an error when disassembling, for example memory read error.  */
+  if (length_with_limm < 0)
+    {
+      insn->valid = FALSE;
+      return;
+    }
+
+  if (length_with_limm == 2 || length_with_limm == 6)
+    insn->length = 2;
+  else
+    insn->length = 4;
+
+  insn->address = addr;
+
+  /* Quick exit if memory at this address is not an instruction.  */
+  if (info->insn_type == dis_noninsn)
+    {
+      insn->valid = FALSE;
+      return;
+    }
+
+  insn->valid = TRUE;
+
+  /* arc_opcode must be set if this is not a dis_noninsn.  */
+  assert (info->private_data != NULL);
+
+  opcode = (const struct arc_opcode *) info->private_data;
+  insn->insn_class = opcode->insn_class;
+
+  insn->raw_word = read_instruction (addr, insn->length, info);
+
+  if (insn->length == 2)
+    insn->opcode = BITS (insn->raw_word, 11, 15);
+  else
+    insn->opcode = BITS (insn->raw_word, 27, 31);
+  set_insn_subopcodes (insn);
+
+  /* Read LIMM if there is one.  */
+  if (length_with_limm > 4)
+    {
+      insn->limm_value = read_instruction (addr + insn->length, 4, info);
+      insn->limm_p = TRUE;
+    }
+
+  insn->is_control_flow = (info->insn_type == dis_branch
+			   || info->insn_type == dis_condbranch
+			   || info->insn_type == dis_jsr
+			   || info->insn_type == dis_condjsr);
+  /* LEAVE_S has insn type dref and MEMORY opcode class, so has to be handled
+     separately.  */
+  if (arc_insn_is_leave_s (insn))
+    insn->is_control_flow = TRUE;
+
+  /* ARC can have only one instruction in delay slot.  */
+  assert (info->branch_delay_insns <= 1);
+  insn->has_delay_slot = info->branch_delay_insns;
+
+  set_insn_flags (insn, opcode);
+  set_insn_operands (insn, opcode);
+}
+
+int
+arc_insn_get_memory_base_reg (const struct arc_instruction *insn)
+{
+  assert (insn->insn_class == MEMORY);
+
+  /* POP_S and PUSH_S have SP as an implicit argument in a disassembler.  */
+  if (arc_insn_is_pop_s (insn) || arc_insn_is_push_s (insn))
+    return 28;
+
+  /* Other instructions all have at least two operands: operand 0 is data,
+     operand 1 is address.  Operand 2 is offset from address.  However, see
+     comment to operands_count - in some cases, third operand may be missing,
+     if it is 0.  */
+  assert (insn->operands_count >= 2);
+  return insn->operands[1].value;
+}
+
+bfd_vma
+arc_insn_get_memory_offset (const struct arc_instruction *insn)
+{
+  bfd_vma value;
+  assert (insn->insn_class == MEMORY);
+
+  /* POP_S and PUSH_S have offset as an implicit argument in a
+     disassembler.  */
+  if (arc_insn_is_pop_s (insn))
+    return 4;
+  else if (arc_insn_is_push_s (insn))
+    return -4;
+
+  /* Other instructions all have at least two operands: operand 0 is data,
+     operand 1 is address.  Operand 2 is offset from address.  However, see
+     comment to operands_count - in some cases, third operand may be missing,
+     if it is 0.  */
+  if (insn->operands_count < 3)
+    return 0;
+
+  assert (insn->operands[2].kind != ARC_OPERAND_KIND_REG);
+  value = (insn->operands[2].kind == ARC_OPERAND_KIND_LIMM
+	   ? insn->limm_value
+	   : insn->operands[2].value);
+
+  /* Handle scaling.  */
+  if (insn->writeback_mode == ARC_WRITEBACK_AS)
+    {
+      /* Byte data size is not valid for AS.  Halfword means shift by 1 bit.
+	 Word and double word means shift by 2 bits.  */
+      assert (insn->data_size_mode != ARC_SCALING_B);
+      if (insn->data_size_mode == ARC_SCALING_H)
+	value <<= 1;
+      else
+	value <<= 2;
+    }
+  return value;
 }
 
 
