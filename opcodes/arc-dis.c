@@ -1228,6 +1228,8 @@ print_insn_arc (bfd_vma memaddr,
 	}
     }
 
+  info->private_data = (void *) opcode;
+
   return insn_len;
 }
 
