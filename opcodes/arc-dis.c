@@ -1002,6 +1002,8 @@ print_insn_arc (bfd_vma memaddr,
       need_comma = TRUE;
     }
 
+  info->private_data = (void *) opcode;
+
   return insn_len;
 }
 
