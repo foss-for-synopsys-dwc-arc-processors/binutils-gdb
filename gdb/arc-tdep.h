@@ -328,9 +328,6 @@ extern int  arc_debug;
 extern struct arcDisState arcAnalyzeInstr (bfd_vma address,
 					   struct disassemble_info *info);
 
-/* From arc-tdep.c */
-extern int arc_debug;
-
 /* From arc-linux.c or arc-elf32.c */
 extern enum gdb_osabi arc_get_osabi (void);
 extern void arc_gdbarch_osabi_init (struct gdbarch *gdbarch);
