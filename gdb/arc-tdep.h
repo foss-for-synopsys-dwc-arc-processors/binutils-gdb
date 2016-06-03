@@ -255,6 +255,7 @@ enum arc_compat_regnum
                           __FUNCTION__, ##__VA_ARGS__);			\
     }
 
+#define arc_print(fmt, args...) fprintf_unfiltered (gdb_stdlog, fmt, ##args);
 
 /* -------------------------------------------------------------------------- */
 /* Globally visible datatypes                                                 */
