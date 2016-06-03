@@ -256,6 +256,7 @@ int arc_debug;
 /* The list of available "set arc ..." and "show arc ..." commands.  */
 static struct cmd_list_element *setarccmdlist = NULL;
 static struct cmd_list_element *showarccmdlist = NULL;
+static struct cmd_list_element *maintenance_print_arc_list = NULL;
 
 /* XML target descriptions features. */
 static const char * const
@@ -2975,6 +2976,13 @@ show_arc_command (char *args, int from_tty)
   cmd_show_list (showarccmdlist, from_tty, "");
 }
 
+
+static void
+maintenance_print_arc_command (char *args, int from_tty)
+{
+  cmd_show_list (maintenance_print_arc_list, from_tty, "");
+}
+
 /* this function is called from gdb */
 void
 _initialize_arc_tdep (void)
@@ -3000,6 +3008,13 @@ _initialize_arc_tdep (void)
   add_prefix_cmd ("arc", no_class, show_arc_command,
 		  _("Various ARC-specific commands."),
 		  &showarccmdlist, "show arc ", 0, &showlist);
+
+  /* Add root prefix command for "maintenance print arc" commands.  */
+  add_prefix_cmd ("arc", class_maintenance, maintenance_print_arc_command,
+		  _("ARC-specific maintenance commands for printing GDB \
+internal state."),
+		  &maintenance_print_arc_list, "maintenance print arc ", 0,
+		  &maintenanceprintlist);
 
   /* Debug internals for ARC GDB.  */
   add_setshow_zinteger_cmd ("arc", class_maintenance,
