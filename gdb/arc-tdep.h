@@ -381,6 +381,37 @@ enum ldst_cache_bypass_mode
   ARC_CACHE_BYPASS_DI = 1,
 };
 
+enum condition_code_t
+{
+  ARC_CC_AL = 0x0,
+  ARC_CC_RA = ARC_CC_AL,
+  ARC_CC_EQ = 0x1,
+  ARC_CC_Z = ARC_CC_EQ,
+  ARC_CC_NE = 0x2,
+  ARC_CC_NZ = ARC_CC_NE,
+  ARC_CC_PL = 0x3,
+  ARC_CC_P = ARC_CC_PL,
+  ARC_CC_MI = 0x4,
+  ARC_CC_N = ARC_CC_MI,
+  ARC_CC_CS = 0x5,
+  ARC_CC_C = ARC_CC_CS,
+  ARC_CC_LO = ARC_CC_CS,
+  ARC_CC_CC = 0x6,
+  ARC_CC_NC = ARC_CC_CC,
+  ARC_CC_HS = ARC_CC_CC,
+  ARC_CC_VS = 0x7,
+  ARC_CC_V = ARC_CC_VS,
+  ARC_CC_VC = 0x8,
+  ARC_CC_NV = ARC_CC_VC,
+  ARC_CC_GT = 0x9,
+  ARC_CC_GE = 0xA,
+  ARC_CC_LT = 0xB,
+  ARC_CC_LE = 0xC,
+  ARC_CC_HI = 0xD,
+  ARC_CC_LS = 0xE,
+  ARC_CC_PNZ = 0xF,
+};
+
 /* Container for information about instruction. Provides a higher level access
  * to data from opcodes' struct arc_opcode.  */
 
@@ -394,6 +425,9 @@ struct arc_instruction {
 
   /* Pointer to arc_opcode struct from opcodes library.  */
   const struct arc_opcode *opcode_data;
+
+  /* Value of condition code field.  */
+  enum condition_code_t condition_code;
 
   /* Is it a branch/jump instruction?  */
   int is_control_flow;
