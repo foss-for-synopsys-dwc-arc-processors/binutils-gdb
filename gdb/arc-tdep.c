@@ -2532,6 +2532,48 @@ parse_arc_opcode_flags (struct arc_instruction *insn)
 			(enum ldst_cache_bypass_mode) value;
 		    break;
 		}
+
+	      /* Condition codes, which are mostly several characters.  */
+	      if (0 == strncmp (flag_operand->name, "eq", 3)
+		  || 0 == strncmp (flag_operand->name, "z", 2))
+		insn->condition_code = ARC_CC_EQ;
+	      else if (0 == strncmp (flag_operand->name, "ne", 3)
+		  || 0 == strncmp (flag_operand->name, "nz", 3))
+		insn->condition_code = ARC_CC_NE;
+	      else if (0 == strncmp (flag_operand->name, "p", 2)
+		  || 0 == strncmp (flag_operand->name, "pl", 3))
+		insn->condition_code = ARC_CC_PL;
+	      else if (0 == strncmp (flag_operand->name, "n", 2)
+		  || 0 == strncmp (flag_operand->name, "mi", 3))
+		insn->condition_code = ARC_CC_MI;
+	      else if (0 == strncmp (flag_operand->name, "c", 2)
+		  || 0 == strncmp (flag_operand->name, "cs", 3)
+		  || 0 == strncmp (flag_operand->name, "lo", 3))
+		insn->condition_code = ARC_CC_CS;
+	      else if (0 == strncmp (flag_operand->name, "cc", 3)
+		  || 0 == strncmp (flag_operand->name, "nc", 3)
+		  || 0 == strncmp (flag_operand->name, "hs", 3))
+		insn->condition_code = ARC_CC_CC;
+	      else if (0 == strncmp (flag_operand->name, "vs", 3)
+		  || 0 == strncmp (flag_operand->name, "v", 2))
+		insn->condition_code = ARC_CC_VS;
+	      else if (0 == strncmp (flag_operand->name, "nv", 3)
+		  || 0 == strncmp (flag_operand->name, "vc", 3))
+		insn->condition_code = ARC_CC_NV;
+	      else if (0 == strncmp (flag_operand->name, "gt", 3))
+		insn->condition_code = ARC_CC_GT;
+	      else if (0 == strncmp (flag_operand->name, "ge", 3))
+		insn->condition_code = ARC_CC_GE;
+	      else if (0 == strncmp (flag_operand->name, "lt", 3))
+		insn->condition_code = ARC_CC_LT;
+	      else if (0 == strncmp (flag_operand->name, "le", 3))
+		insn->condition_code = ARC_CC_LE;
+	      else if (0 == strncmp (flag_operand->name, "hi", 3))
+		insn->condition_code = ARC_CC_HI;
+	      else if (0 == strncmp (flag_operand->name, "ls", 3))
+		insn->condition_code = ARC_CC_LS;
+	      else if (0 == strncmp (flag_operand->name, "pnz", 4))
+		insn->condition_code = ARC_CC_PNZ;
 	    }
 	}
     }
@@ -2622,7 +2664,13 @@ set_insn_subopcodes (struct arc_instruction *insn)
 	{
 	  insn->subopcode2 = BITS (insn->raw_word, 5, 7);
 	  if (insn->subopcode2 == 0x7)
-	    insn->subopcode3 = BITS (insn->raw_word, 8, 10);
+	    {
+	      insn->subopcode3 = BITS (insn->raw_word, 8, 10);
+	      if (insn->subopcode3 == 0x4)
+		insn->condition_code = ARC_CC_EQ;
+	      if (insn->subopcode3 == 0x5)
+		insn->condition_code = ARC_CC_NE;
+	    }
 	}
       break;
     /* No subopcodes for 0x10 - 0x16.  */
@@ -2656,15 +2704,53 @@ set_insn_subopcodes (struct arc_instruction *insn)
       break;
     case 0x1D:
       insn->subopcode1 = BITS (insn->raw_word, 7, 7);
+      if (insn->subopcode1 == 0)
+	insn->condition_code = ARC_CC_EQ;
+      else
+	insn->condition_code = ARC_CC_NE;
       break;
     /* B_S, BEQ_S, BNE_S, Bcc_S.  */
     case 0x1E:
       insn->subopcode1 = BITS (insn->raw_word, 9, 10);
       switch (insn->subopcode1)
 	{
+	case 1:
+	  insn->condition_code = ARC_CC_EQ;
+	  break;
+	case 2:
+	  insn->condition_code = ARC_CC_NE;
+	  break;
 	/* Bcc_S  */
 	case 3:
 	    insn->subopcode2 = BITS (insn->raw_word, 6, 8);
+	    /* In this case subopcode2 is the condition code.  */
+	    switch (insn->subopcode2)
+	      {
+	      case 0:
+		insn->condition_code = ARC_CC_GT;
+		break;
+	      case 1:
+		insn->condition_code = ARC_CC_GE;
+		break;
+	      case 2:
+		insn->condition_code = ARC_CC_LT;
+		break;
+	      case 3:
+		insn->condition_code = ARC_CC_LE;
+		break;
+	      case 4:
+		insn->condition_code = ARC_CC_HI;
+		break;
+	      case 5:
+		insn->condition_code = ARC_CC_HS;
+		break;
+	      case 6:
+		insn->condition_code = ARC_CC_LO;
+		break;
+	      case 7:
+		insn->condition_code = ARC_CC_LS;
+		break;
+	      }
 	    break;
 	}
       break;
@@ -3543,6 +3629,7 @@ arc_insn_dump (const struct arc_instruction *insn)
   arc_print ("subopcode1=0x%02x\n", insn->subopcode1);
   arc_print ("subopcode2=0x%x\n", insn->subopcode2);
   arc_print ("subopcode3=0x%x\n", insn->subopcode3);
+  arc_print ("cc=0x%x\n", insn->condition_code);
   arc_print ("is_control_flow=%i\n", insn->is_control_flow);
   arc_print ("has_delay_slot=%i\n", insn->has_delay_slot);
 
