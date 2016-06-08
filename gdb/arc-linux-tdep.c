@@ -380,33 +380,41 @@ arc_linux_is_condition_true (ULONGEST status32, int condition_code)
 
 }    /* arc_linux_is_condition_true() */
 
-/*! Checks result of brcc/bbit instruction condition by arguments and subopcode.
 
-  @param[in] subopcode	Addition to opcode allowing to determine subtype of
-			instruction with given opcode, in this case it
-			determines the kind of condition that is checked by
-			this instruction.
-  @param[in] arg1	First argument of instruction.
-  @param[in] arg2	Second argument of instruction.
-  @return  The result of condition checking if subopcode is valid, otherwise
-	   throws the assertion error. */
+/*! Checks result of brcc/bbit instruction condition by instruction arguments
+    and subopcode.
+
+  @param insn BRcc/BBIT{0,1} instruction to analyze. This function doesn't
+              check if insn is indeed a BRcc or BBIT.
+
+  @return Whether condition of this instruction is true or not. */
 static int
-arc_linux_is_brcc_taken (int subopcode, long arg1, long arg2)
+arc_linux_is_brcc_taken (const struct arc_instruction *insn)
 {
-  unsigned long uarg1, uarg2;
+  gdb_assert (insn != NULL);
 
-  gdb_assert (subopcode >= 0 && subopcode <= 15);
+  ULONGEST uarg1 = arc_insn_get_operand_value (insn, 0);
+  ULONGEST uarg2 = arc_insn_get_operand_value (insn, 1);
+  /* These variables will be used for signed comparison. */
+  LONGEST arg1 = arc_insn_get_operand_value_signed (insn, 0);
+  LONGEST arg2 = arc_insn_get_operand_value_signed (insn, 1);
 
-  /* These variables will be used for unsigned comparison. */
-  uarg1 = arg1;
-  uarg2 = arg2;
+  /* 32-bit BRcc/BBIT instructions contains they condition in the
+     subopcode. 16-bit BRcc supports only EQ and NE, but subopcode values for
+     short instruction are identical to those of long instruction. However the
+     field in arc_instruction is different. */
+  unsigned int subopcode = ((insn->length == 4) ? insn->subopcode3 :
+			    insn->subopcode1);
+
+  gdb_assert (subopcode <= 15);
 
   if (arc_debug)
     {
       fprintf_unfiltered (gdb_stdlog,
 			  " --- arc_linux_is_brcc_taken subopcode = %d,"
-			  "arg1 = %ld, arg2 = %ld, uarg1 = %lu, uarg2 = %lu\n",
-			  subopcode, arg1, arg2, uarg1, uarg2);
+			  "arg1 = %s, arg2 = %s, uarg1 = %s, uarg2 = %s\n",
+			  subopcode, plongest (arg1), plongest (arg2),
+			  pulongest (uarg1), pulongest (uarg2));
     }
 
   switch (subopcode)
@@ -414,12 +422,12 @@ arc_linux_is_brcc_taken (int subopcode, long arg1, long arg2)
     /* BREQ */
     case 0x0:
     case 0x8:
-      return arg1 == arg2;
+      return uarg1 == uarg2;
 
     /* BRNE */
     case 0x1:
     case 0x9:
-      return arg1 != arg2;
+      return uarg1 != uarg2;
 
     /* BRLT */
     case 0x2:
@@ -444,64 +452,20 @@ arc_linux_is_brcc_taken (int subopcode, long arg1, long arg2)
     /* BBIT0 */
     case 0x6:
     case 0xE:
-      return !(arg1 & (1 << arg2));
+      return !(uarg1 & (1 << uarg2));
 
     /* BBIT1 */
     case 0x7:
     case 0xF:
-      return (arg1 & (1 << arg2));
+      return (uarg1 & (1 << uarg2));
     }
 
-  /* Next line is used to supress warning about the return value. It is
-     unreachable during normal execution which does not cause the assertion
-     error, see code above to understand why.*/
+  /* This line is used to supress warning about the return value. It is
+     unreachable during normal execution, because assert will catch the case of
+     subopcode > 15. */
   return -1;
 }    /* arc_linux_is_brcc_taken() */
 
-/*! Returns register value by register number encoded in the instruction or long
-    immediate value from the next word if given register number is 62 (long
-    immediate value indicator). Don't use this function if you really may want
-    to read 62th register value.
-
-    @param[in] register_number	      Number of register to extract value from.
-    @param[in] byte_order	      Current machine's byte order.
-    @param[in] word_after_instruction It must be the next word after instruction
-				      in which given register number is encoded,
-				      otherwise this function may return wrong
-				      value. In addition to this, word must be
-				      read from memory according to big endian
-				      byte order, use struct arcDisState for
-				      such instruction reading. */
-static long
-arc_linux_read_reg_encoded_in_insn (unsigned int register_number,
-				    enum bfd_endian byte_order,
-				    unsigned long word_after_instruction,
-				    struct regcache *regcache)
-{
-  long register_value = 0;
-  /* Long immediate value operand is indicated by register number
-     62 (ARC_LIMM_REGNUM). */
-  if (register_number == ARC_LIMM_REGNUM)
-    {
-      /* Extracting long immediate value from the next word. */
-      /* LITTLE_ENDIAN */
-      if (byte_order == BFD_ENDIAN_LITTLE)
-	{
-	  register_value = ((word_after_instruction & 0xFFFF) << 16) |
-		 ((word_after_instruction & 0xFFFF0000) >> 16);
-	}
-      /* BIG_ENDIAN */
-      else
-	{
-	  register_value = word_after_instruction;
-	}
-    }
-  else
-    {
-      regcache_cooked_read_signed (regcache, register_number, &register_value);
-    }
-  return register_value;
-}    /* arc_linux_read_reg_encoded_in_insn() */
 
 /*! Returns the address of the next instruction or the branch
     target if it is a branch and it is taken.
@@ -512,150 +476,84 @@ arc_linux_next_pc (CORE_ADDR pc)
 {
   struct regcache *regcache = get_current_regcache ();
   struct gdbarch *gdbarch = get_regcache_arch (regcache);
-  struct disassemble_info di;
-  struct arcDisState instr;
-  struct arcDisState instr_d;
-  ULONGEST lp_end, lp_start, lp_count, status32;
+  struct arc_instruction insn;
   int is_loop_enabled;
-  int is_branch_lpcc = FALSE;
-  int is_brcc_or_bbit = FALSE;
-  int is_branch_taken = FALSE;
-  int instr_subopcode = -1;
-  long arg1_reg, arg2_reg, arg1_value, arg2_value;
-  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  ULONGEST status32;
   CORE_ADDR next_pc;
 
   /* So what is the instruction at the given pc? */
-  arc_initialize_disassembler (gdbarch, &di);
-  instr = arcAnalyzeInstr (pc, &di);
+  arc_insn_decode (gdbarch, pc, &insn);
+
   /* By default, the next instruction is the one immediately after the one at
      pc. */
-  next_pc = pc + instr.instructionLen;
+  next_pc = arc_insn_get_linear_next_pc (&insn);
+
+  /* ZD-loops may be disabled in STATUS32.  */
+  regcache_cooked_read_unsigned (regcache, gdbarch_ps_regnum (gdbarch),
+				 &status32);
   is_loop_enabled = !(status32 & ARC_REG_STATUS32_L);
 
   if (arc_debug)
-    {
-      fprintf_unfiltered (gdb_stdlog,
-			  "--- arc_linux_next_pc (%s) = %s, isBranch = %s, "
-			  "tcnt = %d [0x%x],\n"
-			  "    flow = %s (%d), reg for indirect jump = %d, "
-			  "nullifyMode = %s, is_loop_enabled = %d, "
-			  "byte order = %s\n",
-			  print_core_address (gdbarch, pc),
-			  print_core_address (gdbarch, next_pc),
-			  instr.isBranch ? "true" : "false", instr.tcnt,
-			  instr.targets[0],
-			  (instr.flow == direct_jump
-			   || instr.flow == direct_call)
-			  ? "direct" : "indirect", instr.flow,
-			  instr.register_for_indirect_jump,
-			  ((instr.nullifyMode == (char) BR_exec_always)
-			   ? "delay slot" : "no delay"),
-			  is_loop_enabled,
-			  byte_order == BFD_ENDIAN_LITTLE ? "LITTLE ENDIAN"
-			  : "BIG ENDIAN");
-    }
+    arc_insn_dump (&insn);
 
-  if (instr.isBranch)
+  if (insn.is_control_flow)
     {
+      int is_branch_taken = FALSE;
       /* Checking if instruction is brcc or bbit because there is need to
          calculate branch condition manually then. */
-      is_brcc_or_bbit = (((instr.words[0] & 0x10000) >> 16) == 0x1)
-			&& ((instr._opcode == 0x1) || (instr._opcode == 0x1D));
-      if (arc_debug)
-	{
-	  fprintf_unfiltered (gdb_stdlog,
-			      "--- arc_linux_next_pc is_brcc_or_bbit = %d\n",
-			      is_brcc_or_bbit);
-	}
+      int is_brcc_or_bbit = ((insn.opcode == 0x01) && (insn.subopcode1 == 0x1))
+			 || (insn.opcode == 0x1D);
+      int is_branch_lpcc = (insn.opcode == 0x04 && insn.subopcode1 == 0x28);
+
       if (is_brcc_or_bbit)
 	{
-	  instr_subopcode = instr.words[0] & 0xF;
-	  /* Extracting registers numbers where the arguments are stored from
-	     the instruction. */
-	  arg1_reg = ((instr.words[0] & 0x7000) >> 9)
-	             |((instr.words[0] & 0x07000000) >> 24);
-	  arg2_reg = (instr.words[0] & 0xFC0) >> 6;
-	  arg1_value =
-	    arc_linux_read_reg_encoded_in_insn (arg1_reg, byte_order,
-						instr.words[1], regcache);
-	  arg2_value =
-	    arc_linux_read_reg_encoded_in_insn (arg2_reg, byte_order,
-						instr.words[1], regcache);
-	  is_branch_taken =
-	    arc_linux_is_brcc_taken (instr_subopcode, arg1_value, arg2_value);
-
-	  if (arc_debug)
-	    {
-	      fprintf_unfiltered (gdb_stdlog,
-				  "--- arc_linux_next_pc arg1_reg = %ld, "
-				  "arg2_reg = %ld, ", arg1_reg, arg2_reg);
-	    }
+	  is_branch_taken = arc_linux_is_brcc_taken (&insn);
 	}
-      /* If instruction is not brcc or bbit we have not calculated branch
-         condition yet and should use status32 register for calculating it. */
+      /* If branch instruction is not brcc or bbit we have not calculated
+	 branch condition yet and should use status32 register for calculating
+	 it. */
       else
 	{
-	  instr_subopcode = (instr.words[0] & 0x3F0000) >> 16;
-	  is_branch_lpcc = (instr_subopcode == 0x28)
-			   && (instr._opcode == 0x4);
-	  regcache_cooked_read_unsigned (regcache,
-					 gdbarch_ps_regnum (gdbarch),
-					 &status32);
+	  /* Non-conditional jumps and branches will have condition_code == 0,
+	     which means "execute always.  */
 	  is_branch_taken =
-	    arc_linux_is_condition_true (status32, instr._cond);
+	    arc_linux_is_condition_true (status32, insn.condition_code);
 	}
+
       if (arc_debug)
 	{
 	  fprintf_unfiltered (gdb_stdlog,
 			      "--- arc_linux_next_pc is_brcc_or_bbit = %d, "
-			      "is_branch_taken = %d, instr._opcode = %d, "
-			      "instr subopcode = %d, instr.words[0] = %lu, "
-			      "instr.words[1] = %lu, is_branch_lpcc = %d\n",
-			      is_brcc_or_bbit, is_branch_taken, instr._opcode,
-			      instr_subopcode, instr.words[0], instr.words[1],
+			      "is_branch_taken = %d, is_branch_lpcc = %d\n",
+			      is_brcc_or_bbit, is_branch_taken,
 			      is_branch_lpcc);
 	}
+
       /* If current instruction is LP(cc) and branch is not taken, next
          instruction must be calculated the same way as it would if instruction
          was an another branch or jump and branch was taken. */
       if ((is_branch_taken && !is_branch_lpcc)
-	 || (!is_branch_taken && is_branch_lpcc))
+	  || (!is_branch_taken && is_branch_lpcc))
 	{
-	  if ((instr.flow == direct_jump) || (instr.flow == direct_call))
-	    {
-	      /* It's a direct jump or call, so the destination address is
-		 encoded in the instruction, so we got it by disassembling the
-		 instruction. */
-	      next_pc = (CORE_ADDR) instr.targets[0];
-	    }
-	  else
-	    {
-	      /* It's an indirect jump to the address held in the register
-	         named in the instruction, so we must read that register. */
-	      ULONGEST val;
-	      regcache_cooked_read_unsigned (regcache,
-		  instr.register_for_indirect_jump,
-		  &val);
-	      next_pc = val;
-	    }
+	  next_pc = arc_insn_get_branch_target (&insn);
 	}
       else
 	{
 	  /* For instructions with delay slots, the fall thru is not the
 	     instruction immediately after the branch instruction, but the one
 	     after that. */
-	  if ((instr.nullifyMode) == ((char) BR_exec_always))
+	  if (insn.has_delay_slot)
 	    {
-	      instr_d = arcAnalyzeInstr (next_pc, &di);
-	      next_pc += instr_d.instructionLen;
+	      struct arc_instruction insn_d;
+	      arc_insn_decode (gdbarch, next_pc, &insn_d);
+	      next_pc = arc_insn_get_linear_next_pc (&insn_d);
 	    }
 	}
     }
   /* Is current instruction the last in a loop body? */
-  else
+  else if (is_loop_enabled)
     {
-      /* Zero-overhead loops. */
+      ULONGEST lp_end, lp_start, lp_count;
       regcache_cooked_read_unsigned (regcache, ARC_LP_START_REGNUM,
 				     &lp_start);
       regcache_cooked_read_unsigned (regcache, ARC_LP_END_REGNUM, &lp_end);
@@ -665,16 +563,12 @@ arc_linux_next_pc (CORE_ADDR pc)
       if (arc_debug)
 	{
 	  fprintf_unfiltered (gdb_stdlog,
-			      "lp_start = %s, "
-			      "lp_end = %s, "
-			      "lp_count = %s, "
+			      "lp_start = %s, lp_end = %s, lp_count = %s, "
 			      "next_pc = %s\n",
-			      pulongest (lp_start),
-			      pulongest (lp_end),
-			      pulongest (lp_count),
-			      pulongest (next_pc));
+			      pulongest (lp_start), pulongest (lp_end),
+			      pulongest (lp_count), pulongest (next_pc));
 	}
-      if (is_loop_enabled && next_pc == lp_end && lp_count > 1)
+      if (next_pc == lp_end && lp_count > 1)
 	{
 	  /* The instruction is in effect a jump back to the start of the
 	     loop. */
