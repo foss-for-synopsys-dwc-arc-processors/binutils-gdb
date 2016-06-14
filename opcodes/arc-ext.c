@@ -431,6 +431,9 @@ build_ARC_extmap (bfd *text_bfd)
      from the old.  */
   destroy_map ();
 
+  if (text_bfd == NULL)
+    return;
+
   for (sect = text_bfd->sections; sect != NULL; sect = sect->next)
     if (!strncmp (sect->name,
 		  ".gnu.linkonce.arcextmap.",
