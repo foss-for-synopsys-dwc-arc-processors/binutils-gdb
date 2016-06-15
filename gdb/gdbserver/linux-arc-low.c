@@ -553,34 +553,18 @@ arc_regs_info (void)
            for single step, so will set breakpoints by using memory
            read/write. So we do not need the breakpoint functions. */
 struct linux_target_ops the_low_target = {
-  .arch_setup                       = arc_arch_setup,
-  .regs_info                        = arc_regs_info,
-  .cannot_fetch_register            = arc_cannot_fetch_register,
-  .cannot_store_register            = arc_cannot_store_register,
-  .fetch_register                   = NULL,
-  .get_pc                           = arc_get_pc,
-  .set_pc                           = arc_set_pc,
-  .breakpoint                       = NULL,
-  .breakpoint_len                   = 2,
-  .breakpoint_reinsert_addr         = NULL,
-  .decr_pc_after_break              = 0,
-  .breakpoint_at                    = arc_breakpoint_at,
-  .insert_point                     = NULL,
-  .remove_point                     = NULL,
-  .stopped_by_watchpoint            = NULL,
-  .stopped_data_address             = NULL,
-  .collect_ptrace_register          = NULL,
-  .supply_ptrace_register           = NULL,
-  .siginfo_fixup                    = NULL,
-  .new_process                      = NULL,
-  .new_thread                       = NULL,
-  .prepare_to_resume                = NULL,
-  .process_qsupported               = NULL,
-  .supports_tracepoints             = NULL,
-  .get_thread_area                  = NULL,
-  .install_fast_tracepoint_jump_pad = NULL,
-  .emit_ops                         = NULL,
-  .get_min_fast_tracepoint_insn_len = NULL
+  arc_arch_setup,
+  arc_regs_info,
+  arc_cannot_fetch_register,
+  arc_cannot_store_register,
+  NULL, /* fetch_register  */
+  arc_get_pc,
+  arc_set_pc,
+  NULL, /* breakpoint_kind_from_pc  */
+  NULL, /* sw_breakpoint_from_kind  */
+  NULL, /* get_next_pcs  */
+  0, /* .decr_pc_after_break  */
+  arc_breakpoint_at,
 };
 
 void
