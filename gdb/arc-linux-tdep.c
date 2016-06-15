@@ -666,7 +666,7 @@ arc_linux_sigcontext_addr (struct frame_info *this_frame)
 /* -------------------------------------------------------------------------- */
 /*		   ARC specific GDB architectural functions		      */
 /*									      */
-/* Functions are listed in the order they are used in arc_linux_init_abi.     */
+/* Functions are listed in the order they are used in arc_linux_init_osabi.   */
 /* -------------------------------------------------------------------------- */
 
 /*! Determine whether a register can be read.
@@ -912,29 +912,15 @@ arc_linux_iterate_over_regset_sections (struct gdbarch *gdbarch,
 /*                               externally visible functions                 */
 /* -------------------------------------------------------------------------- */
 
+/* Initialization specific to Linux/uClibc environment.  */
 
-/*! Function to determine the OSABI variant.
-
-    Every target variant must define this appropriately.
-
-    @return  The OSABI variant. */
-enum gdb_osabi
-arc_get_osabi (void)
-{
-  return GDB_OSABI_LINUX;
-
-}	/* arc_get_osabi () */
-
-
-/*! Function to initialize for this target variant.
-
-    Every target variant must define this appropriately.
-
-    @param[in,out] gdbarch  The gdbarch we are initializing. */
-void
-arc_gdbarch_osabi_init (struct gdbarch *gdbarch)
+static void
+arc_linux_init_osabi (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
   struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+
+  if (arc_debug)
+    arc_print ("arc-linux: GNU/Linux OS/ABI initialization.\n");
 
   /* Fill in target-dependent info in ARC-private structure. */
   tdep->is_sigtramp = arc_linux_is_sigtramp;
@@ -960,6 +946,13 @@ arc_gdbarch_osabi_init (struct gdbarch *gdbarch)
 					 svr4_ilp32_fetch_link_map_offsets);
 
 }	/* arc_gdbarch_osabi_init () */
+
+void
+_initialize_arc_linux_tdep (void)
+{
+  gdbarch_register_osabi (bfd_arch_arc, 0, GDB_OSABI_LINUX,
+			  arc_linux_init_osabi);
+}
 
 /* vim: set sts=2 shiftwidth=2 ts=8: */
 
