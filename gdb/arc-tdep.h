@@ -353,6 +353,8 @@ arc_mach_is_arcv2(struct gdbarch *gdbarch)
     return gdbarch_bfd_arch_info (gdbarch)->mach == bfd_mach_arc_arcv2;
 }
 
+extern void
+arc_elf_init_osabi (struct gdbarch_info info, struct gdbarch *gdbarch);
 
 /* Declarations related to instruction decoder.  */
 
