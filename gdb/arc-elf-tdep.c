@@ -51,6 +51,7 @@
 #include "reggroups.h"
 #include "observer.h"
 #include "objfiles.h"
+#include "osabi.h"
 #include "arch-utils.h"
 #include "dis-asm.h"
 #include "opcode/arc.h"
@@ -85,7 +86,7 @@ typedef struct
 /* -------------------------------------------------------------------------- */
 /*		   ARC specific GDB architectural functions		      */
 /*									      */
-/* Functions are listed in the order they are used in arc_elf_init_abi.       */
+/* Functions are listed in the order they are used in arc_elf_init_osabi.     */
 /* -------------------------------------------------------------------------- */
 
 /*! Determine whether a register can be read.
@@ -424,27 +425,15 @@ arc_elf_write_pc (struct regcache *regcache, CORE_ADDR new_pc)
 /*                               externally visible functions                 */
 /* -------------------------------------------------------------------------- */
 
-/*! Function to determine the OSABI variant.
+/* Initialization specific to baremetal environment.  */
 
-    Every target variant must define this appropriately.
-
-    @return  The OSABI variant. */
-enum gdb_osabi
-arc_get_osabi (void)
-{
-  return GDB_OSABI_LINUX;
-
-}	/* arc_get_osabi () */
-
-/*! Function to initialize for this target variant.
-
-    Every target variant must define this appropriately.
-
-    @param[in,out] gdbarch  The gdbarch we are initializing. */
 void
-arc_gdbarch_osabi_init (struct gdbarch *gdbarch)
+arc_elf_init_osabi (struct gdbarch_info info, struct gdbarch *gdbarch)
 {
   struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+
+  if (arc_debug)
+    arc_print ("arc-elf: Baremetal OS/ABI initialization.\n");
 
   /* Fill in target-dependent info in ARC-private structure. */
   tdep->is_sigtramp = NULL;

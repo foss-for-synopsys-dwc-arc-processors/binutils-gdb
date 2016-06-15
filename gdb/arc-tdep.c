@@ -3165,6 +3165,9 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   const struct arc_reginfo * core_reginfo;
   const char * core_feature_name;
 
+  if (arc_debug)
+    arc_print ("arc: Arhitecture initialization.\n");
+
   /* If target doesn't provide us description - use default one. */
   if (!tdesc_has_registers (tdesc))
     {
@@ -3364,11 +3367,6 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
       num_regs += i;
     }
 
-  /* Determine which OSABI we have. A different version of this function is
-     linked in for each GDB target. Must do this before we allocate the
-     gdbarch, since it is copied into the gdbarch! */
-  info.osabi = arc_get_osabi ();
-
   /* Allocate the ARC-private target-dependent information structure, and the
      GDB target-independent information structure. */
   tdep = (struct gdbarch_tdep *) xmalloc (sizeof (struct gdbarch_tdep));
@@ -3518,10 +3516,13 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   frame_base_append_sniffer (gdbarch, dwarf2_frame_base_sniffer);
   frame_base_append_sniffer (gdbarch, arc_sigtramp_frame_base_sniffer);
   frame_base_append_sniffer (gdbarch, arc_frame_base_sniffer);
-  
-  /* Put OS specific stuff into gdbarch. This can override any of the generic
-     ones specified above. */
-  arc_gdbarch_osabi_init (gdbarch);
+
+  /* arc-elf-tdep.c should be completely merged into arc-tdep.c to represent
+     a "none" OS/ABI, while arc-linux-tdep.c will represent a Linux OS/ABI.  */
+  arc_elf_init_osabi (info, gdbarch);
+  /* Setup stuff specific to a particular environment (baremetal or Linux).
+     It can override functions set earlier. */
+  gdbarch_init_osabi (info, gdbarch);
 
   tdesc_use_registers (gdbarch, tdesc, tdesc_data);
 
