@@ -1,0 +1,78 @@
+variables:
+    # ${PATH} is not set here, so it is not possible to do PATH=$GCC_PATH:$PATH
+    GCC_PATH: "/slowfs/ru20arcgnu1/akolesov/depot/gcc-5.3/bin"
+    # PATH to ARC HS Linux compiler
+    ARCHS_GCC_PATH: "/slowfs/ru20arcgnu1/gnu_builds/latest/uclibc_le_archs_linux/bin"
+
+stages:
+    - build
+    - test
+
+linux-build:
+# Build GDB as a C++ application for Linux hosts
+    stage: build
+    script:
+        - export PATH=$GCC_PATH:$PATH
+        - mkdir _build
+        - cd _build
+        - ../configure --disable-ld --disable-gas --disable-binutils
+          --enable-build-warnings --enable-gdb-build-warnings
+          --target=arc-elf32 --enable-targets=arc-linux-uclibc
+        - make -j4
+
+windows-build:
+# Build GDB as a C++ application for Windows hosts
+    stage: build
+    script:
+        - mkdir _build
+        - cd _build
+        - ../configure --disable-ld --disable-gas --disable-binutils
+          --enable-build-warnings --enable-gdb-build-warnings
+          --target=arc-elf32 --enable-targets=arc-linux-uclibc
+          --host=i686-w64-mingw32
+        - make -j4
+
+native-build:
+# Build GDB as a C++ application for ARC HS Linux hosts
+    stage: build
+    script:
+        - mkdir _build
+        - cd _build
+        - export PATH=$ARCHS_GCC_PATH:$PATH
+        - ../configure --disable-ld --disable-gas --disable-binutils
+          --enable-build-warnings --enable-gdb-build-warnings
+          --target=arc-linux-uclibc
+          --host=arc-linux-uclibc
+        - make -j4
+
+linux-build-as-c:
+# Build GDB as a C application for Linux hosts
+    stage: build
+    script:
+        - export PATH=$GCC_PATH:$PATH
+        - mkdir _build
+        - cd _build
+        - ../configure --disable-ld --disable-gas --disable-binutils
+          --enable-build-warnings --enable-gdb-build-warnings
+          --disable-build-with-cxx
+          --target=arc-elf32 --enable-targets=arc-linux-uclibc
+        - make -j4
+
+check-gnu-style:
+# Check GNU formatting style. indent will modify files in place, so if files
+# has been modified - this means that original files do not conform to GNU
+# standard.
+    stage: test
+    script:
+        - cd gdb
+        - indent arc-*
+        - git status -uno --short
+        - test $(git status -uno --porcelain | wc -l) = 0
+
+check-gdb-ari:
+# Run gdb_ari.sh script that does some extra style checks.
+    stage: test
+    script:
+        - cd gdb
+        - bash contrib/ari/gdb_ari.sh arc-*
+        - test $(bash contrib/ari/gdb_ari.sh arc-*| wc -l) = 0
