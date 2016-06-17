@@ -1,0 +1,11 @@
+-T bfd_byte
+-T bfd_vma
+-T CORE_ADDR
+-T gdb_gregset_t
+-T gdb_fpregset_t
+-T gdb_byte
+-T iterate_over_regset_sections_cb
+-T LONGEST
+-T ps_prochandle
+-T ULONGEST
+-l80
