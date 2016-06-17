@@ -1,0 +1,10 @@
+variables:
+    # ${PATH} is not set here, so it is not possible to do PATH=$GCC_PATH:$PATH
+    GCC_PATH: "/slowfs/ru20arcgnu1/akolesov/depot/gcc-5.3/bin"
+
+build:
+    script:
+        - export PATH=$GCC_PATH:$PATH
+        - ./configure --disable-ld --disable-gas --disable-binutils --disable-sim
+          --target=arc-elf32 --enable-targets=arc-linux-uclibc
+        - make -j4
