@@ -74,7 +74,7 @@ get_thread_id (ptid_t ptid)
 static void
 fetch_gregs (struct regcache *regcache, int regnum)
 {
-  const gdb_gregset_t regs;
+  gdb_gregset_t regs;
   struct iovec iov;
   int tid = get_thread_id (inferior_ptid);
 
@@ -213,7 +213,8 @@ ps_get_thread_area (const struct ps_prochandle *ph, lwpid_t lwpid, int idx,
     if (arc_debug >= 2)
       fprintf_unfiltered (gdb_stdlog, "ps_get_thread_area called");
 
-    if (ptrace (PTRACE_GET_THREAD_AREA, lwpid, NULL, base) != 0)
+    if (ptrace ((__ptrace_request) PTRACE_GET_THREAD_AREA, lwpid, NULL, base)
+	!= 0)
       return PS_ERR;
 
     /* IDX is the bias from the thread pointer to the beginning of the thread
