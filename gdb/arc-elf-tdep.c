@@ -410,7 +410,8 @@ arc_elf_write_pc (struct regcache *regcache, CORE_ADDR new_pc)
 	if (arc_debug)
 	  fprintf_unfiltered(gdb_stdlog,
 	    "arc: Changing PC while in delay slot. Will reset STATUS32.DE bit "
-	    "to zero. Value of STATUS32 register is 0x%08lx\n", status32);
+	    "to zero. Value of STATUS32 register is 0x%s\n",
+	    phex (status32, BYTES_IN_REGISTER));
 
 	/* Reset bit and write to the cache */
 	status32 &= ~0x40;
