@@ -2378,14 +2378,14 @@ arc_sigtramp_frame_sniffer (const struct frame_unwind *self,
     Since we are the fallback unwinder, we use the default frame sniffer,
     which always accepts the frame. */
 static const struct frame_unwind arc_frame_unwind = {
-  .type          = NORMAL_FRAME,
-  .stop_reason   = default_frame_unwind_stop_reason,
-  .this_id       = arc_frame_this_id,
-  .prev_register = arc_frame_prev_register,
-  .unwind_data   = NULL,
-  .sniffer       = default_frame_sniffer,
-  .dealloc_cache = NULL,
-  .prev_arch     = NULL
+  NORMAL_FRAME,
+  default_frame_unwind_stop_reason,
+  arc_frame_this_id,
+  arc_frame_prev_register,
+  NULL,
+  default_frame_sniffer,
+  NULL,
+  NULL
 };
 
 
@@ -2394,14 +2394,14 @@ static const struct frame_unwind arc_frame_unwind = {
     We use a custom sniffer, since we must only accept this frame in the right
     context. */
 static const struct frame_unwind arc_sigtramp_frame_unwind = {
-  .type          = SIGTRAMP_FRAME,
-  .stop_reason   = default_frame_unwind_stop_reason,
-  .this_id       = arc_sigtramp_frame_this_id,
-  .prev_register = arc_sigtramp_frame_prev_register,
-  .unwind_data   = NULL,
-  .sniffer       = arc_sigtramp_frame_sniffer,
-  .dealloc_cache = NULL,
-  .prev_arch     = NULL
+  SIGTRAMP_FRAME,
+  default_frame_unwind_stop_reason,
+  arc_sigtramp_frame_this_id,
+  arc_sigtramp_frame_prev_register,
+  NULL,
+  arc_sigtramp_frame_sniffer,
+  NULL,
+  NULL
 };
 
 
@@ -2413,10 +2413,10 @@ arc_frame_base_sniffer (struct frame_info *this_frame)
 {
   static const struct frame_base fb =
     {
-      .unwind      = &arc_frame_unwind,
-      .this_base   = arc_frame_base_address,
-      .this_locals = arc_frame_base_address,
-      .this_args   = arc_frame_base_address
+      &arc_frame_unwind,
+      arc_frame_base_address,
+      arc_frame_base_address,
+      arc_frame_base_address
     };
 
   return &fb;
@@ -2432,10 +2432,10 @@ arc_sigtramp_frame_base_sniffer (struct frame_info *this_frame)
 {
   static const struct frame_base fb =
     {
-      .unwind      = &arc_sigtramp_frame_unwind,
-      .this_base   = arc_frame_base_address,
-      .this_locals = arc_frame_base_address,
-      .this_args   = arc_frame_base_address
+      &arc_sigtramp_frame_unwind,
+      arc_frame_base_address,
+      arc_frame_base_address,
+      arc_frame_base_address
     };
 
   return &fb;
