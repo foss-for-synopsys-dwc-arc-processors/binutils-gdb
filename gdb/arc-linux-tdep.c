@@ -892,9 +892,9 @@ arc_linux_collect_gregset ( const struct regset *regset,
 
 /* Linux regset definitions. */
 static struct regset arc_linux_gregset = {
-  .regmap         = NULL,
-  .supply_regset  = arc_linux_supply_gregset,
-  .collect_regset = NULL,
+  NULL,
+  arc_linux_supply_gregset,
+  NULL,
 };
 
 /* Implement the `iterate_over_regset_sections` gdbarch method.  */
