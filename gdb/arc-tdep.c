@@ -3617,6 +3617,8 @@ void
 arc_insn_dump (const struct arc_instruction *insn)
 {
   struct gdbarch* gdbarch = target_gdbarch ();
+  CORE_ADDR next_pc;
+  unsigned int operand_count, i;
 
   gdb_assert (insn != NULL);
 
@@ -3634,7 +3636,7 @@ arc_insn_dump (const struct arc_instruction *insn)
   arc_print ("is_control_flow=%i\n", insn->is_control_flow);
   arc_print ("has_delay_slot=%i\n", insn->has_delay_slot);
 
-  CORE_ADDR next_pc = arc_insn_get_linear_next_pc (insn);
+  next_pc = arc_insn_get_linear_next_pc (insn);
   arc_print ("linear_next_pc=%s\n", print_core_address (gdbarch, next_pc));
 
   if (insn->is_control_flow)
@@ -3651,9 +3653,9 @@ arc_insn_dump (const struct arc_instruction *insn)
   if (insn->limm_p)
     arc_print ("limm_value=0x%08x\n", insn->limm_value);
 
-  unsigned int operand_count = arc_insn_count_operands (insn);
+  operand_count = arc_insn_count_operands (insn);
   arc_print ("operand_count=%u\n", operand_count);
-  for (unsigned i = 0; i < operand_count; ++i)
+  for (i = 0; i < operand_count; ++i)
     {
       int is_reg = arc_insn_operand_is_reg (insn, i);
       arc_print ("operand[%u].is_reg=%i\n", i, is_reg);
@@ -3662,7 +3664,7 @@ arc_insn_dump (const struct arc_instruction *insn)
 	  arc_print ("operand[%u].regnum=%i\n", i,
 		     arc_insn_get_operand_reg (insn, i));
 	}
-      arc_print ("operand[%u].value=%s, signed=%s", i,
+      arc_print ("operand[%u].value=%s, signed=%s\n", i,
 		 pulongest (arc_insn_get_operand_value (insn, i)),
 		 plongest (arc_insn_get_operand_value_signed (insn, i)));
     }
