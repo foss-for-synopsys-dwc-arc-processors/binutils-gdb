@@ -391,19 +391,23 @@ arc_linux_is_condition_true (ULONGEST status32, int condition_code)
 static int
 arc_linux_is_brcc_taken (const struct arc_instruction *insn)
 {
+  ULONGEST uarg1, uarg2;
+  LONGEST arg1, arg2;
+  unsigned int subopcode;
+
   gdb_assert (insn != NULL);
 
-  ULONGEST uarg1 = arc_insn_get_operand_value (insn, 0);
-  ULONGEST uarg2 = arc_insn_get_operand_value (insn, 1);
+  uarg1 = arc_insn_get_operand_value (insn, 0);
+  uarg2 = arc_insn_get_operand_value (insn, 1);
   /* These variables will be used for signed comparison. */
-  LONGEST arg1 = arc_insn_get_operand_value_signed (insn, 0);
-  LONGEST arg2 = arc_insn_get_operand_value_signed (insn, 1);
+  arg1 = arc_insn_get_operand_value_signed (insn, 0);
+  arg2 = arc_insn_get_operand_value_signed (insn, 1);
 
   /* 32-bit BRcc/BBIT instructions contains they condition in the
      subopcode. 16-bit BRcc supports only EQ and NE, but subopcode values for
      short instruction are identical to those of long instruction. However the
      field in arc_instruction is different. */
-  unsigned int subopcode = ((insn->length == 4) ? insn->subopcode3 :
+  subopcode = ((insn->length == 4) ? insn->subopcode3 :
 			    insn->subopcode1);
 
   gdb_assert (subopcode <= 15);
@@ -946,6 +950,9 @@ arc_linux_init_osabi (struct gdbarch_info info, struct gdbarch *gdbarch)
 					 svr4_ilp32_fetch_link_map_offsets);
 
 }	/* arc_gdbarch_osabi_init () */
+
+/* Shut up -Wmissing-prototypes.  */
+void _initialize_arc_linux_tdep (void);
 
 void
 _initialize_arc_linux_tdep (void)
