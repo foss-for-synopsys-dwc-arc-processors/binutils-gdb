@@ -1,20 +1,7 @@
-/* Target dependent code for ARC processor family, for GDB, the GNU debugger.
+/* Target dependent code for ARC arhitecture, for GDB.
 
-   Copyright 2005 Free Software Foundation, Inc.
-   Copyright 2009-2015 Synopsys Inc.
-
-   Contributor Anton Kolesov <Anton.Kolesov@synopsys.com>
-   Contributor Jeremy Bennett <jeremy.bennett@embecosm.com> on behalf of
-   Synopsys Inc.
-   Contributed by Codito Technologies Pvt. Ltd. (www.codito.com) on behalf of
-   Synopsys Inc.
-
-   Authors:
-      Jeremy Bennett       <jeremy.bennett@embecosm.com>
-      Soam Vasani          <soam.vasani@codito.com>
-      Ramana Radhakrishnan <ramana.radhakrishnan@codito.com>
-      Richard Stuckey      <richard.stuckey@arc.com>
-      Anton Kolesov        <Anton.Kolesov@synopsys.com>
+   Copyright 2005-2016 Free Software Foundation, Inc.
+   Contributed by Synopsys Inc.
 
    This file is part of GDB.
 
@@ -22,25 +9,14 @@
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation; either version 3 of the License, or
    (at your option) any later version.
-  
+
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-  
+
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-   --------------------------------------------------------------------------
-
-   The comments within this file are also licensed under under the terms of
-   the GNU Free Documentation License as published by the Free Software
-   Foundation; either version 1.3 of the License, or (at your option) any
-   later version. See the file fdi.texi in the gdb/doc directory for copying
-   conditions.
-
-   You should have received a copy of the GNU Free Documentation License along
-   with this program. If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 /* -------------------------------------------------------------------------- */
 /*!@mainpage GNU Debugger for the Synopsys ARC Architecture
