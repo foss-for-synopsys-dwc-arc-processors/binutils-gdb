@@ -62,6 +62,8 @@
 #include "symtab.h"
 /* delete_single_step_breakpoints */
 #include "gdbthread.h"
+/* linux_init_abi */
+#include "linux-tdep.h"
 
 /* ARC header files */
 #include "arc-tdep.h"
@@ -931,6 +933,8 @@ arc_linux_init_osabi (struct gdbarch_info info, struct gdbarch *gdbarch)
   tdep->sigcontext_addr = arc_linux_sigcontext_addr;
   tdep->sc_reg_offset = arc_linux_sc_reg_offset;
   tdep->sc_num_regs = ARRAY_SIZE (arc_linux_core_reg_offsets);
+
+  linux_init_abi (info, gdbarch);
 
   /* Set up target dependent GDB architecture entries. */
   set_gdbarch_cannot_fetch_register (gdbarch, arc_linux_cannot_fetch_register);
