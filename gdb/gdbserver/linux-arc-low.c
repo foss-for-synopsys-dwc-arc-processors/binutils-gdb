@@ -1,12 +1,13 @@
-/* GNU/Linux/ARC specific low level interface, for the remote server for GDB.
-   Copyright 1995, 1996, 1998, 1999, 2000, 2001, 2002, 2003, 2004
-   Free Software Foundation, Inc.
+/* Target dependent code for the remote server for GNU/Linux ARC.
+
+   Copyright 2014-2016 Free Software Foundation, Inc.
+   Contributed by Synopsys Inc.
 
    This file is part of GDB.
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 2 of the License, or
+   the Free Software Foundation; either version 3 of the License, or
    (at your option) any later version.
 
    This program is distributed in the hope that it will be useful,
@@ -15,20 +16,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330,
-   Boston, MA 02111-1307, USA.
-
-   --------------------------------------------------------------------------
-
-   The comments within this file are also licensed under under the terms of
-   the GNU Free Documentation License as published by the Free Software
-   Foundation; either version 1.3 of the License, or (at your option) any
-   later version. See the file fdi.texi in the gdb/doc directory for copying
-   conditions.
-
-   You should have received a copy of the GNU Free Documentation License along
-   with this program. If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 /* -------------------------------------------------------------------------- */
 /*!@file
