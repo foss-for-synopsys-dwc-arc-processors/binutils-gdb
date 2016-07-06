@@ -66,6 +66,14 @@ case "${target}" in
 			srv_linux_thread_db=yes
 			ipa_obj="linux-aarch64-ipa.o aarch64-ipa.o"
 			;;
+  arc*-*-linux*)
+			srv_regobj="arc-v2-linux.o arc-arcompact-linux.o"
+			srv_tgtobj="linux-arc-low.o $srv_linux_obj"
+			srv_xmlfiles="arc-v2-linux.xml arc-arcompact-linux.xml"
+			srv_linux_regsets=yes
+			srv_linux_usrregs=yes
+			srv_linux_thread_db=yes
+			;;
   arm*-*-linux*)	srv_regobj="reg-arm.o arm-with-iwmmxt.o"
 			srv_regobj="${srv_regobj} arm-with-vfpv2.o"
 			srv_regobj="${srv_regobj} arm-with-vfpv3.o"
