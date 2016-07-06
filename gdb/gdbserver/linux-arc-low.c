@@ -42,8 +42,6 @@
 
 #include <linux/elf.h>
 #include <arpa/inet.h>
-#include <asm/ptrace.h>
-#include <sys/ptrace.h>
 
 /* From include/uapi/asm/ptrace.h in the ARC Linux sources.
  * See user_regs_struct.
