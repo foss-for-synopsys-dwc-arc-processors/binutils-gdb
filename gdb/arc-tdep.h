@@ -185,3 +185,5 @@ CORE_ADDR arc_insn_get_linear_next_pc (const struct arc_instruction &insn);
 const target_desc *arc_read_description (arc_sys_type sys_type);
 
 #endif /* ARC_TDEP_H */
+
+/* vim: set sts=2 shiftwidth=2 ts=8: */
