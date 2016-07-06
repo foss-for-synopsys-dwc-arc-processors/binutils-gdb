@@ -794,6 +794,7 @@ ALL_64_TARGET_OBS = \
 
 # All other target-dependent objects files (used with --enable-targets=all).
 ALL_TARGET_OBS = \
+	arc-linux-tdep.o \
 	arc-tdep.o \
 	arch/arc.o \
 	arch/arm.o \
