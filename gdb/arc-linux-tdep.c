@@ -966,4 +966,3 @@ _initialize_arc_linux_tdep (void)
 }
 
 /* vim: set sts=2 shiftwidth=2 ts=8: */
-
