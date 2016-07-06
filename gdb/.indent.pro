@@ -8,4 +8,5 @@
 -T LONGEST
 -T ps_prochandle
 -T ULONGEST
+-T VEC
 -l80
