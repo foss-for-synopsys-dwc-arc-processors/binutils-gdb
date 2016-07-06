@@ -4022,5 +4022,4 @@ internal state."),
 			    &showdebuglist);
 }	/* _initialize_arc_tdep () */
 
-
 /* vim: set sts=2 shiftwidth=2 ts=8: */
