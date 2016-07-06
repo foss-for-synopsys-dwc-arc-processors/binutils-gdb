@@ -179,6 +179,7 @@ SFILES = \
 	$(srcdir)/i387-fp.cc \
 	$(srcdir)/inferiors.cc \
 	$(srcdir)/linux-aarch64-low.cc \
+	$(srcdir)/linux-arc-low.cc \
 	$(srcdir)/linux-arm-low.cc \
 	$(srcdir)/linux-ia64-low.cc \
 	$(srcdir)/linux-low.cc \
@@ -206,6 +207,7 @@ SFILES = \
 	$(srcdir)/win32-low.cc \
 	$(srcdir)/x86-low.cc \
 	$(srcdir)/../gdb/alloc.c \
+	$(srcdir)/../gdb/arch/arc.c \
 	$(srcdir)/../gdb/arch/arm.c \
 	$(srcdir)/../gdb/arch/arm-get-next-pcs.c \
 	$(srcdir)/../gdb/arch/arm-linux.c \
@@ -488,6 +490,10 @@ ax-ipa.o: ax.cc
 
 ax.o: ax.cc
 	$(COMPILE) $(WARN_CFLAGS_NO_FORMAT) $<
+	$(POSTCOMPILE)
+
+arch-arc.o: ../gdb/arch/arc.c
+	$(COMPILE) $<
 	$(POSTCOMPILE)
 
 # Rules for objects that go in the in-process agent.
