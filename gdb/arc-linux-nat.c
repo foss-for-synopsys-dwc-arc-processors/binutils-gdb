@@ -179,11 +179,12 @@ arc_linux_prepare_to_resume (struct lwp_info *lwp) {
     struct regcache *regcache;
     struct gdbarch *gdbarch;
 
-    /* When new processes and threads are created we do not have address space
-     * for them and call to get_thread_regcache will cause an internal error in
-     * GDB. It looks like that checking for last_resume_kind is sensible way to
-     * determine processes for which we cannot get regcache. Ultimately better
-     * way would be remote the need for prepare_to_resume at all. */
+    /* When new processes and threads are created we do not have address
+       space for them and call to get_thread_regcache will cause an internal
+       error in GDB.  It looks like that checking for last_resume_kind is
+       sensible way to determine processes for which we cannot get regcache.
+       Ultimately better way would be remove the need for prepare_to_resume
+       at all.  */
     if (lwp->last_resume_kind == resume_stop)
 	return;
 
