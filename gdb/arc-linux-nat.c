@@ -30,6 +30,7 @@
 #include "gdb_assert.h"
 #include "target.h"
 #include "linux-nat.h"
+#include "nat/gdb_ptrace.h"
 
 #include <stdint.h>
 #include <sys/types.h>
@@ -40,7 +41,6 @@
 #include "gdb_wait.h"
 #include <fcntl.h>
 #include <sys/procfs.h>
-#include <sys/ptrace.h>
 #include <linux/elf.h>
 
 #include "gregset.h"
@@ -74,11 +74,7 @@ get_thread_id (ptid_t ptid)
 static void
 fetch_gregs (struct regcache *regcache, int regnum)
 {
-#ifdef __cplusplus
   gdb_gregset_t regs;
-#else
-  const gdb_gregset_t regs;
-#endif
   struct iovec iov;
   int tid = get_thread_id (inferior_ptid);
 
@@ -91,7 +87,7 @@ fetch_gregs (struct regcache *regcache, int regnum)
       return;
     }
 
-  supply_gregset (regcache, &regs);
+  supply_gregset (regcache, (const gdb_gregset_t *) &regs);
 }
 
 /* Store greg-register(s) in GDB's register array into the process/thread
@@ -217,13 +213,7 @@ ps_get_thread_area (const struct ps_prochandle *ph, lwpid_t lwpid, int idx,
     if (arc_debug >= 2)
       fprintf_unfiltered (gdb_stdlog, "ps_get_thread_area called");
 
-#ifdef __cplusplus
-    if (ptrace ((__ptrace_request) PTRACE_GET_THREAD_AREA, lwpid, NULL, base)
-	!= 0)
-#else
-    if (ptrace (PTRACE_GET_THREAD_AREA, lwpid, NULL, base)
-	!= 0)
-#endif
+    if (ptrace (PTRACE_GET_THREAD_AREA, lwpid, NULL, base) != 0)
       return PS_ERR;
 
     /* IDX is the bias from the thread pointer to the beginning of the thread
