@@ -149,3 +149,5 @@ CORE_ADDR arc_insn_get_branch_target (const struct arc_instruction &insn);
 CORE_ADDR arc_insn_get_linear_next_pc (const struct arc_instruction &insn);
 
 #endif /* ARC_TDEP_H */
+
+/* vim: set sts=2 shiftwidth=2 ts=8: */
