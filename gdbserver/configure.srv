@@ -61,6 +61,14 @@ case "${gdbserver_host}" in
 			ipa_obj="${ipa_obj} linux-aarch64-tdesc-ipa.o"
 			ipa_obj="${ipa_obj} arch/aarch64-ipa.o"
 			;;
+  arc*-*-linux*)
+			srv_regobj="arc-v2-linux.o arc-arcompact-linux.o"
+			srv_tgtobj="linux-arc-low.o $srv_linux_obj"
+			srv_xmlfiles="arc-v2-linux.xml arc-arcompact-linux.xml"
+			srv_linux_regsets=yes
+			srv_linux_usrregs=yes
+			srv_linux_thread_db=yes
+			;;
   arm*-*-linux*)	srv_tgtobj="$srv_linux_obj linux-arm-low.o"
 			srv_tgtobj="$srv_tgtobj linux-arm-tdesc.o"
 			srv_tgtobj="$srv_tgtobj linux-aarch32-low.o"
