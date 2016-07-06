@@ -50,3 +50,5 @@ void arc_linux_collect_v2_regset (const struct regset *regset,
 				  int regnum, void *v2_regs, size_t size);
 
 #endif /* ARC_LINUX_TDEP_H */
+
+/* vim: set sts=2 sw=2 ts=8: */

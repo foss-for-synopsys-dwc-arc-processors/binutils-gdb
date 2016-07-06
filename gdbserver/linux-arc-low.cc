@@ -416,3 +416,5 @@ initialize_low_arch (void)
 {
   initialize_regsets_info (&arc_regsets_info);
 }
+
+/* vim: set sts=2 sw=2 ts=8: */
