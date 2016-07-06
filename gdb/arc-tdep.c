@@ -2511,3 +2511,5 @@ _initialize_arc_tdep ()
 			   _("When set, ARC specific debugging is enabled."),
 			   NULL, NULL, &setdebuglist, &showdebuglist);
 }
+
+/* vim: set sts=2 sw=2 ts=8: */
