@@ -318,3 +318,5 @@ _initialize_arc_linux_nat ()
   linux_target = &the_arc_linux_nat_target;
   add_inf_child_target (&the_arc_linux_nat_target);
 }
+
+/* vim: set sts=2 sw=2 ts=8: */

@@ -211,3 +211,5 @@ arc_arch_features arc_arch_features_create (const bfd *abfd,
 					    const unsigned long mach);
 
 #endif /* ARC_TDEP_H */
+
+/* vim: set sts=2 sw=2 ts=8: */

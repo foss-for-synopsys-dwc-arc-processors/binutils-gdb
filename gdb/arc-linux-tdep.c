@@ -744,3 +744,5 @@ _initialize_arc_linux_tdep ()
   gdbarch_register_osabi (bfd_arch_arc, 0, GDB_OSABI_LINUX,
 			  arc_linux_init_osabi);
 }
+
+/* vim: set sts=2 sw=2 ts=8: */
