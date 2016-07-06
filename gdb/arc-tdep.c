@@ -2204,3 +2204,5 @@ _initialize_arc_tdep (void)
 			    _("Non-zero enables ARC specific debugging."),
 			    NULL, NULL, &setdebuglist, &showdebuglist);
 }
+
+/* vim: set sts=2 shiftwidth=2 ts=8: */
