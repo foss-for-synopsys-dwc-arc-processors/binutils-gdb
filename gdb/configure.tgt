@@ -86,6 +86,13 @@ arc*-*-elf32)
 	gdb_target_obs="arc-newlib-tdep.o arc-tdep.o"
 	;;
 
+arc*-*-linux*)
+	# Target: ARC Linux based targets
+	gdb_target_obs="arc-linux-tdep.o arc-tdep.o \
+			linux-tdep.o solib-svr4.o"
+	build_gdbserver=yes
+	;;
+
 arc*-*-*)
 	# Target: Unidentified ARC target
 	gdb_target_obs="arc-tdep.o"
