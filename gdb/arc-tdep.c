@@ -1552,6 +1552,25 @@ arc_frame_align (struct gdbarch *gdbarch, CORE_ADDR sp)
   return align_down (sp, 4);
 }
 
+/* Skip the code for a trampoline.
+
+   @todo Needs writing.  For now we just return the PC.
+
+   PC is a start of trampoline code.  Returns address of start of function
+   proper.  */
+
+static CORE_ADDR
+arc_skip_trampoline_code (struct frame_info *frame, CORE_ADDR pc)
+{
+  if (arc_debug)
+    {
+      fprintf_unfiltered (gdb_stdlog,
+			  "Attempt to skip trampoline code at %s.\n",
+			  print_core_address (get_frame_arch (frame), pc));
+    }
+  return pc;
+}
+
 /* Dump the frame info.  Used for internal debugging only.  */
 
 static void
@@ -2209,6 +2228,8 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   set_gdbarch_frame_align (gdbarch, arc_frame_align);
 
   set_gdbarch_print_insn (gdbarch, arc_delayed_print_insn);
+
+  set_gdbarch_skip_trampoline_code (gdbarch, arc_skip_trampoline_code);
 
   set_gdbarch_cannot_step_breakpoint (gdbarch, 1);
 
