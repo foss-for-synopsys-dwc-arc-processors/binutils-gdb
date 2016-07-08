@@ -264,3 +264,17 @@ replace_disp9s1 (unsigned insn, int value ATTRIBUTE_UNUSED)
 }
 
 #endif /* REPLACE_disp9s1 */
+
+/* mask  = 0000001111111111.  */
+#ifndef REPLACE_jli
+#define REPLACE_jli
+ATTRIBUTE_UNUSED static unsigned
+replace_jli (unsigned insn, int value ATTRIBUTE_UNUSED)
+{
+  insn = insn & ~0x3ff;
+  insn |= (((value /4) >> 0) & 0x03ff) << 0;
+
+  return insn;
+}
+
+#endif /* REPLACE_jli */

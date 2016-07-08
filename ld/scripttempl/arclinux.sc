@@ -483,6 +483,12 @@ cat <<EOF
 
   ${TEXT_PLT+${PLT_NEXT_DATA-${PLT}}}
   ${TINY_READONLY_SECTION}
+
+  .jlitab       ${RELOCATING-0} :
+  {
+    *(.jlitab*)
+  } =${NOP-0}
+
   .text         ${RELOCATING-0} :
   {
     ${RELOCATING+${TEXT_START_SYMBOLS}}

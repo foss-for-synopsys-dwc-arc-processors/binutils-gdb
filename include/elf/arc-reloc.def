@@ -497,3 +497,10 @@ ARC_RELOC_HOWTO(ARC_NPS_CMEM16, 78, \
                 replace_bits16, \
                 dont, \
                 ( ME ( S + A )))
+
+ARC_RELOC_HOWTO(ARC_JLI_SECTOFF, 63, \
+                2, \
+                10, \
+                replace_jli, \
+                bitfield, \
+                ( ( S - JLI ) ))
