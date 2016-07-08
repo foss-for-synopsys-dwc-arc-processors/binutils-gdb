@@ -125,6 +125,12 @@ extern long md_pcrel_from_section (struct fix *, segT);
 #define TC_CONS_FIX_NEW(FRAG, OFF, LEN, EXP, RELOC)	\
   arc_cons_fix_new ((FRAG), (OFF), (LEN), (EXP), (RELOC))
 
+/* You may define this macro to parse an expression used in a data
+   allocation pseudo-op such as `.word'.  You can use this to
+   recognize relocation directives that may appear in such
+   directives.  */
+#define TC_PARSE_CONS_EXPRESSION(EXPR,N) arc_parse_cons_expression (EXPR, N)
+
 /* We don't want gas to fixup the following program memory related
    relocations.  Check also that fx_addsy is not NULL, in order to
    make sure that the fixup refers to some sort of label.  */
@@ -211,6 +217,7 @@ extern void arc_cons_fix_new (fragS *, int, int, expressionS *,
 extern void arc_frob_label (symbolS *);
 extern void tc_arc_frame_initial_instructions (void);
 extern int tc_arc_regname_to_dw2regnum (char *regname);
+extern bfd_reloc_code_real_type arc_parse_cons_expression (expressionS *, int);
 
 /* The blink register is r31.  */
 #define DWARF2_DEFAULT_RETURN_COLUMN	31

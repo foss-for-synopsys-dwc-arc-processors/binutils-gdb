@@ -515,7 +515,8 @@ static unsigned cl_features = 0;
 #define O_tpoff   O_md9     /* @tpoff relocation.  */
 #define O_dtpoff9 O_md10    /* @dtpoff9 relocation.  */
 #define O_dtpoff  O_md11    /* @dtpoff relocation.  */
-#define O_last    O_dtpoff
+#define O_jli     O_md12    /* @jli relocation.  */
+#define O_last    O_jli
 
 /* Used to define a bracket as operand in tokens.  */
 #define O_bracket O_md32
@@ -568,6 +569,7 @@ static const struct arc_reloc_op_tag
   DEF (tpoff,   BFD_RELOC_ARC_TLS_LE_32,	1),
   DEF (dtpoff9, BFD_RELOC_ARC_TLS_DTPOFF_S9,	0),
   DEF (dtpoff,  BFD_RELOC_ARC_TLS_DTPOFF,	1),
+  DEF (jli,     BFD_RELOC_ARC_JLI_SECTOFF_SIMM12, 0),
 };
 
 static const int arc_num_reloc_op
@@ -1095,6 +1097,7 @@ debug_exp (expressionS *t)
     case O_tpoff:		namemd = "O_tpoff";		break;
     case O_dtpoff9:		namemd = "O_dtpoff9";		break;
     case O_dtpoff:		namemd = "O_dtpoff";		break;
+    case O_jli:			namemd = "O_jli";		break;
     }
 
   pr_debug ("%s (%s, %s, %d, %s)", name,
@@ -1594,6 +1597,7 @@ generic_reloc_p (extended_bfd_reloc_code_real_type reloc)
     case BFD_RELOC_ARC_SDA16_LD2:
     case BFD_RELOC_ARC_SDA16_ST2:
     case BFD_RELOC_ARC_SDA32_ME:
+    case BFD_RELOC_ARC_JLI_SECTOFF_SIMM12:
       return FALSE;
     default:
       return TRUE;
@@ -1998,6 +2002,10 @@ find_opcode_match (const struct arc_opcode_hash_entry *entry,
 		     generic and move it to a function.  */
 		  switch (tok[tokidx].X_md)
 		    {
+		    case O_jli:
+		      if (!(operand->flags & ARC_OPERAND_SIGNED))
+			goto match_failed;
+		      break;
 		    case O_gotoff:
 		    case O_gotpc:
 		    case O_pcl:
@@ -3985,6 +3993,7 @@ assemble_insn (const struct arc_opcode *opcode,
 	      needGOTSymbol = TRUE;
 	      /* Fall-through.  */
 
+	    case O_jli:
 	    case O_tpoff:
 	    case O_dtpoff:
 	      reloc = ARC_RELOC_TABLE (t->X_md)->reloc;
@@ -4206,8 +4215,6 @@ arc_cons_fix_new (fragS *frag,
 		  expressionS *exp,
 		  bfd_reloc_code_real_type r_type)
 {
-  r_type = BFD_RELOC_UNUSED;
-
   switch (size)
     {
     case 1:
@@ -4223,8 +4230,11 @@ arc_cons_fix_new (fragS *frag,
       break;
 
     case 4:
-      r_type = BFD_RELOC_32;
-      arc_check_reloc (exp, &r_type);
+      if (r_type != BFD_RELOC_ARC_JLI_32)
+	{
+	  r_type = BFD_RELOC_32;
+	  arc_check_reloc (exp, &r_type);
+	}
       break;
 
     case 8:
@@ -5062,6 +5072,40 @@ int arc_convert_symbolic_attribute (const char *name)
       return attribute_table[i].tag;
 
   return -1;
+}
+
+/* Implement TC_PARSE_CONS_EXPRESSION to handle @symb@jli.  */
+
+bfd_reloc_code_real_type
+arc_parse_cons_expression (expressionS *exp, int size)
+{
+  bfd_reloc_code_real_type ret = BFD_RELOC_NONE;
+
+  SKIP_WHITESPACE ();
+  /* Parse whatever is there.  */
+  expression (exp);
+
+  if (size != 4)
+    return ret;
+
+  /* Check if we have a JLI modifier.  */
+  if ((*input_line_pointer == '@')
+      && (exp->X_op == O_symbol))
+    {
+      /* Parse @relocation_type.  */
+      input_line_pointer++;
+      if (strncasecmp (input_line_pointer, "jli", 3) != 0)
+	{
+	  as_bad (_("@jli relocation operand required"));
+	  return ret;
+	}
+      exp->X_md = O_jli;
+      debug_exp (exp);
+      ret = BFD_RELOC_ARC_JLI_32;
+      input_line_pointer += 3;
+    }
+
+  return ret;
 }
 
 /* Local variables:

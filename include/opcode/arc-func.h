@@ -274,8 +274,36 @@ replace_disp12s (unsigned insn, int value ATTRIBUTE_UNUSED)
   insn = insn & ~0xfff;
   insn |= ((value >> 0) & 0x003f) << 6;
   insn |= ((value >> 6) & 0x003f) << 0;
-
   return insn;
 }
 
 #endif /* REPLACE_disp12s */
+
+/* mask  = 0000001111111111.  */
+#ifndef REPLACE_jli
+#define REPLACE_jli
+ATTRIBUTE_UNUSED static unsigned
+replace_jli (unsigned insn, int value ATTRIBUTE_UNUSED)
+{
+  insn = insn & ~0x3ff;
+  insn |= (((value / 4) >> 0) & 0x03ff) << 0;
+
+  return insn;
+}
+
+#endif /* REPLACE_jli */
+
+/* mask  = 0000001111111111.  */
+#ifndef REPLACE_simm12_20
+#define REPLACE_simm12_20
+ATTRIBUTE_UNUSED static unsigned
+replace_simm12_20 (unsigned insn, int value ATTRIBUTE_UNUSED)
+{
+  insn = insn & ~0xfff0000;
+  insn |= ((value >> 8) & 0x0f) << 16;
+  insn |= ((value >> 0) & 0xff) << 24;
+
+  return insn;
+}
+
+#endif /* REPLACE_simm12_20 */
