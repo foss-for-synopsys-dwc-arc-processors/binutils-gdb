@@ -1135,7 +1135,8 @@ obj_elf_section (int push)
 		      linkonce = 1;
 		    }
 		}
-	      else if (strncmp (name, ".gnu.linkonce", 13) == 0)
+	      else if (strncmp (name, ".gnu.linkonce", 13) == 0 ||
+          strncmp (name, ".text$jlifuncaddr$", 18) == 0)
 		linkonce = 1;
 	    }
 	  else if ((attr & SHF_GROUP) != 0)
