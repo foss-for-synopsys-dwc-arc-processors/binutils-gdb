@@ -13564,6 +13564,13 @@ _bfd_elf_section_already_linked (bfd *abfd,
 
   flags = sec->flags;
 
+  /* Check if the section type is SHT_COMDAT and the SEC_LINK_ONCE flag is not
+   * already set. If so, set it now. */
+  if (elf_section_type (sec) == SHT_COMDAT && (flags & SEC_LINK_ONCE) == 0)
+  {
+    flags |= SEC_LINK_ONCE | SEC_LINK_DUPLICATES_DISCARD;
+  }
+
   /* Return if it isn't a linkonce section.  A comdat group section
      also has SEC_LINK_ONCE set.  */
   if ((flags & SEC_LINK_ONCE) == 0)
