@@ -486,7 +486,7 @@ cat <<EOF
 
   .jlitab       ${RELOCATING-0} :
   {
-    jlitab.o(.jlitab*)
+    jlitab*.o(.jlitab*)
     *(.jlitab*)
   } =${NOP-0}
 

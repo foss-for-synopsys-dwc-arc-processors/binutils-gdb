@@ -264,7 +264,7 @@ cat <<EOF
   ${DATA_PLT-${BSS_PLT-${PLT}}}
   .jlitab       ${RELOCATING-0} :
   {
-    jlitab.o(.jlitab*)
+    jlitab*.o(.jlitab*)
     *(.jlitab*)
   } =${NOP-0}
   .text         ${RELOCATING-0} :
