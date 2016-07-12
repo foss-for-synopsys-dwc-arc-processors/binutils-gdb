@@ -272,9 +272,24 @@ ATTRIBUTE_UNUSED static unsigned
 replace_jli (unsigned insn, int value ATTRIBUTE_UNUSED)
 {
   insn = insn & ~0x3ff;
-  insn |= (((value /4) >> 0) & 0x03ff) << 0;
+  insn |= (((value / 4) >> 0) & 0x03ff) << 0;
 
   return insn;
 }
 
 #endif /* REPLACE_jli */
+
+/* mask  = 0000001111111111.  */
+#ifndef REPLACE_add2_jli
+#define REPLACE_add2_jli
+ATTRIBUTE_UNUSED static unsigned
+replace_add2_jli (unsigned insn, int value ATTRIBUTE_UNUSED)
+{
+  insn = insn & ~0xfff0000;
+  insn |= (((value / 4) >> 8) & 0x0f) << 16;
+  insn |= (((value / 4) >> 0) & 0xff) << 24;
+
+  return insn;
+}
+
+#endif /* REPLACE_add2jli */
