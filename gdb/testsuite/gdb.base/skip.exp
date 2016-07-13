@@ -26,10 +26,14 @@ set srcfile skip.c
 set srcfile1 skip1.c
 
 # Right after we start gdb, there's no default file or function to skip.
-
-gdb_test "skip file" "No default file now." "skip file (no default file)"
-gdb_test "skip function" "No default function now."
-gdb_test "skip" "No default function now." "skip (no default function)"
+# However that is not true for remote targets - after "prepare_for_testing" GDB
+# is already connected to the target and has a valid inferior, hence default
+# file.
+if ![use_gdb_stub] {
+    gdb_test "skip file" "No default file now." "skip file (no default file)"
+    gdb_test "skip function" "No default function now."
+    gdb_test "skip" "No default function now." "skip (no default function)"
+}
 
 # Test elided args.
 
