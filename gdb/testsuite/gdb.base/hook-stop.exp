@@ -164,5 +164,14 @@ proc hook_stop_next {} {
 hook_stop_before_frame
 hook_stop_kill
 hook_stop_continue_fg
-hook_stop_continue_bg
+
+# Tests that run in background will not run properly with targets that doesn't
+# have a proper "exit" function. For example, this particular test expects that
+# after hook will resume inferior in background, there would a message "exited
+# normally", however such a message will appear only for targets with a proper
+# exit(), while others will, for example, spin in the infinite loop.
+if [exit_is_reliable] {
+    hook_stop_continue_bg
+}
+
 hook_stop_next
