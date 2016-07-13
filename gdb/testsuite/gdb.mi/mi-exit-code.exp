@@ -18,6 +18,11 @@ set MIFLAGS "-i=mi"
 
 standard_testfile
 
+if ![exit_is_reliable] {
+    unsupported "exit() function is not reliable on this board."
+    return 0
+}
+
 if { [gdb_compile "${srcdir}/${subdir}/${srcfile}" "${binfile}" executable {debug}] != "" } {
     untested "failed to compile"
     return -1
