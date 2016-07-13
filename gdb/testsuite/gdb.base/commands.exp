@@ -400,6 +400,13 @@ proc deprecated_command_test {} {
 proc bp_deleted_in_command_test {} {
     global gdb_prompt
 
+    # Flow of this test assumes that application will halt after reaching the
+    # exit() function.
+    if ![exit_is_reliable] {
+	unsupported "Function exit() is not reliable on this board."
+	return 0
+    }
+
     delete_breakpoints
 
     # Create a breakpoint, and associate a command-list to it, with
@@ -444,6 +451,13 @@ proc bp_deleted_in_command_test {} {
 
 proc temporary_breakpoint_commands {} {
     global gdb_prompt
+
+    # Flow of this test assumes that application will halt after reaching the
+    # exit() function.
+    if ![exit_is_reliable] {
+	unsupported "Function exit() is not reliable on this board."
+	return 0
+    }
 
     delete_breakpoints
 
