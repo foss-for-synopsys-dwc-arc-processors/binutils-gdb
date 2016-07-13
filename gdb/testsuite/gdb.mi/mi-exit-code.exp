@@ -23,6 +23,11 @@ if [mi_gdb_start] {
 
 standard_testfile
 
+if ![exit_is_reliable] {
+    unsupported "Function exit() is not reliable on this board."
+    return 0
+}
+
 if { [gdb_compile "${srcdir}/${subdir}/${srcfile}" "${binfile}" executable {debug}] != "" } {
     untested "failed to compile $testfile"
     return -1
