@@ -28,6 +28,11 @@ if [target_info exists gdb,cannot_call_functions] {
     continue
 }
 
+if ![exit_is_reliable] {
+    unsupported "exit() function is not reliable on this board."
+    continue
+}
+
 # Start with a fresh gdb.
 
 clean_restart ${binfile}
