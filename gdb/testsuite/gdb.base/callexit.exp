@@ -28,6 +28,13 @@ if [target_info exists gdb,cannot_call_functions] {
     continue
 }
 
+# Some targets (for example baremetal ones) doesn't have exit() that actually
+# exits anywhere.
+if ![exit_is_reliable] {
+    unsupported "This target doesn't have reliable exit() function."
+    continue
+}
+
 # Start with a fresh gdb.
 
 clean_restart ${binfile}

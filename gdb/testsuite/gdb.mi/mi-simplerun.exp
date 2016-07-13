@@ -177,6 +177,11 @@ proc test_program_termination {} {
     # -exec-abort
     # (normal termination of inferior)
 
+    if ![exit_is_reliable] {
+	unsupported "Function exit() is not reliable on this board."
+	return
+    }
+
     mi_execute_to "exec-continue" "exited-normally" "" "" "" "" "" "continue to end"
 }
 
