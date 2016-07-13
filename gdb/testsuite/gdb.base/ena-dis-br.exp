@@ -295,13 +295,17 @@ gdb_test "continue 2" \
 gdb_test "next" ".*$bp_location11\[ \t\]*marker1.*" \
     "step after continue with ignore count"
 
-set test "continue with ignore count, not stopped at bpt"
-gdb_test_multiple "continue 2" "$test" {
-    -re "Not stopped at any breakpoint; argument ignored.*$gdb_prompt $" {
-	pass "$test"
-    }
-    -re "No breakpoint number -1.*$gdb_prompt $" {
-	kfail gdb/1689 "$test"
+# Application is expected to reach an exit() here, so this can't be run if exit
+# is not working.
+if [exit_is_reliable] {
+    set test "continue with ignore count, not stopped at bpt"
+    gdb_test_multiple "continue 2" "$test" {
+	-re "Not stopped at any breakpoint; argument ignored.*$gdb_prompt $" {
+	    pass "$test"
+	}
+	-re "No breakpoint number -1.*$gdb_prompt $" {
+	    kfail gdb/1689 "$test"
+	}
     }
 }
 

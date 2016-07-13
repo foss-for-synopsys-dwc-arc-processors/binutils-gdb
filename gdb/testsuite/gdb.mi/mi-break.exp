@@ -242,6 +242,11 @@ proc test_disabled_creation {} {
 proc test_breakpoint_commands {} {
     global line_callee2_body
 
+    if ![exit_is_reliable] {
+	unsupported "This test requires working exit() function."
+	return 0
+    }
+
     set bp_no_script \
 	[mi_create_breakpoint "basics.c:callee2" \
 	     "breakpoint commands: insert breakpoint at basics.c:callee2" \
