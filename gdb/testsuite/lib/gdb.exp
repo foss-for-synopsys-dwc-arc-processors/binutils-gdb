@@ -3111,6 +3111,16 @@ proc use_gdb_stub {} {
   return [target_info exists use_gdb_stub]
 }
 
+# Return 1 if target has a reliable exit() function, 0 - otherwise.
+
+proc exit_is_reliable {} {
+    if { [target_info exists exit_is_reliable] } {
+      return [target_info exit_is_reliable]
+    } else {
+      return ![use_gdb_stub]
+    }
+}
+
 # Return 1 if the current remote target is an instance of our GDBserver, 0
 # otherwise.  Return -1 if there was an error and we can't tell.
 
@@ -4832,13 +4842,7 @@ proc gdb_continue_to_end {{mssg ""} {command continue} {allow_extra 0}} {
   # loop, or a forced crash/reset.  For native targets, by default, we
   # assume process exit is reported as such.  If a non-reliable target
   # is used, we set a breakpoint at exit, and continue to that.
-  if { [target_info exists exit_is_reliable] } {
-      set exit_is_reliable [target_info exit_is_reliable]
-  } else {
-      set exit_is_reliable [expr ! $use_gdb_stub]
-  }
-
-  if { ! $exit_is_reliable } {
+  if ![exit_is_reliable] {
     if {![gdb_breakpoint "exit"]} {
       return 0
     }
