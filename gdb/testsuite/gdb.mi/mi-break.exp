@@ -257,6 +257,11 @@ proc_with_prefix test_disabled_creation {} {
 proc_with_prefix test_breakpoint_commands {} {
     global line_callee2_body
 
+    if ![exit_is_reliable] {
+	unsupported "exit() function is not reliable on this board."
+	return 0
+    }
+
     set bp_no_script \
 	[mi_create_breakpoint "basics.c:callee2" \
 	     "breakpoint commands: insert breakpoint at basics.c:callee2" \

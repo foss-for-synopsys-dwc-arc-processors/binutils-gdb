@@ -713,6 +713,12 @@ maintenance deprecate set qqq_aaa"
 proc_with_prefix bp_deleted_in_command_test {} {
     global gdb_prompt
 
+    # No halt after reaching exit?
+    if ![exit_is_reliable] {
+	unsupported "exit() function is not reliable on this board."
+	return 0
+    }
+
     delete_breakpoints
 
     # Create a breakpoint, and associate a command-list to it, with
@@ -755,6 +761,12 @@ proc_with_prefix bp_deleted_in_command_test {} {
 }
 
 proc_with_prefix temporary_breakpoint_commands {} {
+    # No halt after reaching exit?
+    if ![exit_is_reliable] {
+	unsupported "exit() function is not reliable on this board."
+	return 0
+    }
+
     delete_breakpoints
 
     # Create a temporary breakpoint, and associate a commands list to it.
