@@ -14,6 +14,13 @@
 
 standard_testfile
 
+# This tests expects message "inferior exited normally", which is present only
+# when exit() actually halts the target.
+if ![exit_is_reliable] {
+    unsupported "Function exit() is not reliable on this board."
+    return 0
+}
+
 if {[prepare_for_testing $testfile.exp $testfile $testfile.c]} {
     return -1
 }
