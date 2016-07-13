@@ -33,6 +33,23 @@ proc test {non_stop displaced always_inserted} {
     global linenum_for_user_bp
     global linenum_for_step_resume
 
+    # There are some issues with running this test with remote targets:
+    #	1. Setting non-stop mode after doing `clean_restart` doesn't work,
+    #	because GDB is already connected to remote server and it is forbidden
+    #	to change non-stop mode at this stage.
+    #	2. Even clean_restart is split into several pieces and non-stop mode is
+    #	set at the valid time, GDB testsuite still will not work with remote
+    #	targets that do no support non-stop mode, and the issue is that error
+    #	message printed by GDB "Non-stop mode requested, but remote doesn't
+    #	support non-stop" is not expected by the procedure that does `target
+    #	remote :port`, which is a gdb_comm_load in dejagnu/config/gdb-comm.exp.
+    #	GDB's own testsuite has a handing of case when non-stop is not
+    #	supported, however that is implemented only for "continue" command in
+    #	lib/gdb.exp:runto.
+    if [use_gdb_stub] {
+	return 0
+    }
+
     clean_restart $binfile
 
     gdb_test_no_output "set non-stop $non_stop"
