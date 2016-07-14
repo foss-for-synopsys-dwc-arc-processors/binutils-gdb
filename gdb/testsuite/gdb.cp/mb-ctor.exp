@@ -67,9 +67,4 @@ gdb_test "continue" \
     ".*Breakpoint.*~Derived.*" \
     "run to breakpoint 3 v2"
 
-gdb_test "continue" \
-    ".*exited normally.*" \
-    "run to exit"
-
-
-
+gdb_continue_to_end "run to exit"
