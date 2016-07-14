@@ -15,6 +15,13 @@
 
 standard_testfile
 
+# Function noreturn_func() calls abort(), which should raise SIGABRT signal -
+# which will not happen if signals doesn't work on this target.
+if [target_info exists gdb,nosignals] {
+    unsupported "This target doesn't support signals."
+    return 0
+}
+
 if [prepare_for_testing "failed to prepare" ${testfile} ${srcfile} {debug}] {
     return -1
 }
