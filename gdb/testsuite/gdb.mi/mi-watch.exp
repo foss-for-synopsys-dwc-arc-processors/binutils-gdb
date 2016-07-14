@@ -172,6 +172,11 @@ proc test_watchpoint_all {mi_mode type} {
     #test_rwatch_creation_and_listing
     #test_awatch_creation_and_listing
     test_watchpoint_triggering
+
+    # If separate-mi-tty is used, GDB will not be properly closed by the
+    # default gdb_exit, which is called by default when .exp file is finished.
+    # Instead a mi_gdb_exit must be used.
+    mi_gdb_exit
 }
 
 # Run the tests twice, once using software watchpoints, and another

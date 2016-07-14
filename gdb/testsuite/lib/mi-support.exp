@@ -91,6 +91,13 @@ proc mi_uncatched_gdb_exit {} {
     }
 
     if ![is_remote host] {
+	# DejaGNU's standard_close uses spawn_id to figure out PID through
+	# exp_pid and then kill process by ID. However, when MI runs on
+	# secondary UI exp_pid returns nothing for it's spawn_id, so we have to
+	# switch back to the main spawn_id for remote_close to succeed.
+	if { $gdb_main_spawn_id != $gdb_spawn_id } {
+	    switch_gdb_spawn_id $gdb_main_spawn_id
+	}
 	remote_close host
     }
     unset gdb_spawn_id
