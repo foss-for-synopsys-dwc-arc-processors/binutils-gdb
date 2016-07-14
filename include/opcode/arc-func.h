@@ -293,3 +293,19 @@ replace_add2_jli (unsigned insn, int value ATTRIBUTE_UNUSED)
 }
 
 #endif /* REPLACE_add2jli */
+
+/* mask  = 11111111111111111111111111111111.  */
+#ifndef REPLACE_word32_jli
+#define REPLACE_word32_jli
+ATTRIBUTE_UNUSED static unsigned
+replace_word32_jli (unsigned insn, int value ATTRIBUTE_UNUSED)
+{
+  extern bfd_signed_vma jli_base;
+
+  insn = insn & ~0xffffffff;
+  insn |= (((int)(jli_base + value) >> 0) & 0xffffffff) << 0;
+
+  return insn;
+}
+
+#endif /* REPLACE_word32 */
