@@ -429,6 +429,11 @@ proc test_break {mi_mode} {
     test_abreak_creation
 
     test_explicit_breakpoints
+
+    # If separate-mi-tty is used, GDB will not be properly closed by the
+    # default gdb_exit, which is called by default when .exp file is finished.
+    # Instead a mi_gdb_exit must be used.
+    mi_gdb_exit
 }
 
 foreach_with_prefix mi-mode {"main" "separate"} {
