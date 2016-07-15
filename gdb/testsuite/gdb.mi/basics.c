@@ -24,9 +24,9 @@ unsigned long long global_zero = 0;
 
 int callee4 (void)
 {
+  int C=0;
   int A=1;
   int B=2;
-  int C;
 
   C = A + B;
   return 0;

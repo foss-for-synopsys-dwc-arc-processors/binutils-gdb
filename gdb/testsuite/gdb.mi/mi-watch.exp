@@ -168,6 +168,7 @@ proc test_watchpoint_all {mi_mode type} {
     mi_gdb_load ${binfile}
 
     mi_runto callee4
+    mi_next "step over C initialization"
     test_watchpoint_creation_and_listing
     #test_rwatch_creation_and_listing
     #test_awatch_creation_and_listing
