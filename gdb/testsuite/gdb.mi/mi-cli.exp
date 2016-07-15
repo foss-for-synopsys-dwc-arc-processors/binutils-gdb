@@ -65,8 +65,9 @@ set line_main_return  [expr $line_main_hello + 2]
 set line_main_callme_2 [expr $line_main_return + 1]
 set line_callee4_head [gdb_get_line_number "callee4 ("]
 set line_callee4_body [expr $line_callee4_head + 2]
-set line_callee4_next [expr $line_callee4_body + 1]
-set line_callee4_next_step [expr $line_callee4_next + 3]
+set line_callee4_first_next [expr $line_callee4_body + 1]
+set line_callee4_second_next [expr $line_callee4_first_next + 1]
+set line_callee4_third_next [expr $line_callee4_second_next + 2]
 
 mi_gdb_test "-interpreter-exec console \"set args foobar\"" \
   ".*=cmd-param-changed,param=\"args\",value=\"foobar\".*\\^done" \
@@ -133,10 +134,12 @@ mi_gdb_test "500-stack-select-frame 0" \
   {500\^done} \
   "-stack-select-frame 0"
 
-mi_execute_to "interpreter-exec console step" "end-stepping-range" "callee4" "" ".*basics.c" $line_callee4_next \
+mi_execute_to "interpreter-exec console step" "end-stepping-range" "callee4" "" ".*basics.c" $line_callee4_first_next \
     "" "check *stopped from CLI command"
 
-mi_send_resuming_command "exec-step" "-exec-step to line \$line_callee4_next_step"
+mi_step_to "callee4" "" ".*basics.c" $line_callee4_second_next "step over B's initialization"
+
+mi_send_resuming_command "exec-step" "-exec-step to line $line_callee4_third_next"
 
 # Test that the new current source line is _not_ output, given we
 # executed MI's -exec-next, not CLI's 'next' command.
@@ -150,8 +153,8 @@ if {[regexp "A + B" "$output"]} {
     pass $test
 }
 
-mi_expect_stop "end-stepping-range" "callee4" "" ".*basics.c" $line_callee4_next_step \
-    "" "check *stopped from CLI command 2"
+mi_expect_stop "end-stepping-range" "callee4" "" ".*basics.c" $line_callee4_third_next \
+    "" "check *stopped from CLI command 3"
 
 # Test that CLI's "finish" command prints the function's return value
 # to both the CLI and MI streams, and that the same result variable is

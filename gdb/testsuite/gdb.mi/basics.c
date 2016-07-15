@@ -26,7 +26,7 @@ int callee4 (void)
 {
   int A=1;
   int B=2;
-  int C;
+  int C=0;
 
   C = A + B;
   return 0;
