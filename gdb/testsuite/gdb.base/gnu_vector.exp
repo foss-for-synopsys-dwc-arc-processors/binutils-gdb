@@ -185,7 +185,8 @@ gdb_test "ptype struct_with_vector_1" "type = struct {\r\n\[\t \]+int i;\r\n\[\t
 
 # Test inferior function calls with vector arguments and/or vector
 # return values.
-if { [istarget "i?86-*-*"] || [istarget "x86_64-*-*" ] } {
+if { [istarget "i?86-*-*"] || [istarget "x86_64-*-*" ]
+    || [istarget "arc*-*-*"] } {
     # These platforms don't support infcalls with vector arguments
     # and/or vector return values, so skip the remaining tests.
     # See also PR exp/18537.
