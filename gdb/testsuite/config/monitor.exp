@@ -233,6 +233,14 @@ proc gdb_load { arg } {
 	    set load_ok 0
 	    send_gdb $command
 	    gdb_expect $loadtimeout {
+		-re "warning: failed to reevaluate condition" {
+		    # Catching just any "failed" word is not correct here. For
+		    # example, testcase gdb.base/chng-syms.exp causes a message:
+		    # "warning: failed to reevaluate condition for breakpoint 1"
+		    # which is an expected result and doesn't mean that load
+		    # itself failed.
+		    exp_continue
+		}
 		-re "\[Ff\]ailed.*$gdb_prompt $" {
 		    verbose "load failed"
 		}
