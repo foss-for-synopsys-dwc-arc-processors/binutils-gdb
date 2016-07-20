@@ -1364,10 +1364,7 @@ arc_extract_return_value (struct gdbarch *gdbarch, struct type *type,
 			      gdbarch_byte_order (gdbarch), val);
 
       if (arc_debug)
-	{
-	  fprintf_unfiltered (gdb_stdlog, "returning %s\n",
-			      phex (val, BYTES_IN_REGISTER));
-	}
+	debug_printf ("arc: returning 0x%s\n", phex (val, BYTES_IN_REGISTER));
     }
   else if (len <= BYTES_IN_REGISTER * 2)
     {
@@ -1387,13 +1384,13 @@ arc_extract_return_value (struct gdbarch *gdbarch, struct type *type,
 
       if (arc_debug)
 	{
-	  fprintf_unfiltered (gdb_stdlog, "returning 0x%s%s\n",
-			      phex (high, BYTES_IN_REGISTER), 
-			      phex (low, BYTES_IN_REGISTER));
+	  debug_printf ("arc: returning 0x%s%s\n",
+			phex (high, BYTES_IN_REGISTER),
+			phex (low, BYTES_IN_REGISTER));
 	}
     }
   else
-    error (_("%s: type length %u too large"), __FUNCTION__, len);
+    error (_("arc: extract_return_value: type length %u too large"), len);
 
 }	/* arc_extract_value () */
 
@@ -1427,10 +1424,7 @@ arc_store_return_value (struct gdbarch *gdbarch, struct type *type,
       regcache_cooked_write_unsigned (regcache, ARC_R0_REGNUM, val);
 
       if (arc_debug)
-	{
-	  fprintf_unfiltered (gdb_stdlog, "storing 0x%s\n",
-			      phex (val, BYTES_IN_REGISTER));
-	}
+	debug_printf ("arc: storing 0x%s\n", phex (val, BYTES_IN_REGISTER));
     }
   else if (len <= BYTES_IN_REGISTER * 2)
     {
@@ -1451,9 +1445,9 @@ arc_store_return_value (struct gdbarch *gdbarch, struct type *type,
 
       if (arc_debug)
 	{
-	  fprintf_unfiltered (gdb_stdlog, "storing 0x%s%s\n",
-			      phex (high, BYTES_IN_REGISTER), 
-			      phex (low, BYTES_IN_REGISTER));
+	  debug_printf ("arc: storing 0x%s%s\n",
+			phex (high, BYTES_IN_REGISTER),
+			phex (low, BYTES_IN_REGISTER));
 	}
     }
   else
@@ -1574,12 +1568,8 @@ arc_push_dummy_call (struct gdbarch *gdbarch,
       regcache_cooked_write_unsigned (regcache, arg_reg, struct_addr);
 
       if (arc_debug)
-	{
-	  fprintf_unfiltered (gdb_stdlog,
-			      "struct return address %s passed in R%d",
-			      print_core_address (gdbarch, struct_addr),
-			      arg_reg);
-	}
+	debug_printf ("arc: struct return address %s passed in R%d",
+		      print_core_address (gdbarch, struct_addr), arg_reg);
 
       arg_reg++;
     }
@@ -1603,10 +1593,8 @@ arc_push_dummy_call (struct gdbarch *gdbarch,
 	  total_space += space;
 
 	  if (arc_debug)
-	    {
-	      fprintf_unfiltered (gdb_stdlog, "arg %d: %d bytes -> %u\n", i,
-				  len, arc_round_up_to_words (gdbarch, len));
-	    }
+	    debug_printf ("arc: arg %d: %d bytes -> %u\n", i, len,
+			  arc_round_up_to_words (gdbarch, len));
 	}
 
       /* Allocate a buffer to hold a memory image of the arguments. */
@@ -1626,9 +1614,8 @@ arc_push_dummy_call (struct gdbarch *gdbarch,
 
 	  (void) memcpy (data, value_contents (args[i]), (size_t) len);
 	  if (arc_debug)
-	    fprintf_unfiltered (gdb_stdlog,
-				"copying arg %d, val 0x%08x, len %d into mem\n",
-				i, * ((int *) value_contents (args[i])), len);
+	    debug_printf ("arc: copying arg %d, val 0x%08x, len %d into mem\n",
+			  i, * ((int *) value_contents (args[i])), len);
 	    
 	  data += space;
 	}
@@ -1638,11 +1625,8 @@ arc_push_dummy_call (struct gdbarch *gdbarch,
       while (arg_reg <= ARC_LAST_ARG_REGNUM)
 	{
 	  if (arc_debug)
-	    {
-	      fprintf_unfiltered (gdb_stdlog,
-				  "passing 0x%02x%02x%02x%02x in register R%d\n",
-				  data[0], data[1], data[2], data[3], arg_reg);
-	    }
+	    debug_printf ("arc: passing 0x%02x%02x%02x%02x in register R%d\n",
+			  data[0], data[1], data[2], data[3], arg_reg);
 
 	  /* Note we don't use write_unsigned here, since that would convert
 	     the byte order, but we are already in the correct byte order! */
@@ -1663,10 +1647,7 @@ arc_push_dummy_call (struct gdbarch *gdbarch,
       if (total_space > 0)
 	{
 	  if (arc_debug)
-	    {
-	      fprintf_unfiltered (gdb_stdlog, "passing %d bytes on stack\n",
-				  total_space);
-	    }
+	    debug_printf ("arc: passing %d bytes on stack\n", total_space);
 
 	  sp -= total_space;
 	  write_memory (sp, data, (int) total_space);
@@ -1941,10 +1922,7 @@ arc_unwind_pc (struct gdbarch *gdbarch, struct frame_info *next_frame)
     (CORE_ADDR) frame_unwind_register_unsigned (next_frame, pc_regnum);
 
   if (arc_debug)
-    {
-      fprintf_unfiltered (gdb_stdlog, "unwind PC: %s\n",
-			  print_core_address (gdbarch, pc));
-    }
+    debug_printf ("arc: unwind PC: %s\n", paddress (gdbarch, pc));
 
   return pc;
 
@@ -1964,10 +1942,7 @@ arc_unwind_sp (struct gdbarch *gdbarch, struct frame_info *next_frame)
     (CORE_ADDR) frame_unwind_register_unsigned (next_frame, sp_regnum);
 
   if (arc_debug)
-    {
-      fprintf_unfiltered (gdb_stdlog, "unwind SP: %s\n",
-			  print_core_address (gdbarch, sp));
-    }
+    debug_printf ("arc: unwind SP: %s\n", paddress (gdbarch, sp));
 
   return (CORE_ADDR) sp;
 
@@ -3168,7 +3143,7 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   const char * core_feature_name;
 
   if (arc_debug)
-    arc_print ("arc: Arhitecture initialization.\n");
+    debug_printf ("arc: Arhitecture initialization.\n");
 
   /* If target doesn't provide us description - use default one. */
   if (!tdesc_has_registers (tdesc))
@@ -3177,19 +3152,19 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 	{
 	  tdesc = tdesc_compatible_v2;
 	  if (arc_debug)
-	    fprintf_unfiltered (gdb_stdlog, "Using default register set for ARC v2.\n");
+	    debug_printf ("arc: Using default register set for ARC v2.\n");
 	}
       else
 	{
 	  tdesc = tdesc_compatible_arcompact;
 	  if (arc_debug)
-	    fprintf_unfiltered (gdb_stdlog, "Using default register set for ARCompact.\n");
+	    debug_printf ("arc: Using default register set for ARCompact.\n");
 	}
     }
   else
     {
       if (arc_debug)
-	fprintf_unfiltered (gdb_stdlog, "Using provided register set.\n");
+	debug_printf ("arc: Using provided register set.\n");
     }
   gdb_assert (tdesc);
 
@@ -3219,8 +3194,8 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
        */
       if (!is_arcv2)
 	{
-	  fprintf_unfiltered (gdb_stdlog, "Error: ARC v2 target description "
-	      "supplied for non-ARCv2 target.\n");
+	  arc_print (_("Error: ARC v2 target description supplied for "
+		       "non-ARCv2 target.\n"));
 	  return NULL;
 	}
 
@@ -3235,8 +3210,8 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 	{
 	  if (!is_arcv2)
 	    {
-	      fprintf_unfiltered (gdb_stdlog, "Error: ARC v2 target description "
-		  "supplied for non-ARCv2 target.\n");
+	      arc_print (_("Error: ARC v2 target description supplied for "
+			   "non-ARCv2 target.\n"));
 	      return NULL;
 	    }
 
@@ -3251,8 +3226,8 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 	    {
 	      if (is_arcv2)
 		{
-		  fprintf_unfiltered (gdb_stdlog, "Error: ARCompact target description "
-		      "supplied for non-ARCompact target.\n");
+		  arc_print (_("Error: ARCompact target description supplied "
+			       "for non-ARCompact target.\n"));
 		  return NULL;
 		}
 
@@ -3262,8 +3237,8 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 	    }
 	  else
 	    {
-	      fprintf_unfiltered (gdb_stdlog, "Error: Couldn't find core "
-		  "register feature in supplied target description.");
+	      arc_print (_("Error: Couldn't find core register feature in "
+			   "supplied target description."));
 	      return NULL;
 	    }
 	}
@@ -3299,9 +3274,9 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
       if (!valid_p && (i <= 28 || i == 31 || i == 60 || i == 63 ||
 	    (i == 30 && is_arcv2)))
         {
-          fprintf_unfiltered (gdb_stdlog, "Error: Cannot find required "
-	  "register `%s' in feature `%s'.\n",
-	  core_reginfo[i].name, core_feature_name);
+          arc_print (_("Error: Cannot find required register `%s' "
+		       "in feature `%s'.\n"),
+		     core_reginfo[i].name, core_feature_name);
           tdesc_data_cleanup (tdesc_data);
           return NULL;
         }
@@ -3314,8 +3289,8 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   feature = tdesc_find_feature (tdesc, aux_base_v2_feature_name);
   if (!feature)
     {
-      fprintf_unfiltered (gdb_stdlog, "Error: Cannot find required feature "
-          "`%s' in supplied target description.\n", aux_base_v2_feature_name);
+      arc_print (_("Error: Cannot find required feature `%s' in supplied "
+		   "target description.\n"), aux_base_v2_feature_name);
       tdesc_data_cleanup (tdesc_data);
       return NULL;
     }
@@ -3328,9 +3303,10 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
       if (!valid_p && (i + num_regs != ARC_LP_START_REGNUM ) &&
 	  (i + num_regs != ARC_LP_END_REGNUM))
 	{
-	  fprintf_unfiltered (gdb_stdlog, "Error: Cannot find required register "
-	      "`%s' in feature `%s'.\n",
-	      aux_base_v2_reginfo[i].name, tdesc_feature_name (feature));
+	  arc_print (_("Error: Cannot find required register `%s' "
+		       "in feature `%s'.\n"),
+		     aux_base_v2_reginfo[i].name,
+		     tdesc_feature_name (feature));
 	  tdesc_data_cleanup (tdesc_data);
 	  return NULL;
 	}
@@ -3355,9 +3331,10 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 	      num_regs + i, aux_compatible_reginfo[i].name);
 	  if (!valid_p)
 	    {
-	      fprintf_unfiltered (gdb_stdlog, "Error: Cannot find required register "
-		  "`%s' in feature `%s'.\n",
-		  aux_compatible_reginfo[i].name, tdesc_feature_name (feature));
+	      arc_print (_("Error: Cannot find required register `%s' "
+			   "in feature `%s'.\n"),
+			 aux_compatible_reginfo[i].name,
+			 tdesc_feature_name (feature));
 	      tdesc_data_cleanup (tdesc_data);
 	      return NULL;
 	    }

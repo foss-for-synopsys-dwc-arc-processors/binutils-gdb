@@ -374,9 +374,8 @@ arc_elf_write_pc (struct regcache *regcache, CORE_ADDR new_pc)
     struct gdbarch *gdbarch = get_regcache_arch(regcache);
 
     if (arc_debug)
-      {
-	fprintf_unfiltered(gdb_stdlog, "writing PC. New value=0x%lx\n" , new_pc);
-      }
+      debug_printf ("arc-elf: Writing PC. New value=%s\n",
+		    paddress (gdbarch, new_pc));
 
     regcache_cooked_write_unsigned (regcache, gdbarch_pc_regnum (gdbarch), new_pc);
 
@@ -386,10 +385,12 @@ arc_elf_write_pc (struct regcache *regcache, CORE_ADDR new_pc)
     if (status32 & 0x40)
       {
 	if (arc_debug)
-	  fprintf_unfiltered(gdb_stdlog,
-	    "arc: Changing PC while in delay slot. Will reset STATUS32.DE bit "
-	    "to zero. Value of STATUS32 register is 0x%s\n",
-	    phex (status32, BYTES_IN_REGISTER));
+	  {
+	    debug_printf ("arc-elf: Changing PC while in delay slot. Will "
+			  "reset STATUS32.DE bit to zero. Value of STATUS32 "
+			  "register is 0x%s\n",
+			  phex (status32, BYTES_IN_REGISTER));
+	  }
 
 	/* Reset bit and write to the cache */
 	status32 &= ~0x40;
@@ -410,7 +411,7 @@ arc_elf_init_osabi (struct gdbarch_info info, struct gdbarch *gdbarch)
   struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
 
   if (arc_debug)
-    arc_print ("arc-elf: Baremetal OS/ABI initialization.\n");
+    debug_printf ("arc-elf: Baremetal OS/ABI initialization.\n");
 
   /* Fill in target-dependent info in ARC-private structure. */
   tdep->is_sigtramp = NULL;

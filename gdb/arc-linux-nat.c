@@ -148,7 +148,7 @@ fill_fpregset (const struct regcache *regcache,
 {
     /* No FP registers on ARC. */
     if (arc_debug)
-      fprintf_unfiltered (gdb_stdlog, "%s() called.", __func__);
+      debug_printf ("arc-linux-nat: fill_fpregset called.");
     return;
 }
 
@@ -158,7 +158,7 @@ supply_fpregset (struct regcache *regcache,
 {
     /* No FP registers on ARC. */
     if (arc_debug)
-      fprintf_unfiltered (gdb_stdlog, "%s() called.", __func__);
+      debug_printf ("arc-linux-nat: supply_fpregset called.");
     return;
 }
 
@@ -209,7 +209,7 @@ ps_get_thread_area (const struct ps_prochandle *ph, lwpid_t lwpid, int idx,
                     void **base)
 {
     if (arc_debug >= 2)
-      arc_print ("arc-linux-nat: ps_get_thread_area called");
+      debug_printf ("arc-linux-nat: ps_get_thread_area called");
 
     if (ptrace (PTRACE_GET_THREAD_AREA, lwpid, NULL, base) != 0)
       return PS_ERR;
