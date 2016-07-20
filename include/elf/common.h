@@ -464,7 +464,6 @@
 #define SHT_REL		9		/* Relocation entries, no addends */
 #define SHT_SHLIB	10		/* Reserved, unspecified semantics */
 #define SHT_DYNSYM	11		/* Dynamic linking symbol table */
-#define SHT_COMDAT   12    /* Common data */
 
 #define SHT_INIT_ARRAY	  14		/* Array of ptrs to init functions */
 #define SHT_FINI_ARRAY	  15		/* Array of ptrs to finish functions */

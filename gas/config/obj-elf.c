@@ -704,7 +704,7 @@ obj_elf_change_section (const char *name,
   flags = md_elf_section_flags (flags, attr, type);
 #endif
 
-  if (type == SHT_COMDAT || linkonce)
+  if (linkonce)
     flags |= SEC_LINK_ONCE | SEC_LINK_DUPLICATES_DISCARD;
 
   if (old_sec == NULL)
@@ -850,8 +850,6 @@ obj_elf_section_type (char *str, size_t len, bfd_boolean warn)
 {
   if (len == 8 && strncmp (str, "progbits", 8) == 0)
     return SHT_PROGBITS;
-  if (len == 6 && strncmp (str, "comdat", 6) == 0)
-    return SHT_COMDAT;
   if (len == 6 && strncmp (str, "nobits", 6) == 0)
     return SHT_NOBITS;
   if (len == 4 && strncmp (str, "note", 4) == 0)
@@ -1137,8 +1135,7 @@ obj_elf_section (int push)
 		      linkonce = 1;
 		    }
 		}
-	      else if (strncmp (name, ".gnu.linkonce", 13) == 0 ||
-          strncmp (name, ".text$jlifuncaddr$", 18) == 0)
+	      else if (strncmp (name, ".gnu.linkonce", 13) == 0)
 		linkonce = 1;
 	    }
 	  else if ((attr & SHF_GROUP) != 0)
