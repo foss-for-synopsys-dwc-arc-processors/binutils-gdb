@@ -231,16 +231,6 @@ enum arc_compat_regnum
 /* Debug support                                                              */
 /* -------------------------------------------------------------------------- */
 
-/*! Debug a function entry point.
-
-    @todo. The use of ##__VA_ARGS__ is a GCC extension. */
-#define ARC_ENTRY_DEBUG(fmt, ...)					\
-  if (arc_debug)							\
-    {									\
-      fprintf_unfiltered (gdb_stdlog, "--- entered %s (" fmt ")\n",	\
-                          __FUNCTION__, ##__VA_ARGS__);			\
-    }
-
 #define arc_print(fmt, args...) fprintf_unfiltered (gdb_stdlog, fmt, ##args)
 
 /* -------------------------------------------------------------------------- */

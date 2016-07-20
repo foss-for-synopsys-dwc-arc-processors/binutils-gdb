@@ -739,7 +739,8 @@ arc_find_this_sp (struct arc_unwind_cache * info,
   struct gdbarch_tdep *tdep;
   unsigned int i;
 
-  ARC_ENTRY_DEBUG ("this_frame = %p", this_frame)
+  if (arc_debug)
+    debug_printf ("arc: find_this_sp\n");
 
   gdbarch = get_frame_arch (this_frame);
   tdep = gdbarch_tdep (gdbarch);
@@ -1219,7 +1220,8 @@ arc_scan_prologue (const CORE_ADDR entrypoint,
   CORE_ADDR prologue_ends_pc;
   CORE_ADDR final_pc;
 
-  ARC_ENTRY_DEBUG ("this_frame = %p, info = %p", this_frame, info)
+  if (arc_debug)
+    debug_printf ("arc: scan_prologue\n");
 
   if (!gdbarch)
     {
@@ -1349,7 +1351,8 @@ arc_extract_return_value (struct gdbarch *gdbarch, struct type *type,
   unsigned int len = TYPE_LENGTH (type);
   const struct gdbarch_tdep * const tdep = gdbarch_tdep (gdbarch);
 
-  ARC_ENTRY_DEBUG ("")
+  if (arc_debug)
+    debug_printf ("arc: extract_return_value\n");
 
   if (len <= BYTES_IN_REGISTER)
     {
@@ -1411,7 +1414,8 @@ arc_store_return_value (struct gdbarch *gdbarch, struct type *type,
   unsigned int len = TYPE_LENGTH (type);
   const struct gdbarch_tdep * const tdep = gdbarch_tdep (gdbarch);
 
-  ARC_ENTRY_DEBUG ("")
+  if (arc_debug)
+    debug_printf ("arc: store_return_value\n");
 
   if (len <= BYTES_IN_REGISTER)
     {
@@ -1551,7 +1555,8 @@ arc_push_dummy_call (struct gdbarch *gdbarch,
   struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
   int arg_reg = ARC_FIRST_ARG_REGNUM;
 
-  ARC_ENTRY_DEBUG ("nargs = %d", nargs)
+  if (arc_debug)
+    debug_printf ("arc: push_dummy_call (nargs = %d)\n", nargs);
 
   /* Push the return address. */
   regcache_cooked_write_unsigned (regcache, ARC_BLINK_REGNUM, bp_addr);
@@ -1853,7 +1858,9 @@ arc_return_value (struct gdbarch *gdbarch,
 			  TYPE_CODE (valtype) == TYPE_CODE_UNION ||
 			  TYPE_LENGTH (valtype) > 2 * BYTES_IN_REGISTER);
 
-  ARC_ENTRY_DEBUG ("readbuf = %p, writebuf = %p", readbuf, writebuf)
+  if (arc_debug)
+    debug_printf ("arc: return_value (readbuf = %p, writebuf = %p)\n",
+		  readbuf, writebuf);
 
   if (writebuf != NULL)
     {
@@ -1893,7 +1900,8 @@ arc_skip_prologue (struct gdbarch *gdbarch, CORE_ADDR pc)
   CORE_ADDR func_addr, limit_pc = 0;
   const char *func_name;
 
-  ARC_ENTRY_DEBUG ("")
+  if (arc_debug)
+    debug_printf ("arc: skip_prologue\n");
 
   /* See what the symbol table says. */
   if (find_pc_partial_function (pc, &func_name, &func_addr, NULL))
@@ -2015,7 +2023,8 @@ arc_frame_cache (struct frame_info *this_frame)
   CORE_ADDR prev_pc;
   CORE_ADDR block_addr;
 
-  ARC_ENTRY_DEBUG ("")
+  if (arc_debug)
+    debug_printf ("arc: frame_cache\n");
 
   gdbarch = get_frame_arch (this_frame);
 
@@ -2071,7 +2080,9 @@ arc_frame_this_id (struct frame_info *this_frame,
   struct arc_unwind_cache *cache;
   CORE_ADDR stack_addr;
   CORE_ADDR code_addr;
-  ARC_ENTRY_DEBUG ("")
+
+  if (arc_debug)
+    debug_printf ("arc: frame_thid_id\n");
 
   gdbarch = get_frame_arch (this_frame);
   tdep = gdbarch_tdep (gdbarch);
@@ -2127,7 +2138,8 @@ arc_frame_prev_register (struct frame_info *this_frame,
   struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
   struct arc_unwind_cache *cache;
 
-  ARC_ENTRY_DEBUG ("regnum %d", regnum)
+  if (arc_debug)
+    debug_printf ("arc: frame_prev_register (regnum = %d)\n", regnum);
 
   if (*this_cache == NULL)
     *this_cache = arc_frame_cache (this_frame);
@@ -2210,7 +2222,8 @@ arc_dwarf2_frame_init_reg (struct gdbarch *gdbarch,
 static struct arc_unwind_cache *
 arc_sigtramp_frame_cache (struct frame_info *this_frame, void **this_cache)
 {
-  ARC_ENTRY_DEBUG ("")
+  if (arc_debug)
+    debug_printf ("arc: sigtramp_frame_cache\n");
 
   if (*this_cache == NULL)
     {
@@ -2264,7 +2277,9 @@ arc_sigtramp_frame_this_id (struct frame_info *this_frame,
   struct gdbarch_tdep *tdep;
   CORE_ADDR stack_addr;
   CORE_ADDR code_addr;
-  ARC_ENTRY_DEBUG ("")
+
+  if (arc_debug)
+    debug_printf ("arc: sigtramp_frame_this_id\n");
 
   gdbarch = get_frame_arch (this_frame);
   tdep = gdbarch_tdep (gdbarch);
@@ -2305,7 +2320,8 @@ arc_sigtramp_frame_prev_register (struct frame_info *this_frame,
   struct arc_unwind_cache *info =
     arc_sigtramp_frame_cache (this_frame, this_cache);
 
-  ARC_ENTRY_DEBUG ("")
+  if (arc_debug)
+    debug_printf ("arc: sigtramp_frame_prev_register (regnum = %d)\n", regnum);
 
   return trad_frame_get_prev_register (this_frame, info->saved_regs, regnum);
 
@@ -2331,7 +2347,8 @@ arc_sigtramp_frame_sniffer (const struct frame_unwind *self,
 {
   struct gdbarch_tdep *tdep;
 
-  ARC_ENTRY_DEBUG ("")
+  if (arc_debug)
+    debug_printf ("arc: sigtramp_frame_sniffer\n");
 
   tdep = gdbarch_tdep (get_frame_arch (this_frame));
 
