@@ -791,14 +791,16 @@ arc_linux_skip_solib_resolver (struct gdbarch *gdbarch, CORE_ADDR pc)
       if (resolver.minsym)
 	{
 	  CORE_ADDR res_addr = BMSYMBOL_VALUE_ADDRESS (resolver);
-	  fprintf_unfiltered (gdb_stdlog, "--- %s : pc = %s, resolver at %s\n",
-			      __FUNCTION__, print_core_address (gdbarch, pc),
-			      print_core_address (gdbarch, res_addr));
+	  debug_printf ("arc-linux: skip_solib_resolver(): "
+			"pc = %s, resolver at %s\n",
+			print_core_address (gdbarch, pc),
+			print_core_address (gdbarch, res_addr));
 	}
       else
 	{
-	  fprintf_unfiltered (gdb_stdlog, "--- %s : pc = %s, no resolver found",
-			      __FUNCTION__, print_core_address (gdbarch, pc));
+	  debug_printf ("arc-linux: skip_solib_resolver(): "
+			"pc = %s, no resolver found\n",
+			print_core_address (gdbarch, pc));
 	}
     }
 
@@ -903,7 +905,7 @@ arc_linux_init_osabi (struct gdbarch_info info, struct gdbarch *gdbarch)
   struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
 
   if (arc_debug)
-    arc_print ("arc-linux: GNU/Linux OS/ABI initialization.\n");
+    debug_printf ("arc-linux: GNU/Linux OS/ABI initialization.\n");
 
   /* Fill in target-dependent info in ARC-private structure. */
   tdep->is_sigtramp = arc_linux_is_sigtramp;
