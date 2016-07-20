@@ -510,11 +510,11 @@ ARC_RELOC_HOWTO(ARC_JLI_SECTOFF_SIMM12, 79, \
                 12, \
                 replace_add2_jli, \
                 bitfield, \
-                ( ( S - JLI ) ))
+                ( ( ( S - JLI ) >> 2 ) ))
 
 ARC_RELOC_HOWTO(ARC_JLI_32, 80, \
                 2, \
                 32, \
                 replace_word32, \
                 bitfield, \
-                ( ( JLI_BASE + ( S - JLI ) ) ))
+                ( S ))

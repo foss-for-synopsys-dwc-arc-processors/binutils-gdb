@@ -286,8 +286,8 @@ ATTRIBUTE_UNUSED static unsigned
 replace_add2_jli (unsigned insn, int value ATTRIBUTE_UNUSED)
 {
   insn = insn & ~0xfff0000;
-  insn |= (((value / 4) >> 8) & 0x0f) << 16;
-  insn |= (((value / 4) >> 0) & 0xff) << 24;
+  insn |= ((value >> 8) & 0x0f) << 16;
+  insn |= ((value >> 0) & 0xff) << 24;
 
   return insn;
 }

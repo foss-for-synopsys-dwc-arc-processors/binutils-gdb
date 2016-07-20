@@ -789,8 +789,7 @@ arc_special_overflow_checks (const struct arc_relocation_data reloc_data,
 	     + (reloc_data.reloc_offset))))
 #define SECTSTART (bfd_signed_vma) (reloc_data.sym_section->output_section->vma \
 				    + reloc_data.sym_section->output_offset)
-#define JLI (jli_base = (bfd_signed_vma) (reloc_data.sym_section->output_section->vma))
-#define JLI_BASE (jli_base)
+#define JLI (bfd_signed_vma) (reloc_data.sym_section->output_section->vma)
 #define _SDA_BASE_ (bfd_signed_vma) (reloc_data.sdata_begin_symbol_vma)
 #define TLS_REL (bfd_signed_vma) \
   ((elf_hash_table (info))->tls_sec->output_section->vma)
@@ -798,8 +797,6 @@ arc_special_overflow_checks (const struct arc_relocation_data reloc_data,
 #define TCB_SIZE (8)
 
 #define none (0)
-
-bfd_signed_vma jli_base = 0;
 
 #define PRINT_DEBUG_RELOC_INFO_BEFORE(FORMULA, TYPE) \
     {\
@@ -971,6 +968,7 @@ arc_do_relocation (bfd_byte * contents,
 #undef P
 #undef SECTSTAR
 #undef SECTSTART
+#undef JLI
 #undef _SDA_BASE_
 #undef none
 
