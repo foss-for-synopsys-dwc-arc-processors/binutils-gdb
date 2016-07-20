@@ -182,6 +182,7 @@ extern const struct arc_opcode arc_opcodes[];
 #define ARC_OPCODE_ARCALL  (ARC_OPCODE_ARC600 | ARC_OPCODE_ARC700	\
 			    | ARC_OPCODE_ARCv2EM | ARC_OPCODE_ARCv2HS)
 #define ARC_OPCODE_ARCFPX  (ARC_OPCODE_ARC700 | ARC_OPCODE_ARCv2EM)
+#define ARC_OPCODE_ARCv2   (ARC_OPCODE_ARCv2EM | ARC_OPCODE_ARCv2HS)
 
 /* CPU extensions.  */
 #define ARC_EA       0x0001
