@@ -1887,10 +1887,15 @@ find_opcode_match (const struct arc_opcode_hash_entry *entry,
 		     generic and move it to a function.  */
 		  switch (tok[tokidx].X_md)
 		    {
+		    case O_jli:
+		      if (!(operand->flags & ARC_OPERAND_SIGNED))
+		      {
+		        goto match_failed;
+		      }
+		      break;
 		    case O_gotoff:
 		    case O_gotpc:
 		    case O_pcl:
-		    case O_jli:
 		    case O_tpoff:
 		    case O_dtpoff:
 		    case O_tlsgd:
@@ -3824,16 +3829,12 @@ assemble_insn (const struct arc_opcode *opcode,
 				  pflags, nflg,
 				  operand->default_reloc);
 	      break;
-	    case O_jli:
-	      reloc = find_reloc ("jli", opcode->name,
-	        pflags, nflg,
-	        operand->default_reloc);
-	      break;
 	    case O_tlsgd:
 	    case O_tlsie:
 	      needGOTSymbol = TRUE;
 	      /* Fall-through.  */
 
+	    case O_jli:
 	    case O_tpoff:
 	    case O_dtpoff:
 	      reloc = ARC_RELOC_TABLE (t->X_md)->reloc;
