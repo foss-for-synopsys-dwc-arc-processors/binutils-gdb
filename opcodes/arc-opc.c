@@ -1695,7 +1695,7 @@ const struct arc_operand arc_operands[] =
 
   /* SIMM12_20 mask = 00000000000000000000111111222222.  */
 #define SIMM12_20	(UIMM6_20 + 1)
-  {12, 0, 0, ARC_OPERAND_SIGNED, insert_simm12_20, extract_simm12_20},
+  {12, 0, -SIMM12_20, ARC_OPERAND_SIGNED, insert_simm12_20, extract_simm12_20},
 
   /* SIMM12_20_JLIOFF mask = 00000000000000000000111111222222.  */
 #define SIMM12_20_JLIOFF (SIMM12_20 + 1)
