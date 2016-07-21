@@ -1697,13 +1697,8 @@ const struct arc_operand arc_operands[] =
 #define SIMM12_20	(UIMM6_20 + 1)
   {12, 0, -SIMM12_20, ARC_OPERAND_SIGNED, insert_simm12_20, extract_simm12_20},
 
-  /* SIMM12_20_JLIOFF mask = 00000000000000000000111111222222.  */
-#define SIMM12_20_JLIOFF (SIMM12_20 + 1)
-  {12, 0, BFD_RELOC_ARC_JLI_SECTOFF_SIMM12, ARC_OPERAND_SIGNED,
-    insert_simm12_20, extract_simm12_20},
-
   /* SIMM3_5_S mask = 0000011100000000.  */
-#define SIMM3_5_S	(SIMM12_20_JLIOFF + 1)
+#define SIMM3_5_S	(SIMM12_20 + 1)
   {3, 0, 0, ARC_OPERAND_SIGNED | ARC_OPERAND_NCHK,
    insert_simm3s, extract_simm3s},
 
