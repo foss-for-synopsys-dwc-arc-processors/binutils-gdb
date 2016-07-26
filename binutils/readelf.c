@@ -2431,6 +2431,9 @@ decode_ARC_machine_flags (unsigned e_flags, unsigned e_machine, char buf[])
     case E_ARC_OSABI_V3:
       strcat (buf, ", v3 no-legacy-syscalls ABI");
       break;
+    case E_ARC_OSABI_V4:
+      strcat (buf, ", v4 ABI");
+      break;
     default:
       strcat (buf, ", unrecognised ARC OSABI flag");
       break;
