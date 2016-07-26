@@ -55,8 +55,12 @@ END_RELOC_NUMBERS (R_ARC_max)
 #define E_ARC_OSABI_ORIG	0x00000000   /* MUST be 0 for back-compat.  */
 #define E_ARC_OSABI_V2		0x00000200
 #define E_ARC_OSABI_V3		0x00000300
+#define E_ARC_OSABI_V4		0x00000400
+#ifdef __ARC_OSABI_V3
 #define E_ARC_OSABI_CURRENT	E_ARC_OSABI_V3
-
+#else
+#define E_ARC_OSABI_CURRENT	E_ARC_OSABI_V4
+#endif
 /* Leave bits 0xf0 alone in case we ever have more than 16 cpu types.  */
 
 /* File contains position independent code.  */
