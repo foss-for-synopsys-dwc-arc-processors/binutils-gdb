@@ -445,6 +445,9 @@ struct arc_instruction {
 
   /* Load/store data size.  */
   enum ldst_data_size data_size_mode;
+
+  /* Copy of dis_insn_type from disassembler_info.  */
+  enum dis_insn_type insn_type;
 };
 
 /* Fill arc_instruction instance with data about instruction at specified
