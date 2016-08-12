@@ -1219,7 +1219,6 @@ arc_scan_prologue (const CORE_ADDR entrypoint,
   struct gdbarch_tdep *tdep;
   CORE_ADDR prologue_ends_pc;
   CORE_ADDR final_pc;
-  struct disassemble_info di;
 
   ARC_ENTRY_DEBUG ("this_frame = %p, info = %p", this_frame, info)
 
@@ -1268,9 +1267,6 @@ arc_scan_prologue (const CORE_ADDR entrypoint,
       info->saved_regs_mask = 0;
     }
 
-  /* Initializations to use the opcodes library. */
-  arc_initialize_disassembler (gdbarch, &di);
-
   if (arc_debug)
     {
       fprintf_unfiltered (gdb_stdlog, "Prologue PC: %s\n",
@@ -1282,8 +1278,6 @@ arc_scan_prologue (const CORE_ADDR entrypoint,
   /* look at each instruction in the prologue */
   while (prologue_ends_pc < final_pc)
     {
-      struct arcDisState current_instr =
-	arcAnalyzeInstr (prologue_ends_pc, &di);
       struct arc_instruction insn;
       arc_insn_decode (gdbarch, prologue_ends_pc, &insn);
 
