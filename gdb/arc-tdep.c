@@ -1286,6 +1286,13 @@ arc_scan_prologue (const CORE_ADDR entrypoint,
 	  arc_insn_dump (&insn);
 	}
 
+      /* Sometimes disassembler may return a non-instruction, for example if
+         GDB connects to a remote target that has non-zeroed memory.  GDB
+         would read PC value and would try to analyze prologue, but there is
+         no guarantee that memory contents is valid.  */
+      if (insn.insn_type == dis_noninsn)
+	break;
+
       /* if this instruction is in the prologue, fields in the info will be
        * updated, and the saved registers mask may be updated
        */
@@ -2752,6 +2759,15 @@ arc_insn_decode (struct gdbarch* gdbarch, CORE_ADDR addr,
 
   insn->address = addr;
 
+  insn->insn_type = di.insn_type;
+
+  /* Quick exit if memory at this address is not an instruction.  */
+  if (di.insn_type == dis_noninsn)
+    return;
+
+  /* arc_opcode must be set if this is not a dis_noninsn.  */
+  gdb_assert (di.private_data);
+
   opcode = (const struct arc_opcode *) di.private_data;
   insn->opcode_data = opcode;
 
@@ -3595,6 +3611,13 @@ arc_insn_dump (const struct arc_instruction *insn)
   arc_print ("Dumping arc_instruction at %s\n",
       print_core_address (gdbarch, insn->address));
   arc_print ("length=%u\n", insn->length);
+
+  if (insn->insn_type == dis_noninsn)
+    {
+      arc_print ("This is not a valid ARC instruction.\n");
+      return;
+    }
+
   arc_print ("length_with_limm=%u\n",
 		      insn->length + (insn->limm_p ? 4 : 0));
   arc_print ("limm_p=%i\n", insn->limm_p);
