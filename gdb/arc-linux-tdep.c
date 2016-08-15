@@ -29,7 +29,6 @@
 #include "solib-svr4.h"
 #include "block.h"
 #include "regset.h"
-#include "dis-asm.h"
 #include "opcode/arc.h"
 #include "exceptions.h"
 /* lookup_minimal_symbol */
