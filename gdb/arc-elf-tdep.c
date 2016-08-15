@@ -31,7 +31,6 @@
 #include "objfiles.h"
 #include "osabi.h"
 #include "arch-utils.h"
-#include "dis-asm.h"
 #include "opcode/arc.h"
 #include "opcodes/arc-dis.h"
 
