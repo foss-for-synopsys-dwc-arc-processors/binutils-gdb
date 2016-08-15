@@ -144,7 +144,6 @@
 /* gdb header files */
 #include "defs.h"
 #include "arch-utils.h"
-#include "dis-asm.h"
 #include "frame.h"
 #include "frame-base.h"
 #include "frame-unwind.h"
