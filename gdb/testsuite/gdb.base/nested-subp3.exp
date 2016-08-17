@@ -24,6 +24,12 @@ standard_testfile
 
 set testcase "nested-subp3"
 
+if {[istarget "arc*-*-*"]
+  && [board_info target arc,has_executable_stack] != 1} {
+  unsupported "This test requires executable stack."
+  return 0
+}
+
 if { [gdb_compile "${srcdir}/${subdir}/${testcase}.c" \
                   [standard_output_file "${testcase}"] \
                   executable \
