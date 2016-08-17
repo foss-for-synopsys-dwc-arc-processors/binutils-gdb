@@ -194,13 +194,15 @@ if [istarget "*-*-cygwin*"] {
 set re \
     [list \
 	 "Statistics for\[^\n\r\]*maint\[^\n\r\]*:" \
-	 "  Number of \"minimal\" symbols read: $decimal" \
+	 "(  Number of \"stab\" symbols read: $decimal" \
+	 ")?  Number of \"minimal\" symbols read: $decimal" \
 	 "  Number of \"full\" symbols read: $decimal" \
 	 "  Number of \"types\" defined: $decimal" \
 	 "  Number of symbol tables: $decimal" \
 	 "  Number of symbol tables with line tables: $decimal" \
 	 "  Number of symbol tables with blockvectors: $decimal" \
-	 "(  Number of read CUs: $decimal" \
+	 "(  Space used by a.out string tables: $decimal" \
+	 ")?(  Number of read CUs: $decimal" \
 	 "  Number of unread CUs: $decimal" \
 	 ")?(  Number of \"partial\" symbols read: $decimal" \
 	 ")?(  Number of psym tables \\(not yet expanded\\): $decimal" \
