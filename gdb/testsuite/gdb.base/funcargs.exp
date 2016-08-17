@@ -164,6 +164,7 @@ proc float_and_integral_args {} {
     gdb_test "print d2" ".* = 5" "print d2 after run to call2a"
 
     setup_xfail "rs6000-*-*"
+    setup_kfail "STAR/9001082849" arc*-*-*
     # Continue; should stop at call2b and print actual arguments.
     gdb_test "cont" ".* call2b \\(f1=4, s=1, d1=5, i=2, f2=4, l=3, d2=5, c=97 'a'\\) .*" "continue to call2b"
 
@@ -177,6 +178,7 @@ proc float_and_integral_args {} {
     gdb_test "cont" ".* call2e \\(i=2, f2=4, l=3, d2=5, c=97 'a', f1=4, s=1, d1=5\\) .*" "continue to call2e"
 
     # Continue; should stop at call2f and print actual arguments.
+    setup_kfail "STAR/9001082849" arc*-*-*
     gdb_test "cont" ".* call2f \\(f2=4, l=3, d2=5, c=97 'a', f1=4, s=1, d1=5, i=2\\) .*" "continue to call2f"
 
     # Continue; should stop at call2g and print actual arguments.
@@ -217,8 +219,10 @@ proc complex_args {} {
 
     gdb_test "cont" ".* callcb \\(d1=3 \\+ 4i, d2=3 \\+ 4i, d3=3 \\+ 4i\\) .*" "continue to callcb"
     gdb_test "cont" ".* callcc \\(ld1=5 \\+ 6i, ld2=5 \\+ 6i, ld3=5 \\+ 6i\\) .*" "continue to callcc"
+    setup_kfail "STAR/9001082849" arc*-*-*
     gdb_test "cont" ".* callcd \\(fc1=1 \\+ 2i, dc1=3 \\+ 4i, ldc1=5 \\+ 6i\\) .*" "continue to callcd"
     gdb_test "cont" ".* callce \\(dc1=3 \\+ 4i, ldc1=5 \\+ 6i, fc1=1 \\+ 2i\\) .*" "continue to callce"
+    setup_kfail "STAR/9001082849" arc*-*-*
     gdb_test "cont" ".* callcf \\(ldc1=5 \\+ 6i, fc1=1 \\+ 2i, dc1=3 \\+ 4i\\) .*" "continue to callcf"
 }
 
@@ -236,8 +240,10 @@ proc complex_integral_args {} {
 
     # Run; should stop at call1a and print actual arguments.
     gdb_run_cmd
+    setup_kfail "STAR/9001082849" arc*-*-*
     gdb_test "" " callc1a \\(c=97 'a', s=1, i=2, ui=7, l=3, fc1=1 \\+ 2i, dc1=3 \\+ 4i, ldc1=5 \\+ 6i\\) .*" "run to callc1a"
 
+    setup_kfail "STAR/9001082849" arc*-*-*
     gdb_test "cont" ".* callc1b \\(ldc1=5 \\+ 6i\\, c=97 'a', s=1, i=2, fc1=1 \\+ 2i, ui=7, l=3, dc1=3 \\+ 4i\\) .*" "continue to callc1b"
 }
 
@@ -256,6 +262,7 @@ proc complex_float_integral_args {} {
     gdb_run_cmd
     gdb_test "" " callc2a \\(c=97 'a', s=1, i=2, ui=7, l=3, f=4, d=5, fc1=1 \\+ 2i, dc1=3 \\+ 4i, ldc1=5 \\+ 6i\\) .*" "run to callc2a"
 
+    setup_kfail "STAR/9001082849" arc*-*-*
     gdb_test "cont" ".* callc2b \\(fc1=1 \\+ 2i, c=97 'a', s=1, i=2, ui=7, ldc1=5 \\+ 6i\\, l=3, f=4, d=5, dc1=3 \\+ 4i\\) .*" "continue to callc2b"
 }
 
@@ -775,6 +782,7 @@ proc shuffle_round_robin {} {
 
     gdb_continue call7j
 
+    setup_kfail "STAR/9001082849" arc*-*-*
     gdb_test_sequence "backtrace 100" "backtrace from call7j" {
 	"\[\r\n\]#0 .* call7j \\(ui=7, c=97 'a', i=2, s=1, l=3, f=4, uc=98 'b', d=5, us=6, ul=8\\) "
 	"\[\r\n\]#1 .* call7i \\(ul=8, ui=7, c=97 'a', i=2, s=1, l=3, f=4, uc=98 'b', d=5, us=6\\) "
@@ -794,6 +802,7 @@ proc shuffle_round_robin {} {
 
     gdb_continue call7k
 
+    setup_kfail "STAR/9001082849" arc*-*-*
     gdb_test_sequence "backtrace 100" "backtrace from call7k" {
 	"\[\r\n\]#0 .* call7k \\(c=97 'a', i=2, s=1, l=3, f=4, uc=98 'b', d=5, us=6, ul=8, ui=7\\) "
 	"\[\r\n\]#1 .* call7j \\(ui=7, c=97 'a', i=2, s=1, l=3, f=4, uc=98 'b', d=5, us=6, ul=8\\) "
