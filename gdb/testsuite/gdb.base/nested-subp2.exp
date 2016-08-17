@@ -21,6 +21,11 @@
 
 standard_testfile
 
+if {[istarget "arc*-*-*"]
+  && [board_info target arc,has_executable_stack] != 1} {
+  unsupported "This test requires executable stack."
+  return 0
+}
 
 set testcase "nested-subp2"
 
