@@ -202,8 +202,8 @@ enum arc_compat_regnum
 
 /*! Offset (in words) of PC in uClibc jmp_buf structure for longjmp () */
 #define ARC_UCLIBC_JB_PC  15
-/*! Offset (in words) of PC in Newlib jmp_buf structure for longjmp () */
-#define ARC_NEWLIB_JB_PC  19
+/* Offset (in words) of PC in Newlib jmp_buf structure for longjmp ().  */
+#define ARC_NEWLIB_JB_PC  18
 
 /* -------------------------------------------------------------------------- */
 /* Useful constants                                                           */
