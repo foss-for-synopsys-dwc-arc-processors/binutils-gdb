@@ -87,7 +87,7 @@ with_test_prefix "address zero boundary" {
         set address_zero "0x0"
         set byte "\t0x\[0-9a-f\]+"
         gdb_test "x/3xb ${address_zero}" \
-            "0x\[0-9a-f\]+00.*:${byte}${byte}${byte}" \
+            "0x(\[0-9a-f\]+0)?0.*:${byte}${byte}${byte}" \
             "examine 3 bytes forward from ${address_zero}"
         gdb_test "x/-6x" \
             "0x\[0-9a-f\]+fd.*:${byte}${byte}${byte}${byte}${byte}${byte}" \
