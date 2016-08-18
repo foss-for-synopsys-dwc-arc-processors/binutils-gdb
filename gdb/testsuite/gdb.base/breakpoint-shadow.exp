@@ -71,9 +71,11 @@ test_disassembly "disassembly with breakpoints"
 gdb_test_no_output "set code-cache off"
 gdb_test_no_output "set code-cache on"
 
+setup_kfail "STAR/9001083453" arc*-*-*
 test_disassembly "disassembly with breakpoints, fresh code cache"
 
 # Delete breakpoints.  This should update the code cache as well.
 delete_breakpoints
 
+setup_kfail "STAR/9001083453" arc*-*-*
 test_disassembly "disassembly without breakpoints, no stale breakpoints"
