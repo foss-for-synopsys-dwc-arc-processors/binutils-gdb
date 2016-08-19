@@ -100,8 +100,11 @@ gdb_test "symbol-file ${binfile1}" \
 	"symbol-file ${testfile1}"
 
 with_test_prefix "single psymtabs" {
+    setup_kfail "STAR/9001083935" arc*-*-*
     test_eliminated_var my_global_symbol
+    setup_kfail "STAR/9001083935" arc*-*-*
     test_eliminated_var my_static_symbol
+    setup_kfail "STAR/9001083935" arc*-*-*
     test_eliminated_var my_global_func
     not_null_var_address main
 }
@@ -116,8 +119,11 @@ gdb_start
 set GDBFLAGS $saved_gdbflags
 
 with_test_prefix "single symtabs" {
+    setup_kfail "STAR/9001083935" arc*-*-*
     test_eliminated_var my_global_symbol
+    setup_kfail "STAR/9001083935" arc*-*-*
     test_eliminated_var my_static_symbol
+    setup_kfail "STAR/9001083935" arc*-*-*
     test_eliminated_var my_global_func
     not_null_var_address main
 }
@@ -141,8 +147,17 @@ with_test_prefix "order1" {
 	    "add symbol table from file \".*${testfile2}\" at.*\\(y or n\\) " \
 	    "y"
 
-    not_null_var_address my_global_symbol
-    not_null_var_address my_static_symbol
+    # That test cannot be marked as KFAIL, because it is actually two "tests":
+    # 1) read value; 2) compare to 0. Only the second one should be KFAIL, but
+    # from here we cannot control the second test - and we cannot insert
+    # `setup_kfail` into `not_null_var_address` since it used at many places.
+    # Modifying `not_null_var_address` to accept extra argument sounds like an
+    # overkill.
+    # STAR 9001083935 GDB finds a symbol of removed variable
+    if ![istarget arc*-*-*] {
+	not_null_var_address my_global_symbol
+	not_null_var_address my_static_symbol
+    }
     not_null_var_address my_global_func
     not_null_var_address main
 }
