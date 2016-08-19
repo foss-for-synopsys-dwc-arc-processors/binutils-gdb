@@ -44,14 +44,18 @@ gdb_test_multiple "interpreter-exec mi \"-break-insert --thread a\"" \
 	}
     }
 
-set cmd "interpreter-exec mi \"-stack-info-frame\""
-gdb_test_multiple $cmd $cmd {
-    -re ".error,msg=.No registers\..\r\n$gdb_prompt " {
-	pass "$cmd"
-	gdb_expect 1 {
-	    -re "\r\n$gdb_prompt $" { }
-	}
-    }
+# If this is a remote target, then GDB already connected to the server, so
+# registers do exist and this test doesn't make sense.
+if !$use_gdb_stub {
+  set cmd "interpreter-exec mi \"-stack-info-frame\""
+  gdb_test_multiple $cmd $cmd {
+      -re ".error,msg=.No registers\..\r\n$gdb_prompt " {
+	  pass "$cmd"
+	  gdb_expect 1 {
+	      -re "\r\n$gdb_prompt $" { }
+	  }
+      }
+  }
 }
 
 set cmd "interpreter-exec mi1 \"-break-insert main\""
