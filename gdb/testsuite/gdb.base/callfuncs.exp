@@ -329,9 +329,11 @@ proc perform_all_tests {} {
     # Check if all registers still have the same value.
     set new_reg_content [fetch_all_registers \
 			     "register contents after gdb function calls"]
+
     if {$old_reg_content == $new_reg_content} then {
 	pass "gdb function calls preserve register contents"
     } else {
+	setup_kfail "STAR/9000896056" arc*-*-*
 	set old_reg_content $new_reg_content
 	fail "gdb function calls preserve register contents"
     }
@@ -357,6 +359,7 @@ proc perform_all_tests {} {
 		 if {$old_reg_content == $new_reg_content} then {
 		     pass "continue after stop in call dummy preserves register contents"
 		 } else {
+		     setup_kfail "STAR/9000896056" arc*-*-*
 		     fail "continue after stop in call dummy preserves register contents"
 		 }
 	     }
@@ -382,6 +385,7 @@ proc perform_all_tests {} {
 		 if {$old_reg_content == $new_reg_content} then {
 		     pass "finish after stop in call dummy preserves register contents"
 		 } else {
+		     setup_kfail "STAR/9000896056" arc*-*-*
 		     fail "finish after stop in call dummy preserves register contents"
 		 }
 	     }
@@ -406,6 +410,7 @@ proc perform_all_tests {} {
 		 if {$old_reg_content == $new_reg_content} then {
 		     pass "return after stop in call dummy preserves register contents"
 		 } else {
+		     setup_kfail "STAR/9000896056" arc*-*-*
 		     fail "return after stop in call dummy preserves register contents"
 		 }
 	     }
@@ -468,6 +473,7 @@ proc perform_all_tests {} {
     if {$old_reg_content == $new_reg_content} then {
 	pass "nested call dummies preserve register contents"
     } else {
+	setup_kfail "STAR/9000896056" arc*-*-*
 	fail "nested call dummies preserve register contents"
     }
 
