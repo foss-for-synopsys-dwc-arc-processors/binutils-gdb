@@ -40,17 +40,20 @@ clean_restart ${testfile}
 #
 # Test command without an running inferior.
 #
-gdb_test "compile code int i=2;" \
-    "The program must be running for the compile command to work.*" \
-    "Test compile code command without running inferior"
+# If target is run via gdb_comm board, then there is already running inferior.
+if {[target_info protocol] != "gdb_comm"} {
+    gdb_test "compile code int i=2;" \
+	"The program must be running for the compile command to work.*" \
+	"Test compile code command without running inferior"
 
-gdb_test "compile int i=2;" \
-    "The program must be running for the compile command to work.*" \
-    "Test compile command without running inferior"
+    gdb_test "compile int i=2;" \
+	"The program must be running for the compile command to work.*" \
+	"Test compile command without running inferior"
 
-gdb_test "compile file -r ${srcdir}/${subdir}/${testfile}-mod.c" \
-    "The program must be running for the compile command to work.*" \
-    "Test compile file command without running inferior"
+    gdb_test "compile file -r ${srcdir}/${subdir}/${testfile}-mod.c" \
+	"The program must be running for the compile command to work.*" \
+	"Test compile file command without running inferior"
+}
 
 if ![runto_main] {
     return -1
