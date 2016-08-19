@@ -213,53 +213,56 @@ if {$macro_support == 0} {
     return 0
 }
  
-list_and_check_macro main WHERE {macscp1.c {before macscp1_3}}
-list_and_check_macro macscp2_2 WHERE {macscp2.h macscp1.c {before macscp2_2}}
-list_and_check_macro macscp3_2 WHERE {macscp3.h macscp1.c {before macscp3_2}}
+# Using "list" will not help for remote stubs.
+if !$use_gdb_stub {
+    list_and_check_macro main WHERE {macscp1.c {before macscp1_3}}
+    list_and_check_macro macscp2_2 WHERE {macscp2.h macscp1.c {before macscp2_2}}
+    list_and_check_macro macscp3_2 WHERE {macscp3.h macscp1.c {before macscp3_2}}
 
 
-# Assuming the current position inside program by `list' from above.
-gdb_test "info macro FROM_COMMANDLINE" \
-	 "Defined at \[^\r\n\]*:0\r\n-DFROM_COMMANDLINE=ARG"
+    # Assuming the current position inside program by `list' from above.
+    gdb_test "info macro FROM_COMMANDLINE" \
+	     "Defined at \[^\r\n\]*:0\r\n-DFROM_COMMANDLINE=ARG"
 
-gdb_test "info macro __FILE__" "#define __FILE__ \".*macscp3.h\"" \
-    "info macro __FILE__ before running"
-gdb_test "info macro __LINE__" "#define __LINE__ 26" \
-    "info macro __LINE__ before running"
+    gdb_test "info macro __FILE__" "#define __FILE__ \".*macscp3.h\"" \
+	"info macro __FILE__ before running"
+    gdb_test "info macro __LINE__" "#define __LINE__ 26" \
+	"info macro __LINE__ before running"
 
-# Although GDB's macro table structures distinguish between multiple
-# #inclusions of the same file, GDB's other structures don't.  So the
-# `list' command here doesn't reliably select one #inclusion or the
-# other, even though it could.  It would be nice to eventually change
-# GDB's structures to handle this correctly.
-gdb_test "list macscp4_2_from_macscp2" ".*macscp4_2_, MACSCP4_INCLUSION.*"
-switch -exact -- [info_macro WHERE] {
-    {macscp4.h macscp2.h macscp1.c {before macscp4_2_..., from macscp2.h}} {
-        pass "info macro WHERE after `list macscp_4_2_from_macscp2'"
-    }
-    {macscp4.h macscp3.h macscp1.c {before macscp4_2_..., from macscp3.h}} {
-        setup_kfail "gdb/555" *-*-* 
-        fail "info macro WHERE after `list macscp_4_2_from_macscp2' (gdb/555)"
-    }
-    timeout { 
-        fail "info macro WHERE after `list macscp_4_2_from_macscp2' (timeout)"
-    }
-    default { fail "info macro WHERE after `list macscp_4_2_from_macscp2'" }
-}
+  # Although GDB's macro table structures distinguish between multiple
+  # #inclusions of the same file, GDB's other structures don't.  So the
+  # `list' command here doesn't reliably select one #inclusion or the
+  # other, even though it could.  It would be nice to eventually change
+  # GDB's structures to handle this correctly.
+  gdb_test "list macscp4_2_from_macscp2" ".*macscp4_2_, MACSCP4_INCLUSION.*"
+  switch -exact -- [info_macro WHERE] {
+      {macscp4.h macscp2.h macscp1.c {before macscp4_2_..., from macscp2.h}} {
+	  pass "info macro WHERE after `list macscp_4_2_from_macscp2'"
+      }
+      {macscp4.h macscp3.h macscp1.c {before macscp4_2_..., from macscp3.h}} {
+	  setup_kfail "gdb/555" *-*-* 
+	  fail "info macro WHERE after `list macscp_4_2_from_macscp2' (gdb/555)"
+      }
+      timeout { 
+	  fail "info macro WHERE after `list macscp_4_2_from_macscp2' (timeout)"
+      }
+      default { fail "info macro WHERE after `list macscp_4_2_from_macscp2'" }
+  }
 
-gdb_test "list macscp4_2_from_macscp3" ".*macscp4_2_, MACSCP4_INCLUSION.*"
-switch -exact -- [info_macro WHERE] {
-    {macscp4.h macscp3.h macscp1.c {before macscp4_2_..., from macscp3.h}} {
-        pass "info macro WHERE after `list macscp_4_2_from_macscp3'"
-    }
-    {macscp4.h macscp2.h macscp1.c {before macscp4_2_..., from macscp2.h}} {
-        setup_kfail "gdb/555" *-*-* 
-        fail "info macro WHERE after `list macscp_4_2_from_macscp3' (gdb/555)"
-    }
-    timeout {
-        fail "info macro WHERE after `list macscp_4_2_from_macscp3' (timeout)"
-    }
-    default { fail "info macro WHERE after `list macscp_4_2_from_macscp3'" }
+  gdb_test "list macscp4_2_from_macscp3" ".*macscp4_2_, MACSCP4_INCLUSION.*"
+  switch -exact -- [info_macro WHERE] {
+      {macscp4.h macscp3.h macscp1.c {before macscp4_2_..., from macscp3.h}} {
+	  pass "info macro WHERE after `list macscp_4_2_from_macscp3'"
+      }
+      {macscp4.h macscp2.h macscp1.c {before macscp4_2_..., from macscp2.h}} {
+	  setup_kfail "gdb/555" *-*-* 
+	  fail "info macro WHERE after `list macscp_4_2_from_macscp3' (gdb/555)"
+      }
+      timeout {
+	  fail "info macro WHERE after `list macscp_4_2_from_macscp3' (timeout)"
+      }
+      default { fail "info macro WHERE after `list macscp_4_2_from_macscp3'" }
+  }
 }
 
 
