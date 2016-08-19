@@ -198,6 +198,12 @@ proc gdb_file_cmd {arg} {
 	                verbose "\t\tKilling previous program being debugged"
 	            exp_continue
 	        }
+	        -re "A program is being debugged already.*change the file.*y or n. $" {
+		    # Handle the case of remote targets.
+	            send_gdb "y\n"
+	                verbose "\t\tChaning file from previous program being debugged"
+	            exp_continue
+	        }
                 -re ".*$gdb_prompt $" {
                     verbose "\t\tLoaded $arg with new symbol table into $GDB"
                     return 0
