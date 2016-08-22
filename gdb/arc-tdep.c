@@ -1740,6 +1740,111 @@ arc_dwarf2_frame_init_reg (struct gdbarch *gdbarch, int regnum,
     reg->how = DWARF2_FRAME_REG_CFA;
 }
 
+/*  Signal trampoline frame unwinder.  Allows frame unwinding to happen from
+    within signal handlers.  */
+
+static struct arc_unwind_cache *
+arc_sigtramp_frame_cache (struct frame_info *this_frame, void **this_cache)
+{
+  if (arc_debug)
+    debug_printf ("arc: sigtramp_frame_cache\n");
+
+  if (*this_cache == NULL)
+    {
+      struct gdbarch_tdep *tdep = gdbarch_tdep (get_frame_arch (this_frame));
+      struct arc_unwind_cache *cache = arc_create_cache (this_frame);
+
+      *this_cache = cache;
+
+      /* Get the stack pointer and use it as the frame base.  */
+      cache->prev_sp = arc_frame_base_address (this_frame, NULL);
+
+      /* If the ARC-private target-dependent info has a table of offsets of
+         saved register contents within a O/S signal context structure.  */
+      if (tdep->sc_reg_offset)
+	{
+	  /* Find the address of the sigcontext structure.  */
+	  CORE_ADDR addr = tdep->sigcontext_addr (this_frame);
+	  unsigned int i;
+
+	  /* For each register, if its contents have been saved within the
+	     sigcontext structure, determine the address of those contents.
+	   */
+	  for (i = 0; i < tdep->sc_num_regs; i++)
+	    {
+	      if (tdep->sc_reg_offset[i] != REGISTER_NOT_PRESENT)
+		{
+		  cache->saved_regs[i].addr =
+		    (LONGEST) (addr + tdep->sc_reg_offset[i]);
+		}
+	    }
+	}
+    }
+  return (struct arc_unwind_cache *) *this_cache;
+
+}
+
+/* Get the frame_id of a signal handler frame.  */
+
+static void
+arc_sigtramp_frame_this_id (struct frame_info *this_frame,
+			    void **this_cache, struct frame_id *this_id)
+{
+  struct gdbarch *gdbarch;
+  CORE_ADDR stack_addr;
+  CORE_ADDR code_addr;
+
+  if (arc_debug)
+    debug_printf ("arc: sigtramp_frame_this_id\n");
+
+  gdbarch = get_frame_arch (this_frame);
+
+  stack_addr = arc_sigtramp_frame_cache (this_frame, this_cache)->prev_sp;
+  code_addr = get_frame_register_unsigned (this_frame,
+					   gdbarch_pc_regnum (gdbarch));
+  *this_id = frame_id_build (stack_addr, code_addr);
+}
+
+/* Get a register from a signal handler frame.  */
+
+static struct value *
+arc_sigtramp_frame_prev_register (struct frame_info *this_frame,
+				  void **this_cache, int regnum)
+{
+  /* Make sure we've initialized the cache.  */
+  struct arc_unwind_cache *info =
+    arc_sigtramp_frame_cache (this_frame, this_cache);
+
+  if (arc_debug)
+    debug_printf ("arc: sigtramp_frame_prev_register (regnum = %d)\n",
+		  regnum);
+
+  return trad_frame_get_prev_register (this_frame, info->saved_regs, regnum);
+}
+
+/* Frame sniffer for signal handler frame.  Only recognize a frame if we have
+   a sigcontext_addr hander in the target dependency.  */
+
+static int
+arc_sigtramp_frame_sniffer (const struct frame_unwind *self,
+			    struct frame_info *this_frame, void **this_cache)
+{
+  struct gdbarch_tdep *tdep;
+
+  if (arc_debug)
+    debug_printf ("arc: sigtramp_frame_sniffer\n");
+
+  tdep = gdbarch_tdep (get_frame_arch (this_frame));
+
+  /* If we have a sigcontext_addr handler, then just use the default frame
+     sniffer.  */
+  if ((tdep->sigcontext_addr != NULL) &&
+      (tdep->is_sigtramp != NULL) && tdep->is_sigtramp (this_frame))
+    return default_frame_sniffer (self, this_frame, this_cache);
+  else
+    return FALSE;
+}
+
 /* Structure defining the ARC ordinary frame unwind functions.  Since we are
    the fallback unwinder, we use the default frame sniffer, which always
    accepts the frame.  */
@@ -1751,6 +1856,20 @@ static const struct frame_unwind arc_frame_unwind = {
   arc_frame_prev_register,
   NULL,
   default_frame_sniffer,
+  NULL,
+  NULL
+};
+
+/* Structure defining the ARC signal frame unwind functions.  We use a custom
+   sniffer, since we must only accept this frame in the right context.  */
+
+static const struct frame_unwind arc_sigtramp_frame_unwind = {
+  SIGTRAMP_FRAME,
+  default_frame_unwind_stop_reason,
+  arc_sigtramp_frame_this_id,
+  arc_sigtramp_frame_prev_register,
+  NULL,
+  arc_sigtramp_frame_sniffer,
   NULL,
   NULL
 };
@@ -2113,8 +2232,15 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   /* Frame unwinders and sniffers.  */
   dwarf2_frame_set_init_reg (gdbarch, arc_dwarf2_frame_init_reg);
   dwarf2_append_unwinders (gdbarch);
+  frame_unwind_append_unwinder (gdbarch, &arc_sigtramp_frame_unwind);
   frame_unwind_append_unwinder (gdbarch, &arc_frame_unwind);
   frame_base_set_default (gdbarch, &arc_normal_base);
+
+  /* Fill in target-dependent info in ARC-private structure.  */
+  tdep->is_sigtramp = NULL;
+  tdep->sigcontext_addr = NULL;
+  tdep->sc_reg_offset = NULL;
+  tdep->sc_num_regs = 0;
 
   /* Setup stuff specific to a particular environment (baremetal or Linux).
      It can override functions set earlier.  */
@@ -2153,6 +2279,15 @@ arc_dump_tdep (struct gdbarch *gdbarch, struct ui_file *file)
   struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
 
   fprintf_unfiltered (file, "arc_dump_tdep: jb_pc = %i\n", tdep->jb_pc);
+
+  fprintf_unfiltered (file, "arc_dump_tdep: is_sigtramp = %p\n",
+		      tdep->is_sigtramp);
+  fprintf_unfiltered (file, "arc_dump_tdep: sigcontext_addr = %p\n",
+		      tdep->sigcontext_addr);
+  fprintf_unfiltered (file, "arc_dump_tdep: sc_reg_offset = %p\n",
+		      tdep->sc_reg_offset);
+  fprintf_unfiltered (file, "arc_dump_tdep: sc_num_regs = %d\n",
+		      tdep->sc_num_regs);
 }
 
 /* Wrapper for "maintenance print arc" list of commands.  */
