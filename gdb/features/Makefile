@@ -44,6 +44,7 @@
 #   make GDB=/path/to/gdb XMLTOC="xml files" cfiles
 
 WHICH = aarch64 \
+	arc-v2-linux arc-arcompact-linux \
 	arm/arm-with-iwmmxt arm/arm-with-vfpv2 arm/arm-with-vfpv3 \
 	arm/arm-with-neon \
 	i386/i386 i386/i386-linux \
@@ -83,6 +84,7 @@ WHICH = aarch64 \
 
 # Record which registers should be sent to GDB by default after stop.
 aarch64-expedite = x29,sp,pc
+arc-expedite = sp,pc
 arm-expedite = r11,sp,pc
 i386-expedite = ebp,esp,eip
 amd64-expedite = rbp,rsp,rip
