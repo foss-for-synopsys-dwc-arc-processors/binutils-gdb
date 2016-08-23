@@ -42,6 +42,8 @@
 /* Default target descriptions.  */
 #include "features/arc-v2.c"
 #include "features/arc-arcompact.c"
+#include "features/arc-v2-linux.c"
+#include "features/arc-arcompact-linux.c"
 
 /* The frame unwind cache for ARC.  */
 
@@ -1799,13 +1801,22 @@ arc_tdesc_init (struct gdbarch_info info, const struct target_desc **tdesc,
     {
       if (is_arcv2)
 	{
-	  tdesc_loc = tdesc_arc_v2;
+	  /* Usually Linux-specific target description would be passed by
+	     gdbserver, but it has to be selected manually when debugging
+	     core files.  */
+	  if (info.osabi == GDB_OSABI_LINUX)
+	    tdesc_loc = tdesc_arc_v2_linux;
+	  else
+	    tdesc_loc = tdesc_arc_v2;
 	  if (arc_debug)
 	    debug_printf ("arc: Using default register set for ARC v2.\n");
 	}
       else
 	{
-	  tdesc_loc = tdesc_arc_arcompact;
+	  if (info.osabi == GDB_OSABI_LINUX)
+	    tdesc_loc = tdesc_arc_arcompact_linux;
+	  else
+	    tdesc_loc = tdesc_arc_arcompact;
 	  if (arc_debug)
 	    debug_printf ("arc: Using default register set for ARCompact.\n");
 	}
@@ -2175,6 +2186,8 @@ _initialize_arc_tdep (void)
 
   initialize_tdesc_arc_v2 ();
   initialize_tdesc_arc_arcompact ();
+  initialize_tdesc_arc_v2_linux ();
+  initialize_tdesc_arc_arcompact_linux ();
 
   /* Register ARC-specific commands with gdb.  */
 
