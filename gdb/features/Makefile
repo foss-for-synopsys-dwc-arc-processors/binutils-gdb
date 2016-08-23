@@ -44,7 +44,8 @@
 #   make GDB=/path/to/gdb XMLTOC="xml files" FEATURE_XMLFILES="xml files" cfiles
 
 # List of .dat files to create in ../regformats/
-WHICH = arm/arm-with-iwmmxt arm/arm-with-vfpv2 arm/arm-with-vfpv3 \
+WHICH = arc-v2-linux arc-arcompact-linux \
+	arm/arm-with-iwmmxt arm/arm-with-vfpv2 arm/arm-with-vfpv3 \
 	arm/arm-with-neon \
 	mips-linux mips-dsp-linux \
 	microblaze-with-stack-protect \
@@ -72,6 +73,7 @@ WHICH = arm/arm-with-iwmmxt arm/arm-with-vfpv2 arm/arm-with-vfpv3 \
 
 # Record which registers should be sent to GDB by default after stop.
 aarch64-expedite = x29,sp,pc
+arc-expedite = sp,pc
 arm-expedite = r11,sp,pc
 i386-expedite = ebp,esp,eip
 amd64-expedite = rbp,rsp,rip
