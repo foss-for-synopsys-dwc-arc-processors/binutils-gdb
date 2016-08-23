@@ -1,5 +1,5 @@
 #as: -mcpu=arcem
-#objdump: -dr -M quarkse_em
+#objdump: -dr
 
 .*: +file format .*arc.*
 

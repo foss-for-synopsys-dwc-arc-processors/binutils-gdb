@@ -1,5 +1,5 @@
 #as:-mcpu=arcem -mfpuda
-#objdump: -dr -M fpuda
+#objdump: -dr
 #source: tfpx.s
 
 .*: +file format .*arc.*

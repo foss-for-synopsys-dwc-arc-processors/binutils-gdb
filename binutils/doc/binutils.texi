@@ -2240,15 +2240,6 @@ some targets.  If it is necessary to specify more than one
 disassembler option then multiple @option{-M} options can be used or
 can be placed together into a comma separated list.
 
-For ARC, @option{dsp} controls the printing of DSP instructions,
-@option{spfp} selects the printing of FPX single precision FP
-instructions, @option{dpfp} selects the printing of FPX double
-precision FP instructions, @option{quarkse_em} selects the printing of
-special QuarkSE-EM instructions, @option{fpuda} selects the printing
-of double precision assist instructions, @option{fpus} selects the
-printing of FPU single precision FP instructions, while @option{fpud}
-selects the printing of FPU souble precision FP instructions.
-
 If the target is an ARM architecture then this switch can be used to
 select which register name set is used during disassembler.  Specifying
 @option{-M reg-names-std} (the default) will select the register names as

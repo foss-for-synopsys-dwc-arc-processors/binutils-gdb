@@ -547,9 +547,6 @@ disassembler_usage (FILE *stream ATTRIBUTE_UNUSED)
 #ifdef ARCH_aarch64
   print_aarch64_disassembler_options (stream);
 #endif
-#ifdef ARCH_arc
-  print_arc_disassembler_options (stream);
-#endif
 #ifdef ARCH_arm
   print_arm_disassembler_options (stream);
 #endif

@@ -2,10 +2,6 @@
 
 	* libiberty.h (MAX_ALLOCA_SIZE): New macro.
 
-2016-07-20  Claudiu Zissulescu  <claziss@synopsys.com>
-
-	* dis-asm.h: Declare print_arc_disassembler_options.
-
 2016-07-15  Thomas Preud'homme  <thomas.preudhomme@arm.com>
 
 	* bfdlink.h (struct bfd_link_info): Declare new ldscript_def and
