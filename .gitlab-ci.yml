@@ -34,6 +34,32 @@ windows-build:
           --with-python=no
         - make -j4
 
+native-build:
+# Build GDB as a C++ application for ARC HS Linux hosts
+    stage: build
+    script:
+        - mkdir _build
+        - cd _build
+        - export PATH=$ARCHS_GCC_PATH:$PATH
+        - ../configure --disable-ld --disable-gas --disable-binutils
+          --enable-build-warnings --enable-gdb-build-warnings
+          --target=arc-linux-uclibc
+          --host=arc-linux-uclibc
+        - make -j4
+
+#linux-build-as-c:
+## Build GDB as a C application for Linux hosts
+#    stage: build
+#    script:
+#        - export PATH=$GCC_PATH:$PATH
+#        - mkdir _build
+#        - cd _build
+#        - ../configure --disable-ld --disable-gas --disable-binutils
+#          --enable-build-warnings --enable-gdb-build-warnings
+#          --disable-build-with-cxx
+#          --target=arc-elf32 --enable-targets=arc-linux-uclibc
+#        - make -j4
+
 check-gdb-ari:
 # Run gdb_ari.sh script that does some extra style checks.
     stage: test
