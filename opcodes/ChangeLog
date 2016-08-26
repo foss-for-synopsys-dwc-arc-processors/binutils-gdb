@@ -17,6 +17,10 @@
 	<paste_last>: Rename mnemonic from ...
 	<paste.>: ...to this.
 
+2016-08-30  Cupertino Miranda  <cmiranda@synopsys.com>
+
+	* opcodes/arc-dis.c (print_insn_arc): Changed.
+
 2016-07-27  Maciej W. Rozycki  <macro@imgtec.com>
 
 	* micromips-opc.c (micromips_opcodes): Reorder "bc" next to "b",
