@@ -53,6 +53,8 @@ enum arc_regnum
     ARC_R30_REGNUM,
     /* Return address from function.  */
     ARC_BLINK_REGNUM,
+    ARC_R58_REGNUM = 58,
+    ARC_R59_REGNUM,
     /* Zero-delay loop counter.  */
     ARC_LP_COUNT_REGNUM = 60,
     /* Reserved register number.  There should never be a register with such
@@ -68,14 +70,21 @@ enum arc_regnum
     /* Program counter, aligned to 4-bytes, read-only.  */
     ARC_PCL_REGNUM,
     ARC_LAST_CORE_REGNUM = ARC_PCL_REGNUM,
+
     /* AUX registers.  */
     /* Actual program counter.  */
     ARC_PC_REGNUM,
     ARC_FIRST_AUX_REGNUM = ARC_PC_REGNUM,
     /* Status register.  */
     ARC_STATUS32_REGNUM,
-    ARC_LAST_REGNUM = ARC_STATUS32_REGNUM,
-    ARC_LAST_AUX_REGNUM = ARC_STATUS32_REGNUM,
+    /* Zero-delay loop start instruction.  */
+    ARC_LP_START_REGNUM,
+    /* Zero-delay loop next-after-last instruction.  */
+    ARC_LP_END_REGNUM,
+    /* Branch target address.  */
+    ARC_BTA_REGNUM,
+    ARC_LAST_AUX_REGNUM = ARC_BTA_REGNUM,
+    ARC_LAST_REGNUM = ARC_LAST_AUX_REGNUM,
 
     /* Additional ABI constants.  */
     ARC_FIRST_ARG_REGNUM = ARC_R0_REGNUM,
@@ -100,6 +109,9 @@ struct gdbarch_tdep
   /* Offset to PC value in jump buffer.  If this is negative, longjmp
      support will be disabled.  */
   int jb_pc;
+
+  /* Whether target has hardware (aka zero-delay) loops.  */
+  bool has_hw_loops;
 };
 
 /* Utility functions used by other ARC-specific modules.  */
