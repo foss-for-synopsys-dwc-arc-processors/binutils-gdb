@@ -120,12 +120,12 @@ static const char *const core_v2_register_names[] = {
   "r44", "r45", "r46", "r47",
   "r48", "r49", "r50", "r51",
   "r52", "r53", "r54", "r55",
-  "r56", "r57", "accl", "acch",
+  "r56", "r57", "r58", "r59",
   "lp_count", "reserved", "limm", "pcl",
 };
 
 static const char *const aux_minimal_register_names[] = {
-  "pc", "status32",
+  "pc", "status32", "lp_start", "lp_end", "bta"
 };
 
 static const char *const core_arcompact_register_names[] = {
@@ -1771,7 +1771,7 @@ static const struct frame_base arc_normal_base = {
 
 static int
 arc_tdesc_init (struct gdbarch_info info, const struct target_desc **tdesc,
-		struct tdesc_arch_data **tdesc_data)
+		struct tdesc_arch_data **tdesc_data, struct gdbarch_tdep *tdep)
 {
   if (arc_debug)
     debug_printf ("arc: Target description initialization.\n");
@@ -1922,8 +1922,35 @@ arc_tdesc_init (struct gdbarch_info info, const struct target_desc **tdesc,
 			    || (i >= ARC_R16_REGNUM && i <= ARC_R25_REGNUM)))
 	continue;
 
-      valid_p = tdesc_numbered_register (feature, tdesc_data_loc, i,
+      /* R58 and R59 can have special names: ACCL and ACCH, however which one is
+         which depends on target endianness - for little endian R58 is ACCL,
+         R59 is ACCH; vice versa for big endian.  */
+
+      const char *const r58_names[] = {
+	"r58",
+	(info.byte_order == BFD_ENDIAN_LITTLE ? "accl" : "acch"),
+	NULL
+      };
+      const char *const r59_names[] = {
+	"r59",
+	(info.byte_order == BFD_ENDIAN_LITTLE ? "acch" : "accl"),
+	NULL
+      };
+
+      switch (i)
+	{
+	case ARC_R58_REGNUM:
+	  valid_p = tdesc_numbered_register_choices (feature, tdesc_data_loc, i,
+					   r58_names);
+	  break;
+	case ARC_R59_REGNUM:
+	  valid_p = tdesc_numbered_register_choices (feature, tdesc_data_loc, i,
+					   r59_names);
+	  break;
+	default:
+	  valid_p = tdesc_numbered_register (feature, tdesc_data_loc, i,
 					 core_regs[i]);
+	}
 
       /* - Ignore errors in extension registers - they are optional.
 	 - Ignore missing ILINK because it doesn't make sense for Linux.
@@ -1959,7 +1986,9 @@ arc_tdesc_init (struct gdbarch_info info, const struct target_desc **tdesc,
     {
       const char *name = aux_minimal_register_names[i - ARC_FIRST_AUX_REGNUM];
       valid_p = tdesc_numbered_register (feature, tdesc_data_loc, i, name);
-      if (!valid_p)
+
+      /* Only STATUS32 and PC are mandatory.  */
+      if (!valid_p && (i == ARC_PC_REGNUM || i == ARC_STATUS32_REGNUM))
 	{
 	  arc_print (_("Error: Cannot find required register `%s' "
 		       "in feature `%s'.\n"),
@@ -1967,6 +1996,11 @@ arc_tdesc_init (struct gdbarch_info info, const struct target_desc **tdesc,
 	  tdesc_data_cleanup (tdesc_data_loc);
 	  return FALSE;
 	}
+      /* Hardware loops present if both its registers are.  */
+      else if (ARC_LP_START_REGNUM == i)
+	tdep->has_hw_loops = valid_p;
+      else if (ARC_LP_END_REGNUM == i)
+	tdep->has_hw_loops &= valid_p;
     }
 
   *tdesc = tdesc_loc;
@@ -1986,13 +2020,17 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   if (arc_debug)
     debug_printf ("arc: Architecture initialization.\n");
 
-  if (!arc_tdesc_init (info, &tdesc, &tdesc_data))
-    return NULL;
-
   /* Allocate the ARC-private target-dependent information structure, and the
      GDB target-independent information structure.  */
   struct gdbarch_tdep *tdep = XCNEW (struct gdbarch_tdep);
   tdep->jb_pc = -1; /* No longjmp support by default.  */
+
+  if (!arc_tdesc_init (info, &tdesc, &tdesc_data, tdep))
+    {
+      XDELETE (tdep);
+      return NULL;
+    }
+
   struct gdbarch *gdbarch = gdbarch_alloc (&info, tdep);
 
   /* Data types.  */
@@ -2022,6 +2060,13 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   set_gdbarch_pc_regnum (gdbarch, ARC_PC_REGNUM);
   set_gdbarch_ps_regnum (gdbarch, ARC_STATUS32_REGNUM);
   set_gdbarch_fp0_regnum (gdbarch, -1);	/* No FPU registers.  */
+
+  /* Confirm that register name lists have proper length.  */
+  gdb_static_assert (ARC_LAST_REGNUM + 1
+		     == (ARRAY_SIZE (core_v2_register_names)
+			 + ARRAY_SIZE (aux_minimal_register_names)));
+  gdb_static_assert (ARRAY_SIZE (core_v2_register_names)
+		     == ARRAY_SIZE (core_arcompact_register_names));
 
   set_gdbarch_dummy_id (gdbarch, arc_dummy_id);
   set_gdbarch_push_dummy_call (gdbarch, arc_push_dummy_call);
