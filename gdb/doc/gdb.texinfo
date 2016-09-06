@@ -41442,7 +41442,8 @@ difference with @samp{org.gnu.gdb.arc.core.v2} feature is in the names of
 ARC v2, but @samp{ilink2} is optional on ARCompact.
 
 The @samp{org.gnu.gdb.arc.aux-minimal} feature is required for all ARC
-targets.  It should contain registers @samp{pc} and @samp{status32}.
+targets.  It should contain registers @samp{pc} and @samp{status32}.  It may
+contain registers @samp{lp_start}, @samp{lp_end} and @samp{bta}.
 
 @node ARM Features
 @subsection ARM Features
