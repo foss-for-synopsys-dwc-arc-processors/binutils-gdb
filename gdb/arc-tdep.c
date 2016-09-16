@@ -1752,7 +1752,13 @@ arc_sigtramp_frame_cache (struct frame_info *this_frame, void **this_cache)
   if (*this_cache == NULL)
     {
       struct gdbarch_tdep *tdep = gdbarch_tdep (get_frame_arch (this_frame));
-      struct arc_unwind_cache *cache = arc_create_cache (this_frame);
+      /* Copied from arc_make_frame_cache.  */
+      /* Allocate new frame cache instance and space for saved register info.
+       * FRAME_OBSTACK_ZALLOC will initialize fields to zeroes.  */
+      struct arc_frame_cache *cache
+	= FRAME_OBSTACK_ZALLOC (struct arc_frame_cache);
+      cache->saved_regs = trad_frame_alloc_saved_regs (this_frame);
+
 
       *this_cache = cache;
 
