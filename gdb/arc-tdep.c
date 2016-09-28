@@ -1841,8 +1841,8 @@ arc_sigtramp_frame_sniffer (const struct frame_unwind *self,
 
   /* If we have a sigcontext_addr handler, then just use the default frame
      sniffer.  */
-  if ((tdep->sigcontext_addr != NULL) &&
-      (tdep->is_sigtramp != NULL) && tdep->is_sigtramp (this_frame))
+  if ((tdep->sigcontext_addr != NULL)
+      && (tdep->is_sigtramp != NULL) && tdep->is_sigtramp (this_frame))
     return default_frame_sniffer (self, this_frame, this_cache);
   else
     return FALSE;
@@ -2323,12 +2323,12 @@ arc_dump_tdep (struct gdbarch *gdbarch, struct ui_file *file)
 
   fprintf_unfiltered (file, "arc_dump_tdep: jb_pc = %i\n", tdep->jb_pc);
 
-  fprintf_unfiltered (file, "arc_dump_tdep: is_sigtramp = %p\n",
-		      tdep->is_sigtramp);
-  fprintf_unfiltered (file, "arc_dump_tdep: sigcontext_addr = %p\n",
-		      tdep->sigcontext_addr);
-  fprintf_unfiltered (file, "arc_dump_tdep: sc_reg_offset = %p\n",
-		      tdep->sc_reg_offset);
+  fprintf_unfiltered (file, "arc_dump_tdep: is_sigtramp = %s\n",
+		      host_address_to_string (tdep->is_sigtramp));
+  fprintf_unfiltered (file, "arc_dump_tdep: sigcontext_addr = %s\n",
+		      host_address_to_string (tdep->sigcontext_addr));
+  fprintf_unfiltered (file, "arc_dump_tdep: sc_reg_offset = %s\n",
+		      host_address_to_string (tdep->sc_reg_offset));
   fprintf_unfiltered (file, "arc_dump_tdep: sc_num_regs = %d\n",
 		      tdep->sc_num_regs);
 }
