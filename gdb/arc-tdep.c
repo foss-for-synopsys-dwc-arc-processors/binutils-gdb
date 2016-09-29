@@ -2403,6 +2403,16 @@ arc_delayed_print_insn (bfd_vma addr, struct disassemble_info *info)
   int (*print_insn) (bfd_vma, struct disassemble_info *);
   print_insn = arc_get_disassembler (exec_bfd);
   gdb_assert (print_insn != NULL);
+
+  /* ARC disassembler requires that info->section is valid - it will be used to
+     access program headers of ELF files that is needed to distinguish between
+     ARC EM and HS (ARC600, ARC700 and ARC v2 can be distinguished by BFD's
+     `mach` attribute).  Without this information disassembler will default to
+     ARC EM for ARC v2 targets, and it will not recognize instructions specific
+     to ARC HS, for example, double-word store and load.  */
+  if (exec_bfd != NULL)
+    info->section = bfd_get_section_by_name (exec_bfd, ".text");
+
   return print_insn (addr, info);
 }
 
