@@ -456,7 +456,7 @@ arc_store_gregset (struct regcache *regcache, const void *buf)
  *
  * This is the same function as in arc-linux-nat.c */
 ps_err_e
-ps_get_thread_area (const struct ps_prochandle *ph, lwpid_t lwpid, int idx,
+ps_get_thread_area (struct ps_prochandle *ph, lwpid_t lwpid, int idx,
                     void **base)
 {
     if (ptrace (PTRACE_GET_THREAD_AREA, lwpid, NULL, base) != 0)

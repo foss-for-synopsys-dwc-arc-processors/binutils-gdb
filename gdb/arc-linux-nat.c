@@ -205,7 +205,7 @@ arc_linux_prepare_to_resume (struct lwp_info *lwp) {
    function is not called from GDB, but is called from libthread_db.  This is
    required to debug multithreaded applications with NPTL.  */
 ps_err_e
-ps_get_thread_area (const struct ps_prochandle *ph, lwpid_t lwpid, int idx,
+ps_get_thread_area (struct ps_prochandle *ph, lwpid_t lwpid, int idx,
                     void **base)
 {
     if (arc_debug >= 2)
