@@ -1701,7 +1701,8 @@ find_opcode_match (const struct arc_opcode_hash_entry *entry,
 		   int *pntok,
 		   struct arc_flags *first_pflag,
 		   int nflgs,
-		   int *pcpumatch)
+		   int *pcpumatch,
+		   const char **errmsg)
 {
   const struct arc_opcode *opcode;
   struct arc_opcode_hash_entry_iterator iter;
@@ -1781,11 +1782,11 @@ find_opcode_match (const struct arc_opcode_hash_entry *entry,
 	      /* Special handling?  */
 	      if (operand->insert)
 		{
-		  const char *errmsg = NULL;
+		  *errmsg = NULL;
 		  (*operand->insert)(0,
 				     regno (tok[tokidx].X_add_number),
-				     &errmsg);
-		  if (errmsg)
+				     errmsg);
+		  if (*errmsg)
 		    {
 		      if (operand->flags & ARC_OPERAND_IGNORE)
 			{
@@ -1901,11 +1902,11 @@ find_opcode_match (const struct arc_opcode_hash_entry *entry,
 		    {
 		      if (operand->insert)
 			{
-			  const char *errmsg = NULL;
+			  *errmsg = NULL;
 			  (*operand->insert)(0,
 					     tok[tokidx].X_add_number,
-					     &errmsg);
-			  if (errmsg)
+					     errmsg);
+			  if (*errmsg)
 			    goto match_failed;
 			}
 		      else if (!(operand->flags & ARC_OPERAND_IGNORE))
@@ -1926,11 +1927,11 @@ find_opcode_match (const struct arc_opcode_hash_entry *entry,
 		      regs |= get_register (tok[tokidx].X_op_symbol);
 		      if (operand->insert)
 			{
-			  const char *errmsg = NULL;
+			  *errmsg = NULL;
 			  (*operand->insert)(0,
 					     regs,
-					     &errmsg);
-			  if (errmsg)
+					     errmsg);
+			  if (*errmsg)
 			    goto match_failed;
 			}
 		      else
@@ -2409,6 +2410,7 @@ assemble_tokens (const char *opname,
   bfd_boolean found_something = FALSE;
   const struct arc_opcode_hash_entry *entry;
   int cpumatch = 1;
+  const char *errmsg = NULL;
 
   /* Search opcodes.  */
   entry = arc_find_opcode (opname);
@@ -2425,7 +2427,7 @@ assemble_tokens (const char *opname,
 		frag_now->fr_file, frag_now->fr_line, opname);
       found_something = TRUE;
       opcode = find_opcode_match (entry, tok, &ntok, pflags,
-				  nflgs, &cpumatch);
+				  nflgs, &cpumatch, &errmsg);
       if (opcode != NULL)
 	{
 	  struct arc_insn insn;
@@ -2439,7 +2441,10 @@ assemble_tokens (const char *opname,
   if (found_something)
     {
       if (cpumatch)
-	as_bad (_("inappropriate arguments for opcode '%s'"), opname);
+	if (errmsg)
+	  as_bad (_("%s for instruction '%s'"), errmsg, opname);
+	else
+	  as_bad (_("inappropriate arguments for opcode '%s'"), opname);
       else
 	as_bad (_("opcode '%s' not supported for target %s"), opname,
 		arc_target_name);

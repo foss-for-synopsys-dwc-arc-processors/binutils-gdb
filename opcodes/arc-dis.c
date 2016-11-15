@@ -1095,8 +1095,10 @@ print_insn_arc (bfd_vma memaddr,
 	    info->insn_type = dis_branch;
 	}
       break;
+    case LOAD:
+    case STORE:
     case MEMORY:
-      info->insn_type = dis_dref; /* FIXME! DB indicates mov as memory! */
+      info->insn_type = dis_dref;
       break;
     default:
       info->insn_type = dis_nonbranch;
