@@ -450,7 +450,7 @@ static const struct cpu_type
 {
   ARC_CPU_TYPE_A6xx (arc600, 0x00),
   ARC_CPU_TYPE_A7xx (arc700, 0x00),
-  ARC_CPU_TYPE_A7xx (nps700, ARC_NPS400),
+  ARC_CPU_TYPE_A7xx (nps400, ARC_NPS400),
   ARC_CPU_TYPE_AV2EM (arcem, 0x00),
   ARC_CPU_TYPE_AV2HS (archs, ARC_CD),
 
