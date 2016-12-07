@@ -152,11 +152,6 @@ DTOR=".dtors        ${CONSTRUCTING-0} :
     KEEP (*(.dtors))
     ${CONSTRUCTING+${DTOR_END}}
   }"
-STACK="  .stack        ${RELOCATING-0}${RELOCATING+${STACK_ADDR}} :
-  {
-    ${RELOCATING+_stack = .;}
-    *(.stack)
-  }"
 
 # if this is for an embedded system, don't add SIZEOF_HEADERS.
 if [ -z "$EMBEDDED" ]; then
@@ -181,6 +176,8 @@ ${RELOCATING- /* For some reason, the Solaris linker makes bad executables
   at non-zero addresses.  Could be a Solaris ld bug, could be a GNU ld
   bug.  But for now assigning the zero vmas works.  */}
 
+_HEAP_SIZE  = (DEFINED(__HEAP_SIZE) ? __HEAP_SIZE : (DEFINED(__DEFAULT_HEAP_SIZE) ? __DEFAULT_HEAP_SIZE : 20k));
+_STACK_SIZE = (DEFINED(__STACK_SIZE) ? __STACK_SIZE : (DEFINED(__DEFAULT_STACK_SIZE) ? __DEFAULT_STACK_SIZE : 64k));
 SECTIONS
 {
   /* Read-only sections, merged into text segment: */
@@ -369,25 +366,14 @@ cat <<EOF
   ${RELOCATING+PROVIDE (end = .);}
   ${RELOCATING+${DATA_SEGMENT_END}}
 
-  /* We want to be able to set a default stack / heap size in a dejagnu
-     board description file, but override it for selected test cases.
-     The options appear in the wrong order to do this with a single symbol -
-     ldflags comes after flags injected with per-file stanzas, and thus
-     the setting from ldflags prevails.  */
-  .heap ${RELOCATING-0} :
-  {
-        ${RELOCATING+ __start_heap = . ; }
-        ${RELOCATING+ . = . + (DEFINED(__HEAP_SIZE) ? __HEAP_SIZE : (DEFINED(__DEFAULT_HEAP_SIZE) ? __DEFAULT_HEAP_SIZE : 20k))  ; }
-        ${RELOCATING+ __end_heap = . ; }
-  }
-
-  ${RELOCATING+. = ALIGN(0x8);}
-  .stack ${RELOCATING-0} :
-  {
-        ${RELOCATING+ __stack = . ; }
-        ${RELOCATING+ . = . + (DEFINED(__STACK_SIZE) ? __STACK_SIZE : (DEFINED(__DEFAULT_STACK_SIZE) ? __DEFAULT_STACK_SIZE : 64k))  ; }
-        ${RELOCATING+ __stack_top = . ; }
-  }
+  ${RELOCATING+ . = ALIGN(0x8);}
+  ${RELOCATING+ PROVIDE (__start_heap = .);}
+  ${RELOCATING+ . = . + _HEAP_SIZE;}
+  ${RELOCATING+ PROVIDE (__end_heap = .);}
+  ${RELOCATING+ . = ALIGN(0x8);}
+  ${RELOCATING+ PROVIDE (__stack = .);}
+  ${RELOCATING+ . = . + _STACK_SIZE;}
+  ${RELOCATING+ PROVIDE (__stack_top = .);}
 
   /* Stabs debugging sections.  */
   .stab          0 : { *(.stab) }
@@ -399,41 +385,14 @@ cat <<EOF
 
   .comment       0 : { *(.comment) }
 
-  /* DWARF debug sections.
-     Symbols in the DWARF debugging sections are relative to the beginning
-     of the section so we begin them at 0.  */
+EOF
 
-  /* DWARF 1 */
-  .debug          0 : { *(.debug) }
-  .line           0 : { *(.line) }
+. $srcdir/scripttempl/DWARF.sc
 
-  /* GNU DWARF 1 extensions */
-  .debug_srcinfo  0 : { *(.debug_srcinfo) }
-  .debug_sfnames  0 : { *(.debug_sfnames) }
-
-  /* DWARF 1.1 and DWARF 2 */
-  .debug_aranges  0 : { *(.debug_aranges) }
-  .debug_pubnames 0 : { *(.debug_pubnames) }
-
-  /* DWARF 2 */
-  .debug_info     0 : { *(.debug_info .gnu.linkonce.wi.*) }
-  .debug_abbrev   0 : { *(.debug_abbrev) }
-  .debug_line     0 : { *(.debug_line) }
-  .debug_frame    0 : { *(.debug_frame) }
-  .debug_str      0 : { *(.debug_str) }
-  .debug_loc      0 : { *(.debug_loc) }
-  .debug_macinfo  0 : { *(.debug_macinfo) }
-
-  /* SGI/MIPS DWARF 2 extensions */
-  .debug_weaknames 0 : { *(.debug_weaknames) }
-  .debug_funcnames 0 : { *(.debug_funcnames) }
-  .debug_typenames 0 : { *(.debug_typenames) }
-  .debug_varnames  0 : { *(.debug_varnames) }
-
+cat <<EOF
   /* ARC Extension Sections */
   .arcextmap	  0 : { *(.gnu.linkonce.arcextmap.*) }
 
-  ${STACK_ADDR+${STACK}}
   ${OTHER_SECTIONS}
   ${RELOCATING+${OTHER_END_SYMBOLS}}
   ${RELOCATING+${STACKNOTE}}
