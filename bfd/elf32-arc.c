@@ -29,6 +29,10 @@
 #include "opcode/arc.h"
 #include "arc-plt.h"
 
+#define FEATURE_LIST_NAME bfd_feature_list
+#define CONFLICT_LIST bfd_conflict_list
+#include "opcode/arc-attrs.h"
+
 /* #define ARC_ENABLE_DEBUG 1  */
 #ifdef ARC_ENABLE_DEBUG
 static const char *
@@ -483,8 +487,9 @@ arc_elf_print_private_bfd_data (bfd *abfd, void * ptr)
     case E_ARC_OSABI_ORIG : fprintf (file, " (ABI:legacy)"); break;
     case E_ARC_OSABI_V2   : fprintf (file, " (ABI:v2)");     break;
     case E_ARC_OSABI_V3   : fprintf (file, " (ABI:v3)");     break;
+    case E_ARC_OSABI_V4   : fprintf (file, " (ABI:v4)");     break;
     default:
-      fprintf (file, "(ABI:unknown)");
+      fprintf (file, " (ABI:unknown)");
       break;
     }
 
@@ -541,6 +546,258 @@ arc_info_to_howto_rel (bfd * abfd ATTRIBUTE_UNUSED,
   cache_ptr->howto = arc_elf_howto (r_type);
 }
 
+/* Extract CPU features from an NTBS.  */
+
+static unsigned
+arc_extract_features (const char *p)
+{
+  unsigned i, r = 0;
+
+  if (!p)
+    return 0;
+
+  for (i = 0; i < ARRAY_SIZE (bfd_feature_list); i++)
+    {
+      char *t = strstr (p, bfd_feature_list[i].attr);
+      unsigned l = strlen (bfd_feature_list[i].attr);
+      if ((t != NULL)
+	  && (t[l] == ','
+	      || t[l] == '\0'))
+	r |= bfd_feature_list[i].feature;
+    }
+
+  return r;
+}
+
+/* Allocate and concatenate two strings.  s1 can be NULL but not
+   s2.  s1 pointer is freed at end of this procedure.  */
+
+static char *
+arc_stralloc (char * s1, const char * s2)
+{
+  char * p;
+  int len = 0;
+
+  if (s1)
+    len = strlen (s1) + 1;
+
+  /* Only s1 can be null.  */
+  BFD_ASSERT (s2);
+  len += strlen (s2) + 1;
+
+  p = (char *) xmalloc (len);
+  if (p == NULL)
+    return NULL;
+
+  if (s1)
+    {
+      strcpy (p, s1);
+      strcat (p, ",");
+      strcat (p, s2);
+      free (s1);
+    }
+  else
+    strcpy (p, s2);
+
+  return p;
+}
+
+/* Merge ARC object attributes from IBFD into OBFD.  Raise an error if
+   there are conflicting attributes.  */
+
+static bfd_boolean
+arc_elf_merge_attributes (bfd *ibfd, struct bfd_link_info *info)
+{
+  bfd *obfd = info->output_bfd;
+  obj_attribute *in_attr;
+  obj_attribute *out_attr;
+  int i;
+  bfd_boolean result = TRUE;
+  const char *sec_name = get_elf_backend_data (ibfd)->obj_attrs_section;
+
+  /* Skip the linker stubs file.  This preserves previous behavior
+     of accepting unknown attributes in the first input file - but
+     is that a bug?  */
+  if (ibfd->flags & BFD_LINKER_CREATED)
+    return TRUE;
+
+  /* Skip any input that hasn't attribute section.
+     This enables to link object files without attribute section with
+     any others.  */
+  if (bfd_get_section_by_name (ibfd, sec_name) == NULL)
+    return TRUE;
+
+  if (!elf_known_obj_attributes_proc (obfd)[0].i)
+    {
+      /* This is the first object.  Copy the attributes.  */
+      _bfd_elf_copy_obj_attributes (ibfd, obfd);
+
+      out_attr = elf_known_obj_attributes_proc (obfd);
+
+      /* Use the Tag_null value to indicate the attributes have been
+	 initialized.  */
+      out_attr[0].i = 1;
+
+      return TRUE;
+    }
+
+  in_attr = elf_known_obj_attributes_proc (ibfd);
+  out_attr = elf_known_obj_attributes_proc (obfd);
+
+  for (i = LEAST_KNOWN_OBJ_ATTRIBUTE; i < NUM_KNOWN_OBJ_ATTRIBUTES; i++)
+    {
+      /* Merge this attribute with existing attributes.  */
+      switch (i)
+	{
+	case Tag_ARC_PCS_config:
+	  if (out_attr[i].i == 0)
+	    out_attr[i].i = in_attr[i].i;
+	  else if (in_attr[i].i != 0 && out_attr[i].i != in_attr[i].i)
+	    {
+	      /* It's sometimes ok to mix different configs, so this is only
+		 a warning.  */
+	      _bfd_error_handler
+		(_("Warning: %B: Conflicting platform configuration"), ibfd);
+	    }
+	  break;
+
+	case Tag_ARC_CPU_base:
+	  if (out_attr[i].i == 0)
+	    out_attr[i].i = in_attr[i].i;
+	  else if (in_attr[i].i != 0 && out_attr[i].i != in_attr[i].i
+		   && ((out_attr[i].i + in_attr[i].i) < 6))
+	    {
+	      /* We cannot mix code for different CPUs.  */
+	      _bfd_error_handler
+		(_("error: %B: unable to merge CPU base attributes "
+		   "with %B"),
+		 obfd, ibfd);
+	      result = FALSE;
+	      break;
+	    }
+	  else
+	    {
+	      unsigned in_feature = 0;
+	      unsigned out_feature = 0;
+	      char *p1 = in_attr[Tag_ARC_ISA_config].s;
+	      char *p2 = out_attr[Tag_ARC_ISA_config].s;
+	      unsigned j;
+	      unsigned cpu1;
+	      unsigned cpu2;
+	      unsigned opcode_map[] = {0, ARC_OPCODE_ARC600, ARC_OPCODE_ARC700,
+				       ARC_OPCODE_ARCv2EM, ARC_OPCODE_ARCv2HS};
+
+	      BFD_ASSERT (in_attr[i].i < sizeof (opcode_map) + 1);
+	      BFD_ASSERT (out_attr[i].i < sizeof (opcode_map) + 1);
+	      cpu1 = opcode_map[in_attr[i].i];
+	      cpu2 = opcode_map[out_attr[i].i];
+
+	      in_feature = arc_extract_features (p1);
+	      out_feature = arc_extract_features (p2);
+
+	      for (j = 0; j < ARRAY_SIZE (bfd_feature_list); j++)
+		if (((in_feature | out_feature) & bfd_feature_list[j].feature)
+		    && (!(cpu1 & bfd_feature_list[j].cpus)
+			 || !(cpu2 & bfd_feature_list[j].cpus)))
+		  {
+		    _bfd_error_handler
+		      (_("error: %B: unable to merge ISA extension attributes "
+			 "with %B"),
+		       obfd, ibfd);
+		    result = FALSE;
+		    break;
+		  }
+	      for (j = 0; j < ARRAY_SIZE (bfd_conflict_list); j++)
+		if (((in_feature ^ out_feature) & bfd_conflict_list[j])
+		    == bfd_conflict_list[j])
+		  {
+		    _bfd_error_handler
+		      (_("error: %B: conflicting ISA extension attributes "
+			 "with %B"),
+		       obfd, ibfd);
+		    result = FALSE;
+		    break;
+		  }
+	      /* Everithing is alright.  */
+	      out_feature |= in_feature;
+	      p1 = NULL;
+	      for (j = 0; j < ARRAY_SIZE (bfd_feature_list); j++)
+		if (out_feature & bfd_feature_list[j].feature)
+		  p1 = arc_stralloc (p1, bfd_feature_list[j].attr);
+	      if (p1)
+		out_attr[Tag_ARC_ISA_config].s =
+		  _bfd_elf_attr_strdup (obfd, p1);
+	    }
+	  /* Fall through.  */
+	case Tag_ARC_CPU_variation:
+	case Tag_ARC_ISA_mpy_option:
+	case Tag_ARC_ABI_osver:
+	  /* Use the largest value specified.  */
+	  if (in_attr[i].i > out_attr[i].i)
+	    out_attr[i].i = in_attr[i].i;
+	  break;
+
+	case Tag_ARC_CPU_name:
+	  break;
+
+	case Tag_ARC_ABI_rf16:
+	  if (out_attr[i].i == 0)
+	    out_attr[i].i = in_attr[i].i;
+	  else if (in_attr[i].i != 0 && out_attr[i].i != in_attr[i].i)
+	    {
+	      /* We cannot mix code with rf16 and without.  */
+	      _bfd_error_handler
+		(_("error: %B: conflicting register set attributes "
+		   "with %B"),
+		 obfd, ibfd);
+	      result = FALSE;
+	    }
+	  break;
+
+	case Tag_ARC_ABI_pic:
+	case Tag_ARC_ABI_sda:
+	case Tag_ARC_ABI_tls:
+	case Tag_ARC_ABI_enumsize:
+	case Tag_ARC_ABI_double_size:
+	case Tag_ARC_ABI_exceptions:
+	  if (out_attr[i].i != 0 && in_attr[i].i != 0
+	      && out_attr[i].i != in_attr[i].i)
+	    {
+	      _bfd_error_handler
+		(_("error: %B: conflicting attributes "
+		   "with %B"),
+		 obfd, ibfd);
+	      result = FALSE;
+	    }
+	  break;
+
+	case Tag_ARC_ISA_apex:
+	  break; /* Do nothing for APEX attributes.  */
+
+	case Tag_ARC_ISA_config:
+	  /* It is handled in Tag_ARC_CPU_base.  */
+	  break;
+
+	default:
+	  result
+	    = result && _bfd_elf_merge_unknown_attribute_low (ibfd, obfd, i);
+	}
+
+      /* If out_attr was copied from in_attr then it won't have a type yet.  */
+      if (in_attr[i].type && !out_attr[i].type)
+	out_attr[i].type = in_attr[i].type;
+    }
+
+  /* Merge Tag_compatibility attributes and any common GNU ones.  */
+  if (!_bfd_elf_merge_object_attributes (ibfd, info))
+    return FALSE;
+
+  /* Check for any attributes not known on ARC.  */
+  result &= _bfd_elf_merge_unknown_attribute_list (ibfd, obfd);
+
+  return result;
+}
+
 /* Merge backend specific data from an object file to the output
    object file when linking.  */
 
@@ -558,6 +815,13 @@ arc_elf_merge_private_bfd_data (bfd *ibfd, struct bfd_link_info *info)
   if (! _bfd_generic_verify_endian_match (ibfd, info))
     return FALSE;
 
+  if (bfd_get_flavour (ibfd) != bfd_target_elf_flavour
+      || bfd_get_flavour (obfd) != bfd_target_elf_flavour)
+    return TRUE;
+
+  if (!arc_elf_merge_attributes (ibfd, info))
+    return FALSE;
+
   /* Collect ELF flags.  */
   in_flags = elf_elfheader (ibfd)->e_flags & EF_ARC_MACH_MSK;
   out_flags = elf_elfheader (obfd)->e_flags & EF_ARC_MACH_MSK;
@@ -567,10 +831,6 @@ arc_elf_merge_private_bfd_data (bfd *ibfd, struct bfd_link_info *info)
       elf_flags_init (obfd) = TRUE;
       out_flags = in_flags;
     }
-
-  if (bfd_get_flavour (ibfd) != bfd_target_elf_flavour
-      || bfd_get_flavour (obfd) != bfd_target_elf_flavour)
-    return TRUE;
 
   /* Check to see if the input BFD actually contains any sections.  Do
      not short-circuit dynamic objects; their section list may be
@@ -610,7 +870,11 @@ arc_elf_merge_private_bfd_data (bfd *ibfd, struct bfd_link_info *info)
 			      ibfd, bfd_get_filename (obfd));
 	  return FALSE;
 	}
-      else if (in_flags != out_flags)
+      else if ((in_flags != out_flags)
+	       /* If we have object attributes, then we already
+		  checked the objects compatibility, skip it.  */
+	       && !bfd_elf_get_obj_attr_int (ibfd, OBJ_ATTR_PROC,
+					     Tag_ARC_CPU_base))
 	{
 	  /* Warn if different flags.  */
 	  _bfd_error_handler
@@ -637,6 +901,30 @@ arc_elf_merge_private_bfd_data (bfd *ibfd, struct bfd_link_info *info)
   return TRUE;
 }
 
+/* Return a best guess for the machine number based on the attributes.  */
+
+static unsigned int
+bfd_arc_get_mach_from_attributes (bfd * abfd)
+{
+  int arch = bfd_elf_get_obj_attr_int (abfd, OBJ_ATTR_PROC, Tag_ARC_CPU_base);
+  unsigned e_machine = elf_elfheader (abfd)->e_machine;
+
+  switch (arch)
+    {
+    case TAG_CPU_ARC6xx:
+      return bfd_mach_arc_arc600;
+    case TAG_CPU_ARC7xx:
+      return bfd_mach_arc_arc700;
+    case TAG_CPU_ARCEM:
+    case TAG_CPU_ARCHS:
+      return bfd_mach_arc_arcv2;
+    default:
+      break;
+    }
+  return (e_machine == EM_ARC_COMPACT)
+    ? bfd_mach_arc_arc700 : bfd_mach_arc_arcv2;
+}
+
 /* Set the right machine number for an ARC ELF file.  */
 static bfd_boolean
 arc_elf_object_p (bfd * abfd)
@@ -644,7 +932,7 @@ arc_elf_object_p (bfd * abfd)
   /* Make sure this is initialised, or you'll have the potential of passing
      garbage---or misleading values---into the call to
      bfd_default_set_arch_mach ().  */
-  int		  mach = bfd_mach_arc_arc700;
+  unsigned int	  mach = bfd_mach_arc_arc700;
   unsigned long   arch = elf_elfheader (abfd)->e_flags & EF_ARC_MACH_MSK;
   unsigned	  e_machine = elf_elfheader (abfd)->e_machine;
 
@@ -666,8 +954,7 @@ arc_elf_object_p (bfd * abfd)
 	    mach = bfd_mach_arc_arcv2;
 	    break;
 	  default:
-	    mach = (e_machine == EM_ARC_COMPACT)
-	      ? bfd_mach_arc_arc700 : bfd_mach_arc_arcv2;
+	    mach = bfd_arc_get_mach_from_attributes (abfd);
 	    break;
 	}
     }
@@ -698,6 +985,9 @@ arc_elf_final_write_processing (bfd * abfd,
 				bfd_boolean linker ATTRIBUTE_UNUSED)
 {
   unsigned long emf;
+  int osver = bfd_elf_get_obj_attr_int (abfd, OBJ_ATTR_PROC,
+					Tag_ARC_ABI_osver);
+  flagword e_flags = elf_elfheader (abfd)->e_flags & ~EF_ARC_OSABI_MSK;
 
   switch (bfd_get_mach (abfd))
     {
@@ -714,16 +1004,18 @@ arc_elf_final_write_processing (bfd * abfd,
       emf = EM_ARC_COMPACT2;
       break;
     default:
-      goto DO_NOTHING;
+      return;
     }
 
   elf_elfheader (abfd)->e_machine = emf;
 
   /* Record whatever is the current syscall ABI version.  */
-  elf_elfheader (abfd)->e_flags |= E_ARC_OSABI_CURRENT;
+  if (osver)
+    e_flags |= ((osver & 0x0f) << 8);
+  else
+    e_flags |= E_ARC_OSABI_V3;
 
-DO_NOTHING:
-  return;
+  elf_elfheader (abfd)->e_flags |=  e_flags;
 }
 
 #ifdef ARC_ENABLE_DEBUG
@@ -2583,6 +2875,69 @@ elf32_arc_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
 					  note->descpos + offset);
 }
 
+/* Determine whether an object attribute tag takes an integer, a
+   string or both.  */
+
+static int
+elf32_arc_obj_attrs_arg_type (int tag)
+{
+  if (tag == Tag_ARC_CPU_name
+	   || tag == Tag_ARC_ISA_config
+	   || tag == Tag_ARC_ISA_apex)
+    return ATTR_TYPE_FLAG_STR_VAL;
+  else if (tag < (Tag_ARC_ISA_mpy_option + 1))
+    return ATTR_TYPE_FLAG_INT_VAL;
+  else
+    return (tag & 1) != 0 ? ATTR_TYPE_FLAG_STR_VAL : ATTR_TYPE_FLAG_INT_VAL;
+}
+
+/* Attribute numbers >=14 can be safely ignored.  */
+
+static bfd_boolean
+elf32_arc_obj_attrs_handle_unknown (bfd *abfd, int tag)
+{
+  if ((tag & 127) < (Tag_ARC_ISA_mpy_option + 1))
+    {
+      _bfd_error_handler
+	(_("%B: Unknown mandatory ARC object attribute %d"),
+	 abfd, tag);
+      bfd_set_error (bfd_error_bad_value);
+      return FALSE;
+    }
+  else
+    {
+      _bfd_error_handler
+	(_("Warning: %B: Unknown ARC object attribute %d"),
+	 abfd, tag);
+      return TRUE;
+    }
+}
+
+/* Handle an ARC specific section when reading an object file.  This is
+   called when bfd_section_from_shdr finds a section with an unknown
+   type.  */
+
+static bfd_boolean
+elf32_arc_section_from_shdr (bfd *abfd,
+			     Elf_Internal_Shdr * hdr,
+			     const char *name,
+			     int shindex)
+{
+  switch (hdr->sh_type)
+    {
+    case SHT_ARC_ATTRIBUTES:
+      break;
+
+    default:
+      return FALSE;
+    }
+
+  if (!_bfd_elf_make_section_from_shdr (abfd, hdr, name, shindex))
+    return FALSE;
+
+  return TRUE;
+}
+
 #define TARGET_LITTLE_SYM   arc_elf32_le_vec
 #define TARGET_LITTLE_NAME  "elf32-littlearc"
 #define TARGET_BIG_SYM	    arc_elf32_be_vec
@@ -2633,5 +2988,17 @@ elf32_arc_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
 #define elf_backend_grok_prstatus elf32_arc_grok_prstatus
 
 #define elf_backend_default_execstack	0
+
+#undef  elf_backend_obj_attrs_vendor
+#define elf_backend_obj_attrs_vendor		"ARC"
+#undef  elf_backend_obj_attrs_section
+#define elf_backend_obj_attrs_section		".ARC.attributes"
+#undef  elf_backend_obj_attrs_arg_type
+#define elf_backend_obj_attrs_arg_type		elf32_arc_obj_attrs_arg_type
+#undef  elf_backend_obj_attrs_section_type
+#define elf_backend_obj_attrs_section_type	SHT_ARC_ATTRIBUTES
+#define elf_backend_obj_attrs_handle_unknown 	elf32_arc_obj_attrs_handle_unknown
+
+#define elf_backend_section_from_shdr  		elf32_arc_section_from_shdr
 
 #include "elf32-target.h"
