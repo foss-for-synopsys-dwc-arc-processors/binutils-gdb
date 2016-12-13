@@ -191,6 +191,19 @@ static const int arc_linux_core_reg_offsets[] = {
   REGOFF (1),			/* BTA */
 };
 
+/* Get sigcontext of sigtramp frame.  Assuming THIS_FRAME is a frame following
+   a GNU/Linux sigtramp routine, return the address of the associated
+   sigcontext structure.  That structure can be found in the stack pointer of
+   the frame.
+
+   Returns the address of the sigcontext structure.  */
+
+static CORE_ADDR
+arc_linux_sigcontext_addr (struct frame_info *this_frame)
+{
+  return (CORE_ADDR) get_frame_sp (this_frame);
+}
+
 /* Implement the "cannot_fetch_register" gdbarch method.  */
 
 static int
@@ -518,6 +531,11 @@ arc_linux_init_osabi (struct gdbarch_info info, struct gdbarch *gdbarch)
 
   if (arc_debug)
     debug_printf ("arc-linux: GNU/Linux OS/ABI initialization.\n");
+
+  /* Fill in target-dependent info in ARC-private structure.  */
+  tdep->sigcontext_addr = arc_linux_sigcontext_addr;
+  tdep->sc_reg_offset = arc_linux_sc_reg_offset;
+  tdep->sc_num_regs = ARRAY_SIZE (arc_linux_core_reg_offsets);
 
   /* If we are using Linux, we have in uClibc
      (libc/sysdeps/linux/arc/bits/setjmp.h):
