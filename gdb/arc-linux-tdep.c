@@ -191,6 +191,60 @@ static const int arc_linux_core_reg_offsets[] = {
   REGOFF (1),			/* BTA */
 };
 
+/* Is THIS_FRAME a sigtramp function? This is the
+   case if the PC is either at the start of, or in the middle of the two
+   instructions:
+
+     mov r8,nr_sigreturn
+     swi
+
+   Returns TRUE if this is a sigtramp frame.  */
+
+static int
+arc_linux_is_sigtramp (struct frame_info *this_frame)
+{
+  static const gdb_byte arc_sigtramp_insns_le[] = {
+    0x8a, 0x20, 0xc2, 0x12,	/* mov  r8,nr_rt_sigreturn */
+    0x6f, 0x22, 0x3f, 0x00	/* swi */
+  };
+  static const gdb_byte arc_sigtramp_insns_be[] = {
+    0x12, 0xc2, 0x20, 0x8a,	/* mov  r8,nr_rt_sigreturn */
+    0x00, 0x3f, 0x22, 0x6f	/* swi */
+  };
+
+  static const int INSNS_SIZE = sizeof (arc_sigtramp_insns_le);
+  struct gdbarch *gdbarch = get_frame_arch (this_frame);
+  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  const gdb_byte *arc_sigtramp_insns = byte_order == BFD_ENDIAN_LITTLE
+    ? arc_sigtramp_insns_le : arc_sigtramp_insns_be;
+  CORE_ADDR pc = get_frame_pc (this_frame);
+  gdb_byte buf[sizeof (arc_sigtramp_insns_le)];
+
+  /* Read the memory at the PC.  Since we are stopped any breakpoints will
+     have been removed).  */
+  if (!safe_frame_unwind_memory (this_frame, pc, buf, INSNS_SIZE))
+    {
+      /* Failed to unwind frame.  */
+      return FALSE;
+    }
+
+  /* Is that code the sigtramp instruction sequence?  */
+  if (memcmp (buf, arc_sigtramp_insns, INSNS_SIZE) == 0)
+    {
+      return TRUE;
+    }
+
+  /* No - look one instruction earlier in the code...  */
+  if (!safe_frame_unwind_memory (this_frame, pc - 4, buf, (int) INSNS_SIZE))
+    {
+      /* Failed to unwind frame.  */
+      return FALSE;
+    }
+
+  return memcmp (buf, arc_sigtramp_insns, INSNS_SIZE) == 0;
+
+}
+
 /* Get sigcontext of sigtramp frame.  Assuming THIS_FRAME is a frame following
    a GNU/Linux sigtramp routine, return the address of the associated
    sigcontext structure.  That structure can be found in the stack pointer of
@@ -533,6 +587,7 @@ arc_linux_init_osabi (struct gdbarch_info info, struct gdbarch *gdbarch)
     debug_printf ("arc-linux: GNU/Linux OS/ABI initialization.\n");
 
   /* Fill in target-dependent info in ARC-private structure.  */
+  tdep->is_sigtramp = arc_linux_is_sigtramp;
   tdep->sigcontext_addr = arc_linux_sigcontext_addr;
   tdep->sc_reg_offset = arc_linux_sc_reg_offset;
   tdep->sc_num_regs = ARRAY_SIZE (arc_linux_core_reg_offsets);
