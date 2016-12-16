@@ -25,6 +25,9 @@ standard_testfile
 
 if {[is_remote target]} {
     set outdir .
+    verbose "Skipping fileio.exp because it is truly broken for remote " \
+	"hosts with gdbservers."
+    continue
 } else {
     set outdir [standard_output_file {}]
 }
