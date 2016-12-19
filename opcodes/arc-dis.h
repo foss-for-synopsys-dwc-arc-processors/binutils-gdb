@@ -41,7 +41,7 @@ extern "C" {
       ARC_SCALING_NONE = 0,
       ARC_SCALING_B = 1,
       ARC_SCALING_H = 2,
-      ARC_SCALING_D = 3,
+      ARC_SCALING_D = 8,
     };
 
 

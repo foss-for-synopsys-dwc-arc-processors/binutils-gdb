@@ -512,9 +512,6 @@ print_flags (const struct arc_opcode *opcode,
 	  const struct arc_flag_operand *flg_operand =
 	    &arc_flag_operands[*flgopridx];
 
-	  if (!flg_operand->favail)
-	    continue;
-
 	  /* Implicit flags are only used for the insn decoder.  */
 	  if (cl_flags->flag_class & F_CLASS_IMPLICIT)
 	    {
@@ -526,6 +523,9 @@ print_flags (const struct arc_opcode *opcode,
 		info->data_size = flg_operand->code;
 	      continue;
 	    }
+
+	  if (!flg_operand->favail)
+	    continue;
 
 	  value = (insn[0] >> flg_operand->shift)
 	    & ((1 << flg_operand->bits) - 1);
