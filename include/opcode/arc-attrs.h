@@ -36,19 +36,20 @@ const struct feature_type
   const char *name;
 }  FEATURE_LIST_NAME [] =
   {
-    { BTSCN,   ARC_OPCODE_ARCALL,   "BITSCAN", "bit-scan" },
-    { CD,      ARC_OPCODE_ARCV2,    "CD",      "code-density" },
-    { DIV,     ARC_OPCODE_ARCV2,    "DIV_REM", "div/rem" },
-    { DP,      ARC_OPCODE_ARCv2HS,  "FPUD",    "double-precision FPU" },
-    { DPA,     ARC_OPCODE_ARCv2EM,  "FPUDA",   "double assist FP" },
-    { DPX,     ARC_OPCODE_ARCFPX,   "DPFP",    "double-precision FPX" },
-    { NPS400,  ARC_OPCODE_ARC700,   "NPS400",  "nps400" },
-    { QUARKSE, ARC_OPCODE_ARCv2EM,  "QUARKSE", "QuarkSE-EM" },
-    { SHFT1,   ARC_OPCODE_ARCALL,   "SA",      "shift assist" },
-    { SHFT2,   ARC_OPCODE_ARCALL,   "BS",      "barrel-shifter" },
-    { SWAP,    ARC_OPCODE_ARCALL,   "SWAP",    "swap" },
-    { SP,      ARC_OPCODE_ARCV2,    "FPUS",    "single-precision FPU" },
-    { SPX,     ARC_OPCODE_ARCFPX,   "SPFP",    "single-precision FPX" }
+    { BTSCN,    ARC_OPCODE_ARCALL,   "BITSCAN",  "bit-scan" },
+    { CD,       ARC_OPCODE_ARCV2,    "CD",       "code-density" },
+    { DIV,      ARC_OPCODE_ARCV2,    "DIV_REM",  "div/rem" },
+    { DP,       ARC_OPCODE_ARCv2HS,  "FPUD",     "double-precision FPU" },
+    { DPA,      ARC_OPCODE_ARCv2EM,  "FPUDA",    "double assist FP" },
+    { DPX,      ARC_OPCODE_ARCFPX,   "DPFP",     "double-precision FPX" },
+    { NPS400,   ARC_OPCODE_ARC700,   "NPS400",   "nps400" },
+    { QUARKSE1, ARC_OPCODE_ARCv2EM,  "QUARKSE1", "QuarkSE-EM" },
+    { QUARKSE2, ARC_OPCODE_ARCv2EM,  "QUARKSE2", "QuarkSE-EM" },
+    { SHFT1,    ARC_OPCODE_ARCALL,   "SA",       "shift assist" },
+    { SHFT2,    ARC_OPCODE_ARCALL,   "BS",       "barrel-shifter" },
+    { SWAP,     ARC_OPCODE_ARCALL,   "SWAP",     "swap" },
+    { SP,       ARC_OPCODE_ARCV2,    "FPUS",     "single-precision FPU" },
+    { SPX,      ARC_OPCODE_ARCFPX,   "SPFP",     "single-precision FPX" }
   };
 
 #ifndef CONFLICT_LIST
@@ -63,6 +64,8 @@ unsigned CONFLICT_LIST [] = {
   SP | DPX,
   SP | SPX,
   DP | DPX,
-  DP | SPX
+  DP | SPX,
+  QUARKSE1 | DP,
+  QUARKSE1 | SP
 };
 #endif
