@@ -39,5 +39,5 @@ check-gdb-ari:
     stage: test
     script:
         - cd gdb
-        - bash contrib/ari/gdb_ari.sh -Wari arc-*
-        - test $(bash contrib/ari/gdb_ari.sh -Wari arc-* | wc -l) = 0
+        - bash contrib/ari/gdb_ari.sh -Wari arc-* gdbserver/linux-arc-low.c
+        - test $(bash contrib/ari/gdb_ari.sh -Wari arc-* gdbserver/linux-arc-low.c | wc -l) = 0
