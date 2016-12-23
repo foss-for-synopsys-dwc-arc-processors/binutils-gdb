@@ -1743,7 +1743,7 @@ arc_dwarf2_frame_init_reg (struct gdbarch *gdbarch, int regnum,
 /*  Signal trampoline frame unwinder.  Allows frame unwinding to happen from
     within signal handlers.  */
 
-static struct arc_unwind_cache *
+static struct arc_frame_cache *
 arc_sigtramp_frame_cache (struct frame_info *this_frame, void **this_cache)
 {
   if (arc_debug)
@@ -1786,7 +1786,7 @@ arc_sigtramp_frame_cache (struct frame_info *this_frame, void **this_cache)
 	    }
 	}
     }
-  return (struct arc_unwind_cache *) *this_cache;
+  return (struct arc_frame_cache *) *this_cache;
 
 }
 
@@ -1818,7 +1818,7 @@ arc_sigtramp_frame_prev_register (struct frame_info *this_frame,
 				  void **this_cache, int regnum)
 {
   /* Make sure we've initialized the cache.  */
-  struct arc_unwind_cache *info =
+  struct arc_frame_cache *info =
     arc_sigtramp_frame_cache (this_frame, this_cache);
 
   if (arc_debug)
