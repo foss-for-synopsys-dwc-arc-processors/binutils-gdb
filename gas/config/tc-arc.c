@@ -3258,7 +3258,7 @@ md_convert_frag (bfd *abfd ATTRIBUTE_UNUSED,
   char *dest;
   const struct arc_opcode *opcode;
   struct arc_insn insn;
-  int size, fix;
+  int size, fix, i;
   struct arc_relax_type *relax_arg = &fragP->tc_frag_data;
 
   fix = (fragP->fr_fix < 0 ? 0 : fragP->fr_fix);
@@ -3275,6 +3275,20 @@ md_convert_frag (bfd *abfd ATTRIBUTE_UNUSED,
     as_fatal (_("no relaxation found for this instruction."));
 
   opcode = &arc_relax_opcodes[fragP->fr_subtype];
+
+  /* Process the original parsed expressions by removing O_pcl.  This
+     is needed to select the proper relocation for the new relaxed
+     instruction.  */
+  for (i = 0; i < relax_arg->ntok; i++)
+    {
+      switch (relax_arg->tok[i].X_md)
+	{
+	case O_pcl:
+	  relax_arg->tok[i].X_md = O_absent;
+	default:
+	  break;
+	}
+    }
 
   assemble_insn (opcode, relax_arg->tok, relax_arg->ntok, relax_arg->pflags,
 	relax_arg->nflg, &insn);
@@ -4022,7 +4036,15 @@ assemble_insn (const struct arc_opcode *opcode,
 	  fixup = &insn->fixups[insn->nfixups++];
 	  fixup->exp = *t;
 	  fixup->reloc = reloc;
-	  pcrel = (operand->flags & ARC_OPERAND_PCREL) ? 1 : 0;
+	  if ((int) reloc < 0)
+	    pcrel = (operand->flags & ARC_OPERAND_PCREL) ? 1 : 0;
+	  else
+	    {
+	      reloc_howto_type *reloc_howto =
+		bfd_reloc_type_lookup (stdoutput,
+				       (bfd_reloc_code_real_type) fixup->reloc);
+	      pcrel = reloc_howto->pc_relative;
+	    }
 	  fixup->pcrel = pcrel;
 	  fixup->islong = (operand->flags & ARC_OPERAND_LIMM) ?
 	    TRUE : FALSE;
@@ -4281,10 +4303,15 @@ arc_frob_label (symbolS * sym)
 int
 arc_pcrel_adjust (fragS *fragP)
 {
+  pr_debug ("arc_pcrel_adjust: address=%d, fix=%d, PCrel %s\n",
+	    fragP->fr_address, fragP->fr_fix,
+	    fragP->tc_frag_data.pcrel ? "Y" : "N");
+
   if (!fragP->tc_frag_data.pcrel)
     return fragP->fr_address + fragP->fr_fix;
 
-  return 0;
+  /* Take into account the PCL rounding.  */
+  return (fragP->fr_address + fragP->fr_fix) & 0x03;
 }
 
 /* Initialize the DWARF-2 unwind information for this procedure.  */
