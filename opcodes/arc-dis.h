@@ -38,7 +38,7 @@ extern "C" {
 
   enum arc_ldst_data_size
     {
-      ARC_SCALING_NONE = 0,
+      ARC_SCALING_NONE = 4,
       ARC_SCALING_B = 1,
       ARC_SCALING_H = 2,
       ARC_SCALING_D = 8,
