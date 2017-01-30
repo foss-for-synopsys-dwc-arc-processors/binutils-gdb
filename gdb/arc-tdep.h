@@ -103,6 +103,9 @@ enum arc_regnum
 /* STATUS32 register: current instruction is a delay slot.  */
 #define ARC_STATUS32_DE_MASK (1 << 6)
 
+/* Special value for register offset arrays.  */
+#define ARC_OFFSET_NO_REGISTER (-1)
+
 #define arc_print(fmt, args...) fprintf_unfiltered (gdb_stdlog, fmt, ##args)
 
 extern int arc_debug;
