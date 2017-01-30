@@ -105,6 +105,9 @@ enum arc_regnum
 /* STATUS32 register: current instruction is a delay slot.  */
 #define ARC_STATUS32_DE_MASK (1 << 6)
 
+/* Special value for register offset arrays.  */
+#define ARC_OFFSET_NO_REGISTER (-1)
+
 #define arc_print(fmt, args...) fprintf_unfiltered (gdb_stdlog, fmt, ##args)
 
 extern int arc_debug;
@@ -181,5 +184,10 @@ CORE_ADDR arc_insn_get_branch_target (const struct arc_instruction &insn);
    instruction length with LIMM".  */
 
 CORE_ADDR arc_insn_get_linear_next_pc (const struct arc_instruction &insn);
+
+/* Create an arc_gdbarch_features instance from the provided data.  */
+
+arc_gdbarch_features arc_gdbarch_features_create (const bfd *abfd,
+						  const unsigned long mach);
 
 #endif /* ARC_TDEP_H */
