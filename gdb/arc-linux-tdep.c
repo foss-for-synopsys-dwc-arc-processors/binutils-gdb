@@ -27,7 +27,65 @@
 
 /* ARC header files.  */
 #include "opcodes/arc-dis.h"
+#include "arc-linux-tdep.h"
 #include "arc-tdep.h"
+
+/* Special value used in register maps to identify registers which are not
+   available.  */
+
+#define REGISTER_NOT_PRESENT (-1)
+
+#define REGOFF(offset) (offset * ARC_REGISTER_SIZE)
+
+/* arc_linux_core_reg_offsets[i] is the offset in the .reg section of GDB
+   regnum i.  Array index is an internal GDB register number, as defined in
+   arc-tdep.h:arc_regnum.
+
+   From include/uapi/asm/ptrace.h in the ARC Linux sources.  */
+
+static const int arc_linux_core_reg_offsets[] = {
+  /* R0 - R12.  */
+  REGOFF (22), REGOFF (21), REGOFF (20), REGOFF (19),
+  REGOFF (18), REGOFF (17), REGOFF (16), REGOFF (15),
+  REGOFF (14), REGOFF (13), REGOFF (12), REGOFF (11),
+  REGOFF (10),
+
+  /* R13 - R25.  */
+  REGOFF (37), REGOFF (36), REGOFF (35), REGOFF (34),
+  REGOFF (33), REGOFF (32), REGOFF (31), REGOFF (30),
+  REGOFF (29), REGOFF (28), REGOFF (27), REGOFF (26),
+  REGOFF (25),
+
+  REGOFF (9),			/* R26 (GP) */
+  REGOFF (8),			/* FP */
+  REGOFF (23),			/* SP */
+  REGISTER_NOT_PRESENT,		/* ILINK */
+  REGISTER_NOT_PRESENT,		/* R30 */
+  REGOFF (7),			/* BLINK */
+
+  /* R32 - R59.  */
+  REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT,
+  REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT,
+  REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT,
+  REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT,
+  REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT,
+  REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT,
+  REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT,
+  REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT,
+  REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT,
+  REGISTER_NOT_PRESENT,
+
+  REGOFF (4),			/* LP_COUNT */
+  REGISTER_NOT_PRESENT,		/* RESERVED */
+  REGISTER_NOT_PRESENT,		/* LIMM */
+  REGISTER_NOT_PRESENT,		/* PCL */
+
+  REGOFF (39),			/* PC  */
+  REGOFF (5),			/* STATUS32 */
+  REGOFF (2),			/* LP_START */
+  REGOFF (3),			/* LP_END */
+  REGOFF (1),			/* BTA */
+};
 
 /* Implement the "cannot_fetch_register" gdbarch method.  */
 
@@ -233,6 +291,120 @@ arc_linux_skip_solib_resolver (struct gdbarch *gdbarch, CORE_ADDR pc)
     }
 }
 
+void
+arc_linux_supply_gregset (const struct regset *regset,
+			  struct regcache *regcache,
+			  int regnum, const void *gregs, size_t size)
+{
+  gdb_static_assert (ARC_LAST_REGNUM
+		     <= ARRAY_SIZE (arc_linux_core_reg_offsets));
+
+  const bfd_byte *buf = (const bfd_byte *) gregs;
+
+  for (int reg = 0; reg <= ARC_LAST_REGNUM; reg++)
+    {
+      if (arc_linux_core_reg_offsets[reg] != REGISTER_NOT_PRESENT)
+	regcache_raw_supply (regcache, reg,
+			     buf + arc_linux_core_reg_offsets[reg]);
+    }
+}
+
+void
+arc_linux_supply_v2_regset (const struct regset *regset,
+			    struct regcache *regcache, int regnum,
+			    const void *v2_regs, size_t size)
+{
+  const bfd_byte *buf = (const bfd_byte *) v2_regs;
+
+  /* user_regs_arcv2 is defined in linux arch/arc/include/uapi/asm/ptrace.h.  */
+  regcache_raw_supply (regcache, ARC_R30_REGNUM, buf);
+  regcache_raw_supply (regcache, ARC_R58_REGNUM, buf + REGOFF (1));
+  regcache_raw_supply (regcache, ARC_R59_REGNUM, buf + REGOFF (2));
+}
+
+void
+arc_linux_collect_gregset (const struct regset *regset,
+			   const struct regcache *regcache,
+			   int regnum, void *gregs, size_t size)
+{
+  gdb_static_assert (ARC_LAST_REGNUM
+		     <= ARRAY_SIZE (arc_linux_core_reg_offsets));
+
+  gdb_byte *buf = (gdb_byte *) gregs;
+  struct gdbarch *gdbarch = get_regcache_arch (regcache);
+  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+
+  for (int reg = 0; reg < ARC_LAST_REGNUM; reg++)
+    {
+      /* Skip unexisting registers.  regnum == -1 means writing all regs.  */
+      if ((arc_linux_core_reg_offsets[reg] != REGISTER_NOT_PRESENT)
+	  && (regnum == reg || regnum == -1))
+	{
+	  /* Address where execution has stopped is in pseudo-register STOP_PC,
+	     however when continuing execution kernel uses value from ERET
+	     register.  And because TRAP_S commits, we have that ERET !=
+	     STOP_PC, so ERET must be overwritten by the GDB, otherwise program
+	     will continue at address after the current instruction, which
+	     might not be a valid instruction at all.  */
+	  if (gdbarch_pc_regnum (gdbarch) == reg)
+	    {
+	      int eret_offset = REGOFF (6);
+	      regcache_raw_collect (regcache, reg, buf + eret_offset);
+	    }
+	  else
+	    {
+	      regcache_raw_collect (regcache, reg,
+				    buf + arc_linux_core_reg_offsets[reg]);
+	    }
+	}
+    }
+}
+
+void
+arc_linux_collect_v2_regset (const struct regset *regset,
+			     const struct regcache *regcache, int regnum,
+			     void *v2_regs, size_t size)
+{
+  bfd_byte *buf = (bfd_byte *) v2_regs;
+
+  regcache_raw_collect (regcache, ARC_R30_REGNUM, buf);
+  regcache_raw_collect (regcache, ARC_R58_REGNUM, buf + REGOFF (1));
+  regcache_raw_collect (regcache, ARC_R59_REGNUM, buf + REGOFF (2));
+}
+
+/* Linux regset definitions.  */
+
+static const struct regset arc_linux_gregset = {
+  arc_linux_core_reg_offsets,
+  arc_linux_supply_gregset,
+  arc_linux_collect_gregset,
+};
+
+static const struct regset arc_linux_v2_regset = {
+  NULL,
+  arc_linux_supply_v2_regset,
+  arc_linux_collect_v2_regset,
+};
+
+/* Implement the `iterate_over_regset_sections` gdbarch method.  */
+
+static void
+arc_linux_iterate_over_regset_sections (struct gdbarch *gdbarch,
+					iterate_over_regset_sections_cb *cb,
+					void *cb_data,
+					const struct regcache *regcache)
+{
+  /* There are 40 registers in Linux user_regs_struct, although some of them
+     are now just a mere paddings, kept to maintain binary compatibility with
+     older tools.  */
+  const int sizeof_gregset = 40 * ARC_REGISTER_SIZE;
+
+  cb (".reg", sizeof_gregset, &arc_linux_gregset, NULL, cb_data);
+  cb (".reg-arc-v2", ARC_LINUX_SIZEOF_V2_REGSET, &arc_linux_v2_regset, NULL,
+      cb_data);
+}
+
+
 /* Initialization specific to Linux environment.  */
 
 static void
@@ -265,6 +437,8 @@ arc_linux_init_osabi (struct gdbarch_info info, struct gdbarch *gdbarch)
 					     svr4_fetch_objfile_link_map);
   set_gdbarch_software_single_step (gdbarch, arc_linux_software_single_step);
   set_gdbarch_skip_solib_resolver (gdbarch, arc_linux_skip_solib_resolver);
+  set_gdbarch_iterate_over_regset_sections
+    (gdbarch, arc_linux_iterate_over_regset_sections);
 
   /* GNU/Linux uses SVR4-style shared libraries, with 32-bit ints, longs and
      pointers (ILP32).  */
