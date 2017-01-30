@@ -45,19 +45,19 @@
 /* From <include/uapi/asm/sigcontext.h> and <include/uapi/asm/ptrace.h>.  */
 
 static const int arc_linux_sc_reg_offset[] = {
-  22 * BYTES_IN_REGISTER,	/* r0       */
-  21 * BYTES_IN_REGISTER,	/* r1       */
-  20 * BYTES_IN_REGISTER,	/* r2       */
-  19 * BYTES_IN_REGISTER,	/* r3       */
-  18 * BYTES_IN_REGISTER,	/* r4       */
-  17 * BYTES_IN_REGISTER,	/* r5       */
-  16 * BYTES_IN_REGISTER,	/* r6       */
-  15 * BYTES_IN_REGISTER,	/* r7       */
-  14 * BYTES_IN_REGISTER,	/* r8       */
-  13 * BYTES_IN_REGISTER,	/* r9       */
-  12 * BYTES_IN_REGISTER,	/* r10      */
-  11 * BYTES_IN_REGISTER,	/* r11      */
-  10 * BYTES_IN_REGISTER,	/* r12      */
+  22 * ARC_REGISTER_SIZE,	/* r0       */
+  21 * ARC_REGISTER_SIZE,	/* r1       */
+  20 * ARC_REGISTER_SIZE,	/* r2       */
+  19 * ARC_REGISTER_SIZE,	/* r3       */
+  18 * ARC_REGISTER_SIZE,	/* r4       */
+  17 * ARC_REGISTER_SIZE,	/* r5       */
+  16 * ARC_REGISTER_SIZE,	/* r6       */
+  15 * ARC_REGISTER_SIZE,	/* r7       */
+  14 * ARC_REGISTER_SIZE,	/* r8       */
+  13 * ARC_REGISTER_SIZE,	/* r9       */
+  12 * ARC_REGISTER_SIZE,	/* r10      */
+  11 * ARC_REGISTER_SIZE,	/* r11      */
+  10 * ARC_REGISTER_SIZE,	/* r12      */
   REGISTER_NOT_PRESENT,		/* r13      */
   REGISTER_NOT_PRESENT,		/* r14      */
   REGISTER_NOT_PRESENT,		/* r15      */
@@ -71,12 +71,12 @@ static const int arc_linux_sc_reg_offset[] = {
   REGISTER_NOT_PRESENT,		/* r23      */
   REGISTER_NOT_PRESENT,		/* r24      */
   REGISTER_NOT_PRESENT,		/* r25      */
-  9 * BYTES_IN_REGISTER,	/* r26 (gp) */
-  8 * BYTES_IN_REGISTER,	/* fp       */
-  23 * BYTES_IN_REGISTER,	/* sp       */
+  9 * ARC_REGISTER_SIZE,	/* r26 (gp) */
+  8 * ARC_REGISTER_SIZE,	/* fp       */
+  23 * ARC_REGISTER_SIZE,	/* sp       */
   REGISTER_NOT_PRESENT,		/* ilink1   */
   REGISTER_NOT_PRESENT,		/* ilink2   */
-  7 * BYTES_IN_REGISTER,	/* blink    */
+  7 * ARC_REGISTER_SIZE,	/* blink    */
 
   REGISTER_NOT_PRESENT,		/* r32      */
   REGISTER_NOT_PRESENT,		/* r33      */
@@ -106,21 +106,21 @@ static const int arc_linux_sc_reg_offset[] = {
   REGISTER_NOT_PRESENT,		/* r57      */
   REGISTER_NOT_PRESENT,		/* r58      */
   REGISTER_NOT_PRESENT,		/* r59      */
-  4 * BYTES_IN_REGISTER,	/* lp_count */
+  4 * ARC_REGISTER_SIZE,	/* lp_count */
   REGISTER_NOT_PRESENT,		/* reserved */
   REGISTER_NOT_PRESENT,		/* limm     */
   REGISTER_NOT_PRESENT,		/* pcl      */
 
   REGISTER_NOT_PRESENT,		/* stop_pc  */
-  2 * BYTES_IN_REGISTER,	/* lp_start */
-  3 * BYTES_IN_REGISTER,	/* lp_end   */
-  5 * BYTES_IN_REGISTER,	/* status32 */
+  2 * ARC_REGISTER_SIZE,	/* lp_start */
+  3 * ARC_REGISTER_SIZE,	/* lp_end   */
+  5 * ARC_REGISTER_SIZE,	/* status32 */
   REGISTER_NOT_PRESENT,		/* st32_l1  */
   REGISTER_NOT_PRESENT,		/* st32_l2  */
   REGISTER_NOT_PRESENT,		/* irq_lv12 */
   REGISTER_NOT_PRESENT,		/* irq_lev  */
   REGISTER_NOT_PRESENT,		/* irq_hint */
-  6 * BYTES_IN_REGISTER,	/* ret      */
+  6 * ARC_REGISTER_SIZE,	/* ret      */
   REGISTER_NOT_PRESENT,		/* erbta    */
   REGISTER_NOT_PRESENT,		/* erstatus */
   REGISTER_NOT_PRESENT,		/* ecr      */
@@ -129,7 +129,7 @@ static const int arc_linux_sc_reg_offset[] = {
   REGISTER_NOT_PRESENT,		/* icause2  */
   REGISTER_NOT_PRESENT,		/* ienable  */
   REGISTER_NOT_PRESENT,		/* itrigger */
-  1 * BYTES_IN_REGISTER,	/* bta      */
+  1 * ARC_REGISTER_SIZE,	/* bta      */
   REGISTER_NOT_PRESENT,		/* bta_l1   */
   REGISTER_NOT_PRESENT,		/* bta_l2   */
   REGISTER_NOT_PRESENT,		/* irq pulse */
