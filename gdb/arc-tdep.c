@@ -145,6 +145,8 @@ static const char *const core_arcompact_register_names[] = {
   "lp_count", "reserved", "limm", "pcl",
 };
 
+static char *arc_disassembler_options = NULL;
+
 /* Functions are sorted in the order as they are used in the
    _initialize_arc_tdep (), which uses the same order as gdbarch.h.  Static
    functions are defined before the first invocation.  */
@@ -1410,6 +1412,31 @@ arc_delayed_print_insn (bfd_vma addr, struct disassemble_info *info)
      will handle NULL value gracefully.  */
   print_insn = arc_get_disassembler (exec_bfd);
   gdb_assert (print_insn != NULL);
+
+  /* Standard BFD "machine number" field allows libocodes disassembler to
+     distinguish ARC 600, 700 and v2 cores, however v2 encompasses both ARC EM
+     and HS, which have some difference between.  There are two ways to specify
+     what is the target core:
+     1) via the disassemble_info->disassembler_options;
+     2) otherwise libopcodes will use private (architecture-specific) ELF
+     header.
+
+     Using disassembler_options is preferable, because it comes directly from
+     GDBserver which scanned an actual ARC core identification info.  However,
+     not all GDBservers report core architecture, so as a fallback GDB still
+     should support analysis of ELF header.  The libopcodes disassembly code
+     uses the section to find the BFD and the BFD to find the ELF header,
+     therefore this function should set disassemble_info->section properly.
+
+     disassembler_options was already set by non-target specific code with
+     proper options obtained via gdbarch_disassembler_options ().  */
+  if (info->disassembler_options == NULL)
+    {
+      struct obj_section * s = find_pc_section (addr);
+      if (s != NULL)
+	info->section = s->the_bfd_section;
+    }
+
   return print_insn (addr, info);
 }
 
@@ -2040,6 +2067,23 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 
   if (tdep->jb_pc >= 0)
     set_gdbarch_get_longjmp_target (gdbarch, arc_get_longjmp_target);
+
+  /* Disassembler options.  Enforce CPU if it was specified in XML target
+     description, otherwise use default method of determining CPU (ELF private
+     header).  */
+  if (info.target_desc != NULL)
+    {
+      const struct bfd_arch_info *tdesc_arch
+	= tdesc_architecture (info.target_desc);
+      if (tdesc_arch != NULL)
+	{
+	  std::string disasm_options
+	    = string_printf ("cpu=%s", tdesc_arch->printable_name);
+	  arc_disassembler_options = xstrdup (disasm_options.c_str ());
+	  set_gdbarch_disassembler_options (gdbarch,
+					    &arc_disassembler_options);
+	}
+    }
 
   tdesc_use_registers (gdbarch, tdesc, tdesc_data);
 
