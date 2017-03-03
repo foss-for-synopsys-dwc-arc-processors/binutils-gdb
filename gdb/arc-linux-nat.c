@@ -1,7 +1,6 @@
 /* Native-dependent code for GNU/Linux ARC.
 
    Copyright 2014-2016 Free Software Foundation, Inc.
-   Contributed by Synopsys Inc.
 
    This file is part of GDB.
 
