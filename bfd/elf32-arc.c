@@ -2236,6 +2236,7 @@ elf_arc_adjust_dynamic_symbol (struct bfd_link_info *info,
       return TRUE;
     }
 
+#define ELIMINATE_COPY_RELOCS 0
   /* If this is a weak symbol, and there is a real definition, the
      processor independent code will have arranged for us to see the
      real definition first, and we can just use the same value.  */
@@ -2245,6 +2246,11 @@ elf_arc_adjust_dynamic_symbol (struct bfd_link_info *info,
 		  || h->u.weakdef->root.type == bfd_link_hash_defweak);
       h->root.u.def.section = h->u.weakdef->root.u.def.section;
       h->root.u.def.value = h->u.weakdef->root.u.def.value;
+      if (ELIMINATE_COPY_RELOCS || info->nocopyreloc)
+	{
+	  h->non_got_ref = h->u.weakdef->non_got_ref;
+	  h->needs_copy = h->u.weakdef->needs_copy;
+	}
       return TRUE;
     }
 
@@ -2270,6 +2276,28 @@ elf_arc_adjust_dynamic_symbol (struct bfd_link_info *info,
       return TRUE;
     }
 
+  /* TODO: Have to implement this functionality as X86 target to PASS
+     "Common symbol override test".  */
+  if (ELIMINATE_COPY_RELOCS)
+    {
+      struct elf_dyn_relocs *p;
+      struct elf_arc_link_hash_entry *eh = (struct elf_arc_link_hash_entry *) h;
+      for (p = eh->dyn_relocs; p != NULL; p = p->next)
+	{
+	  s = p->sec->output_section;
+	  if (s != NULL && (s->flags & SEC_READONLY) != 0)
+	    break;
+	}
+
+      /* If we didn't find any dynamic relocs in read-only sections, then
+        we'll be keeping the dynamic relocs and avoiding the copy reloc.  */
+      if (p == NULL)
+	{
+	  h->non_got_ref = 0;
+	  return TRUE;
+	}
+    }
+
   /* We must allocate the symbol in our .dynbss section, which will
      become part of the .bss section of the executable.  There will be
      an entry for this symbol in the .dynsym section.  The dynamic
@@ -2287,7 +2315,7 @@ elf_arc_adjust_dynamic_symbol (struct bfd_link_info *info,
      copy the initial value out of the dynamic object and into the
      runtime process image.  We need to remember the offset into the
      .rela.bss section we are going to use.  */
-  if ((h->root.u.def.section->flags & SEC_ALLOC) != 0)
+  if ((h->root.u.def.section->flags & SEC_ALLOC) != 0 && h->size != 0)
     {
       struct elf_arc_link_hash_table *arc_htab = elf_arc_hash_table (info);
 
@@ -2845,6 +2873,72 @@ elf32_arc_section_from_shdr (bfd *abfd,
 
   return TRUE;
 }
+
+/* Copy the extra info we tack onto an elf_link_hash_entry.  */
+
+#if ELIMINATE_COPY_RELOCS == 1
+static void
+elf32_arc_copy_indirect_symbol (struct bfd_link_info *info,
+				struct elf_link_hash_entry *dir,
+				struct elf_link_hash_entry *ind)
+{
+  struct elf_arc_link_hash_entry *edir, *eind;
+
+  edir = (struct elf_arc_link_hash_entry *) dir;
+  eind = (struct elf_arc_link_hash_entry *) ind;
+
+  if (eind->dyn_relocs != NULL)
+    {
+      if (edir->dyn_relocs != NULL)
+	{
+	  struct elf_dyn_relocs **pp;
+	  struct elf_dyn_relocs *p;
+
+	  /* Add reloc counts against the indirect sym to the direct sym
+	     list.  Merge any entries against the same section.  */
+	  for (pp = &eind->dyn_relocs; (p = *pp) != NULL; )
+	    {
+	      struct elf_dyn_relocs *q;
+
+	      for (q = edir->dyn_relocs; q != NULL; q = q->next)
+		if (q->sec == p->sec)
+		  {
+		    q->pc_count += p->pc_count;
+		    q->count += p->count;
+		    *pp = p->next;
+		    break;
+		  }
+	      if (q == NULL)
+		pp = &p->next;
+	    }
+	  *pp = edir->dyn_relocs;
+	}
+
+      edir->dyn_relocs = eind->dyn_relocs;
+      eind->dyn_relocs = NULL;
+    }
+
+  if (ELIMINATE_COPY_RELOCS
+      && ind->root.type != bfd_link_hash_indirect
+      && dir->dynamic_adjusted)
+    {
+      /* If called to transfer flags for a weakdef during processing
+         of elf_adjust_dynamic_symbol, don't copy non_got_ref.
+         We clear it ourselves for ELIMINATE_COPY_RELOCS.  */
+      dir->ref_dynamic |= ind->ref_dynamic;
+      dir->ref_regular |= ind->ref_regular;
+      dir->ref_regular_nonweak |= ind->ref_regular_nonweak;
+      dir->needs_plt |= ind->needs_plt;
+      dir->pointer_equality_needed |= ind->pointer_equality_needed;
+    }
+  else
+    {
+      _bfd_elf_link_hash_copy_indirect (info, dir, ind);
+    }
+}
+
+#define elf_backend_copy_indirect_symbol     elf32_arc_copy_indirect_symbol
+#endif
 
 #define TARGET_LITTLE_SYM   arc_elf32_le_vec
 #define TARGET_LITTLE_NAME  "elf32-littlearc"
