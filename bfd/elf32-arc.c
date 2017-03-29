@@ -2815,7 +2815,9 @@ elf32_arc_section_from_shdr (bfd *abfd,
       break;
 
     default:
-      return FALSE;
+      _bfd_error_handler (_("Warning: %B: Unknown ARC section 0x%x"),
+	 abfd, hdr->sh_type);
+      break;
     }
 
   if (!_bfd_elf_make_section_from_shdr (abfd, hdr, name, shindex))
