@@ -28,6 +28,7 @@
 #include "gdbcore.h"
 #include "gdbcmd.h"
 #include "objfiles.h"
+#include "regset.h"
 #include "trad-frame.h"
 
 /* ARC header files.  */
@@ -965,6 +966,108 @@ static const struct frame_base arc_normal_base = {
   arc_frame_base_address
 };
 
+/* Core file and register set support.  */
+#define ARC_LINUX_REGSET_NB_REGISTERS 40
+static int arc_linux_get_register_offset(int regno)
+{
+  switch(regno) {
+  case ARC_LP_COUNT_REGNUM:
+      return ARC_REGISTER_SIZE * 4;
+  case ARC_STATUS32_REGNUM:
+      return ARC_REGISTER_SIZE * 5;
+  case ARC_ILINK_REGNUM:
+      return ARC_REGISTER_SIZE * 6;
+  case ARC_BLINK_REGNUM:
+      return ARC_REGISTER_SIZE * 7;
+  case ARC_FP_REGNUM:
+      return ARC_REGISTER_SIZE * 8;
+  case ARC_GP_REGNUM:
+      return ARC_REGISTER_SIZE * 9;
+  case ARC_R0_REGNUM...ARC_R13_REGNUM - 1:
+      return ARC_REGISTER_SIZE * (10 + (ARC_R13_REGNUM - 1) - regno);
+  case ARC_SP_REGNUM:
+      return ARC_REGISTER_SIZE * 23;
+  case ARC_R13_REGNUM...ARC_R25_REGNUM:
+      return ARC_REGISTER_SIZE * (25 + ARC_R25_REGNUM - regno);
+  case ARC_PC_REGNUM:
+      return ARC_REGISTER_SIZE * 39;
+  default:
+      return -1;
+  }
+}
+
+static void
+arc_linux_supply_gregset (const struct regset *regset,
+			  struct regcache *regcache,
+			  int regnum, const void *gregs_buf, size_t len)
+{
+  struct gdbarch *gdbarch = get_regcache_arch (regcache);
+  enum bfd_endian byte_order = gdbarch_byte_order (gdbarch);
+  const gdb_byte *gregs = (const gdb_byte *) gregs_buf;
+  int regno, ofs;
+  CORE_ADDR reg_pc;
+
+  if (arc_debug)
+      debug_printf ("arc: Supplying register set.\n");
+  for (regno = ARC_FIRST_ARG_REGNUM;
+       regno <= ARC_LAST_REGNUM; regno++)
+           if (regnum == -1 || regnum == regno) {
+               ofs = arc_linux_get_register_offset(regno);
+	       if (ofs >= 0)
+		  regcache_raw_supply (regcache, regno, gregs + ofs);
+	   }
+}
+
+static void
+arc_linux_collect_gregset (const struct regset *regset,
+			   const struct regcache *regcache,
+			   int regnum, void *gregs_buf, size_t len)
+{
+  gdb_byte *gregs = (gdb_byte *) gregs_buf;
+  int regno, ofs;
+
+  if (arc_debug)
+      debug_printf ("arc: Collecting register set.\n");
+  for (regno = ARC_FIRST_ARG_REGNUM;
+       regno <= ARC_LAST_REGNUM; regno++)
+           if (regnum == -1 || regnum == regno) {
+               ofs = arc_linux_get_register_offset(regno);
+	       if (ofs >= 0)
+		  regcache_raw_collect(regcache, regno, gregs + ofs);
+	   }
+}
+
+static const struct regset arc_linux_gregset =
+  {
+    NULL, arc_linux_supply_gregset, arc_linux_collect_gregset
+  };
+
+/* Iterate over core file register note sections.  */
+
+static void
+arc_linux_iterate_over_regset_sections (struct gdbarch *gdbarch,
+					iterate_over_regset_sections_cb *cb,
+					void *cb_data,
+					const struct regcache *regcache)
+{
+  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
+
+  cb (".reg", ARC_REGISTER_SIZE * ARC_LINUX_REGSET_NB_REGISTERS,
+      &arc_linux_gregset, NULL, cb_data);
+}
+
+/* Determine target description from core file.  */
+
+static const struct target_desc *
+arc_linux_core_read_description (struct gdbarch *gdbarch,
+                                 struct target_ops *target,
+                                 bfd *abfd)
+{
+  CORE_ADDR arm_hwcap = 0;
+
+  return NULL;
+}
+
 /* Initialize target description for the ARC.
 
    Returns TRUE if input tdesc was valid and in this case it will assign TDESC
@@ -1264,6 +1367,11 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   dwarf2_append_unwinders (gdbarch);
   frame_unwind_append_unwinder (gdbarch, &arc_frame_unwind);
   frame_base_set_default (gdbarch, &arc_normal_base);
+
+  /* Core file support.  */
+  set_gdbarch_iterate_over_regset_sections
+    (gdbarch, arc_linux_iterate_over_regset_sections);
+  set_gdbarch_core_read_description (gdbarch, arc_linux_core_read_description);
 
   /* Setup stuff specific to a particular environment (baremetal or Linux).
      It can override functions set earlier.  */
