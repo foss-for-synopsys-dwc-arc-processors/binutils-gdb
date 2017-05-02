@@ -7,4 +7,4 @@
 [^:]+:     file format elf32-littlearc
 
 Contents of section \.got:
- [0-9a-f]+ 00000000 04000000 .+
+ [0-9a-f]+ 08000000 0c000000 +.+
