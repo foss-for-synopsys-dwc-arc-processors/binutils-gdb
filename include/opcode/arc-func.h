@@ -283,10 +283,10 @@ replace_disp12s (unsigned insn, int value ATTRIBUTE_UNUSED)
 #ifndef REPLACE_jli
 #define REPLACE_jli
 ATTRIBUTE_UNUSED static unsigned
-replace_jli (unsigned insn, int value ATTRIBUTE_UNUSED)
+replace_jli (unsigned insn, int value)
 {
   insn = insn & ~0x3ff;
-  insn |= (((value / 4) >> 0) & 0x03ff) << 0;
+  insn |= ((value >> 0) & 0x03ff) << 0;
 
   return insn;
 }

@@ -415,11 +415,11 @@ ARC_RELOC_HOWTO(ARC_S25H_PCREL_PLT, 61, \
                 ( ME ( ( ( ( L + A ) - P ) >> 1 ) ) ))
 
 ARC_RELOC_HOWTO(ARC_JLI_SECTOFF, 63, \
-                2, \
+                1, \
                 10, \
                 replace_jli, \
                 bitfield, \
-                ( ( S - JLI ) ))
+                ( ( S - JLI ) >> 2))
 
 ARC_RELOC_HOWTO(ARC_TLS_DTPMOD, 66, \
                 2, \

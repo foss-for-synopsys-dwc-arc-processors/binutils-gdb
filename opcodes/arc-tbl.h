@@ -8200,9 +8200,6 @@
 { "jl", 0x20E20F80, 0xF8FF0FE0, ARC_OPCODE_ARCv2EM | ARC_OPCODE_ARCv2HS, JUMP, NONE, { LIMM }, { C_CC }},
 
 /* jli_s u10 010110uuuuuuuuuu.  */
-{ "jli_s", 0x00005800, 0x0000FC00, ARC_OPCODE_ARCv2EM | ARC_OPCODE_ARCv2HS, JLI, CD1, { UIMM10_6_S }, { 0 }},
-
-/* jli_s u10 010110uuuuuuuuuu.  */
 { "jli_s", 0x00005800, 0x0000FC00, ARC_OPCODE_ARCv2EM | ARC_OPCODE_ARCv2HS, JLI, CD1, { UIMM10_6_S_JLIOFF }, { 0 }},
 
 /* jl_s b 01111bbb01000000.  */
