@@ -9227,6 +9227,12 @@ elfcore_grok_aarch_hw_watch (bfd *abfd, Elf_Internal_Note *note)
   return elfcore_make_note_pseudosection (abfd, ".reg-aarch-hw-watch", note);
 }
 
+static bfd_boolean
+elfcore_grok_arc_v2 (bfd *abfd, Elf_Internal_Note *note)
+{
+  return elfcore_make_note_pseudosection (abfd, ".reg-arc-v2", note);
+}
+
 #if defined (HAVE_PRPSINFO_T)
 typedef prpsinfo_t   elfcore_psinfo_t;
 #if defined (HAVE_PRPSINFO32_T)		/* Sparc64 cross Sparc32 */
@@ -9678,6 +9684,13 @@ elfcore_grok_note (bfd *abfd, Elf_Internal_Note *note)
       if (note->namesz == 6
 	  && strcmp (note->namedata, "LINUX") == 0)
 	return elfcore_grok_s390_vxrs_high (abfd, note);
+      else
+	return TRUE;
+
+    case NT_ARC_V2:
+      if (note->namesz == 6
+	  && strcmp (note->namedata, "LINUX") == 0)
+	return elfcore_grok_arc_v2 (abfd, note);
       else
 	return TRUE;
 
@@ -10786,6 +10799,18 @@ elfcore_write_aarch_hw_watch (bfd *abfd,
 }
 
 char *
+elfcore_write_arc_v2 (bfd *abfd,
+		      char *buf,
+		      int *bufsiz,
+		      const void *arc_v2,
+		      int size)
+{
+  char *note_name = "LINUX";
+  return elfcore_write_note (abfd, buf, bufsiz,
+			     note_name, NT_ARC_V2, arc_v2, size);
+}
+
+char *
 elfcore_write_register_note (bfd *abfd,
 			     char *buf,
 			     int *bufsiz,
@@ -10833,6 +10858,8 @@ elfcore_write_register_note (bfd *abfd,
     return elfcore_write_aarch_hw_break (abfd, buf, bufsiz, data, size);
   if (strcmp (section, ".reg-aarch-hw-watch") == 0)
     return elfcore_write_aarch_hw_watch (abfd, buf, bufsiz, data, size);
+  if (strcmp (section, ".reg-arc-v2") == 0)
+    return elfcore_write_arc_v2 (abfd, buf, bufsiz, data, size);
   return NULL;
 }
 
