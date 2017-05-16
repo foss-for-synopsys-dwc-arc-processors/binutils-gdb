@@ -71,9 +71,6 @@ const bfd_arch_info_type bfd_arc_arch =
 static const bfd_arch_info_type *
 arc_compatible (const bfd_arch_info_type *a, const bfd_arch_info_type *b)
 {
-  const bfd_arch_info_type * const arc600 = &bfd_arc_arch;
-  const bfd_arch_info_type * const arc601 = &arch_info_struct[1];
-  const bfd_arch_info_type * const arc700 = &arch_info_struct[2];
   const bfd_arch_info_type * const em = &arch_info_struct[5];
   const bfd_arch_info_type * const hs = &arch_info_struct[6];
 
@@ -89,10 +86,6 @@ arc_compatible (const bfd_arch_info_type *a, const bfd_arch_info_type *b)
   if (a->bits_per_word != b->bits_per_word)
     return NULL;
 
-  /* HS and EM are not compatible.  */
-  if ((a == em && b == hs) || (a == hs && b == em))
-    return NULL;
-
   /* ARCv2|EM and EM.  */
   if ((a->mach == bfd_mach_arc_arcv2 && b == em)
       || (b->mach == bfd_mach_arc_arcv2 && a == em))
@@ -103,24 +96,5 @@ arc_compatible (const bfd_arch_info_type *a, const bfd_arch_info_type *b)
       || (b->mach == bfd_mach_arc_arcv2 && a == hs))
     return hs;
 
-  /* ARC700.  */
-  if (a->mach == bfd_mach_arc_arc700 && b->mach == bfd_mach_arc_arc700)
-    return arc700;
-
-  /* ARC600.  */
-  if (a->mach == bfd_mach_arc_arc600 && b->mach == bfd_mach_arc_arc600)
-    return arc600;
-
-  /* ARC601.  */
-  if (a->mach == bfd_mach_arc_arc601 && b->mach == bfd_mach_arc_arc601)
-    return arc601;
-
-  /* A4 and A5 are not present in arch_info_struct, so always return A.  */
-  if (a->mach == bfd_mach_arc_a4 && b->mach == bfd_mach_arc_a4)
-    return a;
-
-  if (a->mach == bfd_mach_arc_a5 && b->mach == bfd_mach_arc_a5)
-    return a;
-
-  return NULL;
+  return bfd_default_compatible (a, b);
 }
