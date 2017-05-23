@@ -45,12 +45,21 @@
 /* Defines ps_err_e, struct ps_prochandle.  */
 #include "gdb_proc_service.h"
 
+/* Linux starting with 4.12 supports NT_ARC_V2 note type, which adds R30, R58
+   and R59 registers.  */
+#ifdef NT_ARC_V2
+#define HAS_ARC_V2_REGS
+#endif
+
 /* Fetch greg-register(s) from process/thread TID and store value(s) in GDB's
  * register array.  */
 
 static void fetch_gregs (struct regcache *regcache, int regnum);
 static void store_gregs (struct regcache *regcache, int regnum);
 static void arc_linux_prepare_to_resume (struct lwp_info *lwp);
+static void supply_v2_regset (struct regcache *regcache, const void *v2_regs);
+static void collect_v2_regset (const struct regcache *regcache, void *v2_regs,
+			       int regno);
 
 /* On GNU/Linux, threads are implemented as pseudo-processes, in which
    case we may be tracing more than one process at a time.  In that case,
@@ -88,6 +97,27 @@ fetch_gregs (struct regcache *regcache, int regnum)
   supply_gregset (regcache, (const gdb_gregset_t *) &regs);
 }
 
+static void
+fetch_v2_regs (struct regcache *regcache, int regnum)
+{
+#ifdef HAS_ARC_V2_REGS
+  bfd_byte buffer[ARC_LINUX_SIZEOF_V2_REGSET];
+  int tid = get_thread_id (inferior_ptid);
+  struct iovec iov;
+
+  iov.iov_base = &buffer;
+  iov.iov_len = ARC_LINUX_SIZEOF_V2_REGSET;
+
+  if (ptrace (PTRACE_GETREGSET, tid, NT_ARC_V2, (void *) &iov) < 0)
+    {
+      perror_with_name (_("Couldn't get registers"));
+      return;
+    }
+
+  supply_v2_regset (regcache, buffer);
+#endif
+}
+
 /* Store greg-register(s) in GDB's register array into the process/thread
    specified by TID.  */
 
@@ -116,6 +146,33 @@ store_gregs (struct regcache *regcache, int regnum)
     }
 }
 
+static void
+store_v2_regs (struct regcache *regcache, int regnum)
+{
+#ifdef HAS_ARC_V2_REGS
+  bfd_byte buffer[ARC_LINUX_SIZEOF_V2_REGSET];
+  int tid = get_thread_id (inferior_ptid);
+  struct iovec iov;
+
+  iov.iov_base = &buffer;
+  iov.iov_len = ARC_LINUX_SIZEOF_V2_REGSET;
+
+  if (ptrace (PTRACE_GETREGSET, tid, NT_ARC_V2, (void *) &iov) < 0)
+    {
+      perror_with_name (_("Couldn't get registers"));
+      return;
+    }
+
+  collect_v2_regset (regcache, buffer, regnum);
+
+  if (ptrace (PTRACE_SETREGSET, tid, NT_ARC_V2, (void *) &iov) < 0)
+    {
+      perror_with_name (_("Couldn't write registers"));
+      return;
+    }
+#endif
+}
+
 /* Function exported to target ops.  */
 
 static void
@@ -123,6 +180,7 @@ arc_linux_fetch_inferior_registers (struct target_ops *ops,
 				    struct regcache *regcache, int regnum)
 {
   fetch_gregs (regcache, regnum);
+  fetch_v2_regs (regcache, regnum);
 }
 
 /* Function exported to target ops.  */
@@ -132,6 +190,7 @@ arc_linux_store_inferior_registers (struct target_ops *ops,
 				    struct regcache *regcache, int regnum)
 {
   store_gregs (regcache, regnum);
+  store_v2_regs (regcache, regnum);
 }
 
 
@@ -142,11 +201,24 @@ fill_gregset (const struct regcache *regcache,
   arc_linux_collect_gregset (NULL, regcache, regno, gregsetp, 0);
 }
 
+static void
+collect_v2_regset (const struct regcache *regcache,
+		   void *regs_v2, int regno)
+{
+  arc_linux_collect_v2_regset (NULL, regcache, regno, regs_v2, 0);
+}
+
 
 void
 supply_gregset (struct regcache *regcache, const gdb_gregset_t *gregsetp)
 {
   arc_linux_supply_gregset (NULL, regcache, -1, gregsetp, 0);
+}
+
+static void
+supply_v2_regset (struct regcache *regcache, const void *regs_v2)
+{
+  arc_linux_supply_v2_regset (NULL, regcache, -1, regs_v2, 0);
 }
 
 
