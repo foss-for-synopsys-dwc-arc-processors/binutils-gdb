@@ -217,6 +217,10 @@ case ${gdb_host} in
 		NATDEPFILES="${NATDEPFILES} aarch64-linux-nat.o \
 		aarch32-linux-nat.o aarch64-linux-hw-point.o aarch64-linux.o"
 		;;
+	    arc)
+		# Host: ARC based machine running GNU/Linux
+		NATDEPFILES="${NATDEPFILES} arc-linux-nat.o"
+		;;
 	    arm)
 		# Host: ARM based machine running GNU/Linux
 		NATDEPFILES="${NATDEPFILES} arm-linux-nat.o \
