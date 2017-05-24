@@ -48,7 +48,7 @@
 /* Linux starting with 4.12 supports NT_ARC_V2 note type, which adds R30, R58
    and R59 registers.  */
 #ifdef NT_ARC_V2
-#define HAS_ARC_V2_REGS
+#define ARC_HAS_V2_REGS
 #endif
 
 /* Fetch greg-register(s) from process/thread TID and store value(s) in GDB's
@@ -57,9 +57,11 @@
 static void fetch_gregs (struct regcache *regcache, int regnum);
 static void store_gregs (struct regcache *regcache, int regnum);
 static void arc_linux_prepare_to_resume (struct lwp_info *lwp);
+#ifdef ARC_HAS_V2_REGSET
 static void supply_v2_regset (struct regcache *regcache, const void *v2_regs);
 static void collect_v2_regset (const struct regcache *regcache, void *v2_regs,
 			       int regno);
+#endif
 
 /* On GNU/Linux, threads are implemented as pseudo-processes, in which
    case we may be tracing more than one process at a time.  In that case,
@@ -100,7 +102,7 @@ fetch_gregs (struct regcache *regcache, int regnum)
 static void
 fetch_v2_regs (struct regcache *regcache, int regnum)
 {
-#ifdef HAS_ARC_V2_REGS
+#ifdef ARC_HAS_V2_REGS
   bfd_byte buffer[ARC_LINUX_SIZEOF_V2_REGSET];
   int tid = get_thread_id (inferior_ptid);
   struct iovec iov;
@@ -149,7 +151,7 @@ store_gregs (struct regcache *regcache, int regnum)
 static void
 store_v2_regs (struct regcache *regcache, int regnum)
 {
-#ifdef HAS_ARC_V2_REGS
+#ifdef ARC_HAS_V2_REGS
   bfd_byte buffer[ARC_LINUX_SIZEOF_V2_REGSET];
   int tid = get_thread_id (inferior_ptid);
   struct iovec iov;
@@ -201,12 +203,14 @@ fill_gregset (const struct regcache *regcache,
   arc_linux_collect_gregset (NULL, regcache, regno, gregsetp, 0);
 }
 
+#ifdef ARC_HAS_V2_REGSET
 static void
 collect_v2_regset (const struct regcache *regcache,
 		   void *regs_v2, int regno)
 {
   arc_linux_collect_v2_regset (NULL, regcache, regno, regs_v2, 0);
 }
+#endif
 
 
 void
@@ -215,11 +219,13 @@ supply_gregset (struct regcache *regcache, const gdb_gregset_t *gregsetp)
   arc_linux_supply_gregset (NULL, regcache, -1, gregsetp, 0);
 }
 
+#ifdef ARC_HAS_V2_REGSET
 static void
 supply_v2_regset (struct regcache *regcache, const void *regs_v2)
 {
   arc_linux_supply_v2_regset (NULL, regcache, -1, regs_v2, 0);
 }
+#endif
 
 
 void
