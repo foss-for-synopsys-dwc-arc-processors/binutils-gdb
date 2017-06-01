@@ -45,6 +45,7 @@
 /* From <include/uapi/asm/sigcontext.h> and <include/uapi/asm/ptrace.h>.  */
 
 static const int arc_linux_sc_reg_offset[] = {
+#if 0
   22 * ARC_REGISTER_SIZE,	/* r0       */
   21 * ARC_REGISTER_SIZE,	/* r1       */
   20 * ARC_REGISTER_SIZE,	/* r2       */
@@ -134,6 +135,57 @@ static const int arc_linux_sc_reg_offset[] = {
   REGISTER_NOT_PRESENT,		/* bta_l2   */
   REGISTER_NOT_PRESENT,		/* irq pulse */
   REGISTER_NOT_PRESENT,		/* irq pend */
+#else
+  /* R0 - R12.  */
+  REGOFF (22), REGOFF (21), REGOFF (20), REGOFF (19),
+  REGOFF (18), REGOFF (17), REGOFF (16), REGOFF (15),
+  REGOFF (14), REGOFF (13), REGOFF (12), REGOFF (11),
+  REGOFF (10),
+
+  /* R13 - R25.  */
+#if 1
+  REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT,
+  REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT,
+  REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT,
+  REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT,
+  REGISTER_NOT_PRESENT,
+#else
+  REGOFF (37), REGOFF (36), REGOFF (35), REGOFF (34),
+  REGOFF (33), REGOFF (32), REGOFF (31), REGOFF (30),
+  REGOFF (29), REGOFF (28), REGOFF (27), REGOFF (26),
+  REGOFF (25),
+#endif
+
+  REGOFF (9),			/* R26 (GP) */
+  REGOFF (8),			/* FP */
+  REGOFF (23),			/* SP */
+  REGISTER_NOT_PRESENT,		/* ILINK */
+  REGISTER_NOT_PRESENT,		/* R30 */
+  REGOFF (7),			/* BLINK */
+
+  /* R32 - R59.  */
+  REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT,
+  REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT,
+  REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT,
+  REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT,
+  REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT,
+  REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT,
+  REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT,
+  REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT,
+  REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT, REGISTER_NOT_PRESENT,
+  REGISTER_NOT_PRESENT,
+
+  REGOFF (4),			/* LP_COUNT */
+  REGISTER_NOT_PRESENT,		/* RESERVED */
+  REGISTER_NOT_PRESENT,		/* LIMM */
+  REGISTER_NOT_PRESENT,		/* PCL */
+
+  REGOFF (6),			/* PC  */
+  REGOFF (5),			/* STATUS32 */
+  REGOFF (2),			/* LP_START */
+  REGOFF (3),			/* LP_END */
+  REGOFF (1),			/* BTA */
+#endif
 };
 
 /* arc_linux_core_reg_offsets[i] is the offset in the .reg section of GDB
@@ -200,7 +252,11 @@ arc_linux_is_sigtramp (struct frame_info *this_frame)
 {
   static const gdb_byte arc_sigtramp_insns_le[] = {
     0x8a, 0x20, 0xc2, 0x12,	/* mov  r8,nr_rt_sigreturn */
+#if 0
     0x6f, 0x22, 0x3f, 0x00	/* swi */
+#else
+    0x1e, 0x78 /* trap_s 0 */
+#endif
   };
   static const gdb_byte arc_sigtramp_insns_be[] = {
     0x12, 0xc2, 0x20, 0x8a,	/* mov  r8,nr_rt_sigreturn */
@@ -250,7 +306,7 @@ arc_linux_is_sigtramp (struct frame_info *this_frame)
 static CORE_ADDR
 arc_linux_sigcontext_addr (struct frame_info *this_frame)
 {
-  return (CORE_ADDR) get_frame_sp (this_frame);
+  return (CORE_ADDR) get_frame_sp (this_frame) + 0x94 ;
 }
 
 /* Implement the "cannot_fetch_register" gdbarch method.  */
