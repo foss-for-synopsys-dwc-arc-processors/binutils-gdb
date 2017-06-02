@@ -48,7 +48,7 @@
 /* Linux starting with 4.12 supports NT_ARC_V2 note type, which adds R30, R58
    and R59 registers.  */
 #ifdef NT_ARC_V2
-#define ARC_HAS_V2_REGS
+#define ARC_HAS_V2_REGSET
 #endif
 
 /* Fetch greg-register(s) from process/thread TID and store value(s) in GDB's
@@ -102,7 +102,7 @@ fetch_gregs (struct regcache *regcache, int regnum)
 static void
 fetch_v2_regs (struct regcache *regcache, int regnum)
 {
-#ifdef ARC_HAS_V2_REGS
+#ifdef ARC_HAS_V2_REGSET
   bfd_byte buffer[ARC_LINUX_SIZEOF_V2_REGSET];
   int tid = get_thread_id (inferior_ptid);
   struct iovec iov;
@@ -151,7 +151,7 @@ store_gregs (struct regcache *regcache, int regnum)
 static void
 store_v2_regs (struct regcache *regcache, int regnum)
 {
-#ifdef ARC_HAS_V2_REGS
+#ifdef ARC_HAS_V2_REGSET
   bfd_byte buffer[ARC_LINUX_SIZEOF_V2_REGSET];
   int tid = get_thread_id (inferior_ptid);
   struct iovec iov;
