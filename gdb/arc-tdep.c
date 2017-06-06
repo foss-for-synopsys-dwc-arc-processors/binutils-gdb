@@ -1741,7 +1741,7 @@ arc_dwarf2_frame_init_reg (struct gdbarch *gdbarch, int regnum,
     within signal handlers.  */
 
 static struct arc_frame_cache *
-arc_sigtramp_frame_cache (struct frame_info *this_frame, void **this_cache)
+arc_make_sigtramp_frame_cache (struct frame_info *this_frame, void **this_cache)
 {
   if (arc_debug)
     debug_printf ("arc: sigtramp_frame_cache\n");
@@ -1803,7 +1803,11 @@ arc_sigtramp_frame_this_id (struct frame_info *this_frame,
 
   gdbarch = get_frame_arch (this_frame);
 
-  stack_addr = arc_sigtramp_frame_cache (this_frame, this_cache)->prev_sp;
+  if (*this_cache == NULL)
+    *this_cache = arc_make_sigtramp_frame_cache (this_frame, this_cache);
+
+  struct arc_frame_cache *cache = (struct arc_frame_cache *) *this_cache;
+  stack_addr = cache->prev_sp;
   code_addr = get_frame_register_unsigned (this_frame,
 					   gdbarch_pc_regnum (gdbarch));
   *this_id = frame_id_build (stack_addr, code_addr);
@@ -1816,14 +1820,15 @@ arc_sigtramp_frame_prev_register (struct frame_info *this_frame,
 				  void **this_cache, int regnum)
 {
   /* Make sure we've initialized the cache.  */
-  struct arc_frame_cache *info =
-    arc_sigtramp_frame_cache (this_frame, this_cache);
+  if (*this_cache == NULL)
+    *this_cache = arc_make_sigtramp_frame_cache (this_frame, this_cache);
 
   if (arc_debug)
     debug_printf ("arc: sigtramp_frame_prev_register (regnum = %d)\n",
 		  regnum);
 
-  return trad_frame_get_prev_register (this_frame, info->saved_regs, regnum);
+  struct arc_frame_cache *cache = (struct arc_frame_cache *) *this_cache;
+  return trad_frame_get_prev_register (this_frame, cache->saved_regs, regnum);
 }
 
 /* Frame sniffer for signal handler frame.  Only recognize a frame if we have
