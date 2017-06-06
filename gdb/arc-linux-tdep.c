@@ -245,6 +245,8 @@ static const int arc_linux_core_reg_offsets[] = {
      mov r8,nr_sigreturn
      swi
 
+   On ARC uClibc Linux this function is called __default_rt_sa_restorer.
+
    Returns TRUE if this is a sigtramp frame.  */
 
 static int
