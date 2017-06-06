@@ -2323,11 +2323,11 @@ arc_dump_tdep (struct gdbarch *gdbarch, struct ui_file *file)
 
   fprintf_unfiltered (file, "arc_dump_tdep: jb_pc = %i\n", tdep->jb_pc);
 
-  fprintf_unfiltered (file, "arc_dump_tdep: is_sigtramp = %s\n",
+  fprintf_unfiltered (file, "arc_dump_tdep: is_sigtramp = <%s>\n",
 		      host_address_to_string (tdep->is_sigtramp));
-  fprintf_unfiltered (file, "arc_dump_tdep: sigcontext_addr = %s\n",
+  fprintf_unfiltered (file, "arc_dump_tdep: sigcontext_addr = <%s>\n",
 		      host_address_to_string (tdep->sigcontext_addr));
-  fprintf_unfiltered (file, "arc_dump_tdep: sc_reg_offset = %s\n",
+  fprintf_unfiltered (file, "arc_dump_tdep: sc_reg_offset = <%s>\n",
 		      host_address_to_string (tdep->sc_reg_offset));
   fprintf_unfiltered (file, "arc_dump_tdep: sc_num_regs = %d\n",
 		      tdep->sc_num_regs);
