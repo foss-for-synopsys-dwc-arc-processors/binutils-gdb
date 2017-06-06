@@ -1778,27 +1778,23 @@ arc_make_sigtramp_frame_cache (struct frame_info *this_frame)
   return cache;
 }
 
-/* Get the frame_id of a signal handler frame.  */
+/* Implement the "this_id" frame_unwind method for signal trampoline
+   frames. */
 
 static void
 arc_sigtramp_frame_this_id (struct frame_info *this_frame,
 			    void **this_cache, struct frame_id *this_id)
 {
-  struct gdbarch *gdbarch;
-  CORE_ADDR stack_addr;
-  CORE_ADDR code_addr;
-
   if (arc_debug)
     debug_printf ("arc: sigtramp_frame_this_id\n");
-
-  gdbarch = get_frame_arch (this_frame);
 
   if (*this_cache == NULL)
     *this_cache = arc_make_sigtramp_frame_cache (this_frame);
 
+  struct gdbarch *gdbarch = get_frame_arch (this_frame);
   struct arc_frame_cache *cache = (struct arc_frame_cache *) *this_cache;
-  stack_addr = cache->prev_sp;
-  code_addr = get_frame_register_unsigned (this_frame,
+  CORE_ADDR stack_addr = cache->prev_sp;
+  CORE_ADDR code_addr = get_frame_register_unsigned (this_frame,
 					   gdbarch_pc_regnum (gdbarch));
   *this_id = frame_id_build (stack_addr, code_addr);
 }
