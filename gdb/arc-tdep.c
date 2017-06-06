@@ -1747,9 +1747,9 @@ arc_make_sigtramp_frame_cache (struct frame_info *this_frame)
     debug_printf ("arc: sigtramp_frame_cache\n");
 
   struct gdbarch_tdep *tdep = gdbarch_tdep (get_frame_arch (this_frame));
-  /* Copied from arc_make_frame_cache.  */
+
   /* Allocate new frame cache instance and space for saved register info.
-   * FRAME_OBSTACK_ZALLOC will initialize fields to zeroes.  */
+     FRAME_OBSTACK_ZALLOC will initialize fields to zeroes.  */
   struct arc_frame_cache *cache
     = FRAME_OBSTACK_ZALLOC (struct arc_frame_cache);
   cache->saved_regs = trad_frame_alloc_saved_regs (this_frame);
@@ -1757,26 +1757,22 @@ arc_make_sigtramp_frame_cache (struct frame_info *this_frame)
   /* Get the stack pointer and use it as the frame base.  */
   cache->prev_sp = arc_frame_base_address (this_frame, NULL);
 
-  /* If the ARC-private target-dependent info has a table of offsets of
-     saved register contents within a O/S signal context structure.  */
-  if (tdep->sc_reg_offset)
-    {
-      /* Find the address of the sigcontext structure.  */
-      CORE_ADDR addr = tdep->sigcontext_addr (this_frame);
-      unsigned int i;
+  /* If the ARC-private target-dependent info doesn't have a table of offsets
+     of saved register contents within a O/S signal context structure, then
+     there is nothing to analyze.  */
+  if (tdep->sc_reg_offset == NULL)
+    return cache;
 
-      /* For each register, if its contents have been saved within the
-	 sigcontext structure, determine the address of those contents.
-       */
-      gdb_assert (tdep->sc_num_regs <= ARC_LAST_REGNUM);
-      for (i = 0; i < tdep->sc_num_regs; i++)
-	{
-	  if (tdep->sc_reg_offset[i] != ARC_OFFSET_NO_REGISTER)
-	    {
-	      cache->saved_regs[i].addr =
-		(LONGEST) (addr + tdep->sc_reg_offset[i]);
-	    }
-	}
+  /* Find the address of the sigcontext structure.  */
+  CORE_ADDR addr = tdep->sigcontext_addr (this_frame);
+
+  /* For each register, if its contents have been saved within the
+     sigcontext structure, determine the address of those contents.  */
+  gdb_assert (tdep->sc_num_regs <= ARC_LAST_REGNUM);
+  for (int i = 0; i < tdep->sc_num_regs; i++)
+    {
+      if (tdep->sc_reg_offset[i] != ARC_OFFSET_NO_REGISTER)
+	cache->saved_regs[i].addr = addr + tdep->sc_reg_offset[i];
     }
 
   return cache;
