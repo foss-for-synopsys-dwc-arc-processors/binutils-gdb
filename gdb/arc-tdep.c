@@ -1741,51 +1741,45 @@ arc_dwarf2_frame_init_reg (struct gdbarch *gdbarch, int regnum,
     within signal handlers.  */
 
 static struct arc_frame_cache *
-arc_make_sigtramp_frame_cache (struct frame_info *this_frame, void **this_cache)
+arc_make_sigtramp_frame_cache (struct frame_info *this_frame)
 {
   if (arc_debug)
     debug_printf ("arc: sigtramp_frame_cache\n");
 
-  if (*this_cache == NULL)
+  struct gdbarch_tdep *tdep = gdbarch_tdep (get_frame_arch (this_frame));
+  /* Copied from arc_make_frame_cache.  */
+  /* Allocate new frame cache instance and space for saved register info.
+   * FRAME_OBSTACK_ZALLOC will initialize fields to zeroes.  */
+  struct arc_frame_cache *cache
+    = FRAME_OBSTACK_ZALLOC (struct arc_frame_cache);
+  cache->saved_regs = trad_frame_alloc_saved_regs (this_frame);
+
+  /* Get the stack pointer and use it as the frame base.  */
+  cache->prev_sp = arc_frame_base_address (this_frame, NULL);
+
+  /* If the ARC-private target-dependent info has a table of offsets of
+     saved register contents within a O/S signal context structure.  */
+  if (tdep->sc_reg_offset)
     {
-      struct gdbarch_tdep *tdep = gdbarch_tdep (get_frame_arch (this_frame));
-      /* Copied from arc_make_frame_cache.  */
-      /* Allocate new frame cache instance and space for saved register info.
-       * FRAME_OBSTACK_ZALLOC will initialize fields to zeroes.  */
-      struct arc_frame_cache *cache
-	= FRAME_OBSTACK_ZALLOC (struct arc_frame_cache);
-      cache->saved_regs = trad_frame_alloc_saved_regs (this_frame);
+      /* Find the address of the sigcontext structure.  */
+      CORE_ADDR addr = tdep->sigcontext_addr (this_frame);
+      unsigned int i;
 
-
-      *this_cache = cache;
-
-      /* Get the stack pointer and use it as the frame base.  */
-      cache->prev_sp = arc_frame_base_address (this_frame, NULL);
-
-      /* If the ARC-private target-dependent info has a table of offsets of
-         saved register contents within a O/S signal context structure.  */
-      if (tdep->sc_reg_offset)
+      /* For each register, if its contents have been saved within the
+	 sigcontext structure, determine the address of those contents.
+       */
+      gdb_assert (tdep->sc_num_regs <= ARC_LAST_REGNUM);
+      for (i = 0; i < tdep->sc_num_regs; i++)
 	{
-	  /* Find the address of the sigcontext structure.  */
-	  CORE_ADDR addr = tdep->sigcontext_addr (this_frame);
-	  unsigned int i;
-
-	  /* For each register, if its contents have been saved within the
-	     sigcontext structure, determine the address of those contents.
-	   */
-	  gdb_assert (tdep->sc_num_regs <= ARC_LAST_REGNUM);
-	  for (i = 0; i < tdep->sc_num_regs; i++)
+	  if (tdep->sc_reg_offset[i] != ARC_OFFSET_NO_REGISTER)
 	    {
-	      if (tdep->sc_reg_offset[i] != ARC_OFFSET_NO_REGISTER)
-		{
-		  cache->saved_regs[i].addr =
-		    (LONGEST) (addr + tdep->sc_reg_offset[i]);
-		}
+	      cache->saved_regs[i].addr =
+		(LONGEST) (addr + tdep->sc_reg_offset[i]);
 	    }
 	}
     }
-  return (struct arc_frame_cache *) *this_cache;
 
+  return cache;
 }
 
 /* Get the frame_id of a signal handler frame.  */
@@ -1804,7 +1798,7 @@ arc_sigtramp_frame_this_id (struct frame_info *this_frame,
   gdbarch = get_frame_arch (this_frame);
 
   if (*this_cache == NULL)
-    *this_cache = arc_make_sigtramp_frame_cache (this_frame, this_cache);
+    *this_cache = arc_make_sigtramp_frame_cache (this_frame);
 
   struct arc_frame_cache *cache = (struct arc_frame_cache *) *this_cache;
   stack_addr = cache->prev_sp;
@@ -1821,7 +1815,7 @@ arc_sigtramp_frame_prev_register (struct frame_info *this_frame,
 {
   /* Make sure we've initialized the cache.  */
   if (*this_cache == NULL)
-    *this_cache = arc_make_sigtramp_frame_cache (this_frame, this_cache);
+    *this_cache = arc_make_sigtramp_frame_cache (this_frame);
 
   if (arc_debug)
     debug_printf ("arc: sigtramp_frame_prev_register (regnum = %d)\n",
