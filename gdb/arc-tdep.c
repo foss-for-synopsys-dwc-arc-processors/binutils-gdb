@@ -1737,8 +1737,8 @@ arc_dwarf2_frame_init_reg (struct gdbarch *gdbarch, int regnum,
     reg->how = DWARF2_FRAME_REG_CFA;
 }
 
-/*  Signal trampoline frame unwinder.  Allows frame unwinding to happen from
-    within signal handlers.  */
+/*  Signal trampoline frame unwinder.  Allows frame unwinding to happen
+    from within signal handlers.  */
 
 static struct arc_frame_cache *
 arc_make_sigtramp_frame_cache (struct frame_info *this_frame)
@@ -1749,16 +1749,15 @@ arc_make_sigtramp_frame_cache (struct frame_info *this_frame)
   struct gdbarch_tdep *tdep = gdbarch_tdep (get_frame_arch (this_frame));
 
   /* Allocate new frame cache instance and space for saved register info.  */
-  struct arc_frame_cache *cache
-    = FRAME_OBSTACK_ZALLOC (struct arc_frame_cache);
+  struct arc_frame_cache *cache = FRAME_OBSTACK_ZALLOC (struct arc_frame_cache);
   cache->saved_regs = trad_frame_alloc_saved_regs (this_frame);
 
   /* Get the stack pointer and use it as the frame base.  */
   cache->prev_sp = arc_frame_base_address (this_frame, NULL);
 
-  /* If the ARC-private target-dependent info doesn't have a table of offsets
-     of saved register contents within a O/S signal context structure, then
-     there is nothing to analyze.  */
+  /* If the ARC-private target-dependent info doesn't have a table of
+     offsets of saved register contents within a O/S signal context
+     structure, then there is nothing to analyze.  */
   if (tdep->sc_reg_offset == NULL)
     return cache;
 
@@ -1793,8 +1792,8 @@ arc_sigtramp_frame_this_id (struct frame_info *this_frame,
   struct gdbarch *gdbarch = get_frame_arch (this_frame);
   struct arc_frame_cache *cache = (struct arc_frame_cache *) *this_cache;
   CORE_ADDR stack_addr = cache->prev_sp;
-  CORE_ADDR code_addr = get_frame_register_unsigned (this_frame,
-						 gdbarch_pc_regnum (gdbarch));
+  CORE_ADDR code_addr
+    = get_frame_register_unsigned (this_frame, gdbarch_pc_regnum (gdbarch));
   *this_id = frame_id_build (stack_addr, code_addr);
 }
 
@@ -1815,12 +1814,13 @@ arc_sigtramp_frame_prev_register (struct frame_info *this_frame,
   return trad_frame_get_prev_register (this_frame, cache->saved_regs, regnum);
 }
 
-/* Frame sniffer for signal handler frame.  Only recognize a frame if we have
-   a sigcontext_addr handler in the target dependency.  */
+/* Frame sniffer for signal handler frame.  Only recognize a frame if we
+   have a sigcontext_addr handler in the target dependency.  */
 
 static int
 arc_sigtramp_frame_sniffer (const struct frame_unwind *self,
-			    struct frame_info *this_frame, void **this_cache)
+			    struct frame_info *this_frame,
+			    void **this_cache)
 {
   struct gdbarch_tdep *tdep;
 
@@ -1853,8 +1853,9 @@ static const struct frame_unwind arc_frame_unwind = {
   NULL
 };
 
-/* Structure defining the ARC signal frame unwind functions.  We use a custom
-   sniffer, since we must only accept this frame in the right context.  */
+/* Structure defining the ARC signal frame unwind functions.  Custom
+   sniffer is used, because this frame must be accepted only in the right
+   context.  */
 
 static const struct frame_unwind arc_sigtramp_frame_unwind = {
   SIGTRAMP_FRAME,
