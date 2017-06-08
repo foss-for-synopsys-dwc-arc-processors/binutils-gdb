@@ -1748,8 +1748,7 @@ arc_make_sigtramp_frame_cache (struct frame_info *this_frame)
 
   struct gdbarch_tdep *tdep = gdbarch_tdep (get_frame_arch (this_frame));
 
-  /* Allocate new frame cache instance and space for saved register info.
-     FRAME_OBSTACK_ZALLOC will initialize fields to zeroes.  */
+  /* Allocate new frame cache instance and space for saved register info.  */
   struct arc_frame_cache *cache
     = FRAME_OBSTACK_ZALLOC (struct arc_frame_cache);
   cache->saved_regs = trad_frame_alloc_saved_regs (this_frame);
@@ -1779,7 +1778,7 @@ arc_make_sigtramp_frame_cache (struct frame_info *this_frame)
 }
 
 /* Implement the "this_id" frame_unwind method for signal trampoline
-   frames. */
+   frames.  */
 
 static void
 arc_sigtramp_frame_this_id (struct frame_info *this_frame,
@@ -1795,7 +1794,7 @@ arc_sigtramp_frame_this_id (struct frame_info *this_frame,
   struct arc_frame_cache *cache = (struct arc_frame_cache *) *this_cache;
   CORE_ADDR stack_addr = cache->prev_sp;
   CORE_ADDR code_addr = get_frame_register_unsigned (this_frame,
-					   gdbarch_pc_regnum (gdbarch));
+						 gdbarch_pc_regnum (gdbarch));
   *this_id = frame_id_build (stack_addr, code_addr);
 }
 
@@ -1805,20 +1804,19 @@ static struct value *
 arc_sigtramp_frame_prev_register (struct frame_info *this_frame,
 				  void **this_cache, int regnum)
 {
+  if (arc_debug)
+    debug_printf ("arc: sigtramp_frame_prev_register (regnum = %d)\n", regnum);
+
   /* Make sure we've initialized the cache.  */
   if (*this_cache == NULL)
     *this_cache = arc_make_sigtramp_frame_cache (this_frame);
-
-  if (arc_debug)
-    debug_printf ("arc: sigtramp_frame_prev_register (regnum = %d)\n",
-		  regnum);
 
   struct arc_frame_cache *cache = (struct arc_frame_cache *) *this_cache;
   return trad_frame_get_prev_register (this_frame, cache->saved_regs, regnum);
 }
 
 /* Frame sniffer for signal handler frame.  Only recognize a frame if we have
-   a sigcontext_addr hander in the target dependency.  */
+   a sigcontext_addr handler in the target dependency.  */
 
 static int
 arc_sigtramp_frame_sniffer (const struct frame_unwind *self,
@@ -1833,8 +1831,8 @@ arc_sigtramp_frame_sniffer (const struct frame_unwind *self,
 
   /* If we have a sigcontext_addr handler, then just use the default frame
      sniffer.  */
-  if ((tdep->sigcontext_addr != NULL)
-      && (tdep->is_sigtramp != NULL) && tdep->is_sigtramp (this_frame))
+  if ((tdep->sigcontext_addr != NULL) && (tdep->is_sigtramp != NULL)
+      && tdep->is_sigtramp (this_frame))
     return default_frame_sniffer (self, this_frame, this_cache);
   else
     return FALSE;
