@@ -130,8 +130,8 @@ struct gdbarch_tdep
   /* Offset of registers in `struct sigcontext'.  */
   const int *sc_reg_offset;
 
-  /* Number of registers in sc_reg_offsets.  Most likely a ARC_LAST_REGNUM, but
-     in theory it could be less, so it is kept separate.  */
+  /* Number of registers in sc_reg_offsets.  Most likely a ARC_LAST_REGNUM,
+     but in theory it could be less, so it is kept separate.  */
   int sc_num_regs;
 };
 
