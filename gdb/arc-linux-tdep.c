@@ -298,10 +298,10 @@ arc_linux_is_sigtramp (struct frame_info *this_frame)
 
 }
 
-/* Get sigcontext of sigtramp frame.  Assuming THIS_FRAME is a frame following
-   a GNU/Linux sigtramp routine, return the address of the associated
-   sigcontext structure.  That structure can be found in the stack pointer of
-   the frame.
+/* Get sigcontext of sigtramp frame.  Assuming THIS_FRAME is a frame
+   following a GNU/Linux sigtramp routine, return the address of the
+   associated sigcontext structure.  That structure can be found in the
+   stack pointer of the frame.
 
    Returns the address of the sigcontext structure.  */
 
