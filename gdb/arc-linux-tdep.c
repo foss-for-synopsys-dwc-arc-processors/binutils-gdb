@@ -45,97 +45,6 @@
 /* From <include/uapi/asm/sigcontext.h> and <include/uapi/asm/ptrace.h>.  */
 
 static const int arc_linux_sc_reg_offset[] = {
-#if 0
-  22 * ARC_REGISTER_SIZE,	/* r0       */
-  21 * ARC_REGISTER_SIZE,	/* r1       */
-  20 * ARC_REGISTER_SIZE,	/* r2       */
-  19 * ARC_REGISTER_SIZE,	/* r3       */
-  18 * ARC_REGISTER_SIZE,	/* r4       */
-  17 * ARC_REGISTER_SIZE,	/* r5       */
-  16 * ARC_REGISTER_SIZE,	/* r6       */
-  15 * ARC_REGISTER_SIZE,	/* r7       */
-  14 * ARC_REGISTER_SIZE,	/* r8       */
-  13 * ARC_REGISTER_SIZE,	/* r9       */
-  12 * ARC_REGISTER_SIZE,	/* r10      */
-  11 * ARC_REGISTER_SIZE,	/* r11      */
-  10 * ARC_REGISTER_SIZE,	/* r12      */
-  REGISTER_NOT_PRESENT,		/* r13      */
-  REGISTER_NOT_PRESENT,		/* r14      */
-  REGISTER_NOT_PRESENT,		/* r15      */
-  REGISTER_NOT_PRESENT,		/* r16      */
-  REGISTER_NOT_PRESENT,		/* r17      */
-  REGISTER_NOT_PRESENT,		/* r18      */
-  REGISTER_NOT_PRESENT,		/* r19      */
-  REGISTER_NOT_PRESENT,		/* r20      */
-  REGISTER_NOT_PRESENT,		/* r21      */
-  REGISTER_NOT_PRESENT,		/* r22      */
-  REGISTER_NOT_PRESENT,		/* r23      */
-  REGISTER_NOT_PRESENT,		/* r24      */
-  REGISTER_NOT_PRESENT,		/* r25      */
-  9 * ARC_REGISTER_SIZE,	/* r26 (gp) */
-  8 * ARC_REGISTER_SIZE,	/* fp       */
-  23 * ARC_REGISTER_SIZE,	/* sp       */
-  REGISTER_NOT_PRESENT,		/* ilink1   */
-  REGISTER_NOT_PRESENT,		/* ilink2   */
-  7 * ARC_REGISTER_SIZE,	/* blink    */
-
-  REGISTER_NOT_PRESENT,		/* r32      */
-  REGISTER_NOT_PRESENT,		/* r33      */
-  REGISTER_NOT_PRESENT,		/* r34      */
-  REGISTER_NOT_PRESENT,		/* r35      */
-  REGISTER_NOT_PRESENT,		/* r36      */
-  REGISTER_NOT_PRESENT,		/* r37      */
-  REGISTER_NOT_PRESENT,		/* r38      */
-  REGISTER_NOT_PRESENT,		/* r39      */
-  REGISTER_NOT_PRESENT,		/* r40      */
-  REGISTER_NOT_PRESENT,		/* r41      */
-  REGISTER_NOT_PRESENT,		/* r42      */
-  REGISTER_NOT_PRESENT,		/* r43      */
-  REGISTER_NOT_PRESENT,		/* r44      */
-  REGISTER_NOT_PRESENT,		/* r45      */
-  REGISTER_NOT_PRESENT,		/* r46      */
-  REGISTER_NOT_PRESENT,		/* r47      */
-  REGISTER_NOT_PRESENT,		/* r48      */
-  REGISTER_NOT_PRESENT,		/* r49      */
-  REGISTER_NOT_PRESENT,		/* r50      */
-  REGISTER_NOT_PRESENT,		/* r51      */
-  REGISTER_NOT_PRESENT,		/* r52      */
-  REGISTER_NOT_PRESENT,		/* r53      */
-  REGISTER_NOT_PRESENT,		/* r54      */
-  REGISTER_NOT_PRESENT,		/* r55      */
-  REGISTER_NOT_PRESENT,		/* r56      */
-  REGISTER_NOT_PRESENT,		/* r57      */
-  REGISTER_NOT_PRESENT,		/* r58      */
-  REGISTER_NOT_PRESENT,		/* r59      */
-  4 * ARC_REGISTER_SIZE,	/* lp_count */
-  REGISTER_NOT_PRESENT,		/* reserved */
-  REGISTER_NOT_PRESENT,		/* limm     */
-  REGISTER_NOT_PRESENT,		/* pcl      */
-
-  REGISTER_NOT_PRESENT,		/* stop_pc  */
-  2 * ARC_REGISTER_SIZE,	/* lp_start */
-  3 * ARC_REGISTER_SIZE,	/* lp_end   */
-  5 * ARC_REGISTER_SIZE,	/* status32 */
-  REGISTER_NOT_PRESENT,		/* st32_l1  */
-  REGISTER_NOT_PRESENT,		/* st32_l2  */
-  REGISTER_NOT_PRESENT,		/* irq_lv12 */
-  REGISTER_NOT_PRESENT,		/* irq_lev  */
-  REGISTER_NOT_PRESENT,		/* irq_hint */
-  6 * ARC_REGISTER_SIZE,	/* ret      */
-  REGISTER_NOT_PRESENT,		/* erbta    */
-  REGISTER_NOT_PRESENT,		/* erstatus */
-  REGISTER_NOT_PRESENT,		/* ecr      */
-  REGISTER_NOT_PRESENT,		/* efa      */
-  REGISTER_NOT_PRESENT,		/* icause1  */
-  REGISTER_NOT_PRESENT,		/* icause2  */
-  REGISTER_NOT_PRESENT,		/* ienable  */
-  REGISTER_NOT_PRESENT,		/* itrigger */
-  1 * ARC_REGISTER_SIZE,	/* bta      */
-  REGISTER_NOT_PRESENT,		/* bta_l1   */
-  REGISTER_NOT_PRESENT,		/* bta_l2   */
-  REGISTER_NOT_PRESENT,		/* irq pulse */
-  REGISTER_NOT_PRESENT,		/* irq pend */
-#else
   /* R0 - R12.  */
   REGOFF (22), REGOFF (21), REGOFF (20), REGOFF (19),
   REGOFF (18), REGOFF (17), REGOFF (16), REGOFF (15),
@@ -143,18 +52,11 @@ static const int arc_linux_sc_reg_offset[] = {
   REGOFF (10),
 
   /* R13 - R25.  */
-#if 1
   ARC_OFFSET_NO_REGISTER, ARC_OFFSET_NO_REGISTER, ARC_OFFSET_NO_REGISTER,
   ARC_OFFSET_NO_REGISTER, ARC_OFFSET_NO_REGISTER, ARC_OFFSET_NO_REGISTER,
   ARC_OFFSET_NO_REGISTER, ARC_OFFSET_NO_REGISTER, ARC_OFFSET_NO_REGISTER,
   ARC_OFFSET_NO_REGISTER, ARC_OFFSET_NO_REGISTER, ARC_OFFSET_NO_REGISTER,
   ARC_OFFSET_NO_REGISTER,
-#else
-  REGOFF (37), REGOFF (36), REGOFF (35), REGOFF (34),
-  REGOFF (33), REGOFF (32), REGOFF (31), REGOFF (30),
-  REGOFF (29), REGOFF (28), REGOFF (27), REGOFF (26),
-  REGOFF (25),
-#endif
 
   REGOFF (9),			/* R26 (GP) */
   REGOFF (8),			/* FP */
@@ -185,7 +87,6 @@ static const int arc_linux_sc_reg_offset[] = {
   REGOFF (2),			/* LP_START */
   REGOFF (3),			/* LP_END */
   REGOFF (1),			/* BTA */
-#endif
 };
 
 /* arc_linux_core_reg_offsets[i] is the offset in the .reg section of GDB
