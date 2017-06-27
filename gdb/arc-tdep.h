@@ -123,6 +123,24 @@ arc_mach_is_arcv2 (struct gdbarch *gdbarch)
   return gdbarch_bfd_arch_info (gdbarch)->mach == bfd_mach_arc_arcv2;
 }
 
+/* ARC EM and ARC HS are unique BFD arches, however they share the same machine
+   number as "ARCv2".  Checking for the printable name is not perfect, but the
+   only other way would be to compare with elements in the
+   bfd/cpu-arc.c:arch_info_struct[], which is worse, since it would depend on
+   specific element indexes.  */
+
+static inline bool
+arc_arch_is_hs (const struct bfd_arch_info* arch)
+{
+  return CONST_STRNEQ (arch->printable_name, "HS");
+}
+
+static inline bool
+arc_arch_is_em (const struct bfd_arch_info* arch)
+{
+  return CONST_STRNEQ (arch->printable_name, "EM");
+}
+
 /* Function to access ARC disassembler.  Underlying opcodes disassembler will
    print an instruction into stream specified in the INFO, so if it is
    undesired, then this stream should be set to some invisible stream, but it
