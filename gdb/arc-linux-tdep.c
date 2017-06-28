@@ -174,6 +174,10 @@ arc_linux_is_sigtramp (struct frame_info *this_frame)
   CORE_ADDR pc = get_frame_pc (this_frame);
   gdb_byte buf[sizeof (arc_sigtramp_insns_le)];
 
+  if (arc_debug)
+    debug_printf ("arc-linux: arc_linux_is_sigtramp, pc=%s\n",
+		  paddress(gdbarch, pc));
+
   /* Read the memory at the PC.  Since we are stopped any breakpoints will
      have been removed).  */
   if (!safe_frame_unwind_memory (this_frame, pc, buf, INSNS_SIZE))
@@ -544,7 +548,7 @@ arc_linux_init_osabi (struct gdbarch_info info, struct gdbarch *gdbarch)
   tdep->is_sigtramp = arc_linux_is_sigtramp;
   tdep->sigcontext_addr = arc_linux_sigcontext_addr;
   tdep->sc_reg_offset = arc_linux_sc_reg_offset;
-  tdep->sc_num_regs = ARRAY_SIZE (arc_linux_core_reg_offsets);
+  tdep->sc_num_regs = ARRAY_SIZE (arc_linux_sc_reg_offset);
 
   /* If we are using Linux, we have in uClibc
      (libc/sysdeps/linux/arc/bits/setjmp.h):
