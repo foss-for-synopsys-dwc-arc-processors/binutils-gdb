@@ -32,19 +32,13 @@
 
 #define REGOFF(offset) (offset * ARC_REGISTER_SIZE)
 
-/* Mapping between the general-purpose registers in `struct sigcontext' format
-   and GDB's register cache layout.  It should match current target
-   description, currently it is aligned to the "compatible" register layout.
+/* arc_linux_sc_reg_offsets[i] is the offset of register i in the `struct
+   sigcontext'.  Array index is an internal GDB register number, as defined in
+   arc-tdep.h:arc_regnum.
 
-   arc_linux_sc_reg_offset[i] is the sigcontext offset of GDB regnum `i'.
+   From <include/uapi/asm/sigcontext.h> and <include/uapi/asm/ptrace.h>.  */
 
-   At the moment of this writing sigcontext is the same as user_regs_struct
-   used for core dumps.  The only difference is that sigcontext uses only a
-   subset of registers from user_regs_struct, namely "scratch" part.  */
-
-/* From <include/uapi/asm/sigcontext.h> and <include/uapi/asm/ptrace.h>.  */
-
-static const int arc_linux_sc_reg_offset[] = {
+static const int arc_linux_sc_reg_offsets[] = {
   /* R0 - R12.  */
   REGOFF (22), REGOFF (21), REGOFF (20), REGOFF (19),
   REGOFF (18), REGOFF (17), REGOFF (16), REGOFF (15),
@@ -547,8 +541,8 @@ arc_linux_init_osabi (struct gdbarch_info info, struct gdbarch *gdbarch)
   /* Fill in target-dependent info in ARC-private structure.  */
   tdep->is_sigtramp = arc_linux_is_sigtramp;
   tdep->sigcontext_addr = arc_linux_sigcontext_addr;
-  tdep->sc_reg_offset = arc_linux_sc_reg_offset;
-  tdep->sc_num_regs = ARRAY_SIZE (arc_linux_sc_reg_offset);
+  tdep->sc_reg_offset = arc_linux_sc_reg_offsets;
+  tdep->sc_num_regs = ARRAY_SIZE (arc_linux_sc_reg_offsets);
 
   /* If we are using Linux, we have in uClibc
      (libc/sysdeps/linux/arc/bits/setjmp.h):
