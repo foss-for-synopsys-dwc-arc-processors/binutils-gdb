@@ -25,6 +25,8 @@ windows-build:
 # Build GDB as a C++ application for Windows hosts
     stage: build
     script:
+        # Disable selftests on windows, because they fail to build.
+        - sed -i s/development=true/development=false/ bfd/development.sh
         - mkdir _build
         - cd _build
         - ../configure --disable-ld --disable-gas --disable-binutils
