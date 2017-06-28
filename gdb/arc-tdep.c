@@ -1766,7 +1766,7 @@ arc_make_sigtramp_frame_cache (struct frame_info *this_frame)
 
   /* For each register, if its contents have been saved within the
      sigcontext structure, determine the address of those contents.  */
-  gdb_assert (tdep->sc_num_regs <= ARC_LAST_REGNUM);
+  gdb_assert (tdep->sc_num_regs <= (ARC_LAST_REGNUM + 1));
   for (int i = 0; i < tdep->sc_num_regs; i++)
     {
       if (tdep->sc_reg_offset[i] != ARC_OFFSET_NO_REGISTER)
