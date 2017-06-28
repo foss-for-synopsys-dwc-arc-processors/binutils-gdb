@@ -1359,7 +1359,7 @@ static CORE_ADDR
 arc_skip_prologue (struct gdbarch *gdbarch, CORE_ADDR pc)
 {
   if (arc_debug)
-    debug_printf ("arc: skip_prologue\n");
+    debug_printf ("arc: skip_prologue (pc=%s)\n", paddress (gdbarch, pc));
 
   CORE_ADDR func_addr;
   const char *func_name;
