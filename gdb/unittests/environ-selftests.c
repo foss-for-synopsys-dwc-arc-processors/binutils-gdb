@@ -30,7 +30,11 @@ run_tests ()
 {
   /* Set a test environment variable.  This will be unset at the end
      of this function.  */
+#ifndef USE_WIN32API
   if (setenv ("GDB_SELFTEST_ENVIRON", "1", 1) != 0)
+#else
+  if (putenv ("GDB_SELFTEST_ENVIRON=1") != 0)
+#endif
     error (_("Could not set environment variable for testing."));
 
   gdb_environ env;
@@ -90,7 +94,13 @@ run_tests ()
   SELF_CHECK (num_found == 1);
 
   /* Get rid of our test variable.  */
+#ifndef USE_WIN32API
   unsetenv ("GDB_SELFTEST_ENVIRON");
+#else
+  /* putenv ("var=") has the same meaning as unsetenv ("var"), unlike the
+     setenv ("var="), which would assign an empty value.  */
+  putenv ("GDB_SELFTEST_ENVIRON=");
+#endif
 
   /* Test the case when we set a variable A, then set a variable B,
      then unset A, and make sure that we cannot find A in the environ
