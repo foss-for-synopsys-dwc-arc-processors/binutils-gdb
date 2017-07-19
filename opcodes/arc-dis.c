@@ -761,6 +761,15 @@ parse_option (const char *option)
       add_to_decodelist (FLOAT, QUARKSE2);
     }
 
+  else if (disassembler_options_cmp (option, "quarkse2_em") == 0)
+    {
+      add_to_decodelist (DSP, NONE);
+      add_to_decodelist (FLOAT, DPA);
+      add_to_decodelist (FLOAT, SP);
+      add_to_decodelist (FLOAT, CVT);
+      add_to_decodelist (FLOAT, QUARKSE2);
+    }
+
   else if (disassembler_options_cmp (option, "fpuda") == 0)
     add_to_decodelist (FLOAT, DPA);
 
@@ -1404,6 +1413,8 @@ with -M switch (multiple options should be separated by commas):\n"));
   dpfp            Recognize FPX DP instructions.\n"));
   fprintf (stream, _("\
   quarkse_em      Recognize FPU QuarkSE-EM instructions.\n"));
+  fprintf (stream, _("\
+  quarkse2_em     Recognize FPU QuarkSE2-EM instructions.\n"));
   fprintf (stream, _("\
   fpuda           Recognize double assist FPU instructions.\n"));
   fprintf (stream, _("\
