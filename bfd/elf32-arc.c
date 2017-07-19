@@ -719,7 +719,7 @@ arc_elf_merge_attributes (bfd *ibfd, struct bfd_link_info *info)
 	case Tag_ARC_ABI_rf16:
 	  if (out_attr[i].i == 0)
 	    out_attr[i].i = in_attr[i].i;
-	  else if (out_attr[i].i != in_attr[i].i)
+	  else if (in_attr[i].i != 0 && out_attr[i].i != in_attr[i].i)
 	    {
 	      /* We cannot mix code with rf16 and without.  */
 	      _bfd_error_handler
@@ -2887,7 +2887,9 @@ elf32_arc_section_from_shdr (bfd *abfd,
       break;
 
     default:
-      return FALSE;
+      _bfd_error_handler (_("Warning: %B: Unknown ARC section 0x%x"),
+	 abfd, hdr->sh_type);
+      break;
     }
 
   if (!_bfd_elf_make_section_from_shdr (abfd, hdr, name, shindex))
