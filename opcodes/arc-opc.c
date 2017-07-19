@@ -170,7 +170,9 @@ insert_rhv2 (unsigned long long  insn,
 	     const char **       errmsg)
 {
   if (value == 0x1E)
-    *errmsg = _("register R30 is a limm indicator");
+    *errmsg = _("Register R30 is a limm indicator");
+  else if (value < 0 || value > 31)
+    *errmsg = _("Register out of range");
   return insn |= ((value & 0x07) << 5) | ((value >> 3) & 0x03);
 }
 
