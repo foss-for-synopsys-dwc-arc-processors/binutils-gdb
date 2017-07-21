@@ -1147,7 +1147,7 @@ print_insn_arc (bfd_vma memaddr,
 				 insn & 0xffff);
 	  break;
 	case 4:
-	  (*info->fprintf_func) (info->stream, ".word\t%#08llx",
+	  (*info->fprintf_func) (info->stream, ".long\t%#08llx",
 				 insn & 0xffffffff);
 	  break;
 	case 6:
