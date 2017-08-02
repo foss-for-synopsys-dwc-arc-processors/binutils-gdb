@@ -5013,6 +5013,9 @@ arc_set_public_attributes (void)
 
   /* Tag_ARC_ABI_tls.  */
   arc_set_attribute_int (Tag_ARC_ABI_tls, tls_option);
+
+  /* Tag_ARC_ATR_version.  */
+  arc_set_attribute_int (Tag_ARC_ATR_version, 1);
 }
 
 /* Add the default contents for the .ARC.attributes section.  */
@@ -5057,7 +5060,8 @@ int arc_convert_symbolic_attribute (const char *name)
   T (Tag_ARC_ABI_double_size),
   T (Tag_ARC_ISA_config),
   T (Tag_ARC_ISA_apex),
-  T (Tag_ARC_ISA_mpy_option)
+  T (Tag_ARC_ISA_mpy_option),
+  T (Tag_ARC_ATR_version)
 #undef T
     };
   unsigned int i;
