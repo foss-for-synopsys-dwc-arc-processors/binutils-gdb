@@ -45,14 +45,14 @@
 /* Defines ps_err_e, struct ps_prochandle.  */
 #include "gdb_proc_service.h"
 
-/* Linux starting with 4.12 supports NT_ARC_V2 note type, which adds R30, R58
-   and R59 registers.  */
+/* Linux starting with 4.12 supports NT_ARC_V2 note type, which adds R30,
+   R58 and R59 registers.  */
 #ifdef NT_ARC_V2
 #define ARC_HAS_V2_REGSET
 #endif
 
-/* Fetch greg-register(s) from process/thread TID and store value(s) in GDB's
- * register array.  */
+/* Fetch greg-register(s) from process/thread TID and store value(s) in
+   GDB's register array.  */
 
 static void fetch_gregs (struct regcache *regcache, int regnum);
 static void store_gregs (struct regcache *regcache, int regnum);
@@ -65,9 +65,9 @@ static void collect_v2_regset (const struct regcache *regcache, void *v2_regs,
 
 /* On GNU/Linux, threads are implemented as pseudo-processes, in which
    case we may be tracing more than one process at a time.  In that case,
-   inferior_ptid will contain the main process ID and the individual thread
-   (process) ID.  get_thread_id () is used to get the thread id if it's
-   available, and the process id otherwise.  */
+   inferior_ptid will contain the main process ID and the individual
+   thread (process) ID.  get_thread_id () is used to get the thread id if
+   it's available, and the process id otherwise.  */
 
 static int
 get_thread_id (ptid_t ptid)
@@ -248,17 +248,18 @@ supply_fpregset (struct regcache *regcache, const gdb_fpregset_t *fpregsetp)
   return;
 }
 
-/* As described in arc_linux_collect_gregset(), we need to write resume-PC to
-   ERET.  However by default GDB for native targets doesn't write registers if
-   they haven't been changed.  This is a callback called by generic GDB, and
-   in this callback we have to rewrite PC value so it would force rewrite of
-   register on target.  It seems that the only other arch that utilizes this
-   hook is x86/x86-64 for HW breakpoint support.  But then, AFAIK no other
-   arch has this stop_pc/eret complexity.
+/* As described in arc_linux_collect_gregset(), we need to write resume-PC
+   to ERET.  However by default GDB for native targets doesn't write
+   registers if they haven't been changed.  This is a callback called by
+   generic GDB, and in this callback we have to rewrite PC value so it
+   would force rewrite of register on target.  It seems that the only
+   other arch that utilizes this hook is x86/x86-64 for HW breakpoint
+   support.  But then, AFAIK no other arch has this stop_pc/eret
+   complexity.
 
    I haven't found any other way to force GDB to write register to target,
-   other than this fake write of register value.  Maybe there is some better
-   way?  */
+   other than this fake write of register value.  Maybe there is some
+   better way?  */
 
 static void
 arc_linux_prepare_to_resume (struct lwp_info *lwp)
@@ -271,8 +272,8 @@ arc_linux_prepare_to_resume (struct lwp_info *lwp)
      space for them and call to get_thread_regcache will cause an internal
      error in GDB.  It looks like that checking for last_resume_kind is
      sensible way to determine processes for which we cannot get regcache.
-     Ultimately better way would be remove the need for prepare_to_resume at
-     all.  */
+     Ultimately better way would be remove the need for prepare_to_resume
+     at all.  */
   if (lwp->last_resume_kind == resume_stop)
     return;
 
@@ -280,8 +281,8 @@ arc_linux_prepare_to_resume (struct lwp_info *lwp)
   gdbarch = get_regcache_arch (regcache);
 
   /* Read current PC value, then write it back.  It is required to call
-     invalidate() otherwise GDB will note that new value is equal to old value
-     and will skip write.  */
+     invalidate() otherwise GDB will note that new value is equal to old
+     value and will skip write.  */
   regcache_cooked_read_unsigned (regcache, gdbarch_pc_regnum (gdbarch),
 				 &new_pc);
   regcache_invalidate (regcache, gdbarch_pc_regnum (gdbarch));
@@ -289,9 +290,9 @@ arc_linux_prepare_to_resume (struct lwp_info *lwp)
 				  new_pc);
 }
 
-/* Fetch the thread-local storage pointer for libthread_db.  Note that this
-   function is not called from GDB, but is called from libthread_db.  This is
-   required to debug multithreaded applications with NPTL.  */
+/* Fetch the thread-local storage pointer for libthread_db.  Note that
+   this function is not called from GDB, but is called from libthread_db.
+   This is required to debug multithreaded applications with NPTL.  */
 
 ps_err_e
 ps_get_thread_area (const struct ps_prochandle *ph, lwpid_t lwpid, int idx,
@@ -303,9 +304,9 @@ ps_get_thread_area (const struct ps_prochandle *ph, lwpid_t lwpid, int idx,
   if (ptrace (PTRACE_GET_THREAD_AREA, lwpid, NULL, base) != 0)
     return PS_ERR;
 
-  /* IDX is the bias from the thread pointer to the beginning of the thread
-     descriptor.  It has to be subtracted due to implementation quirks in
-     libthread_db.  */
+  /* IDX is the bias from the thread pointer to the beginning of the
+     thread descriptor.  It has to be subtracted due to implementation
+     quirks in libthread_db.  */
   *base = (void *) ((char *) *base - idx);
 
   return PS_OK;
