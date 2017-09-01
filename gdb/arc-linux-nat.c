@@ -51,9 +51,6 @@
 #define ARC_HAS_V2_REGSET
 #endif
 
-/* Fetch greg-register(s) from process/thread TID and store value(s) in
-   GDB's register array.  */
-
 static void fetch_gregs (struct regcache *regcache, int regnum);
 static void store_gregs (struct regcache *regcache, int regnum);
 static void arc_linux_prepare_to_resume (struct lwp_info *lwp);
@@ -63,21 +60,6 @@ static void collect_v2_regset (const struct regcache *regcache, void *v2_regs,
 			       int regno);
 #endif
 
-/* On GNU/Linux, threads are implemented as pseudo-processes, in which
-   case we may be tracing more than one process at a time.  In that case,
-   inferior_ptid will contain the main process ID and the individual
-   thread (process) ID.  get_thread_id () is used to get the thread id if
-   it's available, and the process id otherwise.  */
-
-static int
-get_thread_id (ptid_t ptid)
-{
-  int tid = ptid_get_lwp (ptid);
-  if (0 == tid)
-    tid = ptid_get_pid (ptid);
-  return tid;
-}
-
 /* Read register from target process via ptrace() into regcache.  */
 
 static void
@@ -85,7 +67,7 @@ fetch_gregs (struct regcache *regcache, int regnum)
 {
   gdb_gregset_t regs;
   struct iovec iov;
-  int tid = get_thread_id (inferior_ptid);
+  long tid = ptid_get_lwp (regcache_get_ptid (regcache));
 
   iov.iov_base = &regs;
   iov.iov_len = sizeof (gdb_gregset_t);
@@ -104,7 +86,7 @@ fetch_v2_regs (struct regcache *regcache, int regnum)
 {
 #ifdef ARC_HAS_V2_REGSET
   bfd_byte buffer[ARC_LINUX_SIZEOF_V2_REGSET];
-  int tid = get_thread_id (inferior_ptid);
+  long tid = ptid_get_lwp (regcache_get_ptid (regcache));
   struct iovec iov;
 
   iov.iov_base = &buffer;
@@ -128,7 +110,7 @@ store_gregs (struct regcache *regcache, int regnum)
 {
   gdb_gregset_t regs;
   struct iovec iov;
-  int tid = get_thread_id (inferior_ptid);
+  long tid = ptid_get_lwp (regcache_get_ptid (regcache));
 
   iov.iov_base = &regs;
   iov.iov_len = sizeof (gdb_gregset_t);
@@ -153,7 +135,7 @@ store_v2_regs (struct regcache *regcache, int regnum)
 {
 #ifdef ARC_HAS_V2_REGSET
   bfd_byte buffer[ARC_LINUX_SIZEOF_V2_REGSET];
-  int tid = get_thread_id (inferior_ptid);
+  long tid = ptid_get_lwp (regcache_get_ptid (regcache));
   struct iovec iov;
 
   iov.iov_base = &buffer;
