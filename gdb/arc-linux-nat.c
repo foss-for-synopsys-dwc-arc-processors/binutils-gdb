@@ -46,78 +46,68 @@
 #include "gdb_proc_service.h"
 
 /* Linux starting with 4.12 supports NT_ARC_V2 note type, which adds R30,
-   R58 and R59 registers.  */
+   R58 and R59 registers, which are specific to ARC HS and aren't
+   available in ARC 700.  */
 #ifdef NT_ARC_V2
 #define ARC_HAS_V2_REGSET
 #endif
 
-static void fetch_gregs (struct regcache *regcache, int regnum);
-static void store_gregs (struct regcache *regcache, int regnum);
-static void arc_linux_prepare_to_resume (struct lwp_info *lwp);
-#ifdef ARC_HAS_V2_REGSET
-static void supply_v2_regset (struct regcache *regcache, const void *v2_regs);
-static void collect_v2_regset (const struct regcache *regcache, void *v2_regs,
-			       int regno);
-#endif
-
-/* Read register from target process via ptrace() into regcache.  */
+/* Read general registers from target process via ptrace () into regcache.  */
 
 static void
 fetch_gregs (struct regcache *regcache, int regnum)
 {
+  long tid = ptid_get_lwp (regcache_get_ptid (regcache));
   gdb_gregset_t regs;
   struct iovec iov;
-  long tid = ptid_get_lwp (regcache_get_ptid (regcache));
-
   iov.iov_base = &regs;
   iov.iov_len = sizeof (gdb_gregset_t);
 
   if (ptrace (PTRACE_GETREGSET, tid, NT_PRSTATUS, (void *) &iov) < 0)
     {
-      perror_with_name (_("Couldn't get registers"));
+      perror_with_name (_("Couldn't get general registers"));
       return;
     }
 
-  supply_gregset (regcache, (const gdb_gregset_t *) &regs);
+  supply_gregset (regcache, &regs);
 }
+
+#ifdef ARC_HAS_V2_REGSET
+/* Read ARC v2 registers from target process via ptrace () into regcache.  */
 
 static void
 fetch_v2_regs (struct regcache *regcache, int regnum)
 {
-#ifdef ARC_HAS_V2_REGSET
-  bfd_byte buffer[ARC_LINUX_SIZEOF_V2_REGSET];
   long tid = ptid_get_lwp (regcache_get_ptid (regcache));
+  bfd_byte buffer[ARC_LINUX_SIZEOF_V2_REGSET];
   struct iovec iov;
-
   iov.iov_base = &buffer;
   iov.iov_len = ARC_LINUX_SIZEOF_V2_REGSET;
 
   if (ptrace (PTRACE_GETREGSET, tid, NT_ARC_V2, (void *) &iov) < 0)
     {
-      perror_with_name (_("Couldn't get registers"));
+      perror_with_name (_("Couldn't get ARC HS registers"));
       return;
     }
 
-  supply_v2_regset (regcache, buffer);
-#endif
+  arc_linux_supply_v2_regset (NULL, regcache, -1, buffer, 0);
 }
+#endif
 
-/* Store greg-register(s) in GDB's register array into the process/thread
-   specified by TID.  */
+/* Store general registers from regcache into the it's thread.  */
 
 static void
 store_gregs (struct regcache *regcache, int regnum)
 {
+  long tid = ptid_get_lwp (regcache_get_ptid (regcache));
   gdb_gregset_t regs;
   struct iovec iov;
-  long tid = ptid_get_lwp (regcache_get_ptid (regcache));
-
   iov.iov_base = &regs;
   iov.iov_len = sizeof (gdb_gregset_t);
 
   if (ptrace (PTRACE_GETREGSET, tid, NT_PRSTATUS, (void *) &iov) < 0)
     {
-      perror_with_name (_("Couldn't get registers"));
+      perror_with_name (_("Couldn't get general registers"));
       return;
     }
 
@@ -125,58 +115,64 @@ store_gregs (struct regcache *regcache, int regnum)
 
   if (ptrace (PTRACE_SETREGSET, tid, NT_PRSTATUS, (void *) &iov) < 0)
     {
-      perror_with_name (_("Couldn't write registers"));
+      perror_with_name (_("Couldn't write general registers"));
       return;
     }
 }
 
+#ifdef ARC_HAS_V2_REGSET
+/* Store ARC v2 registers from regcache into the it's thread.  */
+
 static void
 store_v2_regs (struct regcache *regcache, int regnum)
 {
-#ifdef ARC_HAS_V2_REGSET
-  bfd_byte buffer[ARC_LINUX_SIZEOF_V2_REGSET];
   long tid = ptid_get_lwp (regcache_get_ptid (regcache));
+  bfd_byte buffer[ARC_LINUX_SIZEOF_V2_REGSET];
   struct iovec iov;
-
   iov.iov_base = &buffer;
   iov.iov_len = ARC_LINUX_SIZEOF_V2_REGSET;
 
   if (ptrace (PTRACE_GETREGSET, tid, NT_ARC_V2, (void *) &iov) < 0)
     {
-      perror_with_name (_("Couldn't get registers"));
+      perror_with_name (_("Couldn't get ARC HS registers"));
       return;
     }
 
-  collect_v2_regset (regcache, buffer, regnum);
+  arc_linux_collect_v2_regset (NULL, regcache, regnum, buffer, 0);
 
   if (ptrace (PTRACE_SETREGSET, tid, NT_ARC_V2, (void *) &iov) < 0)
     {
-      perror_with_name (_("Couldn't write registers"));
+      perror_with_name (_("Couldn't write ARC HS registers"));
       return;
     }
-#endif
 }
+#endif
 
-/* Function exported to target ops.  */
+/* Function set to target ops.  */
 
 static void
 arc_linux_fetch_inferior_registers (struct target_ops *ops,
 				    struct regcache *regcache, int regnum)
 {
   fetch_gregs (regcache, regnum);
+#ifdef ARC_HAS_V2_REGSET
   fetch_v2_regs (regcache, regnum);
+#endif
 }
 
-/* Function exported to target ops.  */
+/* Function set to target ops.  */
 
 static void
 arc_linux_store_inferior_registers (struct target_ops *ops,
 				    struct regcache *regcache, int regnum)
 {
   store_gregs (regcache, regnum);
+#ifdef ARC_HAS_V2_REGSET
   store_v2_regs (regcache, regnum);
+#endif
 }
 
+/* Function exported to proc-service.c.  */
 
 void
 fill_gregset (const struct regcache *regcache,
@@ -185,15 +181,7 @@ fill_gregset (const struct regcache *regcache,
   arc_linux_collect_gregset (NULL, regcache, regno, gregsetp, 0);
 }
 
-#ifdef ARC_HAS_V2_REGSET
-static void
-collect_v2_regset (const struct regcache *regcache,
-		   void *regs_v2, int regno)
-{
-  arc_linux_collect_v2_regset (NULL, regcache, regno, regs_v2, 0);
-}
-#endif
-
+/* Function exported to proc-service.c.  */
 
 void
 supply_gregset (struct regcache *regcache, const gdb_gregset_t *gregsetp)
@@ -201,30 +189,24 @@ supply_gregset (struct regcache *regcache, const gdb_gregset_t *gregsetp)
   arc_linux_supply_gregset (NULL, regcache, -1, gregsetp, 0);
 }
 
-#ifdef ARC_HAS_V2_REGSET
-static void
-supply_v2_regset (struct regcache *regcache, const void *regs_v2)
-{
-  arc_linux_supply_v2_regset (NULL, regcache, -1, regs_v2, 0);
-}
-#endif
-
+/* Function exported to proc-service.c.  ARC doesn't have separate FP
+   registers.  */
 
 void
 fill_fpregset (const struct regcache *regcache,
 	       gdb_fpregset_t *fpregsetp, int regnum)
 {
-  /* No FP registers on ARC.  */
   if (arc_debug)
     debug_printf ("arc-linux-nat: fill_fpregset called.");
   return;
 }
 
+/* Function exported to proc-service.c.  ARC doesn't have separate FP
+   registers.  */
 
 void
 supply_fpregset (struct regcache *regcache, const gdb_fpregset_t *fpregsetp)
 {
-  /* No FP registers on ARC.  */
   if (arc_debug)
     debug_printf ("arc-linux-nat: supply_fpregset called.");
   return;
@@ -246,10 +228,6 @@ supply_fpregset (struct regcache *regcache, const gdb_fpregset_t *fpregsetp)
 static void
 arc_linux_prepare_to_resume (struct lwp_info *lwp)
 {
-  ULONGEST new_pc;
-  struct regcache *regcache;
-  struct gdbarch *gdbarch;
-
   /* When new processes and threads are created we do not have address
      space for them and call to get_thread_regcache will cause an internal
      error in GDB.  It looks like that checking for last_resume_kind is
@@ -259,12 +237,13 @@ arc_linux_prepare_to_resume (struct lwp_info *lwp)
   if (lwp->last_resume_kind == resume_stop)
     return;
 
-  regcache = get_thread_regcache (lwp->ptid);
-  gdbarch = get_regcache_arch (regcache);
+  struct regcache *regcache = get_thread_regcache (lwp->ptid);
+  struct gdbarch *gdbarch = get_regcache_arch (regcache);
 
   /* Read current PC value, then write it back.  It is required to call
      invalidate() otherwise GDB will note that new value is equal to old
      value and will skip write.  */
+  ULONGEST new_pc;
   regcache_cooked_read_unsigned (regcache, gdbarch_pc_regnum (gdbarch),
 				 &new_pc);
   regcache_invalidate (regcache, gdbarch_pc_regnum (gdbarch));
@@ -294,6 +273,7 @@ ps_get_thread_area (const struct ps_prochandle *ph, lwpid_t lwpid, int idx,
   return PS_OK;
 }
 
+/* Suppress warning from -Wmissing-prototypes.  */
 void _initialize_arc_linux_nat (void);
 
 void
