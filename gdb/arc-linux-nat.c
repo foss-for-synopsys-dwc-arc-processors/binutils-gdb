@@ -48,7 +48,7 @@
 /* Linux starting with 4.12 supports NT_ARC_V2 note type, which adds R30,
    R58 and R59 registers, which are specific to ARC HS and aren't
    available in ARC 700.  */
-#ifdef NT_ARC_V2
+#if defined (NT_ARC_V2) && defined (__ARCHS__)
 #define ARC_HAS_V2_REGSET
 #endif
 
