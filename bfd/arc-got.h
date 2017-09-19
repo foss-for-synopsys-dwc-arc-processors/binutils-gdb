@@ -341,7 +341,7 @@ relocate_fix_got_relocs_for_got_info (struct got_entry **          list_p,
 			    "GOT_TLS_IE"),
 			   (long) (sym_value - sec_vma),
 			   (long) (htab->sgot->output_section->vma
-			      + htab->sgot->output_offset->vma
+			      + htab->sgot->output_offset
 			      + entry->offset
 			      + (entry->existing_entries == TLS_GOT_MOD_AND_OFF
 				 ? 4 : 0)),
@@ -368,7 +368,7 @@ relocate_fix_got_relocs_for_got_info (struct got_entry **          list_p,
 			    "GOT_TLS_IE"),
 			   (long) (sym_value - sec_vma),
 			   (long) (htab->sgot->output_section->vma
-			      + htab->sgot->output_offset->vma
+			      + htab->sgot->output_offset
 			      + entry->offset
 			      + (entry->existing_entries == TLS_GOT_MOD_AND_OFF
 				 ? 4 : 0)),
