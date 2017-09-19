@@ -560,7 +560,6 @@ arc_elf_merge_attributes (bfd *ibfd, struct bfd_link_info *info)
   bfd_boolean result = TRUE;
   const char *sec_name = get_elf_backend_data (ibfd)->obj_attrs_section;
   char *tagname = NULL;
-  int offset = 0;
 
   /* Skip the linker stubs file.  This preserves previous behavior
      of accepting unknown attributes in the first input file - but
@@ -715,6 +714,8 @@ arc_elf_merge_attributes (bfd *ibfd, struct bfd_link_info *info)
 	  break;
 
 	case Tag_ARC_CPU_name:
+	  if (!out_attr[i].s && in_attr[i].s)
+	    out_attr[i].s = _bfd_elf_attr_strdup (obfd, in_attr[i].s);
 	  break;
 
 	case Tag_ARC_ABI_rf16:
@@ -746,7 +747,9 @@ arc_elf_merge_attributes (bfd *ibfd, struct bfd_link_info *info)
 
 	    BFD_ASSERT (in_attr[i].i < 3);
 	    BFD_ASSERT (out_attr[i].i < 3);
-	    if (out_attr[i].i != 0 && in_attr[i].i != 0
+	    if (out_attr[i].i == 0)
+	      out_attr[i].i = in_attr[i].i;
+	    else if (out_attr[i].i != 0 && in_attr[i].i != 0
 		&& out_attr[i].i != in_attr[i].i)
 	      {
 		_bfd_error_handler
@@ -771,7 +774,9 @@ arc_elf_merge_attributes (bfd *ibfd, struct bfd_link_info *info)
 	  if (!tagname)
 	    tagname = "ABI exceptions";
 
-	  if (out_attr[i].i != 0 && in_attr[i].i != 0
+	  if (out_attr[i].i == 0)
+	    out_attr[i].i = in_attr[i].i;
+	  else if (out_attr[i].i != 0 && in_attr[i].i != 0
 	      && out_attr[i].i != in_attr[i].i)
 	    {
 	      _bfd_error_handler
