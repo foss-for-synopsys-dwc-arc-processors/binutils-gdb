@@ -63,7 +63,7 @@ arc_arch_setup (void)
 static int
 arc_cannot_fetch_register (int regno)
 {
-  return regno >= (current_process ()->tdesc->num_registers);
+  return (regno >= VEC_length (tdesc_reg_p, current_process ()->tdesc->reg_defs));
 }
 
 /* Implementation of linux_target_ops method "cannot_store_register".  */
@@ -71,7 +71,7 @@ arc_cannot_fetch_register (int regno)
 static int
 arc_cannot_store_register (int regno)
 {
-  return regno >= (current_process ()->tdesc->num_registers);
+  return (regno >= VEC_length (tdesc_reg_p, current_process ()->tdesc->reg_defs));
 }
 
 /* Implementation of linux_target_ops method "breakpoint_at".
