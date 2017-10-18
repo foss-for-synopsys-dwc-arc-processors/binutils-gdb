@@ -399,6 +399,26 @@ arc_linux_iterate_over_regset_sections (struct gdbarch *gdbarch,
       NULL, cb_data);
 }
 
+/* Implement the `core_read_description` gdbarch method.  */
+
+static const struct target_desc *
+arc_linux_core_read_description (struct gdbarch *gdbarch,
+				 struct target_ops *target,
+				 bfd *abfd)
+{
+  if (arc_mach_is_arcv2 (gdbarch))
+    {
+      if (arc_debug)
+	debug_printf ("arc-linux: Using register set for ARC HS Linux.\n");
+      return tdesc_arc_v2_linux;
+    }
+  else
+    {
+      if (arc_debug)
+	debug_printf ("arc-linux: Using register set for ARC700 Linux.\n");
+      return tdesc_arc_arcompact_linux;
+    }
+}
 
 /* Initialization specific to Linux environment.  */
 
@@ -435,6 +455,7 @@ arc_linux_init_osabi (struct gdbarch_info info, struct gdbarch *gdbarch)
   set_gdbarch_skip_solib_resolver (gdbarch, arc_linux_skip_solib_resolver);
   set_gdbarch_iterate_over_regset_sections
     (gdbarch, arc_linux_iterate_over_regset_sections);
+  set_gdbarch_core_read_description (gdbarch, arc_linux_core_read_description);
 
   /* GNU/Linux uses SVR4-style shared libraries, with 32-bit ints, longs
      and pointers (ILP32).  */
