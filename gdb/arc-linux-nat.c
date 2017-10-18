@@ -220,11 +220,11 @@ arc_linux_read_description (struct target_ops *ops)
   /* This is a native target, hence description is hardcoded.  */
 #ifdef __ARCHS__
   if (arc_debug)
-    debug_printf ("arc-nat: Using default register set for ARC HS Linux.\n");
+    debug_printf ("arc-nat: Using register set for ARC HS Linux.\n");
   return tdesc_arc_v2_linux;
 #else
   if (arc_debug)
-    debug_printf ("arc-nat: Using default register set for ARC700 Linux.\n");
+    debug_printf ("arc-nat: Using register set for ARC700 Linux.\n");
   return tdesc_arc_arcompact_linux;
 #endif
 }
