@@ -212,6 +212,23 @@ supply_fpregset (struct regcache *regcache, const gdb_fpregset_t *fpregsetp)
   return;
 }
 
+/* Implement the "to_read_description" target_ops method.  */
+
+static const struct target_desc *
+arc_linux_read_description (struct target_ops *ops)
+{
+  /* This is a native target, hence description is hardcoded.  */
+#ifdef __ARCHS__
+  if (arc_debug)
+    debug_printf ("arc-nat: Using default register set for ARC HS Linux.\n");
+  return tdesc_arc_v2_linux;
+#else
+  if (arc_debug)
+    debug_printf ("arc-nat: Using default register set for ARC700 Linux.\n");
+  return tdesc_arc_arcompact_linux;
+#endif
+}
+
 /* As described in arc_linux_collect_gregset(), we need to write resume-PC
    to ERET.  However by default GDB for native targets doesn't write
    registers if they haven't been changed.  This is a callback called by
@@ -284,6 +301,8 @@ _initialize_arc_linux_nat (void)
   t = linux_target ();
   t->to_fetch_registers = arc_linux_fetch_inferior_registers;
   t->to_store_registers = arc_linux_store_inferior_registers;
+  t->to_read_description = arc_linux_read_description;
+
   linux_nat_add_target (t);
   linux_nat_set_prepare_to_resume (t, arc_linux_prepare_to_resume);
 }
