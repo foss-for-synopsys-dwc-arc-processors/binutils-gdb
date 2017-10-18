@@ -29,6 +29,7 @@
 #include "opcodes/arc-dis.h"
 #include "arc-linux-tdep.h"
 #include "arc-tdep.h"
+#include "arch/arc.h"
 
 #define REGOFF(offset) (offset * ARC_REGISTER_SIZE)
 
@@ -395,6 +396,18 @@ arc_linux_iterate_over_regset_sections (struct gdbarch *gdbarch,
       &arc_linux_v2_regset, NULL, cb_data);
 }
 
+/* Implement the `core_read_description` gdbarch method.  */
+
+static const struct target_desc *
+arc_linux_core_read_description (struct gdbarch *gdbarch,
+				 struct target_ops *target,
+				 bfd *abfd)
+{
+  if (arc_mach_is_arcv2 (gdbarch))
+    return arc_read_description (ARC_SYS_TYPE_ARCV2_LNX);
+  else
+    return arc_read_description (ARC_SYS_TYPE_ARCOMPACT_LNX);
+}
 
 /* Initialization specific to Linux environment.  */
 
@@ -431,6 +444,7 @@ arc_linux_init_osabi (struct gdbarch_info info, struct gdbarch *gdbarch)
   set_gdbarch_skip_solib_resolver (gdbarch, arc_linux_skip_solib_resolver);
   set_gdbarch_iterate_over_regset_sections
     (gdbarch, arc_linux_iterate_over_regset_sections);
+  set_gdbarch_core_read_description (gdbarch, arc_linux_core_read_description);
 
   /* GNU/Linux uses SVR4-style shared libraries, with 32-bit ints, longs
      and pointers (ILP32).  */
