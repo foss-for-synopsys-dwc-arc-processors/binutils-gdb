@@ -252,7 +252,7 @@ arc_linux_prepare_to_resume (struct lwp_info *lwp)
     return;
 
   struct regcache *regcache = get_thread_regcache (lwp->ptid);
-  struct gdbarch *gdbarch = get_regcache_arch (regcache);
+  struct gdbarch *gdbarch = regcache->arch ();
 
   /* Read current PC value, then write it back.  It is required to call
      invalidate() otherwise GDB will note that new value is equal to old
