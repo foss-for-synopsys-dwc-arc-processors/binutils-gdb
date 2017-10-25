@@ -28,20 +28,19 @@
 #include "gdbcore.h"
 #include "gdbcmd.h"
 #include "objfiles.h"
+#include "osabi.h"
 #include "prologue-value.h"
+#include "target-descriptions.h"
 #include "trad-frame.h"
 
 /* ARC header files.  */
 #include "opcode/arc.h"
 #include "opcodes/arc-dis.h"
 #include "arc-tdep.h"
+#include "arch/arc.h"
 
 /* Standard headers.  */
 #include <algorithm>
-
-/* Default target descriptions.  */
-#include "features/arc-v2.c"
-#include "features/arc-arcompact.c"
 
 /* The frame unwind cache for ARC.  */
 
@@ -1793,18 +1792,7 @@ arc_tdesc_init (struct gdbarch_info info, const struct target_desc **tdesc,
   /* If target doesn't provide a description - use default one.  */
   if (!tdesc_has_registers (tdesc_loc))
     {
-      if (is_arcv2)
-	{
-	  tdesc_loc = tdesc_arc_v2;
-	  if (arc_debug)
-	    debug_printf ("arc: Using default register set for ARC v2.\n");
-	}
-      else
-	{
-	  tdesc_loc = tdesc_arc_arcompact;
-	  if (arc_debug)
-	    debug_printf ("arc: Using default register set for ARCompact.\n");
-	}
+      tdesc_loc = arc_create_target_description (arc_debug, is_arcv2);
     }
   else
     {
@@ -2165,9 +2153,6 @@ void
 _initialize_arc_tdep (void)
 {
   gdbarch_register (bfd_arch_arc, arc_gdbarch_init, arc_dump_tdep);
-
-  initialize_tdesc_arc_v2 ();
-  initialize_tdesc_arc_arcompact ();
 
   /* Register ARC-specific commands with gdb.  */
 

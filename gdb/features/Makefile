@@ -120,8 +120,6 @@ OUTPUTS = $(patsubst %,$(outdir)/%.dat,$(WHICH))
 # to make on the command line.
 XMLTOC = \
 	aarch64.xml \
-	arc-v2.xml \
-	arc-arcompact.xml \
 	arm/arm-with-iwmmxt.xml \
 	arm/arm-with-m-fpa-layout.xml \
 	arm/arm-with-m-vfp-d16.xml \
@@ -207,7 +205,12 @@ $(outdir)/%.dat: %.xml number-regs.xsl sort-regs.xsl gdbserver-regs.xsl
 	  $(XSLTPROC) gdbserver-regs.xsl - >> $(outdir)/$*.tmp
 	sh ../../move-if-change $(outdir)/$*.tmp $(outdir)/$*.dat
 
-FEATURE_XMLFILES = i386/32bit-core.xml \
+FEATURE_XMLFILES = \
+	arc/core-v2.xml \
+	arc/aux-v2.xml \
+	arc/core-arcompact.xml \
+	arc/aux-arcompact.xml \
+	i386/32bit-core.xml \
 	i386/32bit-sse.xml \
 	i386/32bit-linux.xml \
 	i386/32bit-avx.xml \

@@ -795,6 +795,7 @@ ALL_64_TARGET_OBS = \
 # All other target-dependent objects files (used with --enable-targets=all).
 ALL_TARGET_OBS = \
 	arc-tdep.o \
+	arch/arc.o \
 	arch/arm.o \
 	arch/arm-get-next-pcs.o \
 	arch/arm-linux.o \
@@ -1043,6 +1044,7 @@ SFILES = \
 	agent.c \
 	annotate.c \
 	arch-utils.c \
+	arch/arc.c \
 	arch/i386.c \
 	auto-load.c \
 	auxv.c \
@@ -1515,6 +1517,7 @@ HFILES_NO_SRCDIR = \
 	xml-tdesc.h \
 	xtensa-tdep.h \
 	arch/aarch64-insn.h \
+	arch/arc.h \
 	arch/arm.h \
 	arch/i386.h \
 	cli/cli-cmds.h \
