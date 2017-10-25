@@ -17,5 +17,6 @@
 
 #include "tdesc.h"
 
-target_desc *arc_create_target_description (bool print_debug, bool is_arcv2);
+target_desc *arc_create_target_description (bool print_debug, bool is_arcv2,
+					    bool is_linux);
 

@@ -208,8 +208,12 @@ $(outdir)/%.dat: %.xml number-regs.xsl sort-regs.xsl gdbserver-regs.xsl
 FEATURE_XMLFILES = \
 	arc/core-v2.xml \
 	arc/aux-v2.xml \
+	arc/core-v2-linux.xml \
+	arc/aux-v2-linux.xml \
 	arc/core-arcompact.xml \
 	arc/aux-arcompact.xml \
+	arc/core-arcompact-linux.xml \
+	arc/aux-arcompact-linux.xml \
 	i386/32bit-core.xml \
 	i386/32bit-sse.xml \
 	i386/32bit-linux.xml \

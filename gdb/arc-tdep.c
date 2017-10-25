@@ -1792,7 +1792,7 @@ arc_tdesc_init (struct gdbarch_info info, const struct target_desc **tdesc,
   /* If target doesn't provide a description - use default one.  */
   if (!tdesc_has_registers (tdesc_loc))
     {
-      tdesc_loc = arc_create_target_description (arc_debug, is_arcv2);
+      tdesc_loc = arc_create_target_description (arc_debug, is_arcv2, false);
     }
   else
     {
