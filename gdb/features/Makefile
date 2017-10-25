@@ -108,8 +108,14 @@ OUTPUTS = $(patsubst %,$(outdir)/%.dat,$(WHICH))
 # --enable-targets=all GDB.  You can override this by passing XMLTOC
 # to make on the command line.
 XMLTOC = \
-	arc-v2.xml \
-	arc-arcompact.xml \
+	aarch64.xml \
+	arm/arm-with-iwmmxt.xml \
+	arm/arm-with-m-fpa-layout.xml \
+	arm/arm-with-m-vfp-d16.xml \
+	arm/arm-with-m.xml \
+	arm/arm-with-neon.xml \
+	arm/arm-with-vfpv2.xml \
+	arm/arm-with-vfpv3.xml \
 	microblaze-with-stack-protect.xml \
 	microblaze.xml \
 	mips-dsp-linux.xml \
@@ -203,16 +209,11 @@ $(outdir)/%.dat: %.xml number-regs.xsl sort-regs.xsl gdbserver-regs.xsl
 
 # For targets with feature based target descriptions,
 # the set of xml files we'll generate .c files for GDB from.
-FEATURE_XMLFILES = aarch64-core.xml \
-	aarch64-fpu.xml \
-	aarch64-pauth.xml \
-	arm/arm-core.xml \
-	arm/arm-fpa.xml \
-	arm/arm-m-profile.xml \
-	arm/arm-m-profile-with-fpa.xml \
-	arm/arm-vfpv2.xml \
-	arm/arm-vfpv3.xml \
-	arm/xscale-iwmmxt.xml \
+FEATURE_XMLFILES = \
+	arc/core-v2.xml \
+	arc/aux-v2.xml \
+	arc/core-arcompact.xml \
+	arc/aux-arcompact.xml \
 	i386/32bit-core.xml \
 	i386/32bit-sse.xml \
 	i386/32bit-linux.xml \
