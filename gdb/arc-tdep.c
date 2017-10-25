@@ -1756,9 +1756,9 @@ arc_tdesc_init (struct gdbarch_info info, const struct target_desc **tdesc,
   if (!tdesc_has_registers (tdesc_loc))
     {
       if (is_arcv2)
-	tdesc_loc = arc_read_description (ARC_SYS_TYPE_ARCV2);
+	tdesc_loc = arc_read_description (ARC_SYS_TYPE_ARCV2_BMT);
       else
-	tdesc_loc = arc_read_description (ARC_SYS_TYPE_ARCOMPACT);
+	tdesc_loc = arc_read_description (ARC_SYS_TYPE_ARCOMPACT_BMT);
     }
   else
     {
