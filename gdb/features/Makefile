@@ -206,8 +206,12 @@ FEATURE_XMLFILES = aarch64-core.xml \
 	aarch64-pauth.xml \
 	arc/core-v2.xml \
 	arc/aux-v2.xml \
+	arc/core-v2-linux.xml \
+	arc/aux-v2-linux.xml \
 	arc/core-arcompact.xml \
 	arc/aux-arcompact.xml \
+	arc/core-arcompact-linux.xml \
+	arc/aux-arcompact-linux.xml \
 	arm/arm-core.xml \
 	arm/arm-fpa.xml \
 	arm/arm-m-profile.xml \

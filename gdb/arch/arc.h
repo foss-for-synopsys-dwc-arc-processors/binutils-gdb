@@ -23,8 +23,10 @@
 /* Supported ARC system hardware types.  */
 enum arc_sys_type
 {
-  ARC_SYS_TYPE_ARCOMPACT = 0,	  /* ARC600 or ARC700 */
-  ARC_SYS_TYPE_ARCV2,		  /* ARC EM or ARC HS */
+  ARC_SYS_TYPE_ARCOMPACT_BMT = 0, /* ARC600 or ARC700 (baremetal) */
+  ARC_SYS_TYPE_ARCOMPACT_LNX,	  /* ARC600 or ARC700 (linux) */
+  ARC_SYS_TYPE_ARCV2_BMT,	  /* ARC EM or ARC HS (baremetal) */
+  ARC_SYS_TYPE_ARCV2_LNX,	  /* ARC HS (linux) */
   ARC_SYS_TYPE_NUM
 };
 
@@ -33,10 +35,14 @@ arc_sys_type_to_str (const arc_sys_type type)
 {
   switch (type)
     {
-    case ARC_SYS_TYPE_ARCOMPACT:
-      return "ARC_SYS_TYPE_ARCOMPACT";
-    case ARC_SYS_TYPE_ARCV2:
-      return "ARC_SYS_TYPE_ARCV2";
+    case ARC_SYS_TYPE_ARCOMPACT_BMT:
+      return "ARC_SYS_TYPE_ARCOMPACT_BMT";
+    case ARC_SYS_TYPE_ARCOMPACT_LNX:
+      return "ARC_SYS_TYPE_ARCOMPACT_LNX";
+    case ARC_SYS_TYPE_ARCV2_BMT:
+      return "ARC_SYS_TYPE_ARCV2_BMT";
+    case ARC_SYS_TYPE_ARCV2_LNX:
+      return "ARC_SYS_TYPE_ARCV2_LNX";
     default:
       return "Invalid";
     }

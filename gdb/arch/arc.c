@@ -24,8 +24,12 @@
 /* Target description features.  */
 #include "features/arc/core-v2.c"
 #include "features/arc/aux-v2.c"
+#include "features/arc/core-v2-linux.c"
+#include "features/arc/aux-v2-linux.c"
 #include "features/arc/core-arcompact.c"
 #include "features/arc/aux-arcompact.c"
+#include "features/arc/core-arcompact-linux.c"
+#include "features/arc/aux-arcompact-linux.c"
 
 /* See arc.h.  */
 
@@ -37,21 +41,39 @@ arc_create_target_description (arc_sys_type sys_type)
   long regnum = 0;
 
 #ifndef IN_PROCESS_AGENT
-  if (sys_type == ARC_SYS_TYPE_ARCV2)
+  if (sys_type == ARC_SYS_TYPE_ARCV2_BMT)
     set_tdesc_architecture (tdesc, "arc:ARCv2");
+  else if (sys_type == ARC_SYS_TYPE_ARCV2_LNX)
+    /* If this is ARCv2 Linux, then it is ARC HS.  */
+    set_tdesc_architecture (tdesc, "arc:HS");
   else
     set_tdesc_architecture (tdesc, "arc:ARC700");
+
+  if (sys_type == ARC_SYS_TYPE_ARCOMPACT_LNX
+      || sys_type == ARC_SYS_TYPE_ARCV2_LNX)
+    set_tdesc_osabi (tdesc, "GNU/Linux");
 #endif
 
-  if (sys_type == ARC_SYS_TYPE_ARCV2)
+  switch (sys_type)
     {
-      regnum = create_feature_arc_core_v2 (tdesc, regnum);
-      regnum = create_feature_arc_aux_v2 (tdesc, regnum);
-    }
-  else
-    {
-      regnum = create_feature_arc_core_arcompact (tdesc, regnum);
-      regnum = create_feature_arc_aux_arcompact (tdesc, regnum);
+    case ARC_SYS_TYPE_ARCOMPACT_BMT:
+	  regnum = create_feature_arc_core_arcompact (tdesc, regnum);
+	  regnum = create_feature_arc_aux_arcompact (tdesc, regnum);
+	  break;
+    case ARC_SYS_TYPE_ARCOMPACT_LNX:
+	  regnum = create_feature_arc_core_arcompact_linux (tdesc, regnum);
+	  regnum = create_feature_arc_aux_arcompact_linux (tdesc, regnum);
+	  break;
+    case ARC_SYS_TYPE_ARCV2_BMT:
+	  regnum = create_feature_arc_core_v2 (tdesc, regnum);
+	  regnum = create_feature_arc_aux_v2 (tdesc, regnum);
+	  break;
+    case ARC_SYS_TYPE_ARCV2_LNX:
+	  regnum = create_feature_arc_core_v2_linux (tdesc, regnum);
+	  regnum = create_feature_arc_aux_v2_linux (tdesc, regnum);
+	  break;
+    default:
+	  gdb_assert(!"Invalid arc_sys_type.");
     }
 
   return tdesc;
