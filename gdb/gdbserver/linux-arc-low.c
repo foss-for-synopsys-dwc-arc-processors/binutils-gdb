@@ -21,6 +21,7 @@
 #include "regdef.h"
 #include "linux-low.h"
 #include "tdesc.h"
+#include "arch/arc.h"
 
 #include <linux/elf.h>
 #include <arpa/inet.h>
@@ -31,23 +32,21 @@
 #define ARC_HAS_V2_REGSET
 #endif
 
-/* Defined in auto-generated files arc-v2-linux.c, arc-arcompact-linux.c.  */
-#ifdef __ARC700__
-extern void init_registers_arc_arcompact_linux (void);
-extern const struct target_desc *tdesc_arc_arcompact_linux;
-#else
-extern void init_registers_arc_v2_linux (void);
-extern const struct target_desc *tdesc_arc_v2_linux;
-#endif
-
 static const struct target_desc *
 arc_read_description (void)
 {
+  struct target_desc *tdesc;
 #ifdef __ARC700__
-  return tdesc_arc_arcompact_linux;
+  tdesc = arc_create_target_description (debug_threads, false, true);
 #else
-  return tdesc_arc_v2_linux;
+  tdesc = arc_create_target_description (debug_threads, true, true);
 #endif
+
+  init_target_desc (tdesc);
+  static const char *expedite_regs[] = { "sp", "status32", NULL };
+  tdesc->expedite_regs = expedite_regs;
+
+  return tdesc;
 }
 
 /* Implementation of linux_target_ops method "arch_setup".  */
@@ -318,12 +317,6 @@ struct linux_target_ops the_low_target =
 void
 initialize_low_arch (void)
 {
-#ifdef __ARC700__
-  init_registers_arc_arcompact_linux ();
-#else
-  init_registers_arc_v2_linux ();
-#endif
-
   initialize_regsets_info (&arc_regsets_info);
 }
 
