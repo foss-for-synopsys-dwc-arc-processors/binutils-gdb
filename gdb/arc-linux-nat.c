@@ -41,6 +41,7 @@
 #include "gregset.h"
 #include "arc-tdep.h"
 #include "arc-linux-tdep.h"
+#include "arch/arc.h"
 
 /* Defines ps_err_e, struct ps_prochandle.  */
 #include "gdb_proc_service.h"
@@ -219,13 +220,9 @@ arc_linux_read_description (struct target_ops *ops)
 {
   /* This is a native target, hence description is hardcoded.  */
 #ifdef __ARCHS__
-  if (arc_debug)
-    debug_printf ("arc-nat: Using register set for ARC HS Linux.\n");
-  return tdesc_arc_v2_linux;
+  return arc_create_target_description (arc_debug, true, true);
 #else
-  if (arc_debug)
-    debug_printf ("arc-nat: Using register set for ARC700 Linux.\n");
-  return tdesc_arc_arcompact_linux;
+  return arc_create_target_description (arc_debug, false, true);
 #endif
 }
 
