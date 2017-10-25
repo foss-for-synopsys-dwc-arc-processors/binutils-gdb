@@ -21,6 +21,7 @@
 #include "regdef.h"
 #include "linux-low.h"
 #include "tdesc.h"
+#include "arch/arc.h"
 
 #include <linux/elf.h>
 #include <arpa/inet.h>
@@ -31,23 +32,21 @@
 #define ARC_HAS_V2_REGSET
 #endif
 
-/* Defined in auto-generated files arc-v2-linux.c, arc-arcompact-linux.c.  */
+static const struct target_desc *
+arc_linux_read_description (void)
+{
+  struct target_desc *tdesc;
+  /* FIXME: Shahab, handle linux_read_description like ARM.  */
 #ifdef __ARC700__
-extern void init_registers_arc_arcompact_linux (void);
-extern const struct target_desc *tdesc_arc_arcompact_linux;
+  tdesc = arc_create_target_description (ARC_SYS_TYPE_ARCOMPACT_LNX);
 #else
-extern void init_registers_arc_v2_linux (void);
-extern const struct target_desc *tdesc_arc_v2_linux;
+  tdesc = arc_create_target_description (ARC_SYS_TYPE_ARCV2_LNX);
 #endif
 
-static const struct target_desc *
-arc_read_description (void)
-{
-#ifdef __ARC700__
-  return tdesc_arc_arcompact_linux;
-#else
-  return tdesc_arc_v2_linux;
-#endif
+  static const char *expedite_regs[] = { "sp", "status32", NULL };
+  init_target_desc (tdesc, expedite_regs);
+
+  return tdesc;
 }
 
 /* Implementation of linux_target_ops method "arch_setup".  */
@@ -55,7 +54,7 @@ arc_read_description (void)
 static void
 arc_arch_setup (void)
 {
-  current_process ()->tdesc = arc_read_description ();
+  current_process ()->tdesc = arc_linux_read_description ();
 }
 
 /* Implementation of linux_target_ops method "cannot_fetch_register".  */
@@ -87,7 +86,7 @@ arc_breakpoint_at (CORE_ADDR where)
   uint16_t insn;
   uint16_t breakpoint = ntohs (0x3e78);
 
-  (*the_target->read_memory) (where, (gdb_byte *) &insn, 2);
+  the_target->read_memory (where, (gdb_byte *) &insn, 2);
   return (insn == breakpoint);
 
 }
@@ -318,12 +317,6 @@ struct linux_target_ops the_low_target =
 void
 initialize_low_arch (void)
 {
-#ifdef __ARC700__
-  init_registers_arc_arcompact_linux ();
-#else
-  init_registers_arc_v2_linux ();
-#endif
-
   initialize_regsets_info (&arc_regsets_info);
 }
 
