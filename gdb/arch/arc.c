@@ -24,46 +24,72 @@
 /* Target description features.  */
 #include "features/arc/core-v2.c"
 #include "features/arc/aux-v2.c"
+#include "features/arc/core-v2-linux.c"
+#include "features/arc/aux-v2-linux.c"
 #include "features/arc/core-arcompact.c"
 #include "features/arc/aux-arcompact.c"
+#include "features/arc/core-arcompact-linux.c"
+#include "features/arc/aux-arcompact-linux.c"
 
 /* Create target description for a target with specified parameters.
    PRINT_DEBUG defines whether to print debug messages to the stderr stream.
    IS_ARCV2 defines if this is an ARCv2 (ARC EM or ARC HS) target or ARCompact
    (ARC600 or ARC700); there is no use for more specific information about
-   target processor.  */
+   target processor.  IS_LINUX defines if this is a Linux target or not.  */
 
 target_desc *
-arc_create_target_description (bool print_debug, bool is_arcv2)
+arc_create_target_description (bool print_debug, bool is_arcv2, bool is_linux)
 {
   target_desc *tdesc = allocate_target_description ();
 
   if (print_debug)
     debug_printf ("arc: Creating target description, "
-	"is_arcv2=%i\n", is_arcv2);
+	"is_arcv2=%i, is_linux=%i\n", is_arcv2, is_linux);
 
   long regnum = 0;
 
 #ifndef IN_PROCESS_AGENT
   if (is_arcv2)
     {
-      set_tdesc_architecture (tdesc, "arc:ARCv2");
+      if (is_linux)
+	/* If this is ARCv2 Linux, then it is ARC HS.  */
+	set_tdesc_architecture (tdesc, "arc:HS");
+      else
+	set_tdesc_architecture (tdesc, "arc:ARCv2");
     }
   else
     {
       set_tdesc_architecture (tdesc, "arc:ARC700");
     }
+  if (is_linux)
+    set_tdesc_osabi (tdesc, "GNU/Linux");
 #endif
 
   if (is_arcv2)
     {
-      regnum = create_feature_arc_core_v2 (tdesc, regnum);
-      regnum = create_feature_arc_aux_v2 (tdesc, regnum);
+      if (is_linux)
+	{
+	  regnum = create_feature_arc_core_v2_linux (tdesc, regnum);
+	  regnum = create_feature_arc_aux_v2_linux (tdesc, regnum);
+	}
+      else
+	{
+	  regnum = create_feature_arc_core_v2 (tdesc, regnum);
+	  regnum = create_feature_arc_aux_v2 (tdesc, regnum);
+	}
     }
   else
     {
-      regnum = create_feature_arc_core_arcompact (tdesc, regnum);
-      regnum = create_feature_arc_aux_arcompact (tdesc, regnum);
+      if (is_linux)
+	{
+	  regnum = create_feature_arc_core_arcompact_linux (tdesc, regnum);
+	  regnum = create_feature_arc_aux_arcompact_linux (tdesc, regnum);
+	}
+      else
+	{
+	  regnum = create_feature_arc_core_arcompact (tdesc, regnum);
+	  regnum = create_feature_arc_aux_arcompact (tdesc, regnum);
+	}
     }
 
   return tdesc;
