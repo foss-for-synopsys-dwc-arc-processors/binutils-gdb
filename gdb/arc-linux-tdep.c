@@ -29,6 +29,7 @@
 #include "opcodes/arc-dis.h"
 #include "arc-linux-tdep.h"
 #include "arc-tdep.h"
+#include "arch/arc.h"
 
 #define REGOFF(offset) (offset * ARC_REGISTER_SIZE)
 
@@ -403,17 +404,9 @@ arc_linux_core_read_description (struct gdbarch *gdbarch,
 				 bfd *abfd)
 {
   if (arc_mach_is_arcv2 (gdbarch))
-    {
-      if (arc_debug)
-	debug_printf ("arc-linux: Using register set for ARC HS Linux.\n");
-      return tdesc_arc_v2_linux;
-    }
+    return arc_read_description (ARC_SYS_TYPE_ARCV2_LNX);
   else
-    {
-      if (arc_debug)
-	debug_printf ("arc-linux: Using register set for ARC700 Linux.\n");
-      return tdesc_arc_arcompact_linux;
-    }
+    return arc_read_description (ARC_SYS_TYPE_ARCOMPACT_LNX);
 }
 
 /* Initialization specific to Linux environment.  */
