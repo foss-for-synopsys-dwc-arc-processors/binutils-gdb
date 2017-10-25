@@ -542,6 +542,10 @@ arch/%.o: ../arch/%.c
 	$(COMPILE) $<
 	$(POSTCOMPILE)
 
+arch-arc.o: ../arch/arc.c
+	$(COMPILE) $<
+	$(POSTCOMPILE)
+
 # Rules for objects that go in the in-process agent.
 
 %-ipa.o: %-generated.c
