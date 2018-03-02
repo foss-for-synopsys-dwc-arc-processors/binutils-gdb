@@ -1964,6 +1964,7 @@ elf_arc_check_relocs (bfd *			 abfd,
 	}
 
 
+
       switch (r_type)
 	{
 	  case R_ARC_32:
