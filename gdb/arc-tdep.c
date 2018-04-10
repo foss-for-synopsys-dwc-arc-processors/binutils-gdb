@@ -23,6 +23,8 @@
 #include "arch-utils.h"
 #include "elf-bfd.h"
 #include "disasm.h"
+#include "dwarf2.h"
+#include "dwarf2/expr.h"
 #include "dwarf2/frame.h"
 #include "frame-base.h"
 #include "frame-unwind.h"
@@ -1983,6 +1985,24 @@ static const struct frame_base arc_normal_base = {
   arc_frame_base_address
 };
 
+static bool
+arc_execute_dwarf_cfa_vendor_op (struct gdbarch *gdbarch, gdb_byte op,
+				 struct dwarf2_frame_state *fs,
+				 const gdb_byte **insn_ptr,
+				 const gdb_byte *insn_end)
+{
+  /* MetaWare extension emitted for _Interrupt functions.  Can be ignored by
+     the GDB.  See
+     https://github.com/foss-for-synopsys-dwc-arc-processors/toolchain/issues/122  */
+  if (op == DW_CFA_ARC_info)
+    {
+      *insn_ptr = safe_skip_leb128 (*insn_ptr, insn_end);
+      return true;
+    }
+
+  return false;
+}
+
 /* Add all the expected register sets into GDBARCH.  */
 
 static void
@@ -2409,6 +2429,9 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   frame_unwind_append_unwinder (gdbarch, &arc_sigtramp_frame_unwind);
   frame_unwind_append_unwinder (gdbarch, &arc_frame_unwind);
   frame_base_set_default (gdbarch, &arc_normal_base);
+
+  set_gdbarch_execute_dwarf_cfa_vendor_op (gdbarch,
+					   arc_execute_dwarf_cfa_vendor_op);
 
   /* Setup stuff specific to a particular environment (baremetal or Linux).
      It can override functions set earlier.  */
