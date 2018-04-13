@@ -3588,13 +3588,13 @@ set_gdbarch_address_class_type_flags_to_name (struct gdbarch *gdbarch,
 }
 
 bool
-gdbarch_execute_dwarf_cfa_vendor_op (struct gdbarch *gdbarch, gdb_byte op, struct dwarf2_frame_state *fs)
+gdbarch_execute_dwarf_cfa_vendor_op (struct gdbarch *gdbarch, gdb_byte op, struct dwarf2_frame_state *fs, const gdb_byte **insn_ptr, const gdb_byte *insn_end)
 {
   gdb_assert (gdbarch != NULL);
   gdb_assert (gdbarch->execute_dwarf_cfa_vendor_op != NULL);
   if (gdbarch_debug >= 2)
     fprintf_unfiltered (gdb_stdlog, "gdbarch_execute_dwarf_cfa_vendor_op called\n");
-  return gdbarch->execute_dwarf_cfa_vendor_op (gdbarch, op, fs);
+  return gdbarch->execute_dwarf_cfa_vendor_op (gdbarch, op, fs, insn_ptr, insn_end);
 }
 
 void

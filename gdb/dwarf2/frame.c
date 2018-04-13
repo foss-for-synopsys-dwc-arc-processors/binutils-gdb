@@ -600,7 +600,8 @@ bad CFI data; mismatched DW_CFA_restore_state at %s"),
 	      if (insn >= DW_CFA_lo_user && insn <= DW_CFA_hi_user)
 		{
 		  /* Handle vendor-specific CFI for different architectures.  */
-		  if (!gdbarch_execute_dwarf_cfa_vendor_op (gdbarch, insn, fs))
+		  if (!gdbarch_execute_dwarf_cfa_vendor_op (gdbarch, insn, fs,
+							    &insn_ptr, insn_end))
 		    error (_("Call Frame Instruction op %d in vendor extension "
 			     "space is not handled on this architecture."),
 			   insn);

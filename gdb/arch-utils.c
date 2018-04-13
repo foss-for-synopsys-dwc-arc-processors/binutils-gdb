@@ -179,7 +179,8 @@ default_adjust_dwarf2_line (CORE_ADDR addr, int rel)
 
 bool
 default_execute_dwarf_cfa_vendor_op (struct gdbarch *gdbarch, gdb_byte op,
-				     struct dwarf2_frame_state *fs)
+				     struct dwarf2_frame_state *fs, const gdb_byte **insn_ptr,
+				     const gdb_byte *insn_end)
 {
   return false;
 }
