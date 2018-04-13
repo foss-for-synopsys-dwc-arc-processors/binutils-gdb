@@ -1311,7 +1311,9 @@ aarch64_dwarf2_frame_init_reg (struct gdbarch *gdbarch, int regnum,
 
 static bool
 aarch64_execute_dwarf_cfa_vendor_op (struct gdbarch *gdbarch, gdb_byte op,
-				     struct dwarf2_frame_state *fs)
+				     struct dwarf2_frame_state *fs,
+				     const gdb_byte **insn_ptr,
+				     const gdb_byte *insn_end)
 {
   struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
   struct dwarf2_frame_state_reg *ra_state;
