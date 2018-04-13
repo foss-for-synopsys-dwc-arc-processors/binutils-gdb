@@ -1592,7 +1592,9 @@ sparc32_dwarf2_frame_init_reg (struct gdbarch *gdbarch, int regnum,
 
 static bool
 sparc_execute_dwarf_cfa_vendor_op (struct gdbarch *gdbarch, gdb_byte op,
-				   struct dwarf2_frame_state *fs)
+				   struct dwarf2_frame_state *fs,
+				   const gdb_byte **insn_ptr,
+				   const gdb_byte *insn_end)
 {
   /* Only DW_CFA_GNU_window_save is expected on SPARC.  */
   if (op != DW_CFA_GNU_window_save)
