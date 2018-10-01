@@ -1,3 +1,7 @@
+2018-10-01  Cupertino Miranda <cmiranda@synopsys.com>
+
+	* arc-reloc.def (ARC_TLS_LE_32): Updated reloc formula.
+
 2018-07-18  Nick Clifton  <nickc@redhat.com>
 
 	2.31.1 Release point.
