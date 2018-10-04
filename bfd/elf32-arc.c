@@ -1450,6 +1450,7 @@ elf_arc_relocate_section (bfd *			  output_bfd,
       struct elf_link_hash_entry *  h2;
       const char *		    msg;
       bfd_boolean		    unresolved_reloc = FALSE;
+      bfd_boolean resolved_to_zero;
 
       struct arc_relocation_data reloc_data =
 	{
@@ -1591,6 +1592,8 @@ elf_arc_relocate_section (bfd *			  output_bfd,
 	  continue;
 	}
 
+      resolved_to_zero = (h != NULL && UNDEFWEAK_NO_DYNAMIC_RELOC (info, h));
+
       if (r_symndx < symtab_hdr->sh_info) /* A local symbol.  */
 	{
 	  reloc_data.sym_value = sym->st_value;
@@ -1699,7 +1702,8 @@ elf_arc_relocate_section (bfd *			  output_bfd,
 		  reloc_data.sym_section = htab->splt;
 		  reloc_data.should_relocate = TRUE;
 		}
-	      else
+	      /* See pr22269.  */
+	      else if (!resolved_to_zero)
 		continue;
 	    }
 	  else
@@ -1776,6 +1780,8 @@ elf_arc_relocate_section (bfd *			  output_bfd,
 	case R_ARC_PC32:
 	case R_ARC_32_PCREL:
 	  if (bfd_link_pic (info)
+	      && !resolved_to_zero
+	      && (input_section->flags & SEC_ALLOC) != 0
 	      && (!IS_ARC_PCREL_TYPE (r_type)
 		  || (h != NULL
 		      && h->dynindx != -1
@@ -1995,6 +2001,8 @@ elf_arc_check_relocs (bfd *			 abfd,
 
       switch (r_type)
 	{
+	case R_ARC_8:
+	case R_ARC_16:
 	case R_ARC_32:
 	case R_ARC_32_ME:
 	  /* During shared library creation, these relocs should not
@@ -2032,6 +2040,19 @@ elf_arc_check_relocs (bfd *			 abfd,
 	     no significant cases are being missed.  */
 	  if (h)
 	    h->non_got_ref = 1;
+
+	  /* We don't need to handle relocs into sections not going
+	     into the "real" output.  */
+	  if ((sec->flags & SEC_ALLOC) == 0)
+	    break;
+
+	  /* No need to do anything if we're not creating a shared
+	     object.  */
+	  if (!bfd_link_pic (info)
+	      || (h != NULL
+		  && UNDEFWEAK_NO_DYNAMIC_RELOC (info, h)))
+	    break;
+
 	  /* FALLTHROUGH */
 	case R_ARC_PC32:
 	case R_ARC_32_PCREL:
@@ -2055,7 +2076,6 @@ elf_arc_check_relocs (bfd *			 abfd,
 		    return FALSE;
 		}
 	      sreloc->size += sizeof (Elf32_External_Rela);
-
 	    }
 	default:
 	  break;
