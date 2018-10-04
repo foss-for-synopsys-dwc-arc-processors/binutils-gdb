@@ -1458,6 +1458,7 @@ elf_arc_relocate_section (bfd *			  output_bfd,
       struct elf_link_hash_entry *  h2;
       const char *		    msg;
       bfd_boolean		    unresolved_reloc = FALSE;
+      bfd_boolean resolved_to_zero;
 
       struct arc_relocation_data reloc_data =
       {
@@ -1599,6 +1600,8 @@ elf_arc_relocate_section (bfd *			  output_bfd,
 	  continue;
 	}
 
+      resolved_to_zero = (h != NULL && UNDEFWEAK_NO_DYNAMIC_RELOC (info, h));
+
       if (r_symndx < symtab_hdr->sh_info) /* A local symbol.  */
 	{
 	  reloc_data.sym_value = sym->st_value;
@@ -1707,7 +1710,8 @@ elf_arc_relocate_section (bfd *			  output_bfd,
 		  reloc_data.sym_section = htab->splt;
 		  reloc_data.should_relocate = TRUE;
 		}
-	      else
+	      /* See pr22269.  */
+	      else if (!resolved_to_zero)
 		continue;
 	    }
 	  else
@@ -1779,25 +1783,26 @@ elf_arc_relocate_section (bfd *			  output_bfd,
 
       switch (r_type)
 	{
-	  case R_ARC_32:
-	  case R_ARC_32_ME:
-	  case R_ARC_PC32:
-	  case R_ARC_32_PCREL:
-	    if (bfd_link_pic (info)
-		&& (input_section->flags & SEC_ALLOC) != 0
-		&& (!IS_ARC_PCREL_TYPE (r_type)
-		    || (h != NULL
-			&& h->dynindx != -1
-			&& !h->def_regular
-			&& (!info->symbolic || !h->def_regular))))
-	      {
-		Elf_Internal_Rela outrel;
-		bfd_byte *loc;
-		bfd_boolean skip = FALSE;
-		bfd_boolean relocate = FALSE;
-		asection *sreloc = _bfd_elf_get_dynamic_reloc_section
-				 (input_bfd, input_section,
-				  /*RELA*/ TRUE);
+	case R_ARC_32:
+	case R_ARC_32_ME:
+	case R_ARC_PC32:
+	case R_ARC_32_PCREL:
+	  if (bfd_link_pic (info)
+	      && !resolved_to_zero
+	      && (input_section->flags & SEC_ALLOC) != 0
+	      && (!IS_ARC_PCREL_TYPE (r_type)
+		  || (h != NULL
+		      && h->dynindx != -1
+		      && !h->def_regular
+		      && (!info->symbolic || !h->def_regular))))
+	    {
+	      Elf_Internal_Rela outrel;
+	      bfd_byte *loc;
+	      bfd_boolean skip = FALSE;
+	      bfd_boolean relocate = FALSE;
+	      asection *sreloc = _bfd_elf_get_dynamic_reloc_section
+		(input_bfd, input_section,
+		 /*RELA*/ TRUE);
 
 		BFD_ASSERT (sreloc != NULL);
 
@@ -2001,6 +2006,8 @@ elf_arc_check_relocs (bfd *			 abfd,
 
       switch (r_type)
 	{
+	case R_ARC_8:
+	case R_ARC_16:
 	case R_ARC_32:
 	case R_ARC_32_ME:
 	  /* During shared library creation, these relocs should not
@@ -2031,39 +2038,51 @@ elf_arc_check_relocs (bfd *			 abfd,
 	      return FALSE;
 	    }
 
-	    /* In some cases we are not setting the 'non_got_ref'
-	       flag, even though the relocations don't require a GOT
-	       access.  We should extend the testing in this area to
-	       ensure that no significant cases are being missed.  */
-	    if (h)
-	      h->non_got_ref = 1;
-	    /* FALLTHROUGH */
-	  case R_ARC_PC32:
-	  case R_ARC_32_PCREL:
-	    if ((bfd_link_pic (info))
-		&& ((r_type != R_ARC_PC32 && r_type != R_ARC_32_PCREL)
-		    || (h != NULL
-			&& (!info->symbolic || !h->def_regular))))
-	      {
-		if (sreloc == NULL)
-		  {
-		    if (info->dynamic
-			&& ! htab->dynamic_sections_created
-			&& ! _bfd_elf_link_create_dynamic_sections (abfd, info))
-		      return FALSE;
-		    sreloc = _bfd_elf_make_dynamic_reloc_section (sec, dynobj,
-								  2, abfd,
-								  /*rela*/
-								  TRUE);
+	  /* In some cases we are not setting the 'non_got_ref' flag,
+	     even though the relocations don't require a GOT access.
+	     We should extend the testing in this area to ensure that
+	     no significant cases are being missed.  */
+	  if (h)
+	    h->non_got_ref = 1;
 
-		    if (sreloc == NULL)
-		      return FALSE;
-		  }
-		sreloc->size += sizeof (Elf32_External_Rela);
-
-	      }
-	  default:
+	  /* We don't need to handle relocs into sections not going
+	     into the "real" output.  */
+	  if ((sec->flags & SEC_ALLOC) == 0)
 	    break;
+
+	  /* No need to do anything if we're not creating a shared
+	     object.  */
+	  if (!bfd_link_pic (info)
+	      || (h != NULL
+		  && UNDEFWEAK_NO_DYNAMIC_RELOC (info, h)))
+	    break;
+
+	  /* FALLTHROUGH */
+	case R_ARC_PC32:
+	case R_ARC_32_PCREL:
+	  if ((bfd_link_pic (info))
+	      && ((r_type != R_ARC_PC32 && r_type != R_ARC_32_PCREL)
+		  || (h != NULL
+		      && (!info->symbolic || !h->def_regular))))
+	    {
+	      if (sreloc == NULL)
+		{
+		  if (info->dynamic
+		      && ! htab->dynamic_sections_created
+		      && ! _bfd_elf_link_create_dynamic_sections (abfd, info))
+		    return FALSE;
+		  sreloc = _bfd_elf_make_dynamic_reloc_section (sec, dynobj,
+								2, abfd,
+								/*rela*/
+								TRUE);
+
+		  if (sreloc == NULL)
+		    return FALSE;
+		}
+	      sreloc->size += sizeof (Elf32_External_Rela);
+	    }
+	default:
+	  break;
 	}
 
       if (is_reloc_for_PLT (howto))
