@@ -2046,6 +2046,26 @@ elf_arc_check_relocs (bfd *			 abfd,
       if (is_reloc_for_GOT (howto)
 	  || is_reloc_for_TLS (howto))
 	{
+	  if (bfd_link_dll (info) && !bfd_link_pie (info)
+	      && (r_type == R_ARC_TLS_LE_32 || r_type == R_ARC_TLS_LE_S9)
+	     )
+	    {
+	      const char *name;
+	      if (h)
+	        name = h->root.root.string;
+	      else
+	        /* bfd_elf_sym_name (abfd, symtab_hdr, isym, NULL);  */
+	        name = "UNKNOWN";
+	      _bfd_error_handler
+	        /* xgettext:c-format */
+	        (_("%pB: relocation %s against `%s' can not be used"
+	           " when making a shared object; recompile with -fPIC"),
+	         abfd,
+	         arc_elf_howto (r_type)->name,
+	         name);
+	      bfd_set_error (bfd_error_bad_value);
+	      return FALSE;
+	    }
 	  if (! _bfd_elf_create_got_section (dynobj, info))
 	    return FALSE;
 
