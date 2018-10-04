@@ -208,7 +208,7 @@ arc_got_entry_type_for_reloc (reloc_howto_type *howto)
 		     __LINE__, name_for_global_symbol (H));		\
       }									\
     if (H)								\
-      if (h->dynindx == -1 && !h->forced_local)				\
+      if (H->dynindx == -1 && !H->forced_local)				\
 	if (! bfd_elf_link_record_dynamic_symbol (info, H))		\
 	  return FALSE;							\
      htab->s##SECNAME->size += 4;					\
@@ -284,6 +284,7 @@ relocate_fix_got_relocs_for_got_info (struct got_entry **          list_p,
   BFD_ASSERT (entry);
 
   if (h == NULL
+      || h->forced_local == TRUE
       || (! elf_hash_table (info)->dynamic_sections_created
 	  || (bfd_link_pic (info)
 	      && SYMBOL_REFERENCES_LOCAL (info, h))))
