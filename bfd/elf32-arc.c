@@ -2317,9 +2317,8 @@ static bfd_boolean
 elf_arc_adjust_dynamic_symbol (struct bfd_link_info *info,
 			       struct elf_link_hash_entry *h)
 {
-  asection *s;
-  bfd *dynobj = (elf_hash_table (info))->dynobj;
-  struct elf_link_hash_table *htab = elf_hash_table (info);
+  asection *s, *srel;
+  struct elf_arc_link_hash_table *arc_htab = elf_arc_hash_table (info);
 
   if (h->type == STT_FUNC
       || h->type == STT_GNU_IFUNC
@@ -2345,6 +2344,10 @@ elf_arc_adjust_dynamic_symbol (struct bfd_link_info *info,
 	  || WILL_CALL_FINISH_DYNAMIC_SYMBOL (1, 0, h))
 	{
 	  bfd_vma loc = add_symbol_to_plt (info);
+	  struct elf_link_hash_table *htab = elf_hash_table (info);
+
+	  if (htab == NULL)
+	    return FALSE;
 
 	  if (bfd_link_executable (info) && !h->def_regular)
 	    {
@@ -2405,25 +2408,28 @@ elf_arc_adjust_dynamic_symbol (struct bfd_link_info *info,
      both the dynamic object and the regular object will refer to the
      same memory location for the variable.  */
 
-  if (htab == NULL)
+  if (arc_htab == NULL)
     return FALSE;
 
   /* We must generate a R_ARC_COPY reloc to tell the dynamic linker to
      copy the initial value out of the dynamic object and into the
      runtime process image.  We need to remember the offset into the
      .rela.bss section we are going to use.  */
-  if ((h->root.u.def.section->flags & SEC_ALLOC) != 0)
+  if ((h->root.u.def.section->flags & SEC_READONLY) != 0)
     {
-      struct elf_arc_link_hash_table *arc_htab = elf_arc_hash_table (info);
-
-      BFD_ASSERT (arc_htab->elf.srelbss != NULL);
-      arc_htab->elf.srelbss->size += sizeof (Elf32_External_Rela);
+      s = arc_htab->elf.sdynrelro;
+      srel = arc_htab->elf.sreldynrelro;
+    }
+  else
+    {
+      s = arc_htab->elf.sdynbss;
+      srel = arc_htab->elf.srelbss;
+    }
+  if ((h->root.u.def.section->flags & SEC_ALLOC) != 0 && h->size != 0)
+    {
+      srel->size += sizeof (Elf32_External_Rela);
       h->needs_copy = 1;
     }
-
-  /* TODO: Move this also to arc_hash_table.  */
-  s = bfd_get_section_by_name (dynobj, ".dynbss");
-  BFD_ASSERT (s != NULL);
 
   return _bfd_elf_adjust_dynamic_copy (info, h, s);
 }
@@ -2470,32 +2476,34 @@ elf_arc_finish_dynamic_symbol (bfd * output_bfd,
   if (h->needs_copy)
     {
       struct elf_arc_link_hash_table *arc_htab = elf_arc_hash_table (info);
+      asection *sec;
+      Elf_Internal_Rela rela;
 
       if (arc_htab == NULL)
 	return FALSE;
 
-      if (h->dynindx == -1
+       if (h->dynindx == -1
 	  || (h->root.type != bfd_link_hash_defined
-	      && h->root.type != bfd_link_hash_defweak)
-	  || arc_htab->elf.srelbss == NULL)
+	      && h->root.type != bfd_link_hash_defweak))
 	abort ();
 
-      bfd_vma rel_offset = (h->root.u.def.value
-			    + h->root.u.def.section->output_section->vma
-			    + h->root.u.def.section->output_offset);
+      rela.r_offset = (h->root.u.def.value
+		       + h->root.u.def.section->output_section->vma
+		       + h->root.u.def.section->output_offset);
+      rela.r_addend = 0;
+      rela.r_info = ELF32_R_INFO (h->dynindx, R_ARC_COPY);
 
-      bfd_byte * loc = arc_htab->elf.srelbss->contents
-	+ (arc_htab->elf.srelbss->reloc_count * sizeof (Elf32_External_Rela));
-      arc_htab->elf.srelbss->reloc_count++;
-
-      Elf_Internal_Rela rel;
-      rel.r_addend = 0;
-      rel.r_offset = rel_offset;
-
-      BFD_ASSERT (h->dynindx != -1);
-      rel.r_info = ELF32_R_INFO (h->dynindx, R_ARC_COPY);
-
-      bfd_elf32_swap_reloca_out (output_bfd, &rel, loc);
+      if (h->root.u.def.section == arc_htab->elf.sdynrelro)
+	{
+	  sec = arc_htab->elf.sreldynrelro;
+	}
+      else
+	{
+	  sec = arc_htab->elf.srelbss;
+	}
+      bfd_byte *loc = sec->contents + sec->reloc_count * sizeof (Elf32_External_Rela);
+      sec->reloc_count++;
+      bfd_elf32_swap_reloca_out (output_bfd, &rela, loc);
     }
 
   /* Mark _DYNAMIC and _GLOBAL_OFFSET_TABLE_ as absolute.  */
@@ -2715,7 +2723,8 @@ elf_arc_size_dynamic_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
       if (s == htab->splt
 	  || s == htab->sgot
 	  || s == htab->sgotplt
-	  || s == htab->sdynbss)
+	  || s == htab->sdynbss
+	  || s == htab->sdynrelro)
 	{
 	  /* Strip this section if we don't need it.  */
 	}
@@ -2994,6 +3003,7 @@ elf32_arc_section_from_shdr (bfd *abfd,
 #define elf_backend_plt_readonly	1
 #define elf_backend_rela_plts_and_copies_p 1
 #define elf_backend_want_plt_sym	0
+#define elf_backend_want_dynrelro	1
 #define elf_backend_got_header_size	12
 #define elf_backend_dtrel_excludes_plt	1
 
