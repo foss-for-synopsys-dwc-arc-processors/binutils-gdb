@@ -332,7 +332,10 @@ relocate_fix_got_relocs_for_got_info (struct got_entry **	   list_p,
 		BFD_ASSERT (tls_sec && tls_sec->output_section);
 		bfd_vma sec_vma = tls_sec->output_section->vma;
 
-		bfd_put_32 (output_bfd,
+		if(h == NULL || h->forced_local
+		   || !elf_hash_table (info)->dynamic_sections_created)
+		  {
+		    bfd_put_32 (output_bfd,
 			    sym_value - sec_vma
 			    + (elf_hash_table (info)->dynamic_sections_created
 			       ? 0
@@ -342,17 +345,18 @@ relocate_fix_got_relocs_for_got_info (struct got_entry **	   list_p,
 			    + (entry->existing_entries == TLS_GOT_MOD_AND_OFF
 			       ? 4 : 0));
 
-		ARC_DEBUG ("arc_info: FIXED -> %s value = %#lx "
-			   "@ %lx, for symbol %s\n",
-			   (entry->type == GOT_TLS_GD ? "GOT_TLS_GD" :
-			    "GOT_TLS_IE"),
-			   (long) (sym_value - sec_vma),
-			   (long) (htab->sgot->output_section->vma
-			      + htab->sgot->output_offset
-			      + entry->offset
-			      + (entry->existing_entries == TLS_GOT_MOD_AND_OFF
-				 ? 4 : 0)),
-			   symbol_name);
+		    ARC_DEBUG ("arc_info: FIXED -> %s value = %#lx "
+			  "@ %lx, for symbol %s\n",
+			  (entry->type == GOT_TLS_GD ? "GOT_TLS_GD" :
+			   "GOT_TLS_IE"),
+			  (long) (sym_value - sec_vma),
+			  (long) (htab->sgot->output_section->vma
+			     + htab->sgot->output_offset
+			     + entry->offset
+			     + (entry->existing_entries == TLS_GOT_MOD_AND_OFF
+			        ? 4 : 0)),
+			  symbol_name);
+		  }
 	      }
 	      break;
 
