@@ -297,6 +297,10 @@ struct arc_reloc_map
 struct elf_arc_link_hash_table
 {
   struct elf_link_hash_table elf;
+
+  /* Small local sym cache.  */
+  struct sym_cache sym_cache;
+
 };
 
 static struct bfd_hash_entry *
@@ -2061,6 +2065,12 @@ elf_arc_check_relocs (bfd *			 abfd,
 		  || (h != NULL
 		      && (!info->symbolic || !h->def_regular))))
 	    {
+	      struct elf_dyn_relocs *p;
+	      struct elf_dyn_relocs **head = NULL;
+
+	      /* When creating a shared object, we must copy these
+		 reloc types into the output file.  We create a reloc
+		 section in dynobj and make room for this reloc.  */
 	      if (sreloc == NULL)
 		{
 		  if (info->dynamic
@@ -2075,7 +2085,52 @@ elf_arc_check_relocs (bfd *			 abfd,
 		  if (sreloc == NULL)
 		    return FALSE;
 		}
+	      /* Allocate space.  */
 	      sreloc->size += sizeof (Elf32_External_Rela);
+
+	      /* If this is a global symbol, we count the number of
+		 relocations we need for this symbol.  */
+	      if (h != NULL)
+		head = &((struct elf_arc_link_hash_entry *) h)->dyn_relocs;
+	      else
+		{
+		  /* Track dynamic relocs needed for local syms too.
+		     We really need local syms available to do this
+		     easily.  */
+		  asection *s;
+		  void *vpp;
+		  Elf_Internal_Sym *isym;
+		  struct elf_arc_link_hash_table *arc_htab
+		    = elf_arc_hash_table (info);
+
+		  isym = bfd_sym_from_r_symndx (&arc_htab->sym_cache,
+						abfd, r_symndx);
+		  if (isym == NULL)
+		    return FALSE;
+
+		  s = bfd_section_from_elf_index (abfd, isym->st_shndx);
+		  if (s == NULL)
+		    s = sec;
+
+		  vpp = &elf_section_data (s)->local_dynrel;
+		  head = (struct elf_dyn_relocs **) vpp;
+		}
+
+	      p = *head;
+	      if (p == NULL || p->sec != sec)
+		{
+		  bfd_size_type amt = sizeof *p;
+		  p = ((struct elf_dyn_relocs *)
+		       bfd_alloc (dynobj, amt));
+		  if (p == NULL)
+		    return FALSE;
+		  p->next = *head;
+		  *head = p;
+		  p->sec = sec;
+		  p->count = 0;
+		  p->pc_count = 0;
+		}
+	      p->count += 1;
 	    }
 	default:
 	  break;
@@ -2714,12 +2769,175 @@ elf_arc_finish_dynamic_sections (bfd * output_bfd,
   return TRUE;
 }
 
+/* Find dynamic relocs for H that apply to read-only sections.  */
+
+static asection *
+readonly_dynrelocs (struct elf_link_hash_entry *h)
+{
+  struct elf_dyn_relocs *p;
+
+  for (p = ((struct elf_arc_link_hash_entry *)h)->dyn_relocs;
+       p != NULL;
+       p = p->next)
+    {
+      asection *s = p->sec->output_section;
+
+      if (s != NULL && (s->flags & SEC_READONLY) != 0)
+	return p->sec;
+    }
+  return NULL;
+}
+
+/* Set DF_TEXTREL if we find any dynamic relocs that apply to
+   read-only sections.  */
+
+static bfd_boolean
+maybe_set_textrel (struct elf_link_hash_entry *h, void *inf)
+{
+  asection *sec;
+
+  if (h->root.type == bfd_link_hash_indirect)
+    return TRUE;
+
+  /* Skip local IFUNC symbols. */
+  if (h->forced_local && h->type == STT_GNU_IFUNC)
+    return TRUE;
+
+  sec = readonly_dynrelocs (h);
+  if (sec != NULL)
+    {
+      struct bfd_link_info *info = (struct bfd_link_info *) inf;
+
+      info->flags |= DF_TEXTREL;
+      /* xgettext:c-format */
+      info->callbacks->minfo (_("%pB: dynamic relocation against `%pT' "
+				"in read-only section `%pA'\n"),
+			      sec->owner, h->root.root.string, sec);
+
+      if ((info->warn_shared_textrel && bfd_link_pic (info))
+	  || info->error_textrel)
+	/* xgettext:c-format */
+	info->callbacks->einfo (_("%P: %pB: warning: relocation against `%s' "
+				  "in read-only section `%pA'\n"),
+				sec->owner, h->root.root.string, sec);
+
+      /* Not an error, just cut short the traversal.  */
+      return FALSE;
+    }
+  return TRUE;
+}
+
+/* Another worker function for elf_arc_size_dynamic_sections.
+   Allocate space in .plt, .got and associated reloc sections for
+   dynamic relocs.  */
+
+static bfd_boolean
+allocate_dynrelocs (struct elf_link_hash_entry *h, PTR inf)
+{
+  struct bfd_link_info *info;
+  struct elf_arc_link_hash_table *htab;
+  struct elf_arc_link_hash_entry *eh;
+  struct elf_dyn_relocs *p;
+
+  if (h->root.type == bfd_link_hash_indirect)
+    return TRUE;
+
+  if (h->root.type == bfd_link_hash_warning)
+    /* When warning symbols are created, they **replace** the "real"
+       entry in the hash table, thus we never get to see the real
+       symbol in a hash traversal.  So look at it now.  */
+    h = (struct elf_link_hash_entry *) h->root.u.i.link;
+
+  info = (struct bfd_link_info *) inf;
+  eh = (struct elf_arc_link_hash_entry *) h;
+  htab = elf_arc_hash_table (info);
+
+  if (eh->dyn_relocs == NULL)
+    return TRUE;
+
+  /* In the shared -Bsymbolic case, discard space allocated for
+     dynamic pc-relative relocs against symbols which turn out to be
+     defined in regular objects.  For the normal shared case, discard
+     space for pc-relative relocs that have become local due to symbol
+     visibility changes.  */
+
+  if (bfd_link_pic (info))
+    {
+      if (h->def_regular
+	  && (h->forced_local || SYMBOLIC_BIND (info, h)))
+	{
+	  struct elf_dyn_relocs **pp;
+
+	  for (pp = &eh->dyn_relocs; (p = *pp) != NULL; )
+	    {
+	      p->count -= p->pc_count;
+	      p->pc_count = 0;
+	      if (p->count == 0)
+		*pp = p->next;
+	      else
+		pp = &p->next;
+	    }
+	}
+
+      /* Also discard relocs on undefined weak syms with non-default
+	 visibility.  */
+      if (eh->dyn_relocs != NULL
+	  && h->root.type == bfd_link_hash_undefweak)
+	{
+	  if (ELF_ST_VISIBILITY (h->other) != STV_DEFAULT
+	      || UNDEFWEAK_NO_DYNAMIC_RELOC (info, h))
+	    eh->dyn_relocs = NULL;
+
+	  /* Make sure undefined weak symbols are output as a dynamic
+	     symbol in PIEs.  */
+	  else if (h->dynindx == -1
+		   && !h->forced_local
+		   && !bfd_elf_link_record_dynamic_symbol (info, h))
+	    return FALSE;
+	}
+    }
+  else
+    {
+      /* For the non-shared case, discard space for relocs against
+	 symbols which turn out to need copy relocs or are not
+	 dynamic.  */
+
+      if (!h->non_got_ref
+	  && ((h->def_dynamic && !h->def_regular)
+	      || (htab->elf.dynamic_sections_created
+		  && (h->root.type == bfd_link_hash_undefweak
+		      || h->root.type == bfd_link_hash_undefined))))
+	{
+	  /* Make sure this symbol is output as a dynamic symbol.
+	     Undefined weak syms won't yet be marked as dynamic.  */
+	  if (h->dynindx == -1
+	      && !h->forced_local
+	      && !bfd_elf_link_record_dynamic_symbol (info, h))
+	    return FALSE;
+
+	  /* If that succeeded, we know we'll be keeping all the
+	     relocs.  */
+	  if (h->dynindx != -1)
+	    goto keep;
+	}
+
+      eh->dyn_relocs = NULL;
+
+    keep: ;
+    }
+
+  /* FIXME! allocate here the space.  */
+
+  return TRUE;
+}
+
 #define ADD_DYNAMIC_SYMBOL(NAME, TAG)				\
   h =  elf_link_hash_lookup (elf_hash_table (info),		\
 			     NAME, FALSE, FALSE, FALSE);	\
   if ((h != NULL && (h->ref_regular || h->def_regular)))	\
     if (! _bfd_elf_add_dynamic_entry (info, TAG, 0))		\
       return FALSE;
+
 
 /* Set the sizes of the dynamic sections.  */
 static bfd_boolean
@@ -2834,6 +3052,10 @@ elf_arc_size_dynamic_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
 	return FALSE;
     }
 
+  /* Allocate global sym .plt and .got entries, and space for global
+     sym dynamic relocs.  */
+  elf_link_hash_traverse (elf_hash_table (info), allocate_dynrelocs, info);
+
   if (htab->dynamic_sections_created)
     {
       /* TODO: Check if this is needed.  */
@@ -2849,15 +3071,25 @@ elf_arc_size_dynamic_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
 	  return FALSE;
 
       if (relocs_exist)
-	if (!_bfd_elf_add_dynamic_entry (info, DT_RELA, 0)
-	    || !_bfd_elf_add_dynamic_entry (info, DT_RELASZ, 0)
-	    || !_bfd_elf_add_dynamic_entry (info, DT_RELAENT,
-					    sizeof (Elf32_External_Rela)))
-	  return FALSE;
+	{
+	  if (!_bfd_elf_add_dynamic_entry (info, DT_RELA, 0)
+	      || !_bfd_elf_add_dynamic_entry (info, DT_RELASZ, 0)
+	      || !_bfd_elf_add_dynamic_entry (info, DT_RELAENT,
+					      sizeof (Elf32_External_Rela)))
+	    return FALSE;
 
-      if (reltext_exist)
-	if (!_bfd_elf_add_dynamic_entry (info, DT_TEXTREL, 0))
-	  return FALSE;
+	  /* If any dynamic relocs apply to a read-only section, then
+	     we need a DT_TEXTREL entry.  */
+	  if ((info->flags & DF_TEXTREL) == 0)
+	    elf_link_hash_traverse (elf_hash_table (info), maybe_set_textrel,
+				    info);
+
+	  if ((info->flags & DF_TEXTREL) != 0)
+	    {
+	      if (!_bfd_elf_add_dynamic_entry (info, DT_TEXTREL, 0))
+		return FALSE;
+	    }
+	}
     }
 
   return TRUE;
@@ -3018,6 +3250,54 @@ elf32_arc_section_from_shdr (bfd *abfd,
   return TRUE;
 }
 
+/* Implement elf_backend_copy_indirect_symbol:
+   Copy the extra info we tack onto an elf_link_hash_entry.  */
+
+static void
+elf32_arc_copy_indirect_symbol (struct bfd_link_info *info,
+				struct elf_link_hash_entry *dir,
+				struct elf_link_hash_entry *ind)
+{
+  struct elf_arc_link_hash_entry *edir, *eind;
+
+  edir = (struct elf_arc_link_hash_entry *) dir;
+  eind = (struct elf_arc_link_hash_entry *) ind;
+
+  if (eind->dyn_relocs != NULL)
+    {
+      if (edir->dyn_relocs != NULL)
+	{
+	  struct elf_dyn_relocs **pp;
+	  struct elf_dyn_relocs *p;
+
+	  /* Add reloc counts against the indirect sym to the direct
+	     sym list.  Merge any entries against the same
+	     section.  */
+	  for (pp = &eind->dyn_relocs; (p = *pp) != NULL; )
+	    {
+	      struct elf_dyn_relocs *q;
+
+	      for (q = edir->dyn_relocs; q != NULL; q = q->next)
+		if (q->sec == p->sec)
+		  {
+		    q->pc_count += p->pc_count;
+		    q->count += p->count;
+		    *pp = p->next;
+		    break;
+		  }
+	      if (q == NULL)
+		pp = &p->next;
+	    }
+	  *pp = edir->dyn_relocs;
+	}
+
+      edir->dyn_relocs = eind->dyn_relocs;
+      eind->dyn_relocs = NULL;
+    }
+
+  _bfd_elf_link_hash_copy_indirect (info, dir, ind);
+}
+
 #define TARGET_LITTLE_SYM   arc_elf32_le_vec
 #define TARGET_LITTLE_NAME  "elf32-littlearc"
 #define TARGET_BIG_SYM	    arc_elf32_be_vec
@@ -3044,7 +3324,8 @@ elf32_arc_section_from_shdr (bfd *abfd,
 #define elf_backend_check_relocs	     elf_arc_check_relocs
 #define elf_backend_create_dynamic_sections  _bfd_elf_create_dynamic_sections
 
-#define elf_backend_reloc_type_class		elf32_arc_reloc_type_class
+#define elf_backend_reloc_type_class	     elf32_arc_reloc_type_class
+#define elf_backend_copy_indirect_symbol     elf32_arc_copy_indirect_symbol
 
 #define elf_backend_adjust_dynamic_symbol    elf_arc_adjust_dynamic_symbol
 #define elf_backend_finish_dynamic_symbol    elf_arc_finish_dynamic_symbol
