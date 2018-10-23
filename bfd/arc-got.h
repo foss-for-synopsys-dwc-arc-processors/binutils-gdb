@@ -339,7 +339,7 @@ relocate_fix_got_relocs_for_got_info (struct got_entry **	   list_p,
 			    sym_value - sec_vma
 			    + (elf_hash_table (info)->dynamic_sections_created
 			       ? 0
-			       : (align_power (TCB_SIZE,
+			       : (align_power (0,
 					       tls_sec->alignment_power))),
 			    htab->sgot->contents + entry->offset
 			    + (entry->existing_entries == TLS_GOT_MOD_AND_OFF
