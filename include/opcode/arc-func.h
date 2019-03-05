@@ -292,3 +292,75 @@ replace_jli (unsigned insn, int value)
 }
 
 #endif /* REPLACE_jli */
+
+#ifndef REPLACE_bits9
+#define REPLACE_bits9
+/* mask = 0000 0000 1111 1110 2000 0000 0000 0000.  */
+static unsigned
+replace_bits9 (unsigned insn, int value)
+{
+  insn = insn & ~0x00fe8000;
+  insn |= ((value >> 0) & 0x007f) << 17;
+  insn |= ((value >> 7) & 0x0001) << 15;
+
+  return insn;
+}
+#endif /* REPLACE_bits9 */
+
+#ifndef REPLACE_bits10
+#define REPLACE_bits10
+/* mask = 0000000111111111
+   insn = 1111001sssssssss.  */
+static unsigned
+replace_bits10 (unsigned insn, int value)
+{
+  insn &= ~0x01ff;
+  insn |= value & 0x01ff;
+
+  return insn;
+}
+#endif /* REPLACE_bits10 */
+
+#ifndef REPLACE_bits7
+#define REPLACE_bits7
+/* mask = 0000000000111111
+   insn = 1111011000ssssss.  */
+static unsigned
+replace_bits7 (unsigned insn, int value)
+{
+  insn &= ~0x003f;
+  insn |= value & 0x003f;
+
+  return insn;
+}
+#endif /* REPLACE_bits7 */
+
+#ifndef REPLACE_disp8h
+#define REPLACE_disp8h
+/* mask = 0000000001111111
+   insn = 11101bbb1sssssss.  */
+static unsigned
+replace_disp8h (unsigned insn, int value)
+{
+  insn &= ~0x7f;
+  insn |= value & 0x007f;
+
+  return insn;
+}
+#endif /* REPLACE_disp8h */
+
+#ifndef REPLACE_bits13
+#define REPLACE_bits13
+/* mask = 00000000000000000000111111222222
+   insn = 00100RRR101010000RRRssssssSSSSSS.  */
+static unsigned
+replace_bits13 (unsigned insn, int value)
+{
+
+  insn &= ~0x0FFF;
+  insn |= ((value) & 0x003f) << 6;
+  insn |= ((value >> 6) & 0x003f) << 0;
+
+  return insn;
+}
+#endif /* REPLACE_bits13 */
