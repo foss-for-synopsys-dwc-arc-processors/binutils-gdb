@@ -148,7 +148,12 @@ static int byte_order = DEFAULT_BYTE_ORDER;
 static segT arcext_section;
 
 /* By default relaxation is disabled.  */
-static int relaxation_state = 0;
+static bfd_boolean relaxation_state = FALSE;
+
+/* Status of the linker relaxation.  It is a tristate variable: 0 is
+   non initialized/disabled, 1 is enabled, -1 forced disable (no PCS
+   attribute found).  */
+static int do_linker_relax = 0;
 
 extern int arc_get_mach (char *);
 
@@ -199,6 +204,7 @@ enum options
   OPTION_CD,
   OPTION_RELAX,
   OPTION_NPS400,
+  OPTION_LINKER_RELAX,
 
   OPTION_SPFP,
   OPTION_DPFP,
@@ -243,6 +249,7 @@ struct option md_longopts[] =
   { "mcode-density",	no_argument,	   NULL, OPTION_CD },
   { "mrelax",           no_argument,       NULL, OPTION_RELAX },
   { "mnps400",          no_argument,       NULL, OPTION_NPS400 },
+  { "mlinker-relax",    no_argument,       NULL, OPTION_LINKER_RELAX },
 
   /* Floating point options */
   { "mspfp", no_argument, NULL, OPTION_SPFP},
@@ -2718,6 +2725,8 @@ md_begin (void)
   declare_addrtype ("csd", ARC_NPS400_ADDRTYPE_CSD);
   declare_addrtype ("cxa", ARC_NPS400_ADDRTYPE_CXA);
   declare_addrtype ("cxd", ARC_NPS400_ADDRTYPE_CXD);
+
+  linkrelax = (do_linker_relax == 1) ? 1 : 0;
 }
 
 void
@@ -2805,6 +2814,11 @@ md_pcrel_from_section (fixS *fixP,
 	case BFD_RELOC_ARC_S13_PCREL:
 	case BFD_RELOC_ARC_S21W_PCREL:
 	case BFD_RELOC_ARC_S25W_PCREL:
+	case BFD_RELOC_ARC_S10H_PCREL:
+	case BFD_RELOC_ARC_S13H_PCREL:
+	case BFD_RELOC_ARC_S9H_PCREL:
+	case BFD_RELOC_ARC_S8H_PCREL:
+	case BFD_RELOC_ARC_S7H_PCREL:
 	  base &= ~3;
 	  break;
 	default:
@@ -2920,7 +2934,6 @@ md_apply_fix (fixS *fixP,
   symbolS *fx_addsy, *fx_subsy;
   offsetT fx_offset;
   segT add_symbol_segment = absolute_section;
-  segT sub_symbol_segment = absolute_section;
   const struct arc_operand *operand = NULL;
   extended_bfd_reloc_code_real_type reloc;
 
@@ -2939,29 +2952,9 @@ md_apply_fix (fixS *fixP,
       add_symbol_segment = S_GET_SEGMENT (fx_addsy);
     }
 
-  if (fx_subsy
-      && fixP->fx_r_type != BFD_RELOC_ARC_TLS_DTPOFF
-      && fixP->fx_r_type != BFD_RELOC_ARC_TLS_DTPOFF_S9
-      && fixP->fx_r_type != BFD_RELOC_ARC_TLS_GD_LD)
-    {
-      resolve_symbol_value (fx_subsy);
-      sub_symbol_segment = S_GET_SEGMENT (fx_subsy);
-
-      if (sub_symbol_segment == absolute_section)
-	{
-	  /* The symbol is really a constant.  */
-	  fx_offset -= S_GET_VALUE (fx_subsy);
-	  fx_subsy = NULL;
-	}
-      else
-	{
-	  as_bad_subtract (fixP);
-	  return;
-	}
-    }
-
   if (fx_addsy
-      && !S_IS_WEAK (fx_addsy))
+      && !S_IS_WEAK (fx_addsy)
+      && !fx_subsy)
     {
       if (add_symbol_segment == seg
 	  && fixP->fx_pcrel)
@@ -3131,6 +3124,11 @@ md_apply_fix (fixS *fixP,
     case BFD_RELOC_ARC_S21H_PCREL:
     case BFD_RELOC_ARC_S25H_PCREL:
     case BFD_RELOC_ARC_S13_PCREL:
+    case BFD_RELOC_ARC_S10H_PCREL:
+    case BFD_RELOC_ARC_S13H_PCREL:
+    case BFD_RELOC_ARC_S9H_PCREL:
+    case BFD_RELOC_ARC_S8H_PCREL:
+    case BFD_RELOC_ARC_S7H_PCREL:
     solve_plt:
       operand = find_operand_for_reloc (reloc);
       gas_assert (operand);
@@ -3482,7 +3480,13 @@ md_parse_option (int c, const char *arg ATTRIBUTE_UNUSED)
       break;
 
     case OPTION_RELAX:
-      relaxation_state = 1;
+      relaxation_state = TRUE;
+      do_linker_relax = -1;
+      break;
+
+    case OPTION_LINKER_RELAX:
+      relaxation_state = FALSE;
+      do_linker_relax = (do_linker_relax == 0) ? 1 : do_linker_relax;
       break;
 
     case OPTION_NPS400:
@@ -4182,26 +4186,64 @@ assemble_insn (const struct arc_opcode *opcode,
 	    arc_last_insns[0].opcode->name);
 }
 
+static void
+arc_make_nops (char *buf, bfd_vma bytes)
+{
+  bfd_vma i = 0;
+
+  /* ARC instructions cannot begin or end on odd addresses, so this case
+     means we are not within a valid instruction sequence.  It is thus safe
+     to use a zero byte, even though that is not a valid instruction.  */
+  if (bytes % 2 == 1)
+    buf[i++] = 0;
+
+  /* Use 2-byte NOP.  */
+  for ( ; i < bytes; i += 2)
+    md_number_to_chars_midend (buf + i, NOP_OPCODE_S, 2);
+}
+
+/* Implement HANDLE_ALIGN.  */
+
 void
 arc_handle_align (fragS* fragP)
 {
-  if ((fragP)->fr_type == rs_align_code)
+  char *dest = (fragP)->fr_literal + (fragP)->fr_fix;
+  valueT count = ((fragP)->fr_next->fr_address
+		  - (fragP)->fr_address - (fragP)->fr_fix);
+  bfd_signed_vma size = count & ~0x01;
+  bfd_signed_vma excess = count & 0x01;
+  expressionS ex;
+
+  if (fragP->fr_type != rs_align_code)
+    return;
+
+  if (count <= 0)
+    return;
+
+  /* Insert zeros to get 2 byte alignment.  */
+  if (excess && fragP->fr_type == rs_align_code)
     {
-      char *dest = (fragP)->fr_literal + (fragP)->fr_fix;
-      valueT count = ((fragP)->fr_next->fr_address
-		      - (fragP)->fr_address - (fragP)->fr_fix);
-
-      (fragP)->fr_var = 2;
-
-      if (count & 1)/* Padding in the gap till the next 2-byte
-		       boundary with 0s.  */
-	{
-	  (fragP)->fr_fix++;
-	  *dest++ = 0;
-	}
-      /* Writing nop_s.  */
-      md_number_to_chars (dest, NOP_OPCODE_S, 2);
+      arc_make_nops (dest, excess);
+      fragP->fr_fix += excess;
+      dest += excess;
     }
+
+  /* Only emit this reloc when linker relaxation is required.  */
+  if (linkrelax && size)
+    {
+      ex.X_op = O_constant;
+      ex.X_add_number = size;
+      fix_new_exp (fragP, fragP->fr_fix, 0, &ex, FALSE, BFD_RELOC_ARC_ALIGN);
+    }
+  else
+    {
+      if (size > MAX_MEM_FOR_RS_ALIGN_CODE)
+	size &= MAX_MEM_FOR_RS_ALIGN_CODE;
+
+      /* Insert variable number of 2 bytes NOPs.  */
+      arc_make_nops (dest, size);
+    }
+  fragP->fr_fix += size;
 }
 
 /* Here we decide which fixups can be adjusted to make them relative
@@ -4213,7 +4255,6 @@ arc_handle_align (fragS* fragP)
 int
 tc_arc_fix_adjustable (fixS *fixP)
 {
-
   /* Prevent all adjustments to global symbols.  */
   if (S_IS_EXTERNAL (fixP->fx_addsy))
     return 0;
@@ -4235,7 +4276,7 @@ tc_arc_fix_adjustable (fixS *fixP)
       break;
     }
 
-  return 1;
+  return !linkrelax;
 }
 
 /* Compute the reloc type of an expression EXP.  */
@@ -4266,23 +4307,88 @@ arc_cons_fix_new (fragS *frag,
   switch (size)
     {
     case 1:
-      r_type = BFD_RELOC_8;
+      if (exp->X_op == O_subtract && exp->X_op_symbol != NULL && linkrelax)
+	{
+	  if (S_IS_LOCAL (exp->X_add_symbol) && S_IS_LOCAL (exp->X_op_symbol))
+	    {
+	      expressionS exps;
+	      memcpy  (&exps, exp, sizeof (expressionS));
+	      exps.X_op = O_symbol;
+	      exps.X_add_symbol = exp->X_op_symbol;
+	      exps.X_op_symbol = NULL;
+	      exp->X_op_symbol = NULL;
+	      exp->X_op = O_symbol;
+	      fix_new_exp (frag, off, size, exp, 0, BFD_RELOC_ARC_ADD8);
+	      fix_new_exp (frag, off, size, &exps, 0, BFD_RELOC_ARC_SUB8);
+	      return;
+	    }
+	  else
+	    as_bad_where (frag->fr_file, frag->fr_line,
+			  _("Unknown substract operation. "
+			    "Cannot generate reloc"));
+	}
+      else
+	r_type = BFD_RELOC_8;
       break;
 
     case 2:
-      r_type = BFD_RELOC_16;
+      if (exp->X_op == O_subtract && exp->X_op_symbol != NULL && linkrelax)
+	{
+	  if (S_IS_LOCAL (exp->X_add_symbol) && S_IS_LOCAL (exp->X_op_symbol))
+	    {
+	      expressionS exps;
+	      memcpy  (&exps, exp, sizeof (expressionS));
+	      exps.X_op = O_symbol;
+	      exps.X_add_symbol = exp->X_op_symbol;
+	      exps.X_op_symbol = NULL;
+	      exp->X_op_symbol = NULL;
+	      exp->X_op = O_symbol;
+	      fix_new_exp (frag, off, size, exp, 0, BFD_RELOC_ARC_ADD16);
+	      fix_new_exp (frag, off, size, &exps, 0, BFD_RELOC_ARC_SUB16);
+	      return;
+	    }
+	  else
+	    as_bad_where (frag->fr_file, frag->fr_line,
+			  _("Unknown substract operation. "
+			    "Cannot generate reloc"));
+	}
+      else
+	r_type = BFD_RELOC_16;
       break;
 
     case 3:
+      gas_assert (!linkrelax);
       r_type = BFD_RELOC_24;
       break;
 
     case 4:
-      r_type = BFD_RELOC_32;
+      if (exp->X_op == O_subtract && exp->X_op_symbol != NULL && linkrelax)
+	{
+	  if (S_IS_LOCAL (exp->X_add_symbol) && S_IS_LOCAL (exp->X_op_symbol))
+	    {
+	      expressionS exps;
+	      memcpy  (&exps, exp, sizeof (expressionS));
+	      exps.X_op = O_symbol;
+	      exps.X_add_symbol = exp->X_op_symbol;
+	      exps.X_op_symbol = NULL;
+	      exp->X_op_symbol = NULL;
+	      exp->X_op = O_symbol;
+	      fix_new_exp (frag, off, size, exp, 0, BFD_RELOC_32);
+	      fix_new_exp (frag, off, size, &exps, 0, BFD_RELOC_ARC_SUB32);
+	      return;
+	    }
+	  else
+	    as_bad_where (frag->fr_file, frag->fr_line,
+			  _("Unknown substract operation. "
+			    "Cannot generate reloc"));
+	}
+      else
+	r_type = BFD_RELOC_32;
       arc_check_reloc (exp, &r_type);
       break;
 
     case 8:
+      gas_assert (!linkrelax);
       r_type = BFD_RELOC_64;
       break;
 
@@ -5069,6 +5175,17 @@ arc_set_public_attributes (void)
 		 "register file"));
       bfd_elf_add_proc_attr_int (stdoutput, Tag_ARC_ABI_rf16, 0);
     }
+
+  /* Tag_ARC_PCS_config.  */
+  if (attributes_set_explicitly[Tag_ARC_PCS_config])
+    {
+      int val = bfd_elf_get_obj_attr_int (stdoutput, OBJ_ATTR_PROC,
+					  Tag_ARC_PCS_config);
+      val |= (do_linker_relax == 1) ? 0x100 : 0x00;
+      bfd_elf_add_proc_attr_int (stdoutput, Tag_ARC_PCS_config, val);
+    }
+  else if (do_linker_relax == 1)
+    arc_set_attribute_int (Tag_ARC_PCS_config, 0x100);
 }
 
 /* Add the default contents for the .ARC.attributes section.  */
@@ -5127,6 +5244,26 @@ int arc_convert_symbolic_attribute (const char *name)
       return attribute_table[i].tag;
 
   return -1;
+}
+
+/* Implements md_allow_local_substract.  */
+
+bfd_boolean arc_allow_local_subtract (expressionS * left,
+				      expressionS * right,
+				      segT section)
+{
+  /* if we don't relax allow substraction.  */
+  if (!linkrelax)
+    return TRUE;
+
+  /* if the symbols are not in a code section then they are OK.  */
+  if ((section->flags & SEC_CODE) == 0)
+    return TRUE;
+
+  if (left->X_add_symbol == right->X_add_symbol)
+    return TRUE;
+
+  return FALSE;
 }
 
 /* Local variables:

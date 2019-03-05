@@ -90,7 +90,7 @@ ARC_RELOC_HOWTO(ARC_N32, 11, \
                 32, \
                 replace_word32, \
                 bitfield, \
-                ( A - S ))
+                ( A - S))
 
 ARC_RELOC_HOWTO(ARC_SDA, 12, \
                 4, \
@@ -511,3 +511,80 @@ ARC_RELOC_HOWTO(ARC_NPS_CMEM16, 78, \
                 replace_bits16, \
                 dont, \
                 ( ME ( S + A )))
+
+ARC_RELOC_HOWTO(ARC_S9H_PCREL, 79, \
+                4, \
+                8, \
+                replace_bits9, \
+                signed, \
+                ( ME ( ( ( ( S + A ) - P ) >> 1 ) ) ) )
+
+ARC_RELOC_HOWTO(ARC_S7H_PCREL, 80, \
+                1, \
+                6, \
+                replace_bits7, \
+                signed, \
+                ( ( ( ( S + A ) - P ) >> 1 ) ) )
+
+ARC_RELOC_HOWTO(ARC_S8H_PCREL, 81, \
+                1, \
+                7, \
+                replace_disp8h, \
+                signed, \
+                ( ( ( ( S + A ) - P ) >> 1 ) ) )
+
+ARC_RELOC_HOWTO(ARC_S10H_PCREL, 82, \
+                1, \
+                9, \
+                replace_bits10, \
+                signed, \
+                ( ( ( ( S + A ) - P ) >> 1 ) ) )
+
+ARC_RELOC_HOWTO(ARC_S13H_PCREL, 83, \
+                4, \
+                12, \
+                replace_bits13, \
+                signed, \
+                ( ME ( ( ( ( S + A ) - P ) >> 1 ) ) ) )
+
+ARC_RELOC_HOWTO(ARC_ALIGN, 84, \
+                2, \
+                0, \
+                replace_none, \
+                dont, \
+                0 )
+
+ARC_RELOC_HOWTO(ARC_ADD8, 85, \
+                0, \
+                8, \
+                replace_bits8, \
+                dont, \
+                ( S + A ))
+
+ARC_RELOC_HOWTO(ARC_ADD16, 86, \
+                1, \
+                16, \
+                replace_bits16, \
+                dont, \
+                ( S + A ))
+
+ARC_RELOC_HOWTO(ARC_SUB8, 87, \
+                0, \
+                8, \
+                replace_bits8, \
+                dont, \
+                ( A - S + ICARRY ))
+
+ARC_RELOC_HOWTO(ARC_SUB16, 88, \
+                1, \
+                16, \
+                replace_bits16, \
+                dont, \
+                ( A - S + ICARRY ))
+
+ARC_RELOC_HOWTO(ARC_SUB32, 89, \
+                2, \
+                32, \
+                replace_word32, \
+                dont, \
+                ( A - S + ICARRY))

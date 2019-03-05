@@ -16436,27 +16436,31 @@ display_arc_attribute (unsigned char * p,
     case Tag_ARC_PCS_config:
       READ_ULEB (val, p, end);
       printf ("  Tag_ARC_PCS_config: ");
-      switch (val)
+      switch (val & 0xff)
 	{
 	case 0:
-	  printf (_("Absent/Non standard\n"));
+	  printf (_("Absent/Non standard"));
 	  break;
 	case 1:
-	  printf (_("Bare metal/mwdt\n"));
+	  printf (_("Bare metal/mwdt"));
 	  break;
 	case 2:
-	  printf (_("Bare metal/newlib\n"));
+	  printf (_("Bare metal/newlib"));
 	  break;
 	case 3:
-	  printf (_("Linux/uclibc\n"));
+	  printf (_("Linux/uclibc"));
 	  break;
 	case 4:
-	  printf (_("Linux/glibc\n"));
+	  printf (_("Linux/glibc"));
 	  break;
 	default:
-	  printf (_("Unknown\n"));
+	  printf (_("Unknown"));
 	  break;
 	}
+      if (val & 0x100)
+	printf (_(" -linkrelax-\n"));
+      else
+	printf (_("\n"));
       break;
 
     case Tag_ARC_CPU_base:
