@@ -48,7 +48,6 @@ name_for_global_symbol (struct elf_link_hash_entry *h)
 #define ARC_DEBUG(...)
 #endif
 
-
 #define ADD_RELA(BFD, SECTION, OFFSET, SYM_IDX, TYPE, ADDEND)		\
   {									\
     struct elf_link_hash_table *_htab = elf_hash_table (info);		\
@@ -629,20 +628,21 @@ arc_elf_merge_attributes (bfd *ibfd, struct bfd_link_info *info)
 	case Tag_ARC_PCS_config:
 	  if (out_attr[i].i == 0)
 	    out_attr[i].i = in_attr[i].i;
-	  else if (in_attr[i].i != 0 && out_attr[i].i != in_attr[i].i)
+	  else if ((in_attr[i].i & 0xff) != 0
+		   && ((out_attr[i].i & 0xff) != (in_attr[i].i & 0xff)))
 	    {
 	      const char *tagval[] = { "Absent", "Bare-metal/mwdt",
-					"Bare-metal/newlib", "Linux/uclibc",
-					"Linux/glibc" };
-	      BFD_ASSERT (in_attr[i].i < 5);
-	      BFD_ASSERT (out_attr[i].i < 5);
+				       "Bare-metal/newlib", "Linux/uclibc",
+				       "Linux/glibc" };
+	      BFD_ASSERT ((in_attr[i].i & 0xff) < 5);
+	      BFD_ASSERT ((out_attr[i].i & 0xff) < 5);
 	      /* It's sometimes ok to mix different configs, so this is only
 		 a warning.  */
 	      _bfd_error_handler
 		(_("warning: %pB: conflicting platform configuration "
 		   "%s with %s"), ibfd,
-		 tagval[in_attr[i].i],
-		 tagval[out_attr[i].i]);
+		 tagval[in_attr[i].i & 0xff],
+		 tagval[out_attr[i].i & 0xff]);
 	    }
 	  break;
 
@@ -1230,6 +1230,7 @@ arc_special_overflow_checks (const struct arc_relocation_data reloc_data,
   ((elf_hash_table (info))->tls_sec->output_section->vma)
 #define TLS_TBSS (align_power(TCB_SIZE, \
 		  reloc_data.sym_section->alignment_power))
+#define ICARRY insn
 
 #define none (0)
 
@@ -1404,6 +1405,7 @@ arc_do_relocation (bfd_byte * contents,
 #undef SECTSTART
 #undef JLI
 #undef _SDA_BASE_
+#undef ICARRY
 #undef none
 
 #undef ARC_RELOC_HOWTO
@@ -2947,13 +2949,137 @@ elf32_arc_section_from_shdr (bfd *abfd,
   return true;
 }
 
+/* Delete a number of bytes from a given section while relaxing.  */
+
+static bool
+arc_relax_delete_bytes (struct bfd_link_info *link_info, bfd *abfd,
+			asection *sec, bfd_vma addr, int count)
+{
+    Elf_Internal_Shdr *symtab_hdr;
+  unsigned int sec_shndx;
+  bfd_byte *contents;
+  Elf_Internal_Rela *irel, *irelend;
+  bfd_vma toaddr;
+  Elf_Internal_Sym *isym;
+  Elf_Internal_Sym *isymend;
+  struct elf_link_hash_entry **sym_hashes;
+  struct elf_link_hash_entry **end_hashes;
+  struct elf_link_hash_entry **start_hashes;
+  unsigned int symcount;
+
+  sec_shndx = _bfd_elf_section_from_bfd_section (abfd, sec);
+
+  contents = elf_section_data (sec)->this_hdr.contents;
+
+  toaddr = sec->size;
+
+  irel = elf_section_data (sec)->relocs;
+  irelend = irel + sec->reloc_count;
+
+  /* Actually delete the bytes.  */
+  memmove (contents + addr, contents + addr + count,
+           (size_t) (toaddr - addr - count));
+  sec->size -= count;
+
+  /* Adjust all the relocs.  */
+  for (irel = elf_section_data (sec)->relocs; irel < irelend; irel++)
+    /* Get the new reloc address.  */
+    if ((irel->r_offset > addr && irel->r_offset < toaddr))
+        irel->r_offset -= count;
+
+  /* Adjust the local symbols defined in this section.  */
+  symtab_hdr = &elf_tdata (abfd)->symtab_hdr;
+  isym = (Elf_Internal_Sym *) symtab_hdr->contents;
+  for (isymend = isym + symtab_hdr->sh_info; isym < isymend; isym++)
+    {
+      if (isym->st_shndx == sec_shndx
+          && isym->st_value > addr
+          && isym->st_value <= toaddr)
+        {
+          /* Adjust the addend of SWITCH relocations in this section,
+             which reference this local symbol.  */
+          isym->st_value -= count;
+        }
+    }
+
+  /* Now adjust the global symbols defined in this section.  */
+  symcount = (symtab_hdr->sh_size / sizeof (Elf32_External_Sym)
+               - symtab_hdr->sh_info);
+  sym_hashes = start_hashes = elf_sym_hashes (abfd);
+  end_hashes = sym_hashes + symcount;
+
+  for (; sym_hashes < end_hashes; sym_hashes++)
+    {
+      struct elf_link_hash_entry *sym_hash = *sym_hashes;
+
+      /* The '--wrap SYMBOL' option is causing a pain when the object file,
+         containing the definition of __wrap_SYMBOL, includes a direct
+         call to SYMBOL as well. Since both __wrap_SYMBOL and SYMBOL reference
+         the same symbol (which is __wrap_SYMBOL), but still exist as two
+         different symbols in 'sym_hashes', we don't want to adjust
+         the global symbol __wrap_SYMBOL twice.
+         This check is only relevant when symbols are being wrapped.  */
+      if (link_info->wrap_hash != NULL)
+        {
+          struct elf_link_hash_entry **cur_sym_hashes;
+
+          /* Loop only over the symbols whom been already checked.  */
+          for (cur_sym_hashes = start_hashes; cur_sym_hashes < sym_hashes;
+               cur_sym_hashes++)
+            /* If the current symbol is identical to 'sym_hash', that means
+               the symbol was already adjusted (or at least checked).  */
+            if (*cur_sym_hashes == sym_hash)
+              break;
+
+          /* Don't adjust the symbol again.  */
+          if (cur_sym_hashes < sym_hashes)
+            continue;
+        }
+
+      if ((sym_hash->root.type == bfd_link_hash_defined
+          || sym_hash->root.type == bfd_link_hash_defweak)
+          && sym_hash->root.u.def.section == sec)
+	{
+	  /* As above, adjust the value if needed.  */
+	  if (sym_hash->root.u.def.value > addr
+	      && sym_hash->root.u.def.value <= toaddr)
+	    sym_hash->root.u.def.value -= count;
+
+	  /* As above, adjust the size if needed.  */
+	  if (sym_hash->root.u.def.value <= addr
+	      && sym_hash->root.u.def.value + sym_hash->size > addr
+	      && sym_hash->root.u.def.value + sym_hash->size <= toaddr)
+	    sym_hash->size -= count;
+	}
+    }
+
+  return true;
+}
+
+/* Check Tag_ARC_PCS_config if we can relax.  */
+static bool
+arc_can_relax_p (bfd *abfd)
+{
+  obj_attribute *attr = elf_known_obj_attributes_proc (abfd);
+
+  if (attr[Tag_ARC_PCS_config].i & 0x100)
+    return true;
+  return false;
+}
+
 /* Relaxation hook.
 
    These are the current relaxing opportunities available:
 
    * R_ARC_GOTPC32 => R_ARC_PCREL.
+   * R_ARC_S25W_PCREL => R_ARC_S13_PCREL.
 
-*/
+   This is a two step relaxation procedure, in the first round, we
+   relax all the above opportunities.  In the second round, we deal
+   with function align by removing unnecessary NOP_S placed by the
+   assembler.
+
+   Inspired from CRX and RISCV backends.  */
 
 static bool
 arc_elf_relax_section (bfd *abfd, asection *sec,
@@ -2964,9 +3090,13 @@ arc_elf_relax_section (bfd *abfd, asection *sec,
   Elf_Internal_Rela *irel, *irelend;
   bfd_byte *contents = NULL;
   Elf_Internal_Sym *isymbuf = NULL;
+  bool do_relax = false;
 
   /* Assume nothing changes.  */
   *again = false;
+
+  /* Check if we can do size related relaxation.  */
+  do_relax = arc_can_relax_p (abfd);
 
   /* We don't have to do anything for a relocatable link, if this
      section does not have relocs, or if this is not a code
@@ -2974,6 +3104,7 @@ arc_elf_relax_section (bfd *abfd, asection *sec,
   if (bfd_link_relocatable (link_info)
       || (sec->flags & SEC_RELOC) == 0
       || sec->reloc_count == 0
+      || sec->sec_flg0
       || (sec->flags & SEC_CODE) == 0)
     return true;
 
@@ -2989,45 +3120,78 @@ arc_elf_relax_section (bfd *abfd, asection *sec,
   irelend = internal_relocs + sec->reloc_count;
   for (irel = internal_relocs; irel < irelend; irel++)
     {
-      /* If this isn't something that can be relaxed, then ignore
-         this reloc.  */
-      if (ELF32_R_TYPE (irel->r_info) != (int) R_ARC_GOTPC32)
-        continue;
+      asection *sym_sec;
+      struct elf_link_hash_entry *htop = NULL;
+      bfd_vma symval;
+
+      /* If this isn't something that can be relaxed, then ignore this
+	 reloc.  */
+      if (ELF32_R_TYPE (irel->r_info) != (int) R_ARC_GOTPC32
+	  && ELF32_R_TYPE (irel->r_info) != (int) R_ARC_S25W_PCREL
+	  && ELF32_R_TYPE (irel->r_info) != (int) R_ARC_ALIGN)
+	continue;
 
       /* Get the section contents if we haven't done so already.  */
       if (contents == NULL)
-        {
-          /* Get cached copy if it exists.  */
-          if (elf_section_data (sec)->this_hdr.contents != NULL)
-            contents = elf_section_data (sec)->this_hdr.contents;
-          /* Go get them off disk.  */
-          else if (!bfd_malloc_and_get_section (abfd, sec, &contents))
-            goto error_return;
-        }
+	{
+	  /* Get cached copy if it exists.  */
+	  if (elf_section_data (sec)->this_hdr.contents != NULL)
+	    contents = elf_section_data (sec)->this_hdr.contents;
+	  /* Go get them off disk.  */
+	  else if (!bfd_malloc_and_get_section (abfd, sec, &contents))
+	    goto error_return;
+	}
 
       /* Read this BFD's local symbols if we haven't done so already.  */
       if (isymbuf == NULL && symtab_hdr->sh_info != 0)
-        {
-          isymbuf = (Elf_Internal_Sym *) symtab_hdr->contents;
-          if (isymbuf == NULL)
-            isymbuf = bfd_elf_get_elf_syms (abfd, symtab_hdr,
-                                            symtab_hdr->sh_info, 0,
-                                            NULL, NULL, NULL);
-          if (isymbuf == NULL)
-            goto error_return;
-        }
+	{
+	  isymbuf = (Elf_Internal_Sym *) symtab_hdr->contents;
+	  if (isymbuf == NULL)
+	    isymbuf = bfd_elf_get_elf_syms (abfd, symtab_hdr,
+					    symtab_hdr->sh_info, 0,
+					    NULL, NULL, NULL);
+	  if (isymbuf == NULL)
+	    goto error_return;
+	}
 
-      struct elf_link_hash_entry *htop = NULL;
+      /* Get the value of the symbol referred to by the reloc.  */
+      if (ELF32_R_SYM (irel->r_info) < symtab_hdr->sh_info)
+	{
+	  /* A local symbol.  */
+	  Elf_Internal_Sym *isym;
 
-      if (ELF32_R_SYM (irel->r_info) >= symtab_hdr->sh_info)
+	  isym = isymbuf + ELF32_R_SYM (irel->r_info);
+	  sym_sec = bfd_section_from_elf_index (abfd, isym->st_shndx);
+	  symval = isym->st_value;
+	  /* If the reloc is absolute, it will not have
+	     a symbol or section associated with it.  */
+	  if (sym_sec)
+	    symval += sym_sec->output_section->vma
+	      + sym_sec->output_offset;
+	}
+      else
 	{
 	  /* An external symbol.  */
 	  unsigned int indx = ELF32_R_SYM (irel->r_info) - symtab_hdr->sh_info;
 	  htop = elf_sym_hashes (abfd)[indx];
+
+	  BFD_ASSERT (htop != NULL);
+	  if (htop->root.type != bfd_link_hash_defined
+	      && htop->root.type != bfd_link_hash_defweak)
+	    /* This appears to be a reference to an undefined
+	       symbol.  Just ignore it--it will be caught by the
+	       regular reloc processing.  */
+	    continue;
+
+	  symval = (htop->root.u.def.value
+		    + htop->root.u.def.section->output_section->vma
+		    + htop->root.u.def.section->output_offset);
+	  sym_sec = htop->root.u.def.section;
 	}
 
       if (ELF32_R_TYPE (irel->r_info) == (int) R_ARC_GOTPC32
-	  && SYMBOL_REFERENCES_LOCAL (link_info, htop))
+	  && SYMBOL_REFERENCES_LOCAL (link_info, htop)
+	  && link_info->relax_pass == 0)
 	{
 	  unsigned int code;
 
@@ -3053,7 +3217,101 @@ arc_elf_relax_section (bfd *abfd, asection *sec,
 	  bfd_put_32_me (abfd, code, contents + irel->r_offset - 4);
 
 	  /* The size isn't changed, don't redo.  */
-	  *again = false;
+	}
+
+      /* Any of the next relax rules are changing the size, allow them
+	 is assembler was informed.  */
+      if (!do_relax)
+	continue;
+
+      if (ELF32_R_TYPE (irel->r_info) == (int) R_ARC_S25W_PCREL
+	  && link_info->relax_pass == 0)
+	{
+	  unsigned int code;
+	  bfd_vma value = symval + irel->r_addend;
+	  bfd_vma dot, gap;
+
+	  /* Get the address (PCL) of this instruction.  */
+	  dot = (sec->output_section->vma
+		 + sec->output_offset + irel->r_offset) & ~0x03;
+
+	  /* Compute the distance from this insn to the branch target.  */
+	  gap = value - dot;
+
+	  /* Check if the gap falls in the range that can be
+	     accomodated in 13bit signed range (32-bit aligned).  */
+	  if ((int) gap < -4094 || (int) gap > 4097 || ((int) gap & 0x3) != 0)
+	    continue;
+
+	  /* Get the opcode.  */
+	  code = bfd_get_32_me (abfd, contents + irel->r_offset);
+	  /* bl @symb@pcl -> bl_s @symb@pcl.  */
+	  /* 0000 1sss ssss ss10 SSSS SSSS SSNR tttt. */
+	  BFD_ASSERT ((code & 0xF8030000) == 0x08020000);
+
+	  /* Check for delay slot bit.  */
+	  if (code & 0x20)
+	    continue;
+
+	  /* Note that we've changed the relocs, section contents, etc.  */
+	  elf_section_data (sec)->relocs = internal_relocs;
+	  elf_section_data (sec)->this_hdr.contents = contents;
+	  symtab_hdr->contents = (unsigned char *) isymbuf;
+
+	  /* Fix the relocation's type.  */
+	  irel->r_info = ELF32_R_INFO (ELF32_R_SYM (irel->r_info),
+				       R_ARC_S13_PCREL);
+
+	  /* Write back bl_s instruction.  */
+	  bfd_put_16 (abfd, 0xF800, contents + irel->r_offset);
+	  /* Delete two bytes of data.  */
+	  if (!arc_relax_delete_bytes (link_info, abfd, sec,
+				       irel->r_offset + 2, 2))
+	    goto error_return;
+
+	  *again = true;
+	}
+
+      if (ELF32_R_TYPE (irel->r_info) == (int) R_ARC_ALIGN
+	  && link_info->relax_pass == 1)
+	{
+	  bfd_vma aligned_addr;
+	  bfd_vma nop_bytes;
+	  bfd_vma alignment = 4;
+
+	  if (irel->r_addend == 2)
+	    alignment = 2;
+	  aligned_addr = ((irel->r_offset - 1) & ~(alignment - 1)) + alignment;
+	  nop_bytes = aligned_addr - irel->r_offset;
+
+	  /* Cannot remove more than we have left.  */
+	  BFD_ASSERT (irel->r_addend >= nop_bytes);
+	  /* I should be always 16bit multiple quantum.  */
+	  BFD_ASSERT (nop_bytes == 0 || nop_bytes == 2);
+
+	  /* Once we aligned we cannot relax anything else.  */
+	  sec->sec_flg0 = true;
+
+	  /* Note that we've changed the relocs, section contents, etc.  */
+	  elf_section_data (sec)->relocs = internal_relocs;
+	  elf_section_data (sec)->this_hdr.contents = contents;
+	  symtab_hdr->contents = (unsigned char *) isymbuf;
+
+	  /* Delete the relocation's type.  */
+	  irel->r_info = ELF32_R_INFO (ELF32_R_SYM (irel->r_info),
+				       R_ARC_NONE);
+
+	  /* Add an NOP_S if needed.  */
+	  if (nop_bytes != 0)
+	    bfd_put_16 (abfd, 0x78E0, contents + irel->r_offset);
+
+	  /* Delete nop_bytes bytes of data.  */
+	  if (!arc_relax_delete_bytes (link_info, abfd, sec,
+				       irel->r_offset + nop_bytes,
+				       irel->r_addend - nop_bytes))
+	    goto error_return;
+
+	  *again = true;
 	}
     }
 
@@ -3061,20 +3319,20 @@ arc_elf_relax_section (bfd *abfd, asection *sec,
       && symtab_hdr->contents != (unsigned char *) isymbuf)
     {
       if (!link_info->keep_memory)
-        free (isymbuf);
+	free (isymbuf);
       else
-       /* Cache the symbols for elf_link_input_bfd.  */
-       symtab_hdr->contents = (unsigned char *) isymbuf;
+	/* Cache the symbols for elf_link_input_bfd.  */
+	symtab_hdr->contents = (unsigned char *) isymbuf;
     }
 
   if (contents != NULL
       && elf_section_data (sec)->this_hdr.contents != contents)
     {
       if (!link_info->keep_memory)
-        free (contents);
+	free (contents);
       else
-       /* Cache the section contents for elf_link_input_bfd.  */
-       elf_section_data (sec)->this_hdr.contents = contents;
+	/* Cache the section contents for elf_link_input_bfd.  */
+	elf_section_data (sec)->this_hdr.contents = contents;
     }
 
   if (elf_section_data (sec)->relocs != internal_relocs)
