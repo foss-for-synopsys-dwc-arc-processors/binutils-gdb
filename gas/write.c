@@ -2611,7 +2611,8 @@ relax_frag (segT segment, fragS *fragP, long stretch)
    lowest order bits all 0s, return size of adjustment made.  */
 static relax_addressT
 relax_align (relax_addressT address,	/* Address now.  */
-	     int alignment	/* Alignment (binary).  */)
+	     int alignment,	/* Alignment (binary).  */
+	     enum _relax_state fr_type)
 {
   relax_addressT mask;
   relax_addressT new_address;
@@ -2619,7 +2620,7 @@ relax_align (relax_addressT address,	/* Address now.  */
   mask = ~((relax_addressT) ~0 << alignment);
   new_address = (address + mask) & (~mask);
 #ifdef LINKER_RELAXING_SHRINKS_ONLY
-  if (linkrelax)
+  if (linkrelax && fr_type == rs_align_code)
     /* We must provide lots of padding, so the linker can discard it
        when needed.  The linker will not add extra space, ever.  */
     new_address += (1 << alignment);
@@ -2672,7 +2673,8 @@ relax_segment (struct frag *segment_frag_root, segT segment, int pass)
 	case rs_align_code:
 	case rs_align_test:
 	  {
-	    addressT offset = relax_align (address, (int) fragP->fr_offset);
+	    addressT offset = relax_align (address, (int) fragP->fr_offset,
+					   fragP->fr_type);
 
 	    if (fragP->fr_subtype != 0 && offset > fragP->fr_subtype)
 	      offset = 0;
@@ -2889,9 +2891,9 @@ relax_segment (struct frag *segment_frag_root, segT segment, int pass)
 		  addressT oldoff, newoff;
 
 		  oldoff = relax_align (was_address + fragP->fr_fix,
-					(int) offset);
+					(int) offset, fragP->fr_type);
 		  newoff = relax_align (address + fragP->fr_fix,
-					(int) offset);
+					(int) offset, fragP->fr_type);
 
 		  if (fragP->fr_subtype != 0)
 		    {
