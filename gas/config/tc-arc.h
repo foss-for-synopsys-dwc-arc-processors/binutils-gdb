@@ -125,6 +125,10 @@ extern const char *arc_target_format;
 #define TC_CONS_FIX_NEW(FRAG, OFF, LEN, EXP, RELOC)	\
   arc_cons_fix_new ((FRAG), (OFF), (LEN), (EXP), (RELOC))
 
+/* We don't want to do any fixup when linker is relaxing.  */
+#define TC_LINKRELAX_FIXUP(SEG) 1
+#define LINKER_RELAXING_SHRINKS_ONLY 1
+
 /* We don't want gas to fixup the following program memory related
    relocations.  Check also that fx_addsy is not NULL, in order to
    make sure that the fixup refers to some sort of label.  */
@@ -134,26 +138,21 @@ extern const char *arc_target_format;
        || FIXP->fx_r_type == BFD_RELOC_ARC_S25W_PCREL_PLT	     \
        || FIXP->fx_r_type == BFD_RELOC_ARC_S25H_PCREL_PLT	     \
        || FIXP->fx_r_type == BFD_RELOC_ARC_S21W_PCREL_PLT	     \
-       || FIXP->fx_r_type == BFD_RELOC_ARC_S21H_PCREL_PLT)	     \
-      && FIXP->fx_addsy != NULL					     \
-      && FIXP->fx_subsy == NULL)				     \
+       || FIXP->fx_r_type == BFD_RELOC_ARC_S21H_PCREL_PLT	     \
+       || (linkrelax						     \
+	   && (FIXP->fx_r_type == BFD_RELOC_ARC_S7H_PCREL	     \
+	       || FIXP->fx_r_type == BFD_RELOC_ARC_S8H_PCREL)))	     \
+       && (FIXP->fx_addsy != NULL)				     \
+       && (FIXP->fx_subsy == NULL))				     \
     {								     \
       symbol_mark_used_in_reloc (FIXP->fx_addsy);		     \
       goto SKIP;						     \
     }
 
-/* BFD_RELOC_ARC_TLS_GD_LD may use fx_subsy to store a label that is
-   later turned into fx_offset.  */
-#define TC_FORCE_RELOCATION_SUB_LOCAL(FIX, SEG) \
-  ((FIX)->fx_r_type == BFD_RELOC_ARC_TLS_GD_LD)
-
-#define TC_VALIDATE_FIX_SUB(FIX, SEG) \
-  ((md_register_arithmetic || (SEG) != reg_section) \
-   && ((FIX)->fx_r_type == BFD_RELOC_GPREL32 \
-       || (FIX)->fx_r_type == BFD_RELOC_GPREL16 \
-       || (FIX)->fx_r_type == BFD_RELOC_ARC_TLS_DTPOFF \
-       || (FIX)->fx_r_type == BFD_RELOC_ARC_TLS_DTPOFF_S9 \
-       || TC_FORCE_RELOCATION_SUB_LOCAL (FIX, SEG)))
+/* The difference between same-section symbols may be affected by linker
+   relaxation, so do not resolve such expressions in the assembler.  */
+#define md_allow_local_subtract(l,r,s) arc_allow_local_subtract(l, r, s)
+extern bfd_boolean arc_allow_local_subtract (expressionS *, expressionS *, segT);
 
 /* We use this to mark the end-loop label.  We use this mark for ZOL
    validity checks.  */
