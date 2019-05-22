@@ -2777,6 +2777,8 @@ md_pcrel_from_section (fixS *fixP,
 	case BFD_RELOC_ARC_S10H_PCREL:
 	case BFD_RELOC_ARC_S13H_PCREL:
 	case BFD_RELOC_ARC_S9H_PCREL:
+	case BFD_RELOC_ARC_S8H_PCREL:
+	case BFD_RELOC_ARC_S7H_PCREL:
 	  base &= ~3;
 	  break;
 	default:
@@ -3085,6 +3087,8 @@ md_apply_fix (fixS *fixP,
     case BFD_RELOC_ARC_S10H_PCREL:
     case BFD_RELOC_ARC_S13H_PCREL:
     case BFD_RELOC_ARC_S9H_PCREL:
+    case BFD_RELOC_ARC_S8H_PCREL:
+    case BFD_RELOC_ARC_S7H_PCREL:
     solve_plt:
       operand = find_operand_for_reloc (reloc);
       gas_assert (operand);
@@ -4207,9 +4211,9 @@ arc_handle_align (fragS* fragP)
    used.  */
 
 int
-tc_arc_fix_adjustable (fixS *fixP ATTRIBUTE_UNUSED)
+tc_arc_fix_adjustable (fixS *fixP)
 {
-    /* Prevent all adjustments to global symbols.  */
+  /* Prevent all adjustments to global symbols.  */
   if (S_IS_EXTERNAL (fixP->fx_addsy))
     return 0;
   if (S_IS_WEAK (fixP->fx_addsy))
