@@ -139,10 +139,11 @@ extern long md_pcrel_from_section (struct fix *, segT);
        || FIXP->fx_r_type == BFD_RELOC_ARC_S25H_PCREL_PLT	     \
        || FIXP->fx_r_type == BFD_RELOC_ARC_S21W_PCREL_PLT	     \
        || FIXP->fx_r_type == BFD_RELOC_ARC_S21H_PCREL_PLT	     \
-       || FIXP->fx_r_type == BFD_RELOC_ARC_S7H_PCREL		     \
-       || FIXP->fx_r_type == BFD_RELOC_ARC_S8H_PCREL)		     \
-      && FIXP->fx_addsy != NULL					     \
-      && FIXP->fx_subsy == NULL)				     \
+       || (linkrelax						     \
+	   && (FIXP->fx_r_type == BFD_RELOC_ARC_S7H_PCREL	     \
+	       || FIXP->fx_r_type == BFD_RELOC_ARC_S8H_PCREL)))	     \
+       && (FIXP->fx_addsy != NULL)				     \
+       && (FIXP->fx_subsy == NULL))				     \
     {								     \
       symbol_mark_used_in_reloc (FIXP->fx_addsy);		     \
       goto SKIP;						     \
