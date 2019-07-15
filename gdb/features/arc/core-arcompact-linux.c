@@ -1,14 +1,14 @@
 /* THIS FILE IS GENERATED.  -*- buffer-read-only: t -*- vi:set ro:
   Original: core-arcompact-linux.xml */
 
-#include "arch/tdesc.h"
+#include "gdbsupport/tdesc.h"
 
 static int
 create_feature_arc_core_arcompact_linux (struct target_desc *result, long regnum)
 {
   struct tdesc_feature *feature;
 
-  feature = tdesc_create_feature (result, "org.gnu.gdb.arc.core.arcompact", "core-arcompact-linux.xml");
+  feature = tdesc_create_feature (result, "org.gnu.gdb.arc.core.arcompact");
   tdesc_create_reg (feature, "r0", regnum++, 1, NULL, 32, "int");
   tdesc_create_reg (feature, "r1", regnum++, 1, NULL, 32, "int");
   tdesc_create_reg (feature, "r2", regnum++, 1, NULL, 32, "int");
@@ -40,6 +40,6 @@ create_feature_arc_core_arcompact_linux (struct target_desc *result, long regnum
   tdesc_create_reg (feature, "sp", regnum++, 1, NULL, 32, "data_ptr");
   tdesc_create_reg (feature, "blink", regnum++, 1, NULL, 32, "code_ptr");
   tdesc_create_reg (feature, "lp_count", regnum++, 1, NULL, 32, "uint32");
-  tdesc_create_reg (feature, "pcl", regnum++, 1, "", 32, "code_ptr");
+  tdesc_create_reg (feature, "pcl", regnum++, 1, NULL, 32, "code_ptr");
   return regnum;
 }
