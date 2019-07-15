@@ -474,8 +474,8 @@ arc_linux_supply_gregset (const struct regset *regset,
   for (int reg = 0; reg <= ARC_LAST_REGNUM; reg++)
     {
       if (arc_linux_core_reg_offsets[reg] != ARC_OFFSET_NO_REGISTER)
-	regcache_raw_supply (regcache, reg,
-			     buf + arc_linux_core_reg_offsets[reg]);
+	regcache->raw_supply (reg,
+			      buf + arc_linux_core_reg_offsets[reg]);
     }
 }
 
@@ -487,9 +487,9 @@ arc_linux_supply_v2_regset (const struct regset *regset,
   const bfd_byte *buf = (const bfd_byte *) v2_regs;
 
   /* user_regs_arcv2 is defined in linux arch/arc/include/uapi/asm/ptrace.h.  */
-  regcache_raw_supply (regcache, ARC_R30_REGNUM, buf);
-  regcache_raw_supply (regcache, ARC_R58_REGNUM, buf + REGOFF (1));
-  regcache_raw_supply (regcache, ARC_R59_REGNUM, buf + REGOFF (2));
+  regcache->raw_supply (ARC_R30_REGNUM, buf);
+  regcache->raw_supply (ARC_R58_REGNUM, buf + REGOFF (1));
+  regcache->raw_supply (ARC_R59_REGNUM, buf + REGOFF (2));
 }
 
 void
@@ -519,12 +519,12 @@ arc_linux_collect_gregset (const struct regset *regset,
 	  if (gdbarch_pc_regnum (gdbarch) == reg)
 	    {
 	      int eret_offset = REGOFF (6);
-	      regcache_raw_collect (regcache, reg, buf + eret_offset);
+	      regcache->raw_collect (reg, buf + eret_offset);
 	    }
 	  else
 	    {
-	      regcache_raw_collect (regcache, reg,
-				    buf + arc_linux_core_reg_offsets[reg]);
+	      regcache->raw_collect (reg,
+			   	     buf + arc_linux_core_reg_offsets[reg]);
 	    }
 	}
     }
@@ -537,9 +537,9 @@ arc_linux_collect_v2_regset (const struct regset *regset,
 {
   bfd_byte *buf = (bfd_byte *) v2_regs;
 
-  regcache_raw_collect (regcache, ARC_R30_REGNUM, buf);
-  regcache_raw_collect (regcache, ARC_R58_REGNUM, buf + REGOFF (1));
-  regcache_raw_collect (regcache, ARC_R59_REGNUM, buf + REGOFF (2));
+  regcache->raw_collect (ARC_R30_REGNUM, buf);
+  regcache->raw_collect (ARC_R58_REGNUM, buf + REGOFF (1));
+  regcache->raw_collect (ARC_R59_REGNUM, buf + REGOFF (2));
 }
 
 /* Linux regset definitions.  */
@@ -569,9 +569,10 @@ arc_linux_iterate_over_regset_sections (struct gdbarch *gdbarch,
      compatibility with older tools.  */
   const int sizeof_gregset = 40 * ARC_REGISTER_SIZE;
 
-  cb (".reg", sizeof_gregset, &arc_linux_gregset, NULL, cb_data);
-  cb (".reg-arc-v2", ARC_LINUX_SIZEOF_V2_REGSET, &arc_linux_v2_regset,
-      NULL, cb_data);
+  cb (".reg", sizeof_gregset, sizeof_gregset, &arc_linux_gregset, NULL,
+      cb_data);
+  cb (".reg-arc-v2", ARC_LINUX_SIZEOF_V2_REGSET, ARC_LINUX_SIZEOF_V2_REGSET,
+      &arc_linux_v2_regset, NULL, cb_data);
 }
 
 /* Implement the `core_read_description` gdbarch method.  */

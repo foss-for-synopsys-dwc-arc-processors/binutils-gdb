@@ -16,7 +16,7 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 
-#include "common-defs.h"
+#include "gdbsupport/common-defs.h"
 #include <stdlib.h>
 
 #include "arc.h"
