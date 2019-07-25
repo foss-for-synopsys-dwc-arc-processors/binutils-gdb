@@ -26,37 +26,37 @@
 static const bfd_arch_info_type *
 arc_compatible (const bfd_arch_info_type *a, const bfd_arch_info_type *b);
 
-#define ARC(mach, print_name, default_p, next) \
-  {					       \
-    32,	/* Bits in a word.  */		\
-    32,	/* Bits in an address.  */	\
-    8,	/* Bits in a byte.  */		\
-    bfd_arch_arc,			\
-    mach,				\
-    "arc",				\
-    print_name,				\
-    4, /* Section alignment power.  */	\
-    default_p,				\
-    arc_compatible,			\
-    bfd_default_scan,			\
-    bfd_arch_default_fill,		\
-    next,				\
-    0 /* Maximum offset of a reloc from the start of an insn.  */ \
-  }
+#define ARC(BITS_WORD, BITS_ADDR, MACH, PRINT_NAME, DEFAULT_P, NEXT)	\
+{									\
+    BITS_WORD,	/* 32 bits in a word  */				\
+    BITS_ADDR,	/* 32 bits in an address  */				\
+    8,	/* 8 bits in a byte  */						\
+    bfd_arch_arc,							\
+    MACH,								\
+    "arc",								\
+    PRINT_NAME,								\
+    4, /* section alignment power  */					\
+    DEFAULT_P,								\
+    arc_compatible,							\
+    bfd_default_scan,							\
+    bfd_arch_default_fill,						\
+    NEXT,								\
+}
 
 static const bfd_arch_info_type arch_info_struct[] =
 {
-  ARC (bfd_mach_arc_arc600, "A6"    , FALSE, &arch_info_struct[1]),
-  ARC (bfd_mach_arc_arc601, "ARC601", FALSE, &arch_info_struct[2]),
-  ARC (bfd_mach_arc_arc700, "ARC700", FALSE, &arch_info_struct[3]),
-  ARC (bfd_mach_arc_arc700, "A7",     FALSE, &arch_info_struct[4]),
-  ARC (bfd_mach_arc_arcv2,  "ARCv2",  FALSE, &arch_info_struct[5]),
-  ARC (bfd_mach_arc_arcv2,  "EM",     FALSE, &arch_info_struct[6]),
-  ARC (bfd_mach_arc_arcv2,  "HS",     FALSE, NULL),
+  ARC (32, 32, bfd_mach_arc_arc600, "A6"    , FALSE, &arch_info_struct[1]),
+  ARC (32, 32, bfd_mach_arc_arc601, "ARC601", FALSE, &arch_info_struct[2]),
+  ARC (32, 32, bfd_mach_arc_arc700, "ARC700", FALSE, &arch_info_struct[3]),
+  ARC (32, 32, bfd_mach_arc_arc700, "A7",     FALSE, &arch_info_struct[4]),
+  ARC (32, 32, bfd_mach_arc_arcv2,  "ARCv2",  FALSE, &arch_info_struct[5]),
+  ARC (32, 32, bfd_mach_arc_arcv2,  "EM",     FALSE, &arch_info_struct[6]),
+  ARC (32, 32, bfd_mach_arc_arcv2,  "HS",     FALSE, &arch_info_struct[7]),
+  ARC (64, 64, bfd_mach_arc_arcv2,  "ARC64",  FALSE, NULL),
 };
 
 const bfd_arch_info_type bfd_arc_arch =
-  ARC (bfd_mach_arc_arc600, "ARC600", TRUE, &arch_info_struct[0]);
+  ARC (32, 32, bfd_mach_arc_arc600, "ARC600", TRUE, &arch_info_struct[0]);
 
 /* ARC-specific "compatible" function.  The general rule is that if A and B are
    compatible, then this function should return architecture that is more

@@ -27,11 +27,25 @@
 #include "libiberty.h"
 #include "opcode/arc-func.h"
 #include "opcode/arc.h"
-#include "arc-plt.h"
 
-#define FEATURE_LIST_NAME bfd_feature_list
-#define CONFLICT_LIST bfd_conflict_list
+#if (NN == 32)
+#include "arc-plt.h"
+#endif
+
+#define FEATURE_LIST_NAME bfdNN_feature_list
+#define CONFLICT_LIST bfdNN_conflict_list
 #include "opcode/arc-attrs.h"
+
+
+#define ARCH_SIZE NN
+
+/* The name of the dynamic interpreter.  This is put in the .interp
+   section.  */
+
+#define ELF64_DYNAMIC_INTERPRETER "/lib/ld.so.1"
+#define ELF32_DYNAMIC_INTERPRETER  "/sbin/ld-uClibc.so"
+
+#define LOG_FILE_ALIGN (ARCH_SIZE == 32 ? 2 : 3)
 
 /* #define ARC_ENABLE_DEBUG 1  */
 #ifdef ARC_ENABLE_DEBUG
@@ -53,20 +67,22 @@ name_for_global_symbol (struct elf_link_hash_entry *h)
     struct elf_link_hash_table *_htab = elf_hash_table (info);		\
     Elf_Internal_Rela _rel;						\
     bfd_byte * _loc;							\
+    const struct elf_backend_data *bed;					\
+    bed = get_elf_backend_data (BFD);					\
 									\
     if (_htab->dynamic_sections_created == TRUE)			\
       {									\
 	BFD_ASSERT (_htab->srel##SECTION &&_htab->srel##SECTION->contents); \
 	_loc = _htab->srel##SECTION->contents				\
 	  + ((_htab->srel##SECTION->reloc_count)			\
-	     * sizeof (Elf32_External_Rela));				\
+	     * sizeof (ElfNN_External_Rela));				\
 	_htab->srel##SECTION->reloc_count++;				\
 	_rel.r_addend = ADDEND;						\
 	_rel.r_offset = (_htab->s##SECTION)->output_section->vma	\
 	  + (_htab->s##SECTION)->output_offset + OFFSET;		\
 	BFD_ASSERT ((long) SYM_IDX != -1);				\
-	_rel.r_info = ELF32_R_INFO (SYM_IDX, TYPE);			\
-	bfd_elf32_swap_reloca_out (BFD, &_rel, _loc);			\
+	_rel.r_info = ELFNN_R_INFO (SYM_IDX, TYPE);			\
+	bed->s->swap_reloca_out (BFD, &_rel, _loc);			\
       }									\
   }
 
@@ -282,16 +298,6 @@ arc_elf_howto_init (void)
 #undef ARC_RELOC_HOWTO
 
 
-#define ARC_RELOC_HOWTO(TYPE, VALUE, SIZE, BITSIZE, RELOC_FUNCTION, OVERFLOW, FORMULA) \
-  [TYPE] = VALUE,
-
-const int howto_table_lookup[] =
-  {
-#include "elf/arc-reloc.def"
-  };
-
-#undef ARC_RELOC_HOWTO
-
 static reloc_howto_type *
 arc_elf_howto (unsigned int r_type)
 {
@@ -355,8 +361,9 @@ static struct bfd_link_hash_table *
 arc_elf_link_hash_table_create (bfd *abfd)
 {
   struct elf_arc_link_hash_table *ret;
+  bfd_size_type amt = sizeof (struct elf_arc_link_hash_table);
 
-  ret = (struct elf_arc_link_hash_table *) bfd_zmalloc (sizeof (*ret));
+  ret = (struct elf_arc_link_hash_table *) bfd_zmalloc (amt);
   if (ret == NULL)
     return NULL;
 
@@ -415,7 +422,7 @@ get_replace_function (bfd *abfd, unsigned int r_type)
 #undef ARC_RELOC_HOWTO
 
 static reloc_howto_type *
-arc_elf32_bfd_reloc_type_lookup (bfd * abfd ATTRIBUTE_UNUSED,
+arc_elfNN_bfd_reloc_type_lookup (bfd * abfd ATTRIBUTE_UNUSED,
 				 bfd_reloc_code_real_type code)
 {
   unsigned int i;
@@ -502,7 +509,7 @@ arc_elf_copy_private_bfd_data (bfd *ibfd, bfd *obfd)
 }
 
 static reloc_howto_type *
-bfd_elf32_bfd_reloc_name_lookup (bfd * abfd ATTRIBUTE_UNUSED,
+bfd_elfNN_bfd_reloc_name_lookup (bfd * abfd ATTRIBUTE_UNUSED,
 				 const char *r_name)
 {
   unsigned int i;
@@ -524,7 +531,7 @@ arc_info_to_howto_rel (bfd * abfd,
 {
   unsigned int r_type;
 
-  r_type = ELF32_R_TYPE (dst->r_info);
+  r_type = ELFNN_R_TYPE (dst->r_info);
   if (r_type >= (unsigned int) R_ARC_max)
     {
       /* xgettext:c-format */
@@ -535,7 +542,7 @@ arc_info_to_howto_rel (bfd * abfd,
     }
 
   cache_ptr->howto = arc_elf_howto (r_type);
-  return TRUE;
+  return cache_ptr->howto != NULL;
 }
 
 /* Extract CPU features from an NTBS.  */
@@ -548,14 +555,14 @@ arc_extract_features (const char *p)
   if (!p)
     return 0;
 
-  for (i = 0; i < ARRAY_SIZE (bfd_feature_list); i++)
+  for (i = 0; i < ARRAY_SIZE (FEATURE_LIST_NAME); i++)
     {
-      char *t = strstr (p, bfd_feature_list[i].attr);
-      unsigned l = strlen (bfd_feature_list[i].attr);
+      char *t = strstr (p, FEATURE_LIST_NAME[i].attr);
+      unsigned l = strlen (FEATURE_LIST_NAME[i].attr);
       if ((t != NULL)
 	  && (t[l] == ','
 	      || t[l] == '\0'))
-	r |= bfd_feature_list[i].feature;
+	r |= FEATURE_LIST_NAME[i].feature;
     }
 
   return r;
@@ -690,33 +697,33 @@ arc_elf_merge_attributes (bfd *ibfd, struct bfd_link_info *info)
 
 	      /* First, check if a feature is compatible with the
 		 output object chosen CPU.  */
-	      for (j = 0; j < ARRAY_SIZE (bfd_feature_list); j++)
-		if (((in_feature | out_feature) & bfd_feature_list[j].feature)
-		    && (!(cpu_out & bfd_feature_list[j].cpus)))
+	      for (j = 0; j < ARRAY_SIZE (FEATURE_LIST_NAME); j++)
+		if (((in_feature | out_feature) & FEATURE_LIST_NAME[j].feature)
+		    && (!(cpu_out & FEATURE_LIST_NAME[j].cpus)))
 		  {
 		    _bfd_error_handler
 		      (_("error: %pB: unable to merge ISA extension attributes "
 			 "%s"),
-		       obfd, bfd_feature_list[j].name);
+		       obfd, FEATURE_LIST_NAME[j].name);
 		    result = FALSE;
 		    break;
 		  }
 	      /* Second, if we have compatible features with the
 		 chosen CPU, check if they are compatible among
 		 them.  */
-	      for (j = 0; j < ARRAY_SIZE (bfd_conflict_list); j++)
-		if (((in_feature | out_feature) & bfd_conflict_list[j])
-		    == bfd_conflict_list[j])
+	      for (j = 0; j < ARRAY_SIZE (CONFLICT_LIST); j++)
+		if (((in_feature | out_feature) & CONFLICT_LIST[j])
+		    == CONFLICT_LIST[j])
 		  {
 		    unsigned k;
-		    for (k = 0; k < ARRAY_SIZE (bfd_feature_list); k++)
+		    for (k = 0; k < ARRAY_SIZE (FEATURE_LIST_NAME); k++)
 		      {
-			if (in_feature &  bfd_feature_list[k].feature
-			    & bfd_conflict_list[j])
-			  p1 = (char *) bfd_feature_list[k].name;
-			if (out_feature &  bfd_feature_list[k].feature
-			    & bfd_conflict_list[j])
-			  p2 = (char *) bfd_feature_list[k].name;
+			if (in_feature &  FEATURE_LIST_NAME[k].feature
+			    & CONFLICT_LIST[j])
+			  p1 = (char *) FEATURE_LIST_NAME[k].name;
+			if (out_feature &  FEATURE_LIST_NAME[k].feature
+			    & CONFLICT_LIST[j])
+			  p2 = (char *) FEATURE_LIST_NAME[k].name;
 		      }
 		    _bfd_error_handler
 		      (_("error: %pB: conflicting ISA extension attributes "
@@ -728,9 +735,9 @@ arc_elf_merge_attributes (bfd *ibfd, struct bfd_link_info *info)
 	      /* Everithing is alright.  */
 	      out_feature |= in_feature;
 	      p1 = NULL;
-	      for (j = 0; j < ARRAY_SIZE (bfd_feature_list); j++)
-		if (out_feature & bfd_feature_list[j].feature)
-		  p1 = arc_stralloc (p1, bfd_feature_list[j].attr);
+	      for (j = 0; j < ARRAY_SIZE (FEATURE_LIST_NAME); j++)
+		if (out_feature & FEATURE_LIST_NAME[j].feature)
+		  p1 = arc_stralloc (p1, FEATURE_LIST_NAME[j].attr);
 	      if (p1)
 		out_attr[Tag_ARC_ISA_config].s =
 		  _bfd_elf_attr_strdup (obfd, p1);
@@ -1442,7 +1449,9 @@ elf_arc_relocate_section (bfd *			  output_bfd,
   Elf_Internal_Rela *		 wrel;
   Elf_Internal_Rela *		 relend;
   struct elf_link_hash_table *   htab = elf_hash_table (info);
+  const struct elf_backend_data *bed;
 
+  bed = get_elf_backend_data (output_bfd);
   symtab_hdr = &((elf_tdata (input_bfd))->symtab_hdr);
   sym_hashes = elf_sym_hashes (input_bfd);
 
@@ -1476,7 +1485,7 @@ elf_arc_relocate_section (bfd *			  output_bfd,
 	 .should_relocate = FALSE
 	};
 
-      r_type = ELF32_R_TYPE (rel->r_info);
+      r_type = ELFNN_R_TYPE (rel->r_info);
 
       if (r_type >= (int) R_ARC_max)
 	{
@@ -1485,7 +1494,7 @@ elf_arc_relocate_section (bfd *			  output_bfd,
 	}
       howto = arc_elf_howto (r_type);
 
-      r_symndx = ELF32_R_SYM (rel->r_info);
+      r_symndx = ELFNN_R_SYM (rel->r_info);
 
       /* If we are generating another .o file and the symbol in not
 	 local, skip this relocation.  */
@@ -1837,7 +1846,7 @@ elf_arc_relocate_section (bfd *			  output_bfd,
 		    relocate = TRUE;
 
 		  BFD_ASSERT (h->dynindx != -1);
-		  outrel.r_info = ELF32_R_INFO (h->dynindx, r_type);
+		  outrel.r_info = ELFNN_R_INFO (h->dynindx, r_type);
 		}
 	      else
 		{
@@ -1853,16 +1862,16 @@ elf_arc_relocate_section (bfd *			  output_bfd,
 		     symbol as local, resolve it now.  */
 		  relocate = TRUE;
 		  /* outrel.r_addend = 0; */
-		  outrel.r_info = ELF32_R_INFO (0, R_ARC_RELATIVE);
+		  outrel.r_info = ELFNN_R_INFO (0, R_ARC_RELATIVE);
 		}
 
 	      BFD_ASSERT (sreloc->contents != 0);
 
 	      loc = sreloc->contents;
-	      loc += sreloc->reloc_count * sizeof (Elf32_External_Rela);
+	      loc += sreloc->reloc_count * sizeof (ElfNN_External_Rela);
 	      sreloc->reloc_count += 1;
 
-	      bfd_elf32_swap_reloca_out (output_bfd, &outrel, loc);
+	      bed->s->swap_reloca_out (output_bfd, &outrel, loc);
 
 	      if (!relocate)
 		continue;
@@ -1986,7 +1995,7 @@ elf_arc_check_relocs (bfd *			 abfd,
       unsigned long   r_symndx;
       struct elf_link_hash_entry *h;
 
-      r_type = ELF32_R_TYPE (rel->r_info);
+      r_type = ELFNN_R_TYPE (rel->r_info);
 
       if (r_type >= (int) R_ARC_max)
 	{
@@ -1996,7 +2005,7 @@ elf_arc_check_relocs (bfd *			 abfd,
       howto = arc_elf_howto (r_type);
 
       /* Load symbol information.  */
-      r_symndx = ELF32_R_SYM (rel->r_info);
+      r_symndx = ELFNN_R_SYM (rel->r_info);
       if (r_symndx < symtab_hdr->sh_info) /* Is a local symbol.  */
 	h = NULL;
       else /* Global one.  */
@@ -2084,7 +2093,7 @@ elf_arc_check_relocs (bfd *			 abfd,
 		  if (sreloc == NULL)
 		    return FALSE;
 		}
-	      sreloc->size += sizeof (Elf32_External_Rela);
+	      sreloc->size += sizeof (ElfNN_External_Rela);
 	    }
 	default:
 	  break;
@@ -2136,8 +2145,7 @@ elf_arc_check_relocs (bfd *			 abfd,
   return TRUE;
 }
 
-#define ELF_DYNAMIC_INTERPRETER  "/sbin/ld-uClibc.so"
-
+#if (ARCH_SIZE == 32)
 static struct plt_version_t *
 arc_get_plt_version (struct bfd_link_info *info)
 {
@@ -2185,8 +2193,7 @@ add_symbol_to_plt (struct bfd_link_info *info)
   ARC_DEBUG ("PLT_SIZE = %d\n", (int) htab->splt->size);
 
   htab->sgotplt->size += 4;
-  htab->srelplt->size += sizeof (Elf32_External_Rela);
-
+  htab->srelplt->size += sizeof (ElfNN_External_Rela);
   return ret;
 }
 
@@ -2254,10 +2261,12 @@ relocate_plt_for_symbol (bfd *output_bfd,
 {
   struct plt_version_t *plt_data = arc_get_plt_version (info);
   struct elf_link_hash_table *htab = elf_hash_table (info);
+  const struct elf_backend_data *bed;
 
   bfd_vma plt_index = (h->plt.offset  - plt_data->entry_size)
     / plt_data->elem_size;
   bfd_vma got_offset = (plt_index + 3) * 4;
+  bed = get_elf_backend_data (output_bfd);
 
   ARC_DEBUG ("arc_info: PLT_OFFSET = %#lx, PLT_ENTRY_VMA = %#lx, \
 GOT_ENTRY_OFFSET = %#lx, GOT_ENTRY_VMA = %#lx, for symbol %s\n",
@@ -2306,11 +2315,11 @@ GOT_ENTRY_OFFSET = %#lx, GOT_ENTRY_VMA = %#lx, for symbol %s\n",
     rel.r_addend = 0;
 
     BFD_ASSERT (h->dynindx != -1);
-    rel.r_info = ELF32_R_INFO (h->dynindx, R_ARC_JMP_SLOT);
+    rel.r_info = ELFNN_R_INFO (h->dynindx, R_ARC_JMP_SLOT);
 
     loc = htab->srelplt->contents;
-    loc += plt_index * sizeof (Elf32_External_Rela); /* relA */
-    bfd_elf32_swap_reloca_out (output_bfd, &rel, loc);
+    loc += plt_index * sizeof (ElfNN_External_Rela); /* relA */
+    bed->s->swap_reloca_out (output_bfd, &rel, loc);
   }
 }
 
@@ -2334,6 +2343,7 @@ relocate_plt_for_entry (bfd *abfd,
   }
   PLT_DO_RELOCS_FOR_ENTRY (abfd, htab, plt_data->entry_relocs);
 }
+#endif
 
 /* Desc : Adjust a symbol defined by a dynamic object and referenced
    by a regular object.  The current definition is in some section of
@@ -2372,6 +2382,8 @@ elf_arc_adjust_dynamic_symbol (struct bfd_link_info *info,
       if (bfd_link_pic (info)
 	  || WILL_CALL_FINISH_DYNAMIC_SYMBOL (1, 0, h))
 	{
+#if (ARCH_SIZE == 32)
+
 	  bfd_vma loc = add_symbol_to_plt (info);
 
 	  if (bfd_link_executable (info) && !h->def_regular)
@@ -2380,6 +2392,7 @@ elf_arc_adjust_dynamic_symbol (struct bfd_link_info *info,
 	      h->root.u.def.value = loc;
 	    }
 	  h->plt.offset = loc;
+#endif
 	}
       else
 	{
@@ -2445,7 +2458,7 @@ elf_arc_adjust_dynamic_symbol (struct bfd_link_info *info,
       struct elf_arc_link_hash_table *arc_htab = elf_arc_hash_table (info);
 
       BFD_ASSERT (arc_htab->elf.srelbss != NULL);
-      arc_htab->elf.srelbss->size += sizeof (Elf32_External_Rela);
+      arc_htab->elf.srelbss->size += sizeof (ElfNN_External_Rela);
       h->needs_copy = 1;
     }
 
@@ -2471,9 +2484,15 @@ elf_arc_finish_dynamic_symbol (bfd * output_bfd,
 			       struct elf_link_hash_entry *h,
 			       Elf_Internal_Sym * sym)
 {
+  const struct elf_backend_data *bed;
+
+  bed = get_elf_backend_data (output_bfd);
+
   if (h->plt.offset != (bfd_vma) -1)
     {
+#if (ARCH_SIZE == 32)
       relocate_plt_for_symbol (output_bfd, info, h);
+#endif
 
       if (!h->def_regular)
 	{
@@ -2513,7 +2532,7 @@ elf_arc_finish_dynamic_symbol (bfd * output_bfd,
 			    + h->root.u.def.section->output_offset);
 
       bfd_byte * loc = arc_htab->elf.srelbss->contents
-	+ (arc_htab->elf.srelbss->reloc_count * sizeof (Elf32_External_Rela));
+	+ (arc_htab->elf.srelbss->reloc_count * sizeof (ElfNN_External_Rela));
       arc_htab->elf.srelbss->reloc_count++;
 
       Elf_Internal_Rela rel;
@@ -2521,9 +2540,9 @@ elf_arc_finish_dynamic_symbol (bfd * output_bfd,
       rel.r_offset = rel_offset;
 
       BFD_ASSERT (h->dynindx != -1);
-      rel.r_info = ELF32_R_INFO (h->dynindx, R_ARC_COPY);
+      rel.r_info = ELFNN_R_INFO (h->dynindx, R_ARC_COPY);
 
-      bfd_elf32_swap_reloca_out (output_bfd, &rel, loc);
+      bed->s->swap_reloca_out (output_bfd, &rel, loc);
     }
 
   /* Mark _DYNAMIC and _GLOBAL_OFFSET_TABLE_ as absolute.  */
@@ -2592,14 +2611,15 @@ elf_arc_finish_dynamic_sections (bfd * output_bfd,
   struct elf_link_hash_table *htab = elf_hash_table (info);
   bfd *dynobj = (elf_hash_table (info))->dynobj;
   asection *sdyn = bfd_get_linker_section (dynobj, ".dynamic");
+  const struct elf_backend_data *bed = get_elf_backend_data (output_bfd);
 
   if (sdyn)
     {
-      Elf32_External_Dyn *dyncon, *dynconend;
+      ElfNN_External_Dyn *dyncon, *dynconend;
 
-      dyncon = (Elf32_External_Dyn *) sdyn->contents;
+      dyncon = (ElfNN_External_Dyn *) sdyn->contents;
       dynconend
-	= (Elf32_External_Dyn *) (sdyn->contents + sdyn->size);
+	= (ElfNN_External_Dyn *) (sdyn->contents + sdyn->size);
       for (; dyncon < dynconend; dyncon++)
 	{
 	  Elf_Internal_Dyn internal_dyn;
@@ -2608,7 +2628,7 @@ elf_arc_finish_dynamic_sections (bfd * output_bfd,
 	  struct elf_link_hash_entry *h = NULL;
 	  asection	 *s = NULL;
 
-	  bfd_elf32_swap_dyn_in (dynobj, dyncon, &internal_dyn);
+	  bed->s->swap_dyn_in (dynobj, dyncon, &internal_dyn);
 
 	  switch (internal_dyn.d_tag)
 	    {
@@ -2672,12 +2692,14 @@ elf_arc_finish_dynamic_sections (bfd * output_bfd,
 	    }
 
 	  if (do_it)
-	    bfd_elf32_swap_dyn_out (output_bfd, &internal_dyn, dyncon);
+	    bed->s->swap_dyn_out (output_bfd, &internal_dyn, dyncon);
 	}
 
       if (htab->splt->size > 0)
 	{
+#if (ARCH_SIZE == 32)
 	  relocate_plt_for_entry (output_bfd, info);
+#endif
 	}
 
       /* TODO: Validate this.  */
@@ -2749,8 +2771,8 @@ elf_arc_size_dynamic_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
 	{
 	  s = bfd_get_section_by_name (dynobj, ".interp");
 	  BFD_ASSERT (s != NULL);
-	  s->size = sizeof (ELF_DYNAMIC_INTERPRETER);
-	  s->contents = (unsigned char *) ELF_DYNAMIC_INTERPRETER;
+	  s->size = sizeof (ELFNN_DYNAMIC_INTERPRETER);
+	  s->contents = (unsigned char *) ELFNN_DYNAMIC_INTERPRETER;
 	}
 
       /* Add some entries to the .dynamic section.  We fill in some of
@@ -2833,7 +2855,7 @@ elf_arc_size_dynamic_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
 	if (!_bfd_elf_add_dynamic_entry (info, DT_RELA, 0)
 	    || !_bfd_elf_add_dynamic_entry (info, DT_RELASZ, 0)
 	    || !_bfd_elf_add_dynamic_entry (info, DT_RELAENT,
-					    sizeof (Elf32_External_Rela)))
+					    sizeof (ElfNN_External_Rela)))
 	  return FALSE;
 
       if (reltext_exist)
@@ -2848,11 +2870,11 @@ elf_arc_size_dynamic_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
 /* Classify dynamic relocs such that -z combreloc can reorder and combine
    them.  */
 static enum elf_reloc_type_class
-elf32_arc_reloc_type_class (const struct bfd_link_info *info ATTRIBUTE_UNUSED,
-			    const asection *rel_sec ATTRIBUTE_UNUSED,
-			    const Elf_Internal_Rela *rela)
+arc_reloc_type_class (const struct bfd_link_info *info ATTRIBUTE_UNUSED,
+		      const asection *rel_sec ATTRIBUTE_UNUSED,
+		      const Elf_Internal_Rela *rela)
 {
-  switch ((int) ELF32_R_TYPE (rela->r_info))
+  switch ((int) ELFNN_R_TYPE (rela->r_info))
     {
     case R_ARC_RELATIVE:
       return reloc_class_relative;
@@ -2870,20 +2892,24 @@ elf32_arc_reloc_type_class (const struct bfd_link_info *info ATTRIBUTE_UNUSED,
     }
 }
 
-const struct elf_size_info arc_elf32_size_info =
+/* We use this so we can override certain functions
+   (though currently we don't).  */
+
+const struct elf_size_info arc_elfNN_size_info =
   {
-   sizeof (Elf32_External_Ehdr),
-   sizeof (Elf32_External_Phdr),
-   sizeof (Elf32_External_Shdr),
-   sizeof (Elf32_External_Rel),
-   sizeof (Elf32_External_Rela),
-   sizeof (Elf32_External_Sym),
-   sizeof (Elf32_External_Dyn),
+   sizeof (ElfNN_External_Ehdr),
+   sizeof (ElfNN_External_Phdr),
+   sizeof (ElfNN_External_Shdr),
+   sizeof (ElfNN_External_Rel),
+   sizeof (ElfNN_External_Rela),
+   sizeof (ElfNN_External_Sym),
+   sizeof (ElfNN_External_Dyn),
    sizeof (Elf_External_Note),
    4,
    1,
-   32, 2,
-   ELFCLASS32, EV_CURRENT,
+   ARCH_SIZE,
+   LOG_FILE_ALIGN,
+   ELFCLASSNN, EV_CURRENT,
    bfd_elf32_write_out_phdrs,
    bfd_elf32_write_shdrs_and_ehdr,
    bfd_elf32_checksum_contents,
@@ -2900,8 +2926,6 @@ const struct elf_size_info arc_elf32_size_info =
    bfd_elf32_swap_reloca_out
   };
 
-#define elf_backend_size_info		arc_elf32_size_info
-
 /* GDB expects general purpose registers to be in section .reg.  However Linux
    kernel doesn't create this section and instead writes registers to NOTE
    section.  It is up to the binutils to create a pseudo-section .reg from the
@@ -2910,7 +2934,7 @@ const struct elf_size_info arc_elf32_size_info =
    stable.  */
 
 static bfd_boolean
-elf32_arc_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
+elfNN_arc_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
 {
   int offset;
   size_t size;
@@ -2939,7 +2963,7 @@ elf32_arc_grok_prstatus (bfd *abfd, Elf_Internal_Note *note)
    string or both.  */
 
 static int
-elf32_arc_obj_attrs_arg_type (int tag)
+elfNN_arc_obj_attrs_arg_type (int tag)
 {
   if (tag == Tag_ARC_CPU_name
       || tag == Tag_ARC_ISA_config
@@ -2954,7 +2978,7 @@ elf32_arc_obj_attrs_arg_type (int tag)
 /* Attribute numbers >=14 can be safely ignored.  */
 
 static bfd_boolean
-elf32_arc_obj_attrs_handle_unknown (bfd *abfd, int tag)
+elfNN_arc_obj_attrs_handle_unknown (bfd *abfd, int tag)
 {
   if ((tag & 127) < (Tag_ARC_ISA_mpy_option + 1))
     {
@@ -2978,7 +3002,7 @@ elf32_arc_obj_attrs_handle_unknown (bfd *abfd, int tag)
    type.  */
 
 static bfd_boolean
-elf32_arc_section_from_shdr (bfd *abfd,
+elfNN_arc_section_from_shdr (bfd *abfd,
 			     Elf_Internal_Shdr * hdr,
 			     const char *name,
 			     int shindex)
@@ -3401,24 +3425,26 @@ arc_elf_relax_section (bfd *abfd, asection *sec,
   return FALSE;
 }
 
-#define TARGET_LITTLE_SYM   arc_elf32_le_vec
-#define TARGET_LITTLE_NAME  "elf32-littlearc"
-#define TARGET_BIG_SYM	    arc_elf32_be_vec
-#define TARGET_BIG_NAME     "elf32-bigarc"
+#define TARGET_LITTLE_SYM   arc_elfNN_le_vec
+#define TARGET_LITTLE_NAME  "elfNN-littlearc"
+#define TARGET_BIG_SYM	    arc_elfNN_be_vec
+#define TARGET_BIG_NAME     "elfNN-bigarc"
 #define ELF_ARCH	    bfd_arch_arc
 #define ELF_TARGET_ID	    ARC_ELF_DATA
 #define ELF_MACHINE_CODE    EM_ARC_COMPACT
 #define ELF_MACHINE_ALT1    EM_ARC_COMPACT2
 #define ELF_MAXPAGESIZE     0x2000
 
-#define bfd_elf32_bfd_link_hash_table_create	arc_elf_link_hash_table_create
+#define bfd_elfNN_bfd_link_hash_table_create	arc_elf_link_hash_table_create
 
-#define bfd_elf32_bfd_merge_private_bfd_data    arc_elf_merge_private_bfd_data
-#define bfd_elf32_bfd_reloc_type_lookup		arc_elf32_bfd_reloc_type_lookup
-#define bfd_elf32_bfd_set_private_flags		arc_elf_set_private_flags
-#define bfd_elf32_bfd_print_private_bfd_data    arc_elf_print_private_bfd_data
-#define bfd_elf32_bfd_copy_private_bfd_data     arc_elf_copy_private_bfd_data
-#define bfd_elf32_bfd_relax_section		arc_elf_relax_section
+#define bfd_elfNN_bfd_merge_private_bfd_data    arc_elf_merge_private_bfd_data
+#define bfd_elfNN_bfd_reloc_type_lookup		arc_elfNN_bfd_reloc_type_lookup
+#define bfd_elfNN_bfd_set_private_flags		arc_elf_set_private_flags
+#define bfd_elfNN_bfd_print_private_bfd_data    arc_elf_print_private_bfd_data
+#define bfd_elfNN_bfd_copy_private_bfd_data     arc_elf_copy_private_bfd_data
+#define bfd_elfNN_bfd_relax_section		arc_elf_relax_section
+
+#define elf_backend_size_info		     arc_elfNN_size_info
 
 #define elf_info_to_howto_rel		     arc_info_to_howto_rel
 #define elf_backend_object_p		     arc_elf_object_p
@@ -3428,7 +3454,7 @@ arc_elf_relax_section (bfd *abfd, asection *sec,
 #define elf_backend_check_relocs	     elf_arc_check_relocs
 #define elf_backend_create_dynamic_sections  _bfd_elf_create_dynamic_sections
 
-#define elf_backend_reloc_type_class		elf32_arc_reloc_type_class
+#define elf_backend_reloc_type_class	     arc_reloc_type_class
 
 #define elf_backend_adjust_dynamic_symbol    elf_arc_adjust_dynamic_symbol
 #define elf_backend_finish_dynamic_symbol    elf_arc_finish_dynamic_symbol
@@ -3448,7 +3474,7 @@ arc_elf_relax_section (bfd *abfd, asection *sec,
 #define elf_backend_may_use_rela_p	1
 #define elf_backend_default_use_rela_p	1
 
-#define elf_backend_grok_prstatus elf32_arc_grok_prstatus
+#define elf_backend_grok_prstatus elfNN_arc_grok_prstatus
 
 #define elf_backend_default_execstack	0
 
@@ -3457,11 +3483,11 @@ arc_elf_relax_section (bfd *abfd, asection *sec,
 #undef  elf_backend_obj_attrs_section
 #define elf_backend_obj_attrs_section		".ARC.attributes"
 #undef  elf_backend_obj_attrs_arg_type
-#define elf_backend_obj_attrs_arg_type		elf32_arc_obj_attrs_arg_type
+#define elf_backend_obj_attrs_arg_type		elfNN_arc_obj_attrs_arg_type
 #undef  elf_backend_obj_attrs_section_type
 #define elf_backend_obj_attrs_section_type	SHT_ARC_ATTRIBUTES
-#define elf_backend_obj_attrs_handle_unknown	elf32_arc_obj_attrs_handle_unknown
+#define elf_backend_obj_attrs_handle_unknown	elfNN_arc_obj_attrs_handle_unknown
 
-#define elf_backend_section_from_shdr		elf32_arc_section_from_shdr
+#define elf_backend_section_from_shdr		elfNN_arc_section_from_shdr
 
-#include "elf32-target.h"
+#include "elfNN-target.h"
