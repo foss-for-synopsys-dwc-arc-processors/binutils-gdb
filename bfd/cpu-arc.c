@@ -52,7 +52,8 @@ static const bfd_arch_info_type arch_info_struct[] =
   ARC (32, 32, bfd_mach_arc_arcv2,  "ARCv2",  FALSE, &arch_info_struct[5]),
   ARC (32, 32, bfd_mach_arc_arcv2,  "EM",     FALSE, &arch_info_struct[6]),
   ARC (32, 32, bfd_mach_arc_arcv2,  "HS",     FALSE, &arch_info_struct[7]),
-  ARC (64, 64, bfd_mach_arc_arcv2,  "ARC64",  FALSE, NULL),
+  ARC (32, 32, bfd_mach_arcv3_32, "ARCv3_32", FALSE, &arch_info_struct[8]),
+  ARC (64, 64, bfd_mach_arcv3_64, "ARCv3_64", FALSE, NULL),
 };
 
 const bfd_arch_info_type bfd_arc_arch =
