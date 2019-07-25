@@ -199,6 +199,7 @@ extern int arc_opcode_len (const struct arc_opcode *opcode);
 #define ARC_OPCODE_ARC700   0x0002  /* ARC 700 specific insns.  */
 #define ARC_OPCODE_ARCv2EM  0x0004  /* ARCv2 EM specific insns.  */
 #define ARC_OPCODE_ARCv2HS  0x0008  /* ARCv2 HS specific insns.  */
+#define ARC_OPCODE_ARC64    0x0010  /* ARC64 specific insns.  */
 
 /* CPU combi.  */
 #define ARC_OPCODE_ARCALL  (ARC_OPCODE_ARC600 | ARC_OPCODE_ARC700	\
