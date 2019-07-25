@@ -668,6 +668,7 @@ arc_insn_length (bfd_byte msb, bfd_byte lsb, struct disassemble_info *info)
       break;
 
     case bfd_mach_arc_arcv2:
+    case bfd_mach_arc64:
       return (major_opcode > 0x7) ? 2 : 4;
       break;
 
@@ -810,7 +811,9 @@ parse_option (const char *option)
   { #NAME,  ARC_OPCODE_ARCv2EM, "ARC EM" }
 #define ARC_CPU_TYPE_AV2HS(NAME,EXTRA)			\
   { #NAME,  ARC_OPCODE_ARCv2HS, "ARC HS" }
-#define ARC_CPU_TYPE_NONE				\
+#define ARC_CPU_TYPE_A64x(NAME,EXTRA)			\
+  { #NAME,  ARC_OPCODE_ARC64, "ARC64" }
+#define ARC_CPU_TYPE_NONE			\
   { 0, 0, 0 }
 
 /* A table of CPU names and opcode sets.  */
@@ -981,6 +984,10 @@ print_insn_arc (bfd_vma memaddr,
 
 	case bfd_mach_arc_arc600:
 	  isa_mask = ARC_OPCODE_ARC600;
+	  break;
+
+	case bfd_mach_arc64:
+	  isa_mask = ARC_OPCODE_ARC64;
 	  break;
 
 	case bfd_mach_arc_arcv2:

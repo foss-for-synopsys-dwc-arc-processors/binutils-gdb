@@ -63,13 +63,10 @@
 
 #endif /* TARGET_BYTES_BIG_ENDIAN.  */
 
-/* The endianness of the target format may change based on command
-   line arguments.  */
-extern const char *arc_target_format;
-
 /* This macro is the BFD target name to use when creating the output
    file.  This will normally depend upon the `OBJ_FMT' macro.  */
-#define TARGET_FORMAT arc_target_format
+#define TARGET_FORMAT arc_target_format()
+extern const char *arc_target_format (void);
 
 /* `md_short_jump_size'
    `md_long_jump_size'
