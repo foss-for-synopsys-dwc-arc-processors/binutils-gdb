@@ -668,7 +668,7 @@ arc_insn_length (bfd_byte msb, bfd_byte lsb, struct disassemble_info *info)
       break;
 
     case bfd_mach_arc_arcv2:
-    case bfd_mach_arc64:
+    case bfd_mach_arcv3_64:
       return (major_opcode > 0x7) ? 2 : 4;
       break;
 
@@ -986,7 +986,7 @@ print_insn_arc (bfd_vma memaddr,
 	  isa_mask = ARC_OPCODE_ARC600;
 	  break;
 
-	case bfd_mach_arc64:
+	case bfd_mach_arcv3_64:
 	  isa_mask = ARC_OPCODE_ARC64;
 	  break;
 
