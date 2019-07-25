@@ -993,19 +993,27 @@ bfd_arc_get_mach_from_attributes (bfd * abfd)
     ? bfd_mach_arc_arc700 : bfd_mach_arc_arcv2;
 }
 
-/* Set the right machine number for an ARC ELF file.  */
+/* Set the right machine number for an ARC ELF file.  Make sure this
+ is initialised, or you'll have the potential of passing garbage---or
+ misleading values---into the call to bfd_default_set_arch_mach().  */
+
 static bfd_boolean
 arc_elf_object_p (bfd * abfd)
 {
-  /* Make sure this is initialised, or you'll have the potential of passing
-     garbage---or misleading values---into the call to
-     bfd_default_set_arch_mach ().  */
-  unsigned int	  mach = bfd_mach_arc_arc700;
-  unsigned long   arch = elf_elfheader (abfd)->e_flags & EF_ARC_MACH_MSK;
-  unsigned	  e_machine = elf_elfheader (abfd)->e_machine;
+  unsigned int mach;
+  unsigned long arch = elf_elfheader (abfd)->e_flags & EF_ARC_MACH_MSK;
+  unsigned  e_machine = elf_elfheader (abfd)->e_machine;
 
-  if (e_machine == EM_ARC_COMPACT || e_machine == EM_ARC_COMPACT2)
+#if ARCH_SIZE == 32
+  mach = bfd_mach_arc_arc700;
+#else
+  mach = bfd_mach_arcv3_64;
+#endif
+
+  switch (e_machine)
     {
+    case EM_ARC_COMPACT:
+    case EM_ARC_COMPACT2:
       switch (arch)
 	{
 	case E_ARC_MACH_ARC600:
@@ -1025,21 +1033,25 @@ arc_elf_object_p (bfd * abfd)
 	  mach = bfd_arc_get_mach_from_attributes (abfd);
 	  break;
 	}
-    }
-  else
-    {
-      if (e_machine == EM_ARC)
-	{
-	  _bfd_error_handler
-	    (_("error: the ARC4 architecture is no longer supported"));
-	  return FALSE;
-	}
-      else
-	{
-	  _bfd_error_handler
-	    (_("warning: unset or old architecture flags; "
-	       "use default machine"));
-	}
+      break;
+
+    case EM_ARC:
+      _bfd_error_handler
+	(_("error: the ARC4 architecture is no longer supported"));
+      return FALSE;
+
+    case EM_ARC_COMPACT3_64:
+      mach = bfd_mach_arcv3_64;
+      break;
+
+    case EM_ARC_COMPACT3:
+      mach = bfd_mach_arcv3_32;
+      break;
+
+    default:
+      _bfd_error_handler
+	(_("warning: unset or old architecture flags; "
+	   "use default machine"));
     }
 
   return bfd_default_set_arch_mach (abfd, bfd_arch_arc, mach);
@@ -1060,6 +1072,12 @@ arc_elf_final_write_processing (bfd *abfd)
     {
     case bfd_mach_arc_arcv2:
       emf = EM_ARC_COMPACT2;
+      break;
+    case bfd_mach_arcv3_64:
+      emf = EM_ARC_COMPACT3_64;
+      break;
+    case bfd_mach_arcv3_32:
+      emf = EM_ARC_COMPACT3;
       break;
     default:
       emf = EM_ARC_COMPACT;
@@ -2910,20 +2928,20 @@ const struct elf_size_info arc_elfNN_size_info =
    ARCH_SIZE,
    LOG_FILE_ALIGN,
    ELFCLASSNN, EV_CURRENT,
-   bfd_elf32_write_out_phdrs,
-   bfd_elf32_write_shdrs_and_ehdr,
-   bfd_elf32_checksum_contents,
-   bfd_elf32_write_relocs,
-   bfd_elf32_swap_symbol_in,
-   bfd_elf32_swap_symbol_out,
-   bfd_elf32_slurp_reloc_table,
-   bfd_elf32_slurp_symbol_table,
-   bfd_elf32_swap_dyn_in,
-   bfd_elf32_swap_dyn_out,
-   bfd_elf32_swap_reloc_in,
-   bfd_elf32_swap_reloc_out,
-   bfd_elf32_swap_reloca_in,
-   bfd_elf32_swap_reloca_out
+   bfd_elfNN_write_out_phdrs,
+   bfd_elfNN_write_shdrs_and_ehdr,
+   bfd_elfNN_checksum_contents,
+   bfd_elfNN_write_relocs,
+   bfd_elfNN_swap_symbol_in,
+   bfd_elfNN_swap_symbol_out,
+   bfd_elfNN_slurp_reloc_table,
+   bfd_elfNN_slurp_symbol_table,
+   bfd_elfNN_swap_dyn_in,
+   bfd_elfNN_swap_dyn_out,
+   bfd_elfNN_swap_reloc_in,
+   bfd_elfNN_swap_reloc_out,
+   bfd_elfNN_swap_reloca_in,
+   bfd_elfNN_swap_reloca_out
   };
 
 /* GDB expects general purpose registers to be in section .reg.  However Linux
@@ -3431,8 +3449,14 @@ arc_elf_relax_section (bfd *abfd, asection *sec,
 #define TARGET_BIG_NAME     "elfNN-bigarc"
 #define ELF_ARCH	    bfd_arch_arc
 #define ELF_TARGET_ID	    ARC_ELF_DATA
-#define ELF_MACHINE_CODE    EM_ARC_COMPACT
-#define ELF_MACHINE_ALT1    EM_ARC_COMPACT2
+
+#if ARCH_SIZE == 32
+# define ELF_MACHINE_CODE    EM_ARC_COMPACT
+# define ELF_MACHINE_ALT1    EM_ARC_COMPACT2
+#else
+# define ELF_MACHINE_CODE    EM_ARC_COMPACT3_64
+#endif
+
 #define ELF_MAXPAGESIZE     0x2000
 
 #define bfd_elfNN_bfd_link_hash_table_create	arc_elf_link_hash_table_create

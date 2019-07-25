@@ -458,7 +458,7 @@ static htab_t arc_addrtype_hash;
   { #NAME,  ARC_OPCODE_ARCv2HS, bfd_mach_arc_arcv2,	\
       EF_ARC_CPU_ARCV2HS, EXTRA}
 #define ARC_CPU_TYPE_A64x(NAME,EXTRA)			\
-  { #NAME,  ARC_OPCODE_ARC64, bfd_mach_arc64,		\
+  { #NAME,  ARC_OPCODE_ARC64, bfd_mach_arcv3_64,	\
       EF_ARC_CPU_ARC64, EXTRA}
 #define ARC_CPU_TYPE_NONE				\
   { 0, 0, 0, 0, 0 }
@@ -2909,7 +2909,7 @@ arc_target_format (void)
   if (selected_cpu.name == NULL)
     return DEFAULT_TARGET_FORMAT;
 
-  if (selected_cpu.mach == bfd_mach_arc64)
+  if (selected_cpu.mach == bfd_mach_arcv3_64)
     return "elf64-littlearc";
 
   if (byte_order == LITTLE_ENDIAN)
@@ -4408,7 +4408,7 @@ check_zol (symbolS *s)
   switch (selected_cpu.mach)
     {
     case bfd_mach_arc_arcv2:
-    case bfd_mach_arc64:
+    case bfd_mach_arcv3_64:
       if (selected_cpu.flags & ARC_OPCODE_ARCv2EM)
 	return;
 
@@ -5196,9 +5196,6 @@ void
 arc_md_end (void)
 {
   arc_set_public_attributes ();
-
-  if (!bfd_set_arch_mach (stdoutput, bfd_arch_arc, selected_cpu.mach))
-    as_fatal (_("could not set architecture and machine"));
 
   bfd_set_private_flags (stdoutput, selected_cpu.eflags);
 }
