@@ -291,7 +291,6 @@ BFD32_BACKENDS = \
 	elf-vxworks.lo \
 	elf.lo \
 	elf32-am33lin.lo \
-	elf32-arc.lo \
 	elf32-arm.lo \
 	elf32-avr.lo \
 	elf32-bfin.lo \
@@ -426,7 +425,6 @@ BFD32_BACKENDS_CFILES = \
 	elf-vxworks.c \
 	elf.c \
 	elf32-am33lin.c \
-	elf32-arc.c \
 	elf32-arm.c \
 	elf32-avr.c \
 	elf32-bfin.c \
@@ -537,6 +535,8 @@ BFD64_BACKENDS = \
 	elf32-aarch64.lo \
 	elf64-aarch64.lo \
 	elfxx-aarch64.lo \
+	elf32-arc.lo \
+	elf64-arc.lo \
 	aix5ppc-core.lo \
 	aout64.lo \
 	coff-alpha.lo \
@@ -668,6 +668,7 @@ SOURCE_CFILES = \
 
 BUILD_CFILES = \
 	elf32-aarch64.c elf64-aarch64.c \
+	elf32-arc.c elf64-arc.c \
 	elf32-ia64.c elf64-ia64.c \
 	elf32-riscv.c elf64-riscv.c \
 	peigen.c pepigen.c pex64igen.c
@@ -837,6 +838,18 @@ elf32-aarch64.c : elfnn-aarch64.c
 elf64-aarch64.c : elfnn-aarch64.c
 	echo "#line 1 \"elfnn-aarch64.c\"" > $@
 	$(SED) -e s/NN/64/g < $< >> $@
+
+elf32-arc.c : elfnn-arc.c
+	rm -f elf32-arc.c
+	echo "#line 1 \"$(srcdir)/elfnn-arc.c\"" > elf32-arc.new
+	sed -e s/NN/32/g < $(srcdir)/elfnn-arc.c >> elf32-arc.new
+	mv -f elf32-arc.new elf32-arc.c
+
+elf64-arc.c : elfnn-arc.c
+	rm -f elf64-arc.c
+	echo "#line 1 \"$(srcdir)/elfnn-arc.c\"" > elf64-arc.new
+	sed -e s/NN/64/g < $(srcdir)/elfnn-arc.c >> elf64-arc.new
+	mv -f elf64-arc.new elf64-arc.c
 
 elf32-ia64.c : elfnn-ia64.c
 	echo "#line 1 \"elfnn-ia64.c\"" > $@

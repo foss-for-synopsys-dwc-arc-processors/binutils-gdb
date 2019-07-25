@@ -141,7 +141,6 @@ const char FLT_CHARS[] = "rRsSfFdD";
 
 /* Byte order.  */
 extern int target_big_endian;
-const char *arc_target_format = DEFAULT_TARGET_FORMAT;
 static int byte_order = DEFAULT_BYTE_ORDER;
 
 /* Arc extension section.  */
@@ -458,6 +457,9 @@ static struct hash_control *arc_addrtype_hash;
 #define ARC_CPU_TYPE_AV2HS(NAME,EXTRA)			\
   { #NAME,  ARC_OPCODE_ARCv2HS, bfd_mach_arc_arcv2,	\
       EF_ARC_CPU_ARCV2HS, EXTRA}
+#define ARC_CPU_TYPE_A64x(NAME,EXTRA)			\
+  { #NAME,  ARC_OPCODE_ARC64, bfd_mach_arc64,		\
+      EF_ARC_CPU_ARC64, EXTRA}
 #define ARC_CPU_TYPE_NONE				\
   { 0, 0, 0, 0, 0 }
 
@@ -2900,6 +2902,22 @@ insert_operand (unsigned long long insn,
   return insn;
 }
 
+
+const char *
+arc_target_format (void)
+{
+  if (selected_cpu.name == NULL)
+    return DEFAULT_TARGET_FORMAT;
+
+  if (selected_cpu.mach == bfd_mach_arc64)
+    return "elf64-littlearc";
+
+  if (byte_order == LITTLE_ENDIAN)
+    return "elf32-littlearc";
+
+  return "elf32-bigarc";
+}
+
 /* Apply a fixup to the object code.  At this point all symbol values
    should be fully resolved, and we attempt to completely resolve the
    reloc.  If we can not do that, we determine the correct reloc code
@@ -3447,12 +3465,10 @@ md_parse_option (int c, const char *arg ATTRIBUTE_UNUSED)
       }
 
     case OPTION_EB:
-      arc_target_format = "elf32-bigarc";
       byte_order = BIG_ENDIAN;
       break;
 
     case OPTION_EL:
-      arc_target_format = "elf32-littlearc";
       byte_order = LITTLE_ENDIAN;
       break;
 
@@ -4392,6 +4408,7 @@ check_zol (symbolS *s)
   switch (selected_cpu.mach)
     {
     case bfd_mach_arc_arcv2:
+    case bfd_mach_arc64:
       if (selected_cpu.flags & ARC_OPCODE_ARCv2EM)
 	return;
 
