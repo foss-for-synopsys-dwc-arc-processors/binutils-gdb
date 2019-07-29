@@ -667,8 +667,11 @@ arc_insn_length (bfd_byte msb, bfd_byte lsb, struct disassemble_info *info)
       return (major_opcode > 0xb) ? 2 : 4;
       break;
 
-    case bfd_mach_arc_arcv2:
     case bfd_mach_arcv3_64:
+      if (major_opcode == 0x0b)
+	return 4;
+      /* Fall through.  */
+    case bfd_mach_arc_arcv2:
       return (major_opcode > 0x7) ? 2 : 4;
       break;
 
