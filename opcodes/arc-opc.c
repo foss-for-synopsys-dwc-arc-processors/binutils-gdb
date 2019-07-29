@@ -1701,6 +1701,7 @@ const struct arc_flag_class arc_flag_classes[] =
   { F_CLASS_OPTIONAL, { F_SIZEB1, F_SIZEW1, F_H1, F_NULL}},
 
 #define C_AS	    (C_ZZ29 + 1)
+#define C_AAHARD13  (C_ZZ29 + 1)
   { F_CLASS_OPTIONAL, { F_ASFAKE, F_NULL}},
 
 #define C_NE	    (C_AS + 1)
@@ -1829,6 +1830,7 @@ const struct arc_operand arc_operands[] =
 #define RB_CHK		(RB + 1)
   { 6, 12, 0, ARC_OPERAND_IR, insert_rb_chk, extract_rb },
 #define RC		(RB_CHK + 1)
+#define RC_CHK		(RB_CHK + 1)
   { 6, 6, 0, ARC_OPERAND_IR, 0, 0 },
 #define RBdup		(RC + 1)
   { 6, 12, 0, ARC_OPERAND_IR | ARC_OPERAND_DUPLICATE, insert_rb, extract_rb },
@@ -1914,6 +1916,7 @@ const struct arc_operand arc_operands[] =
   /* Long immediate.  */
 #define LIMM		(ILINK2 + 1)
 #define LIMM_S		(ILINK2 + 1)
+#define SLIMM_S		(ILINK2 + 1)
   { 32, 0, BFD_RELOC_ARC_32_ME, ARC_OPERAND_LIMM, insert_limm, 0 },
 #define LIMMdup		(LIMM + 1)
   { 32, 0, 0, ARC_OPERAND_LIMM | ARC_OPERAND_DUPLICATE, insert_limm, 0 },
@@ -1993,8 +1996,13 @@ const struct arc_operand arc_operands[] =
    | ARC_OPERAND_TRUNCATE | ARC_OPERAND_IGNORE | ARC_OPERAND_PCREL,
    insert_uimm7_a32_11_s, extract_uimm7_a32_11_s},
 
+#define UIMM9_A32_11_S	     (UIMM7_A32_11R_S + 1)
+  {9, 0, 0, ARC_OPERAND_UNSIGNED | ARC_OPERAND_ALIGNED32
+   | ARC_OPERAND_TRUNCATE | ARC_OPERAND_IGNORE, insert_uimm9_a32_11_s,
+   extract_uimm9_a32_11_s},
+
   /* UIMM7_9_S mask = 0000000001111111.  */
-#define UIMM7_9_S	(UIMM7_A32_11R_S + 1)
+#define UIMM7_9_S	(UIMM9_A32_11_S + 1)
   {7, 0, 0, ARC_OPERAND_UNSIGNED, insert_uimm7_9_s, extract_uimm7_9_s},
 
   /* UIMM3_13_S mask = 0000000000000111.  */
@@ -2095,8 +2103,11 @@ const struct arc_operand arc_operands[] =
 #define UIMM10_6_S	 (UIMM3_23 + 1)
   {10, 0, 0, ARC_OPERAND_UNSIGNED, insert_uimm10_6_s, extract_uimm10_6_s},
 
+#define UIMM10_13_S	 (UIMM10_6_S+ 1)
+  {10, 0, 0, ARC_OPERAND_UNSIGNED, insert_uimm10_13_s, extract_uimm10_13_s},
+
   /* UIMM6_11_S mask = 0000002200011110.  */
-#define UIMM6_11_S	 (UIMM10_6_S + 1)
+#define UIMM6_11_S	 (UIMM10_13_S + 1)
   {6, 0, 0, ARC_OPERAND_UNSIGNED, insert_uimm6_11_s, extract_uimm6_11_s},
 
   /* SIMM9_8 mask = 00000000111111112000000000000000.	 */
@@ -2646,9 +2657,7 @@ const unsigned char arg_32bit_limm[] = { LIMM };
    nps extension instructions.  */
 const struct arc_opcode arc_opcodes[] =
 {
-#include "arc-tbl.h"
-#include "arc-nps400-tbl.h"
-#include "arc-ext-tbl.h"
+#include "arc64-tbl.h"
 
   { NULL, 0, 0, 0, 0, 0, { 0 }, { 0 } }
 };
