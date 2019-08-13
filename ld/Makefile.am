@@ -162,10 +162,8 @@ ALL_EMULATION_SOURCES = \
 	earcv2elf.c \
 	earcv2elfx.c \
 	earcelf.c \
-	earcelf_prof.c \
 	earclinux.c \
 	earclinux_nps.c \
-	earclinux_prof.c \
 	earm_wince_pe.c \
 	earmelf.c \
 	earmelf_fbsd.c \
@@ -670,9 +668,6 @@ earcv2elfx.c: $(srcdir)/emulparams/arcv2elfx.sh \
 earcelf.c: $(srcdir)/emulparams/arcelf.sh \
   $(ELF_DEPS) $(srcdir)/scripttempl/elfarc.sc ${GEN_DEPENDS}
 
-earcelf_prof.c: $(srcdir)/emulparams/arcelf_prof.sh \
-  $(ELF_DEPS) $(srcdir)/scripttempl/elfarc.sc ${GEN_DEPENDS}
-
 #for linux on arc
 earclinux.c: $(srcdir)/emulparams/arclinux.sh \
   $(ELF_DEPS) $(srcdir)/emultempl/arclinux.em \
@@ -680,10 +675,6 @@ earclinux.c: $(srcdir)/emulparams/arclinux.sh \
 
 earclinux_nps.c: $(srcdir)/emulparams/arclinux_nps.sh \
   $(srcdir)/emulparams/arc-nps.sh \
-  $(ELF_DEPS) $(srcdir)/emultempl/arclinux.em \
-  $(srcdir)/scripttempl/arclinux.sc ${GEN_DEPENDS}
-
-earclinux_prof.c: $(srcdir)/emulparams/arclinux_prof.sh \
   $(ELF_DEPS) $(srcdir)/emultempl/arclinux.em \
   $(srcdir)/scripttempl/arclinux.sc ${GEN_DEPENDS}
 
@@ -1875,7 +1866,6 @@ emmo.c: $(srcdir)/emulparams/mmo.sh $(srcdir)/emultempl/mmix-elfnmmo.em \
   $(srcdir)/emultempl/generic.em $(srcdir)/emultempl/elf-generic.em \
   $(srcdir)/emultempl/mmo.em $(srcdir)/scripttempl/DWARF.sc \
   $(srcdir)/scripttempl/mmo.sc ${GEN_DEPENDS}
-
 
 # We need this for automake to use YLWRAP.
 EXTRA_ld_new_SOURCES = deffilep.y ldlex.l
