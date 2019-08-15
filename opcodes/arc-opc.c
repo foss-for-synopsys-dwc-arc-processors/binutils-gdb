@@ -1916,17 +1916,23 @@ const struct arc_operand arc_operands[] =
   /* Long immediate.  */
 #define LIMM		(ILINK2 + 1)
 #define LIMM_S		(ILINK2 + 1)
-#define SLIMM_S		(ILINK2 + 1)
   { 32, 0, BFD_RELOC_ARC_32_ME, ARC_OPERAND_LIMM, insert_limm, 0 },
-#define LIMMdup		(LIMM + 1)
+#define XIMM_S		(LIMM + 1)
+#define XIMM		(LIMM + 1)
+  { 32, 0, BFD_RELOC_ARC_32_ME, ARC_OPERAND_LIMM | ARC_OPERAND_SIGNED,
+    insert_limm, 0 },
+#define LIMMdup		(XIMM + 1)
   { 32, 0, 0, ARC_OPERAND_LIMM | ARC_OPERAND_DUPLICATE, insert_limm, 0 },
+#define XIMMdup		(LIMMdup + 1)
+  { 32, 0, 0, ARC_OPERAND_LIMM | ARC_OPERAND_DUPLICATE | ARC_OPERAND_SIGNED,
+    insert_limm, 0 },
 
   /* Special operands.  */
-#define ZA		(LIMMdup + 1)
-#define ZB		(LIMMdup + 1)
-#define ZA_S		(LIMMdup + 1)
-#define ZB_S		(LIMMdup + 1)
-#define ZC_S		(LIMMdup + 1)
+#define ZA		(XIMMdup + 1)
+#define ZB		(XIMMdup + 1)
+#define ZA_S		(XIMMdup + 1)
+#define ZB_S		(XIMMdup + 1)
+#define ZC_S		(XIMMdup + 1)
   { 0, 0, 0, ARC_OPERAND_UNSIGNED, insert_za, 0 },
 
 #define RRANGE_EL	(ZA + 1)

@@ -140,6 +140,12 @@ static bfd_boolean print_hex = FALSE;
 #define BITS(word,s,e)  (((word) >> (s)) & ((1ull << ((e) - (s)) << 1) - 1))
 #define OPCODE_32BIT_INSN(word)	(BITS ((word), 27, 31))
 
+#define REG_PCL    63
+#define REG_LIMM   62
+#define REG_LIMM_S 30
+#define REG_U32    62
+#define REG_S32    60
+
 /* Functions implementation.  */
 
 /* Initialize private data.  */
@@ -285,7 +291,7 @@ find_format_from_table (struct disassemble_info *info,
       /* Possible candidate, check the operands.  */
       for (opidx = opcode->operands; *opidx; opidx++)
 	{
-	  int value, limmind;
+	  int value, slimmind;
 	  const struct arc_operand *operand = &arc_operands[*opidx];
 
 	  if (operand->flags & ARC_OPERAND_FAKE)
@@ -296,19 +302,20 @@ find_format_from_table (struct disassemble_info *info,
 	  else
 	    value = (insn >> operand->shift) & ((1ull << operand->bits) - 1);
 
-	  /* Check for LIMM indicator.  If it is there, then make sure
-	     we pick the right format.  */
-	  limmind = (isa_mask & ARC_OPCODE_ARCV2) ? 0x1E : 0x3E;
+	  /* Check for (short) LIMM indicator.  If it is there, then
+	     make sure we pick the right format.  */
+	  slimmind = (isa_mask & (ARC_OPCODE_ARCV2 || ARC_OPCODE_ARC64)) ?
+	    REG_LIMM_S : REG_LIMM;
 	  if (operand->flags & ARC_OPERAND_IR
 	      && !(operand->flags & ARC_OPERAND_LIMM))
-	    {
-	      if ((value == 0x3E && insn_len == 4)
-		  || (value == limmind && insn_len == 2))
-		{
-		  invalid = TRUE;
-		  break;
-		}
-	    }
+	    if ((value == REG_LIMM && insn_len == 4)
+		|| (value == slimmind && insn_len == 2)
+		|| (isa_mask & ARC_OPCODE_ARC64
+		    && (value == REG_S32) && (insn_len == 4)))
+	      {
+		invalid = TRUE;
+		break;
+	      }
 
 	  if (operand->flags & ARC_OPERAND_LIMM
 	      && !(operand->flags & ARC_OPERAND_DUPLICATE))
@@ -1294,7 +1301,7 @@ print_insn_arc (bfd_vma memaddr,
 			  "pair.\n");
 	      (*info->fprintf_func) (info->stream, "%s", rname);
 	    }
-	  if (value == 63)
+	  if (value == REG_PCL)
 	    rpcl = TRUE;
 	  else
 	    rpcl = FALSE;
@@ -1307,7 +1314,10 @@ print_insn_arc (bfd_vma memaddr,
 	    (*info->fprintf_func) (info->stream, "%s", rname);
 	  else
 	    {
-	      (*info->fprintf_func) (info->stream, "%#x", value);
+	      if (operand->flags & ARC_OPERAND_SIGNED)
+		(*info->fprintf_func) (info->stream, "%d@s32", value);
+	      else
+		(*info->fprintf_func) (info->stream, "%#x", value);
 	      if (info->insn_type == dis_branch
 		  || info->insn_type == dis_jsr)
 		info->target = (bfd_vma) value;
@@ -1373,7 +1383,7 @@ print_insn_arc (bfd_vma memaddr,
 	    = ARC_OPERAND_KIND_LIMM;
 	  /* It is not important to have exactly the LIMM indicator
 	     here.  */
-	  arc_infop->operands[arc_infop->operands_count].value = 63;
+	  arc_infop->operands[arc_infop->operands_count].value = REG_PCL;
 	}
       else
 	{
