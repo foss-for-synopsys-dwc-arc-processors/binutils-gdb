@@ -1364,11 +1364,13 @@ const struct arc_flag_operand arc_flag_operands[] =
   /* FLAG.  */
 #define F_FLAG     (F_NO_T + 1)
   { "f",  1, 1, 15, 1 },
-#define F_FFAKE     (F_FLAG + 1)
+#define F_FFAKE    (F_FLAG + 1)
   { "f",  0, 0, 0, 1 },
+#define F_AQ       (F_FFAKE + 1)
+  { "a",  1, 1, 15, 1 },
 
   /* Delay slot.  */
-#define F_ND	   (F_FFAKE + 1)
+#define F_ND	   (F_AQ + 1)
   { "nd", 0, 1, 5, 0 },
 #define F_D	   (F_ND + 1)
   { "d",  1, 1, 5, 1 },
@@ -1652,8 +1654,10 @@ const struct arc_flag_class arc_flag_classes[] =
   { F_CLASS_OPTIONAL, { F_FLAG, F_NULL } },
 #define C_FHARD	    (C_F + 1)
   { F_CLASS_OPTIONAL, { F_FFAKE, F_NULL } },
+#define C_AQ	    (C_FHARD + 1)
+  { F_CLASS_OPTIONAL, { F_AQ, F_NULL } },
 
-#define C_T	    (C_FHARD + 1)
+#define C_T	    (C_AQ + 1)
   { F_CLASS_OPTIONAL, { F_NT, F_T, F_NULL } },
 #define C_D	    (C_T + 1)
   { F_CLASS_OPTIONAL, { F_ND, F_D, F_NULL } },
