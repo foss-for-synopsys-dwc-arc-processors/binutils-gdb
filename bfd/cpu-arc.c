@@ -85,9 +85,6 @@ arc_compatible (const bfd_arch_info_type *a, const bfd_arch_info_type *b)
   if (a->arch != b->arch)
     return NULL;
 
-  if (a->bits_per_word != b->bits_per_word)
-    return NULL;
-
   /* ARCv2|EM and EM.  */
   if ((a->mach == bfd_mach_arc_arcv2 && b == em)
       || (b->mach == bfd_mach_arc_arcv2 && a == em))
@@ -98,5 +95,6 @@ arc_compatible (const bfd_arch_info_type *a, const bfd_arch_info_type *b)
       || (b->mach == bfd_mach_arc_arcv2 && a == hs))
     return hs;
 
-  return bfd_default_compatible (a, b);
+  /* Machine compatibilitu is checked in merge_private_bfd_data.  */
+  return a;
 }
