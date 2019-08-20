@@ -42,9 +42,8 @@ arc_read_description (void)
   tdesc = arc_create_target_description (debug_threads, true, true);
 #endif
 
-  init_target_desc (tdesc);
   static const char *expedite_regs[] = { "sp", "status32", NULL };
-  tdesc->expedite_regs = expedite_regs;
+  init_target_desc (tdesc, expedite_regs);
 
   return tdesc;
 }
