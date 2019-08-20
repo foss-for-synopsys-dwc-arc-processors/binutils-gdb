@@ -502,7 +502,6 @@ arc_linux_collect_gregset (const struct regset *regset,
 
   gdb_byte *buf = (gdb_byte *) gregs;
   struct gdbarch *gdbarch = regcache->arch ();
-  struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
 
   for (int reg = 0; reg < ARC_LAST_REGNUM; reg++)
     {
