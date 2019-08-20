@@ -57,7 +57,7 @@ static const bfd_arch_info_type arch_info_struct[] =
 };
 
 const bfd_arch_info_type bfd_arc_arch =
-  ARC (32, 32, bfd_mach_arc_arc600, "ARC600", TRUE, &arch_info_struct[0]);
+  ARC (32, 32, 0, "ARC600", TRUE, &arch_info_struct[0]);
 
 /* ARC-specific "compatible" function.  The general rule is that if A and B are
    compatible, then this function should return architecture that is more
@@ -85,9 +85,6 @@ arc_compatible (const bfd_arch_info_type *a, const bfd_arch_info_type *b)
   if (a->arch != b->arch)
     return NULL;
 
-  if (a->bits_per_word != b->bits_per_word)
-    return NULL;
-
   /* ARCv2|EM and EM.  */
   if ((a->mach == bfd_mach_arc_arcv2 && b == em)
       || (b->mach == bfd_mach_arc_arcv2 && a == em))
@@ -98,5 +95,6 @@ arc_compatible (const bfd_arch_info_type *a, const bfd_arch_info_type *b)
       || (b->mach == bfd_mach_arc_arcv2 && a == hs))
     return hs;
 
-  return bfd_default_compatible (a, b);
+  /* Machine compatibilitu is checked in merge_private_bfd_data.  */
+  return a;
 }
