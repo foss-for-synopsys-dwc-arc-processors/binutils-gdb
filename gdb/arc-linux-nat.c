@@ -22,7 +22,7 @@
 #include "inferior.h"
 #include "gdbcore.h"
 #include "regcache.h"
-#include "gdb_assert.h"
+#include "gdbsupport/gdb_assert.h"
 #include "target.h"
 #include "linux-nat.h"
 #include "nat/gdb_ptrace.h"
@@ -33,7 +33,7 @@
 #include <signal.h>
 #include <sys/user.h>
 #include <sys/ioctl.h>
-#include "gdb_wait.h"
+#include "gdbsupport/gdb_wait.h"
 #include <fcntl.h>
 #include <sys/procfs.h>
 #include <linux/elf.h>
@@ -53,12 +53,27 @@
 #define ARC_HAS_V2_REGSET
 #endif
 
+class arc_linux_nat_target final : public linux_nat_target
+{
+public:
+  /* Add ARC register access methods.  */
+  void fetch_registers (struct regcache *, int) override;
+  void store_registers (struct regcache *, int) override;
+
+  const struct target_desc *read_description () override;
+
+  /* Handle threads  */
+  void low_prepare_to_resume (struct lwp_info *lp) override;
+};
+
+static arc_linux_nat_target the_arc_linux_nat_target;
+
 /* Read general registers from target process via ptrace () into regcache.  */
 
 static void
 fetch_gregs (struct regcache *regcache, int regnum)
 {
-  long tid = ptid_get_lwp (regcache_get_ptid (regcache));
+  long tid = regcache->ptid ().lwp ();
   gdb_gregset_t regs;
   struct iovec iov;
   iov.iov_base = &regs;
@@ -79,7 +94,7 @@ fetch_gregs (struct regcache *regcache, int regnum)
 static void
 fetch_v2_regs (struct regcache *regcache, int regnum)
 {
-  long tid = ptid_get_lwp (regcache_get_ptid (regcache));
+  long tid = regcache->ptid ().lwp ();
   bfd_byte buffer[ARC_LINUX_SIZEOF_V2_REGSET];
   struct iovec iov;
   iov.iov_base = &buffer;
@@ -100,7 +115,7 @@ fetch_v2_regs (struct regcache *regcache, int regnum)
 static void
 store_gregs (struct regcache *regcache, int regnum)
 {
-  long tid = ptid_get_lwp (regcache_get_ptid (regcache));
+  long tid = regcache->ptid ().lwp ();
   gdb_gregset_t regs;
   struct iovec iov;
   iov.iov_base = &regs;
@@ -127,7 +142,7 @@ store_gregs (struct regcache *regcache, int regnum)
 static void
 store_v2_regs (struct regcache *regcache, int regnum)
 {
-  long tid = ptid_get_lwp (regcache_get_ptid (regcache));
+  long tid = regcache->ptid ().lwp ();
   bfd_byte buffer[ARC_LINUX_SIZEOF_V2_REGSET];
   struct iovec iov;
   iov.iov_base = &buffer;
@@ -151,9 +166,8 @@ store_v2_regs (struct regcache *regcache, int regnum)
 
 /* Function set to target ops.  */
 
-static void
-arc_linux_fetch_inferior_registers (struct target_ops *ops,
-				    struct regcache *regcache, int regnum)
+void
+arc_linux_nat_target::fetch_registers (struct regcache *regcache, int regnum)
 {
   fetch_gregs (regcache, regnum);
 #ifdef ARC_HAS_V2_REGSET
@@ -163,9 +177,8 @@ arc_linux_fetch_inferior_registers (struct target_ops *ops,
 
 /* Function set to target ops.  */
 
-static void
-arc_linux_store_inferior_registers (struct target_ops *ops,
-				    struct regcache *regcache, int regnum)
+void
+arc_linux_nat_target::store_registers (struct regcache *regcache, int regnum)
 {
   store_gregs (regcache, regnum);
 #ifdef ARC_HAS_V2_REGSET
@@ -213,10 +226,10 @@ supply_fpregset (struct regcache *regcache, const gdb_fpregset_t *fpregsetp)
   return;
 }
 
-/* Implement the "to_read_description" target_ops method.  */
+/* Implement the "read_description" method of linux_nat_target.  */
 
-static const struct target_desc *
-arc_linux_read_description (struct target_ops *ops)
+const struct target_desc *
+arc_linux_nat_target::read_description ()
 {
   /* This is a native target, hence description is hardcoded.  */
 #ifdef __ARCHS__
@@ -239,15 +252,15 @@ arc_linux_read_description (struct target_ops *ops)
    other than this fake write of register value.  Maybe there is some
    better way?  */
 
-static void
-arc_linux_prepare_to_resume (struct lwp_info *lwp)
+void
+arc_linux_nat_target::low_prepare_to_resume (struct lwp_info *lwp)
 {
   /* When new processes and threads are created we do not have address
      space for them and call to get_thread_regcache will cause an internal
      error in GDB.  It looks like that checking for last_resume_kind is
      sensible way to determine processes for which we cannot get regcache.
-     Ultimately better way would be remove the need for prepare_to_resume
-     at all.  */
+     Ultimately better way would be remove the need for
+     low_prepare_to_resume at all.  */
   if (lwp->last_resume_kind == resume_stop)
     return;
 
@@ -260,7 +273,7 @@ arc_linux_prepare_to_resume (struct lwp_info *lwp)
   ULONGEST new_pc;
   regcache_cooked_read_unsigned (regcache, gdbarch_pc_regnum (gdbarch),
 				 &new_pc);
-  regcache_invalidate (regcache, gdbarch_pc_regnum (gdbarch));
+  regcache->invalidate (gdbarch_pc_regnum (gdbarch));
   regcache_cooked_write_unsigned (regcache, gdbarch_pc_regnum (gdbarch),
 				  new_pc);
 }
@@ -293,15 +306,9 @@ void _initialize_arc_linux_nat (void);
 void
 _initialize_arc_linux_nat (void)
 {
-  struct target_ops *t;
-  /* Fill in the generic GNU/Linux methods.  */
-  t = linux_target ();
-  t->to_fetch_registers = arc_linux_fetch_inferior_registers;
-  t->to_store_registers = arc_linux_store_inferior_registers;
-  t->to_read_description = arc_linux_read_description;
-
-  linux_nat_add_target (t);
-  linux_nat_set_prepare_to_resume (t, arc_linux_prepare_to_resume);
+  /* Register the target.  */
+  linux_target = &the_arc_linux_nat_target;
+  add_inf_child_target (&the_arc_linux_nat_target);
 }
 
 /* vim: set sts=2 shiftwidth=2 ts=8: */

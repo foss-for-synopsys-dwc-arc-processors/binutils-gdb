@@ -23,6 +23,7 @@
 
 /* Need disassemble_info.  */
 #include "dis-asm.h"
+#include "gdbarch.h"
 
 /* To simplify GDB code this enum assumes that internal regnums should be same
    as architectural register numbers, i.e. PCL regnum is 63.  This allows to
