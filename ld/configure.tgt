@@ -84,14 +84,12 @@ alpha*-*-netbsd*)	targ_emul=elf64alpha_nbsd ;;
 alpha*-*-openbsd*)	targ_emul=elf64alpha ;;
 alpha*-*-*vms*)		targ_emul=alphavms
 			;;
-arc*-*-elf*)		case "${with_cpu}" in
-			arc64) targ_emul=elf64arc
-			       targ_extra_emuls=arcelf
-			       ;;
-			*)     targ_emul=arcelf
-			       targ_extra_emuls=elf64arc
-			       ;;
-			esac
+arc*-*-elf*)		targ_emul=arcelf
+			targ_extra_emuls=elf64arc
+			targ_extra_emuls="${targ_extra_emuls} arclinux arclinux_nps arcv2elf arcv2elfx"
+			;;
+arc64*-*-elf*)		targ_emul=elf64arc
+			targ_extra_emuls=arcelf
 			targ_extra_emuls="${targ_extra_emuls} arclinux arclinux_nps arcv2elf arcv2elfx"
 			;;
 arc*-*-linux*)		case "${with_cpu}" in

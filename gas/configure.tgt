@@ -51,6 +51,7 @@ case ${cpu} in
   alpha*)		cpu_type=alpha ;;
   am33_2.0)		cpu_type=mn10300 endian=little ;;
   arc*eb)		cpu_type=arc endian=big ;;
+  arc64*)		cpu_type=arc arch=arc64 endian=little ;;
   arm*be|arm*b)		cpu_type=arm endian=big ;;
   arm*)			cpu_type=arm endian=little ;;
   bfin*)		cpu_type=bfin endian=little ;;
@@ -135,6 +136,7 @@ case ${generic_target} in
   alpha-*-netbsd* | alpha-*-openbsd*)	fmt=elf em=nbsd ;;
 
   arc-*-elf*)				fmt=elf ;;
+  arc64-*-elf*)				fmt=elf ;;
   arc*-*-linux*)			fmt=elf bfd_gas=yes ;;
 
   arm-*-phoenix*)			fmt=elf ;;
