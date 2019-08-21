@@ -52,6 +52,10 @@
 #define TARGET_WITH_CPU "arc700"
 #endif /* TARGET_WITH_CPU */
 
+#ifndef DEFAULT_ARCH
+#define DEFAULT_ARCH "arc"
+#endif
+
 #define ARC_GET_FLAG(s)   	(*symbol_get_tc (s))
 #define ARC_SET_FLAG(s,v) 	(*symbol_get_tc (s) |= (v))
 #define streq(a, b)	      (strcmp (a, b) == 0)
@@ -120,6 +124,9 @@ enum arc_rlx_types
 
 /* Generic assembler global variables which must be defined by all
    targets.  */
+
+/* Default architecture.  */
+static const char default_arch[] = DEFAULT_ARCH;
 
 /* Characters which always start a comment.  */
 const char comment_chars[] = "#;";
@@ -2914,10 +2921,27 @@ insert_operand (unsigned long long insn,
   return insn;
 }
 
+/* Initialize the default cpu.  */
+
+static void
+init_default_arch (void)
+{
+  if (strcmp (default_arch, "arc64") == 0)
+    {
+      arc_select_cpu ("arc64", MACH_SELECTION_FROM_DEFAULT);
+    }
+}
+
+/* Called by TARGET_FORMAT.  */
 
 const char *
 arc_target_format (void)
 {
+
+  /* We don't get a chance to initialize anything before we're called,
+     so handle that now.  */
+  init_default_arch ();
+
   if (selected_cpu.name == NULL)
     return DEFAULT_TARGET_FORMAT;
 
