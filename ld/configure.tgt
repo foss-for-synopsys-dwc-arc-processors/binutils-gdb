@@ -104,14 +104,12 @@ alpha*-*-*vms*)		targ_emul=alphavms
 			;;
 am33_2.0-*-linux*)	targ_emul=elf32am33lin # mn10300 variant
 			;;
-arc*-*-elf*)		case "${with_cpu}" in
-			arc64) targ_emul=elf64arc
-			       targ_extra_emuls=arcelf
-			       ;;
-			*)     targ_emul=arcelf
-			       targ_extra_emuls=elf64arc
-			       ;;
-			esac
+arc*-*-elf*)		targ_emul=arcelf
+			targ_extra_emuls=elf64arc
+			targ_extra_emuls="${targ_extra_emuls} arclinux arclinux_nps arcv2elf arcv2elfx"
+			;;
+arc64*-*-elf*)		targ_emul=elf64arc
+			targ_extra_emuls=arcelf
 			targ_extra_emuls="${targ_extra_emuls} arclinux arclinux_nps arcv2elf arcv2elfx"
 			;;
 arc*-*-linux*)		case "${with_cpu}" in
