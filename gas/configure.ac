@@ -569,7 +569,7 @@ changequote([,])dnl
 	AC_MSG_RESULT($enable_zol_ext)
 	;;
 
-      aarch64 | i386 | s390 | sparc)
+      aarch64 | i386 | s390 | sparc | arc)
 	if test $this_target = $target ; then
 	  AC_DEFINE_UNQUOTED(DEFAULT_ARCH, "${arch}", [Default architecture.])
 	fi

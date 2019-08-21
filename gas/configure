@@ -13009,7 +13009,7 @@ $as_echo "#define NDS32_DEFAULT_ZOL_EXT 1" >>confdefs.h
 $as_echo "$enable_zol_ext" >&6; }
 	;;
 
-      aarch64 | i386 | s390 | sparc)
+      aarch64 | i386 | s390 | sparc | arc)
 	if test $this_target = $target ; then
 
 cat >>confdefs.h <<_ACEOF
