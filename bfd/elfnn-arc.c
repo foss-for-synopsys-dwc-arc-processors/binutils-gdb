@@ -393,6 +393,7 @@ static const struct arc_reloc_map arc_reloc_map[] =
    {BFD_RELOC_16, R_ARC_16},
    {BFD_RELOC_24, R_ARC_24},
    {BFD_RELOC_32, R_ARC_32},
+   {BFD_RELOC_64, R_ARC_64},
   };
 
 #undef ARC_RELOC_HOWTO
