@@ -3356,6 +3356,7 @@ pc-relative or some form of GOT-indirect relocation.  */
   BFD_RELOC_ARC_16,
   BFD_RELOC_ARC_24,
   BFD_RELOC_ARC_32,
+  BFD_RELOC_ARC_64,
   BFD_RELOC_ARC_N8,
   BFD_RELOC_ARC_N16,
   BFD_RELOC_ARC_N24,
