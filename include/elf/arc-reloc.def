@@ -64,6 +64,13 @@ ARC_RELOC_HOWTO(ARC_32, 4, \
                 bitfield, \
                 ( S + A ))
 
+ARC_RELOC_HOWTO(ARC_64, 5, \
+                2, \
+                64, \
+                replace_word64, \
+                bitfield, \
+                ( S + A ))
+
 ARC_RELOC_HOWTO(ARC_N8, 8, \
                 0, \
                 8, \
@@ -515,35 +522,35 @@ ARC_RELOC_HOWTO(ARC_NPS_CMEM16, 78, \
 ARC_RELOC_HOWTO(ARC_S9H_PCREL, 80, \
                 2, \
                 8, \
-                replace_bits9, \
+                replace_disp8ls, \
                 signed, \
                 ( ME ( ( ( ( S + A ) - P ) >> 1 ) ) ) )
 
 ARC_RELOC_HOWTO(ARC_S7H_PCREL, 81, \
                 1, \
                 6, \
-                replace_bits7, \
+                replace_disp6s, \
                 signed, \
                 ( ( ( ( S + A ) - P ) >> 1 ) ) )
 
 ARC_RELOC_HOWTO(ARC_S8H_PCREL, 82, \
                 1, \
                 7, \
-                replace_disp8h, \
+                replace_disp7s, \
                 signed, \
                 ( ( ( ( S + A ) - P ) >> 1 ) ) )
 
 ARC_RELOC_HOWTO(ARC_S10H_PCREL, 83, \
                 1, \
                 9, \
-                replace_bits10, \
+                replace_disp9s, \
                 signed, \
                 ( ( ( ( S + A ) - P ) >> 1 ) ) )
 
 ARC_RELOC_HOWTO(ARC_S13H_PCREL, 84, \
                 2, \
                 12, \
-                replace_bits13, \
+                replace_disp12s, \
                 signed, \
                 ( ME ( ( ( ( S + A ) - P ) >> 1 ) ) ) )
 
