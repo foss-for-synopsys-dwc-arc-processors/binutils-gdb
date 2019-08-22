@@ -48,12 +48,16 @@
 #define LP_INSN(x)	 ((MAJOR_OPCODE (x) == 0x4) \
 			  && (SUB_OPCODE (x) == 0x28))
 
-#ifndef TARGET_WITH_CPU
-#define TARGET_WITH_CPU "arc700"
-#endif /* TARGET_WITH_CPU */
 
 #ifndef DEFAULT_ARCH
 #define DEFAULT_ARCH "arc"
+#ifndef TARGET_WITH_CPU
+#define TARGET_WITH_CPU "arc64"
+#endif /* TARGET_WITH_CPU */
+#else
+#ifndef TARGET_WITH_CPU
+#define TARGET_WITH_CPU "arc700"
+#endif /* TARGET_WITH_CPU */
 #endif
 
 #define ARC_GET_FLAG(s)   	(*symbol_get_tc (s))
@@ -2927,9 +2931,7 @@ static void
 init_default_arch (void)
 {
   if (strcmp (default_arch, "arc64") == 0)
-    {
-      arc_select_cpu ("arc64", MACH_SELECTION_FROM_DEFAULT);
-    }
+    arc_select_cpu (TARGET_WITH_CPU, MACH_SELECTION_FROM_DEFAULT);
 }
 
 /* Called by TARGET_FORMAT.  */
@@ -2940,7 +2942,8 @@ arc_target_format (void)
 
   /* We don't get a chance to initialize anything before we're called,
      so handle that now.  */
-  init_default_arch ();
+  if (mach_selection_mode == MACH_SELECTION_NONE)
+    init_default_arch ();
 
   if (selected_cpu.name == NULL)
     return DEFAULT_TARGET_FORMAT;
