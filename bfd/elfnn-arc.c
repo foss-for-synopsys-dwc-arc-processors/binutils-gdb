@@ -297,7 +297,6 @@ arc_elf_howto_init (void)
 }
 #undef ARC_RELOC_HOWTO
 
-
 static reloc_howto_type *
 arc_elf_howto (unsigned int r_type)
 {
@@ -3454,8 +3453,12 @@ arc_elf_relax_section (bfd *abfd, asection *sec,
 #if ARCH_SIZE == 32
 # define ELF_MACHINE_CODE    EM_ARC_COMPACT
 # define ELF_MACHINE_ALT1    EM_ARC_COMPACT2
+# define ELF_MACHINE_ALT2    EM_ARC_COMPACT3_64
 #else
 # define ELF_MACHINE_CODE    EM_ARC_COMPACT3_64
+# define ELF_MACHINE_ALT1    EM_ARC_COMPACT2
+/* To be deprecated and instead used for ARCv3 32 bit machine.  */
+# define ELF_MACHINE_ALT2    EM_ARC_COMPACT
 #endif
 
 #define ELF_MAXPAGESIZE     0x2000
