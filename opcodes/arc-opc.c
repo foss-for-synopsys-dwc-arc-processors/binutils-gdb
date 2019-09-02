@@ -2651,6 +2651,8 @@ const struct arc_opcode arc_opcodes[] =
 {
 #include "arc-tbl.h"
 #include "arc64-tbl.h"
+#include "arc-nps400-tbl.h"
+#include "arc-ext-tbl.h"
 
   { NULL, 0, 0, 0, 0, 0, { 0 }, { 0 } }
 };
