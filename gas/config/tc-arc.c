@@ -51,14 +51,11 @@
 
 #ifndef DEFAULT_ARCH
 #define DEFAULT_ARCH "arc"
+#endif /* DEFAULT_ARCH */
+
 #ifndef TARGET_WITH_CPU
 #define TARGET_WITH_CPU "arc700"
 #endif /* TARGET_WITH_CPU */
-#else /* ARC64 */
-#ifndef TARGET_WITH_CPU
-#define TARGET_WITH_CPU "arc64"
-#endif /* TARGET_WITH_CPU */
-#endif /* !DEFAULT_ARCH */
 
 #define ARC_GET_FLAG(s)   	(*symbol_get_tc (s))
 #define ARC_SET_FLAG(s,v) 	(*symbol_get_tc (s) |= (v))
@@ -2931,6 +2928,8 @@ static void
 init_default_arch (void)
 {
   if (strcmp (default_arch, "arc64") == 0)
+    arc_select_cpu ("arc64", MACH_SELECTION_FROM_DEFAULT);
+  else
     arc_select_cpu (TARGET_WITH_CPU, MACH_SELECTION_FROM_DEFAULT);
 }
 
