@@ -41,6 +41,7 @@ arc_compatible (const bfd_arch_info_type *a, const bfd_arch_info_type *b);
     bfd_default_scan,							\
     bfd_arch_default_fill,						\
     NEXT,								\
+    0 /* Maximum offset of a reloc from the start of an insn.  */	\
 }
 
 static const bfd_arch_info_type arch_info_struct[] =
