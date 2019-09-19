@@ -13106,6 +13106,8 @@ is_64bit_abs_reloc (Filedata * filedata, unsigned int reloc_type)
     {
     case EM_AARCH64:
       return reloc_type == 257;	/* R_AARCH64_ABS64.  */
+    case EM_ARC_COMPACT3_64:
+      return reloc_type == 5; /* R_ARC_64.  */
     case EM_ALPHA:
       return reloc_type == 2; /* R_ALPHA_REFQUAD.  */
     case EM_IA_64:
