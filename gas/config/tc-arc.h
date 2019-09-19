@@ -48,16 +48,16 @@
 #undef  BIG_ENDIAN
 #define BIG_ENDIAN      4321
 
-#ifdef TARGET_BYTES_BIG_ENDIAN
-
-# define DEFAULT_TARGET_FORMAT  "elf32-bigarc"
-# define DEFAULT_BYTE_ORDER     BIG_ENDIAN
-
-#else
+#ifndef TARGET_BYTES_BIG_ENDIAN
 /* You should define this macro to be non-zero if the target is big
    endian, and zero if the target is little endian.  */
-# define TARGET_BYTES_BIG_ENDIAN 0
+#define TARGET_BYTES_BIG_ENDIAN 0
+#endif
 
+#if TARGET_BYTES_BIG_ENDIAN == 1
+# define DEFAULT_TARGET_FORMAT  "elf32-bigarc"
+# define DEFAULT_BYTE_ORDER     BIG_ENDIAN
+#else
 # define DEFAULT_TARGET_FORMAT  "elf32-littlearc"
 # define DEFAULT_BYTE_ORDER     LITTLE_ENDIAN
 

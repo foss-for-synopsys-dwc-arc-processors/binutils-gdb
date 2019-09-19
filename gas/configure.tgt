@@ -50,7 +50,7 @@ case ${cpu} in
   aarch64_be)		cpu_type=aarch64 endian=big arch=aarch64;;
   alpha*)		cpu_type=alpha ;;
   am33_2.0)		cpu_type=mn10300 endian=little ;;
-  arc*eb)		cpu_type=arc endian=big ;;
+  arceb)		cpu_type=arc endian=big ;;
   arc64*)		cpu_type=arc arch=arc64 endian=little ;;
   arm*be|arm*b)		cpu_type=arm endian=big ;;
   arm*)			cpu_type=arm endian=little ;;
