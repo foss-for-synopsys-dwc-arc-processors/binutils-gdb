@@ -910,7 +910,7 @@ arc_select_cpu (const char *arg, enum mach_selection_type sel)
   if (mach_selection_mode != MACH_SELECTION_NONE
       && (old_cpu.mach != selected_cpu.mach))
     {
-      bfd_find_target (arc_target_format, stdoutput);
+      bfd_find_target (arc_target_format (), stdoutput);
       if (! bfd_set_arch_mach (stdoutput, bfd_arch_arc, selected_cpu.mach))
 	as_warn (_("Could not set architecture and machine"));
     }
