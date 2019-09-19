@@ -1454,9 +1454,11 @@ const struct arc_flag_operand arc_flag_operands[] =
   { "h", 2, 2, 17, 1 },
 #define F_SIZED  (F_H17 + 1)
   { "dd", 8, 0, 0, 0 },  /* Fake.  */
+#define F_SIZEL  (F_SIZED + 1)
+  { "dl", 8, 0, 0, 0 },  /* Fake.  */
 
   /* Fake Flags.  */
-#define F_NE   (F_SIZED + 1)
+#define F_NE   (F_SIZEL + 1)
   { "ne", 0, 0, 0, 1 },
 
   /* ARC NPS400 Support: See comment near head of file.  */
@@ -1625,7 +1627,10 @@ const struct arc_flag_class arc_flag_classes[] =
 #define C_ZZ_D      (C_AA_AW + 1)
   {F_CLASS_IMPLICIT | F_CLASS_ZZ, {F_SIZED, F_NULL} },
 
-#define C_ZZ_H      (C_ZZ_D + 1)
+#define C_ZZ_L      (C_ZZ_D + 1)
+  {F_CLASS_IMPLICIT | F_CLASS_ZZ, {F_SIZEL, F_NULL} },
+
+#define C_ZZ_H      (C_ZZ_L + 1)
   {F_CLASS_IMPLICIT | F_CLASS_ZZ, {F_H1, F_NULL} },
 
 #define C_ZZ_B      (C_ZZ_H + 1)
@@ -2649,8 +2654,10 @@ const unsigned char arg_32bit_limm[] = { LIMM };
    nps extension instructions.  */
 const struct arc_opcode arc_opcodes[] =
 {
-#include "arc-tbl.h"
+ /* ARC64 needs to be included first as there are new instructions
+    which can be interpreted as ARCv2 insns.  */
 #include "arc64-tbl.h"
+#include "arc-tbl.h"
 #include "arc-nps400-tbl.h"
 #include "arc-ext-tbl.h"
 
