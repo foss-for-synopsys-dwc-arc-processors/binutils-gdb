@@ -3094,7 +3094,7 @@ arc_relax_delete_bytes (struct bfd_link_info *link_info, bfd *abfd,
     }
 
   /* Now adjust the global symbols defined in this section.  */
-  symcount = (symtab_hdr->sh_size / sizeof (Elf32_External_Sym)
+  symcount = (symtab_hdr->sh_size / sizeof (ElfNN_External_Sym)
                - symtab_hdr->sh_info);
   sym_hashes = start_hashes = elf_sym_hashes (abfd);
   end_hashes = sym_hashes + symcount;
@@ -3217,9 +3217,9 @@ arc_elf_relax_section (bfd *abfd, asection *sec,
 
       /* If this isn't something that can be relaxed, then ignore this
 	 reloc.  */
-      if (ELF32_R_TYPE (irel->r_info) != (int) R_ARC_GOTPC32
-	  && ELF32_R_TYPE (irel->r_info) != (int) R_ARC_S25W_PCREL
-	  && ELF32_R_TYPE (irel->r_info) != (int) R_ARC_ALIGN)
+      if (ELFNN_R_TYPE (irel->r_info) != (int) R_ARC_GOTPC32
+	  && ELFNN_R_TYPE (irel->r_info) != (int) R_ARC_S25W_PCREL
+	  && ELFNN_R_TYPE (irel->r_info) != (int) R_ARC_ALIGN)
 	continue;
 
       /* Get the section contents if we haven't done so already.  */
@@ -3246,12 +3246,12 @@ arc_elf_relax_section (bfd *abfd, asection *sec,
 	}
 
       /* Get the value of the symbol referred to by the reloc.  */
-      if (ELF32_R_SYM (irel->r_info) < symtab_hdr->sh_info)
+      if (ELFNN_R_SYM (irel->r_info) < symtab_hdr->sh_info)
 	{
 	  /* A local symbol.  */
 	  Elf_Internal_Sym *isym;
 
-	  isym = isymbuf + ELF32_R_SYM (irel->r_info);
+	  isym = isymbuf + ELFNN_R_SYM (irel->r_info);
 	  sym_sec = bfd_section_from_elf_index (abfd, isym->st_shndx);
 	  symval = isym->st_value;
 	  /* If the reloc is absolute, it will not have
@@ -3263,7 +3263,7 @@ arc_elf_relax_section (bfd *abfd, asection *sec,
       else
 	{
 	  /* An external symbol.  */
-	  unsigned int indx = ELF32_R_SYM (irel->r_info) - symtab_hdr->sh_info;
+	  unsigned int indx = ELFNN_R_SYM (irel->r_info) - symtab_hdr->sh_info;
 	  htop = elf_sym_hashes (abfd)[indx];
 
 	  BFD_ASSERT (htop != NULL);
@@ -3280,7 +3280,7 @@ arc_elf_relax_section (bfd *abfd, asection *sec,
 	  sym_sec = htop->root.u.def.section;
 	}
 
-      if (ELF32_R_TYPE (irel->r_info) == (int) R_ARC_GOTPC32
+      if (ELFNN_R_TYPE (irel->r_info) == (int) R_ARC_GOTPC32
 	  && SYMBOL_REFERENCES_LOCAL (link_info, htop)
 	  && link_info->relax_pass == 0)
 	{
@@ -3295,7 +3295,7 @@ arc_elf_relax_section (bfd *abfd, asection *sec,
 	  symtab_hdr->contents = (unsigned char *) isymbuf;
 
 	  /* Fix the relocation's type.  */
-	  irel->r_info = ELF32_R_INFO (ELF32_R_SYM (irel->r_info), R_ARC_PC32);
+	  irel->r_info = ELFNN_R_INFO (ELFNN_R_SYM (irel->r_info), R_ARC_PC32);
 
 	  /* ld rA,[pcl,symbol@tgot] -> add rA,pcl,symbol@pcl.  */
 	  /* 0010 0bbb aa11 0ZZX DBBB 1111 10AA AAAA.
@@ -3315,7 +3315,7 @@ arc_elf_relax_section (bfd *abfd, asection *sec,
       if (!do_relax)
 	continue;
 
-      if (ELF32_R_TYPE (irel->r_info) == (int) R_ARC_S25W_PCREL
+      if (ELFNN_R_TYPE (irel->r_info) == (int) R_ARC_S25W_PCREL
 	  && link_info->relax_pass == 0)
 	{
 	  unsigned int code;
@@ -3350,7 +3350,7 @@ arc_elf_relax_section (bfd *abfd, asection *sec,
 	  symtab_hdr->contents = (unsigned char *) isymbuf;
 
 	  /* Fix the relocation's type.  */
-	  irel->r_info = ELF32_R_INFO (ELF32_R_SYM (irel->r_info),
+	  irel->r_info = ELFNN_R_INFO (ELFNN_R_SYM (irel->r_info),
 				       R_ARC_S13_PCREL);
 
 	  /* Write back bl_s instruction.  */
@@ -3363,7 +3363,7 @@ arc_elf_relax_section (bfd *abfd, asection *sec,
 	  *again = TRUE;
 	}
 
-      if (ELF32_R_TYPE (irel->r_info) == (int) R_ARC_ALIGN
+      if (ELFNN_R_TYPE (irel->r_info) == (int) R_ARC_ALIGN
 	  && link_info->relax_pass == 1)
 	{
 	  bfd_vma aligned_addr;
@@ -3389,7 +3389,7 @@ arc_elf_relax_section (bfd *abfd, asection *sec,
 	  symtab_hdr->contents = (unsigned char *) isymbuf;
 
 	  /* Delete the relocation's type.  */
-	  irel->r_info = ELF32_R_INFO (ELF32_R_SYM (irel->r_info),
+	  irel->r_info = ELFNN_R_INFO (ELFNN_R_SYM (irel->r_info),
 				       R_ARC_NONE);
 
 	  /* Add an NOP_S if needed.  */
