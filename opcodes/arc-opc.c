@@ -53,6 +53,16 @@ insert_rb (unsigned long long  insn,
   return insn | ((value & 0x07) << 24) | (((value >> 3) & 0x07) << 12);
 }
 
+/* Insert RB register into a push(d)l/pop(d)l instruction.  */
+
+static unsigned long long
+insert_rbb (unsigned long long  insn,
+	    long long           value,
+	    const char **       errmsg ATTRIBUTE_UNUSED)
+{
+  return insn | ((value & 0x07) << 7) | (((value >> 3) & 0x07) << 1);
+}
+
 /* Insert RB register with checks.  */
 
 static unsigned long long
@@ -71,6 +81,19 @@ extract_rb (unsigned long long  insn,
 	    bfd_boolean *       invalid)
 {
   int value = (((insn >> 12) & 0x07) << 3) | ((insn >> 24) & 0x07);
+
+  if (value == 0x3e && invalid)
+    *invalid = TRUE; /* A limm operand, it should be extracted in a
+			different way.  */
+
+  return value;
+}
+
+static long long
+extract_rbb (unsigned long long  insn,
+	    bfd_boolean *       invalid)
+{
+  int value = (((insn >> 1) & 0x07) << 3) | ((insn >> 7) & 0x07);
 
   if (value == 0x3e && invalid)
     *invalid = TRUE; /* A limm operand, it should be extracted in a
@@ -1838,8 +1861,10 @@ const struct arc_operand arc_operands[] =
   { 6, 12, 0, ARC_OPERAND_IR, insert_rb, extract_rb },
 #define RB_CHK		(RB + 1)
   { 6, 12, 0, ARC_OPERAND_IR, insert_rb_chk, extract_rb },
-#define RC		(RB_CHK + 1)
-#define RC_CHK		(RB_CHK + 1)
+#define RBB_S		(RB_CHK + 1)
+  { 6, 12, 0, ARC_OPERAND_IR, insert_rbb, extract_rbb },
+#define RC		(RBB_S + 1)
+#define RC_CHK		(RBB_S + 1)
   { 6, 6, 0, ARC_OPERAND_IR, 0, 0 },
 #define RBdup		(RC + 1)
   { 6, 12, 0, ARC_OPERAND_IR | ARC_OPERAND_DUPLICATE, insert_rb, extract_rb },
