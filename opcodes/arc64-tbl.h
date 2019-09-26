@@ -8508,6 +8508,9 @@
 /* movl_s h,u8 11011bbbuuuuuuuu.  */
 { "movl_s", 0x0000D800, 0x0000F800, ARC_OPCODE_ARC64, ARITH, NONE, { RH_S, UIMM8_8_S }, { 0 }},
 
+/* movl_s g,limm 01000ggg110GG111.  */
+{ "movl_s", 0x000040C7, 0x0000F8E7, ARC_OPCODE_ARC64, MOVE, NONE, { G_S, LIMM_S }, { 0 }},
+
 /* mov_s.NE b,h 01110bbbhhh111HH.  */
 { "mov_s", 0x0000701C, 0x0000F81C, ARC_OPCODE_ARCv2HS | ARC_OPCODE_ARC64, MOVE, NONE, { RB_S, RH_S }, { C_NE, C_CC_NE}},
 
