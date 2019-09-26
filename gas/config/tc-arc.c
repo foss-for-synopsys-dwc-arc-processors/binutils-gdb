@@ -176,6 +176,7 @@ const pseudo_typeS md_pseudo_table[] =
 {
   /* Make sure that .word is 32 bits.  */
   { "word", cons, 4 },
+  { "xword", cons, 8},
 
   { "align",   s_align_bytes, 0 }, /* Defaulting is invalid (0).  */
   { "lcomm",   arc_lcomm, 0 },
