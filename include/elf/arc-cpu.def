@@ -19,7 +19,7 @@
    02110-1301, USA.  */
 
 
-ARC_CPU_TYPE_A64x (arc64, 0x00),
+ARC_CPU_TYPE_A64x (arc64, CD),
 
 ARC_CPU_TYPE_A7xx (arc700, 0x00),
 ARC_CPU_TYPE_A7xx (nps400, NPS400),
