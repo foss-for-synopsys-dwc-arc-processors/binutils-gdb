@@ -1895,16 +1895,16 @@ find_opcode_match (const struct arc_opcode_hash_entry *entry,
               break;
 
 	    case (ARC_OPERAND_LIMM | ARC_OPERAND_SIGNED):
-	      {
 		/* Signed extended 32 bit, only available for ARC64.  */
-		if (tok[tokidx].X_op != O_constant)
-		  goto match_failed;
-		offsetT val = tok[tokidx].X_add_number;
-		const offsetT min = -(1LL << 31);
-		if (val >= 0LL || val < min)
-		  goto match_failed;
-	      }
-	      break;
+		if (tok[tokidx].X_op == O_constant)
+		  {
+		    offsetT val = tok[tokidx].X_add_number;
+		    const offsetT min = -(1LL << 31);
+		    if (val >= 0LL || val < min)
+		      goto match_failed;
+		    break;
+		  }
+		/* FALLTHRU */
 
 	    case ARC_OPERAND_LIMM:
 	    case ARC_OPERAND_SIGNED:
