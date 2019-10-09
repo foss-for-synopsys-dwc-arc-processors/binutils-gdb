@@ -3430,6 +3430,15 @@ pc-relative or some form of GOT-indirect relocation.  */
   BFD_RELOC_ARC_SUB8,
   BFD_RELOC_ARC_SUB16,
   BFD_RELOC_ARC_SUB32,
+  BFD_RELOC_ARC_LO32,
+  BFD_RELOC_ARC_HI32,
+  BFD_RELOC_ARC_LO32_ME,
+  BFD_RELOC_ARC_HI32_ME,
+  BFD_RELOC_ARC_N64,
+  BFD_RELOC_ARC_SDA_LDST3,
+  BFD_RELOC_ARC_NLO32,
+  BFD_RELOC_ARC_NLO32_ME,
+
 
 /* ADI Blackfin 16 bit immediate absolute reloc.  */
   BFD_RELOC_BFIN_16_IMM,
