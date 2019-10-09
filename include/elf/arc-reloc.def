@@ -519,79 +519,136 @@ ARC_RELOC_HOWTO(ARC_NPS_CMEM16, 78, \
                 dont, \
                 ( ME ( S + A )))
 
-ARC_RELOC_HOWTO(ARC_S9H_PCREL, 80, \
+ARC_RELOC_HOWTO(ARC_S9H_PCREL, 79, \
                 2, \
                 8, \
                 replace_disp8ls, \
                 signed, \
                 ( ME ( ( ( ( S + A ) - P ) >> 1 ) ) ) )
 
-ARC_RELOC_HOWTO(ARC_S7H_PCREL, 81, \
+ARC_RELOC_HOWTO(ARC_S7H_PCREL, 80, \
                 1, \
                 6, \
                 replace_disp6s, \
                 signed, \
                 ( ( ( ( S + A ) - P ) >> 1 ) ) )
 
-ARC_RELOC_HOWTO(ARC_S8H_PCREL, 82, \
+ARC_RELOC_HOWTO(ARC_S8H_PCREL, 81, \
                 1, \
                 7, \
                 replace_disp7s, \
                 signed, \
                 ( ( ( ( S + A ) - P ) >> 1 ) ) )
 
-ARC_RELOC_HOWTO(ARC_S10H_PCREL, 83, \
+ARC_RELOC_HOWTO(ARC_S10H_PCREL, 82, \
                 1, \
                 9, \
                 replace_disp9s, \
                 signed, \
                 ( ( ( ( S + A ) - P ) >> 1 ) ) )
 
-ARC_RELOC_HOWTO(ARC_S13H_PCREL, 84, \
+ARC_RELOC_HOWTO(ARC_S13H_PCREL, 83, \
                 2, \
                 12, \
                 replace_disp12s, \
                 signed, \
                 ( ME ( ( ( ( S + A ) - P ) >> 1 ) ) ) )
 
-ARC_RELOC_HOWTO(ARC_ALIGN, 85, \
+ARC_RELOC_HOWTO(ARC_ALIGN, 84, \
                 2, \
                 0, \
                 replace_none, \
                 dont, \
                 0 )
 
-ARC_RELOC_HOWTO(ARC_ADD8, 86, \
+ARC_RELOC_HOWTO(ARC_ADD8, 85, \
                 0, \
                 8, \
                 replace_bits8, \
                 dont, \
                 ( S + A ))
 
-ARC_RELOC_HOWTO(ARC_ADD16, 87, \
+ARC_RELOC_HOWTO(ARC_ADD16, 86, \
                 1, \
                 16, \
                 replace_bits16, \
                 dont, \
                 ( S + A ))
 
-ARC_RELOC_HOWTO(ARC_SUB8, 88, \
+ARC_RELOC_HOWTO(ARC_SUB8, 87, \
                 0, \
                 8, \
                 replace_bits8, \
                 dont, \
                 ( A - S + ICARRY ))
 
-ARC_RELOC_HOWTO(ARC_SUB16, 89, \
+ARC_RELOC_HOWTO(ARC_SUB16, 88, \
                 1, \
                 16, \
                 replace_bits16, \
                 dont, \
                 ( A - S + ICARRY ))
 
-ARC_RELOC_HOWTO(ARC_SUB32, 90, \
+ARC_RELOC_HOWTO(ARC_SUB32, 89, \
                 2, \
                 32, \
                 replace_word32, \
                 dont, \
                 ( A - S + ICARRY))
+
+ARC_RELOC_HOWTO(ARC_LO32, 90, \
+                2, \
+                32, \
+                replace_word32, \
+                dont, \
+                ( ( S + A ) & 4294967295 ))
+
+ARC_RELOC_HOWTO(ARC_HI32, 91, \
+                2, \
+                32, \
+                replace_word32, \
+                dont, \
+                ( ( S + A ) >> 32 ))
+
+ARC_RELOC_HOWTO(ARC_LO32_ME, 92, \
+                2, \
+                32, \
+                replace_word32, \
+                dont, \
+                ( ME ( ( ( S + A ) & 4294967295 ) ) ))
+
+ARC_RELOC_HOWTO(ARC_HI32_ME, 93, \
+                2, \
+                32, \
+                replace_word32, \
+                dont, \
+                ( ME ( ( ( S + A ) >> 32 ) ) ))
+
+ARC_RELOC_HOWTO(ARC_N64, 94, \
+                2, \
+                32, \
+                replace_word32, \
+                dont, \
+                ( DEREFP - ( S + A ) ))
+
+ARC_RELOC_HOWTO(ARC_SDA_LDST3, 95, \
+                2, \
+                9, \
+                replace_disp9ls, \
+                signed, \
+                ( ( ( S + A ) - _SDA_BASE_ ) >> 3 ))
+
+ARC_RELOC_HOWTO(ARC_NLO32, 96, \
+                2, \
+                32, \
+                replace_word32, \
+                dont, \
+                ( DEREFP - ( ( S + A ) & 4294967295 ) ))
+
+ARC_RELOC_HOWTO(ARC_NLO32_ME, 97, \
+                2, \
+                32, \
+                replace_word32, \
+                dont, \
+                ( ME ( ( DEREFP - ( ( S + A ) & 4294967295 ) ) ) ))
+
