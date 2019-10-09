@@ -1257,6 +1257,7 @@ arc_special_overflow_checks (const struct arc_relocation_data reloc_data,
 #define TLS_TBSS (align_power(TCB_SIZE,					\
 			      reloc_data.sym_section->alignment_power))
 #define ICARRY insn
+#define DEREFP (insn)
 
 #define none (0)
 
