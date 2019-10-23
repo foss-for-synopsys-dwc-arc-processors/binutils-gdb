@@ -248,7 +248,7 @@ arc_store_v2_regset (struct regcache *regcache, const void *buf)
    linux-arm-low.c.  */
 
 ps_err_e
-ps_get_thread_area (const struct ps_prochandle *ph, lwpid_t lwpid,
+ps_get_thread_area (struct ps_prochandle *ph, lwpid_t lwpid,
 		    int idx, void **base)
 {
   if (ptrace (PTRACE_GET_THREAD_AREA, lwpid, NULL, base) != 0)
