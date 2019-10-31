@@ -1933,9 +1933,13 @@ const struct arc_operand arc_operands[] =
 #define LIMM		(ILINK2 + 1)
 #define LIMM_S		(ILINK2 + 1)
   { 32, 0, BFD_RELOC_ARC_32_ME, ARC_OPERAND_LIMM, insert_limm, 0 },
-#define XIMM_S		(LIMM + 1)
-#define XIMM		(LIMM + 1)
-  { 32, 0, BFD_RELOC_ARC_32_ME, ARC_OPERAND_LIMM | ARC_OPERAND_SIGNED,
+#define LO32		(LIMM + 1)
+  { 32, 0, BFD_RELOC_ARC_LO32_ME, ARC_OPERAND_LIMM, insert_limm, 0 },
+#define HI32		(LO32 + 1)
+  { 32, 0, BFD_RELOC_ARC_HI32_ME, ARC_OPERAND_LIMM, insert_limm, 0 },
+#define XIMM_S		(HI32 + 1)
+#define XIMM		(HI32 + 1)
+  { 32, 0, BFD_RELOC_ARC_LO32_ME, ARC_OPERAND_LIMM | ARC_OPERAND_SIGNED,
     insert_limm, 0 },
 #define LIMMdup		(XIMM + 1)
   { 32, 0, 0, ARC_OPERAND_LIMM | ARC_OPERAND_DUPLICATE, insert_limm, 0 },
