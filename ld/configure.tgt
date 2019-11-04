@@ -108,7 +108,7 @@ arc-*-elf* | arc[be]*-*-elf*)	targ_emul=arcelf
 			targ_extra_emuls=elf64arc
 			targ_extra_emuls="${targ_extra_emuls} arclinux arclinux_nps arcv2elf arcv2elfx"
 			;;
-arc64-*-elf*)		targ_emul=elf64arc
+arc64-*elf*)		targ_emul=elf64arc
 			targ_extra_emuls=arcelf
 			targ_extra_emuls="${targ_extra_emuls} arclinux arclinux_nps arcv2elf arcv2elfx"
 			;;
