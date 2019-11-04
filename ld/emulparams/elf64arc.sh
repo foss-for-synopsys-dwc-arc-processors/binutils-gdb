@@ -1,5 +1,6 @@
 SCRIPT_NAME=elf
 ELFSIZE=64
+SCRIPT_NAME=elfarc
 TEMPLATE_NAME=elf
 OUTPUT_FORMAT="elf64-littlearc"
 
