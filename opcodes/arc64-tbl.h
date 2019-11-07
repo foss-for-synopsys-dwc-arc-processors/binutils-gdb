@@ -8502,11 +8502,11 @@
 /* movl<.f><.cc> RB,limm 01011bbb11001010FBBB1111100QQQQQ.  */
 { "movl", 0x58CA0F80, 0xF8FF0FE0, ARC_OPCODE_ARC64, ARITH, NONE, { RB, LIMM }, { C_F, C_CC }},
 
-/* movl_s h,g 01000ggghhhGG1HH.  */
-{ "movl_s", 0x00004004, 0x0000F804, ARC_OPCODE_ARC64, ARITH, NONE, { RH_S, G_S }, { 0 }},
+/* movl_s g,h 01000ggghhhGG1HH.  */
+{ "movl_s", 0x00004004, 0x0000F804, ARC_OPCODE_ARC64, ARITH, NONE, { G_S, RH_S }, { 0 }},
 
-/* movl_s h,u8 11011bbbuuuuuuuu.  */
-{ "movl_s", 0x0000D800, 0x0000F800, ARC_OPCODE_ARC64, ARITH, NONE, { RH_S, UIMM8_8_S }, { 0 }},
+/* movl_s b,u8 11011bbbuuuuuuuu.  */
+{ "movl_s", 0x0000D800, 0x0000F800, ARC_OPCODE_ARC64, ARITH, NONE, { RB_S, UIMM8_8_S }, { 0 }},
 
 /* movl_s g,limm 01000ggg110GG111.  */
 { "movl_s", 0x000040C7, 0x0000F8E7, ARC_OPCODE_ARC64, MOVE, NONE, { G_S, LIMM_S }, { 0 }},
