@@ -60,7 +60,7 @@ insert_rbb (unsigned long long  insn,
 	    long long           value,
 	    const char **       errmsg ATTRIBUTE_UNUSED)
 {
-  return insn | ((value & 0x07) << 7) | (((value >> 3) & 0x07) << 1);
+  return insn | ((value & 0x07) << 8) | (((value >> 3) & 0x07) << 1);
 }
 
 /* Insert RB register with checks.  */
@@ -93,7 +93,7 @@ static long long
 extract_rbb (unsigned long long  insn,
 	    bfd_boolean *       invalid)
 {
-  int value = (((insn >> 1) & 0x07) << 3) | ((insn >> 7) & 0x07);
+  int value = (((insn >> 1) & 0x07) << 3) | ((insn >> 8) & 0x07);
 
   if (value == 0x3e && invalid)
     *invalid = TRUE; /* A limm operand, it should be extracted in a
