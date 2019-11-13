@@ -1076,8 +1076,8 @@
 /* addl_s SP,SP,u9 11000UU0101uuuuu.  */
 { "addl_s", 0x0000C0A0, 0x0000F9E0, ARC_OPCODE_ARC64, ARITH, NONE, { SP_S, SP_Sdup, UIMM9_A32_11_S }, { 0 }},
 
-/* addl_s b,b,c 01011bbbccc00001.  */
-{ "addl_s", 0x00005801, 0x0000F81F, ARC_OPCODE_ARC64, ARITH, NONE, { RB_S, RB_Sdup, RC_S }, { 0 }},
+/* addl_s b,b,c 01111bbbccc00001.  */
+{ "addl_s", 0x00007801, 0x0000F81F, ARC_OPCODE_ARC64, ARITH, NONE, { RB_S, RB_Sdup, RC_S }, { 0 }},
 
 /* addl_s b,SP,u7 11000bbb100uuuuu.  */
 { "addl_s", 0x0000C080, 0x0000F8E0, ARC_OPCODE_ARC64, ARITH, NONE, { RB_S, SP_S, UIMM7_A32_11_S }, { 0 }},
@@ -1085,11 +1085,11 @@
 /* addl_s R0,GP,s11 1100111sssssssss.  */
 { "addl_s", 0x0000CE00, 0x0000FE00, ARC_OPCODE_ARC64, ARITH, NONE, { R0_S, GP_S, SIMM11_A32_7_S }, { 0 }},
 
-/* addl_s h,h,ximm 01110001hhh110HH.  */
-{ "addl_s", 0x00007118, 0x0000FF1C, ARC_OPCODE_ARC64, ARITH, NONE, { RH_S, RH_Sdup, XIMM_S }, { 0 }},
+/* addl_s h,h,LO32 01110001hhh110HH.  */
+{ "addl_s", 0x00007118, 0x0000FF1C, ARC_OPCODE_ARC64, ARITH, NONE, { RH_S, RH_Sdup, LO32 }, { 0 }},
 
-/* addl_s h,PCL,ximm 01110011hhh110HH.  */
-{ "addl_s", 0x00007318, 0x0000FF1C, ARC_OPCODE_ARC64, ARITH, NONE, { RH_S, PCL_S, XIMM_S }, { 0 }},
+/* addl_s h,PCL,LO32 01110011hhh110HH.  */
+{ "addl_s", 0x00007318, 0x0000FF1C, ARC_OPCODE_ARC64, ARITH, NONE, { RH_S, PCL_S, LO32 }, { 0 }},
 
 /* adds<.f> a,b,c 00101bbb00000110FBBBCCCCCCAAAAAA.  */
 { "adds", 0x28060000, 0xF8FF0000, ARC_OPCODE_ARCv2HS | ARC_OPCODE_ARC64, ARITH, NONE, { RA, RB, RC }, { C_F }},
@@ -1430,8 +1430,8 @@
 /* andl<.f><.cc> 0,limm,limm 0101111011000100F1111111100QQQQQ.  */
 { "andl", 0x5EC47F80, 0xFFFF7FE0, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, LIMM, LIMMdup }, { C_F, C_CC }},
 
-/* andl_s b,b,c 01011bbbccc01000.  */
-{ "andl_s", 0x00005808, 0x0000F81F, ARC_OPCODE_ARC64, ARITH, NONE, { RB_S, RB_Sdup, RC_S }, { 0 }},
+/* andl_s b,b,c 01111bbbccc01000.  */
+{ "andl_s", 0x00007808, 0x0000F81F, ARC_OPCODE_ARC64, ARITH, NONE, { RB_S, RB_Sdup, RC_S }, { 0 }},
 
 /* and_s b,b,c 01111bbbccc00100.  */
 { "and_s", 0x00007804, 0x0000F81F, ARC_OPCODE_ARCv2HS | ARC_OPCODE_ARC64, LOGICAL, NONE, { RB_S, RB_Sdup, RC_S }, { 0 }},
@@ -10851,8 +10851,8 @@
 /* orl<.f><.cc> 0,limm,limm 0101111011000101F1111111100QQQQQ.  */
 { "orl", 0x5EC57F80, 0xFFFF7FE0, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, LIMM, LIMMdup }, { C_F, C_CC }},
 
-/* orl_s b,b,c 01011bbbccc10111.  */
-{ "orl_s", 0x00005817, 0x0000F81F, ARC_OPCODE_ARC64, ARITH, NONE, { RB_S, RB_Sdup, RC_S }, { 0 }},
+/* orl_s b,b,c 01111bbbccc10111.  */
+{ "orl_s", 0x00007817, 0x0000F81F, ARC_OPCODE_ARC64, ARITH, NONE, { RB_S, RB_Sdup, RC_S }, { 0 }},
 
 /* orl_s h,h,ximm 01110000hhh110HH.  */
 { "orl_s", 0x00007018, 0x0000FF1C, ARC_OPCODE_ARC64, ARITH, NONE, { RH_S, RH_Sdup, LO32 }, { 0 }},
@@ -14694,8 +14694,8 @@
 /* subl_s SP,SP,u9 11000UU1101uuuuu.  */
 { "subl_s", 0x0000C1A0, 0x0000F9E0, ARC_OPCODE_ARC64, ARITH, NONE, { SP_S, SP_Sdup, UIMM9_A32_11_S }, { 0 }},
 
-/* subl_s b,b,c 01011bbbccc00011.  */
-{ "subl_s", 0x00005803, 0x0000F81F, ARC_OPCODE_ARC64, ARITH, NONE, { RB_S, RB_Sdup, RC_S }, { 0 }},
+/* subl_s b,b,c 01111bbbccc00011.  */
+{ "subl_s", 0x00007803, 0x0000F81F, ARC_OPCODE_ARC64, ARITH, NONE, { RB_S, RB_Sdup, RC_S }, { 0 }},
 
 /* subs<.f> a,b,c 00101bbb00000111FBBBCCCCCCAAAAAA.  */
 { "subs", 0x28070000, 0xF8FF0000, ARC_OPCODE_ARCv2HS | ARC_OPCODE_ARC64, ARITH, NONE, { RA, RB, RC }, { C_F }},
