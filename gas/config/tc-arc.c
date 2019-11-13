@@ -1900,7 +1900,9 @@ find_opcode_match (const struct arc_opcode_hash_entry *entry,
 		  {
 		    offsetT val = tok[tokidx].X_add_number;
 		    const offsetT min = -(1LL << 31);
-		    if (val >= 0LL || val < min)
+		    const offsetT max = (1LL << 31) - 1;
+
+		    if (val > max || val < min)
 		      goto match_failed;
 		    break;
 		  }
@@ -2656,12 +2658,19 @@ md_begin (void)
   arc_reg_hash = str_htab_create ();
 
   declare_register_set ();
-  declare_register ("gp", 26);
+  if (selected_cpu.mach == bfd_mach_arcv3_64)
+    declare_register ("gp", 30);
+  else
+    declare_register ("gp", 26);
   declare_register ("fp", 27);
   declare_register ("sp", 28);
   declare_register ("ilink", 29);
-  declare_register ("ilink1", 29);
-  declare_register ("ilink2", 30);
+  if (selected_cpu.mach == bfd_mach_arc_arc600
+      || selected_cpu.mach == bfd_mach_arc_arc700)
+    {
+      declare_register ("ilink1", 29);
+      declare_register ("ilink2", 30);
+    }
   declare_register ("blink", 31);
 
   /* XY memory registers.  */
