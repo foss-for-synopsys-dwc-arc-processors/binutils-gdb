@@ -299,7 +299,8 @@ insert_gp (unsigned long long  insn,
 	   long long           value,
 	   const char **       errmsg)
 {
-  if (value != 26)
+  if (value != 26
+      && value != 30)
     *errmsg = _("register must be GP");
   return insn;
 }
