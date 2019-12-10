@@ -32,7 +32,8 @@ switch -glob -- [istarget] {
     }
     "arc*-*-*" {
 	set architecture "arc:ARCv2"
-	set core-regs {arc-v2.xml}
+	set regdir "arc/"
+	set core-regs {core-v2.xml aux-v2.xml}
     }
     "arm*-*-*" {
 	set regdir "arm/"
