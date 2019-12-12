@@ -96,6 +96,7 @@ static struct cmd_list_element *maintenance_print_arc_list = NULL;
 /* XML target description features.  */
 
 static const char core_v2_feature_name[] = "org.gnu.gdb.arc.core.v2";
+static const char core_v3_feature_name[] = "org.gnu.gdb.arc.core.v3";
 static const char
   core_reduced_v2_feature_name[] = "org.gnu.gdb.arc.core-reduced.v2";
 static const char
@@ -468,7 +469,8 @@ arc_write_pc (struct regcache *regcache, CORE_ADDR new_pc)
 	  debug_printf ("arc: Changing PC while in delay slot.  Will "
 			"reset STATUS32.DE bit to zero.  Value of STATUS32 "
 			"register is 0x%s\n",
-			phex (status32, ARC_REGISTER_SIZE));
+			phex (status32,
+			      gdbarch_tdep (gdbarch)->register_size));
 	}
 
       /* Reset bit and write to the cache.  */
@@ -586,6 +588,7 @@ arc_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
   if (arc_debug)
     debug_printf ("arc: push_dummy_call (nargs = %d)\n", nargs);
 
+  const int register_size = gdbarch_tdep (gdbarch)->register_size;
   int arg_reg = ARC_FIRST_ARG_REGNUM;
 
   /* Push the return address.  */
@@ -654,8 +657,8 @@ arc_push_dummy_call (struct gdbarch *gdbarch, struct value *function,
 	     the byte order, but we are already in the correct byte order.  */
 	  regcache->cooked_write (arg_reg, data);
 
-	  data += ARC_REGISTER_SIZE;
-	  total_space -= ARC_REGISTER_SIZE;
+	  data += register_size;
+	  total_space -= register_size;
 
 	  /* All the data is now in registers.  */
 	  if (total_space == 0)
@@ -763,12 +766,13 @@ static void
 arc_extract_return_value (struct gdbarch *gdbarch, struct type *type,
 			  struct regcache *regcache, gdb_byte *valbuf)
 {
+  const int register_size = gdbarch_tdep (gdbarch)->register_size;
   unsigned int len = TYPE_LENGTH (type);
 
   if (arc_debug)
     debug_printf ("arc: extract_return_value\n");
 
-  if (len <= ARC_REGISTER_SIZE)
+  if (len <= register_size)
     {
       ULONGEST val;
 
@@ -778,9 +782,9 @@ arc_extract_return_value (struct gdbarch *gdbarch, struct type *type,
 			      gdbarch_byte_order (gdbarch), val);
 
       if (arc_debug)
-	debug_printf ("arc: returning 0x%s\n", phex (val, ARC_REGISTER_SIZE));
+	debug_printf ("arc: returning 0x%s\n", phex (val, register_size));
     }
-  else if (len <= ARC_REGISTER_SIZE * 2)
+  else if (len <= register_size * 2)
     {
       ULONGEST low, high;
 
@@ -788,16 +792,16 @@ arc_extract_return_value (struct gdbarch *gdbarch, struct type *type,
       regcache_cooked_read_unsigned (regcache, ARC_R0_REGNUM, &low);
       regcache_cooked_read_unsigned (regcache, ARC_R1_REGNUM, &high);
 
-      store_unsigned_integer (valbuf, ARC_REGISTER_SIZE,
+      store_unsigned_integer (valbuf, register_size,
 			      gdbarch_byte_order (gdbarch), low);
-      store_unsigned_integer (valbuf + ARC_REGISTER_SIZE,
-			      (int) len - ARC_REGISTER_SIZE,
+      store_unsigned_integer (valbuf + register_size,
+			      (int) len - register_size,
 			      gdbarch_byte_order (gdbarch), high);
 
       if (arc_debug)
 	debug_printf ("arc: returning 0x%s%s\n",
-		      phex (high, ARC_REGISTER_SIZE),
-		      phex (low, ARC_REGISTER_SIZE));
+		      phex (high, register_size),
+		      phex (low, register_size));
     }
   else
     error (_("arc: extract_return_value: type length %u too large"), len);
@@ -817,12 +821,13 @@ static void
 arc_store_return_value (struct gdbarch *gdbarch, struct type *type,
 			struct regcache *regcache, const gdb_byte *valbuf)
 {
+  const int register_size = gdbarch_tdep (gdbarch)->register_size;
   unsigned int len = TYPE_LENGTH (type);
 
   if (arc_debug)
     debug_printf ("arc: store_return_value\n");
 
-  if (len <= ARC_REGISTER_SIZE)
+  if (len <= register_size)
     {
       ULONGEST val;
 
@@ -832,17 +837,17 @@ arc_store_return_value (struct gdbarch *gdbarch, struct type *type,
       regcache_cooked_write_unsigned (regcache, ARC_R0_REGNUM, val);
 
       if (arc_debug)
-	debug_printf ("arc: storing 0x%s\n", phex (val, ARC_REGISTER_SIZE));
+	debug_printf ("arc: storing 0x%s\n", phex (val, register_size));
     }
-  else if (len <= ARC_REGISTER_SIZE * 2)
+  else if (len <= register_size * 2)
     {
       ULONGEST low, high;
 
       /* Put the return value into  two registers.  */
-      low = extract_unsigned_integer (valbuf, ARC_REGISTER_SIZE,
+      low = extract_unsigned_integer (valbuf, register_size,
 				      gdbarch_byte_order (gdbarch));
-      high = extract_unsigned_integer (valbuf + ARC_REGISTER_SIZE,
-				       (int) len - ARC_REGISTER_SIZE,
+      high = extract_unsigned_integer (valbuf + register_size,
+				       (int) len - register_size,
 				       gdbarch_byte_order (gdbarch));
 
       regcache_cooked_write_unsigned (regcache, ARC_R0_REGNUM, low);
@@ -850,8 +855,8 @@ arc_store_return_value (struct gdbarch *gdbarch, struct type *type,
 
       if (arc_debug)
 	debug_printf ("arc: storing 0x%s%s\n",
-		      phex (high, ARC_REGISTER_SIZE),
-		      phex (low, ARC_REGISTER_SIZE));
+		      phex (high, register_size),
+		      phex (low, register_size));
     }
   else
     error (_("arc_store_return_value: type length too large."));
@@ -867,14 +872,15 @@ arc_get_longjmp_target (struct frame_info *frame, CORE_ADDR *pc)
 
   struct gdbarch *gdbarch = get_frame_arch (frame);
   struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
-  int pc_offset = tdep->jb_pc * ARC_REGISTER_SIZE;
-  gdb_byte buf[ARC_REGISTER_SIZE];
+  const int register_size = tdep->register_size;
+  int pc_offset = tdep->jb_pc * register_size;
+  gdb_byte buf[register_size];
   CORE_ADDR jb_addr = get_frame_register_unsigned (frame, ARC_FIRST_ARG_REGNUM);
 
-  if (target_read_memory (jb_addr + pc_offset, buf, ARC_REGISTER_SIZE))
+  if (target_read_memory (jb_addr + pc_offset, buf, register_size))
     return 0; /* Failed to read from memory.  */
 
-  *pc = extract_unsigned_integer (buf, ARC_REGISTER_SIZE,
+  *pc = extract_unsigned_integer (buf, register_size,
 				  gdbarch_byte_order (gdbarch));
   return 1;
 }
@@ -886,6 +892,7 @@ arc_return_value (struct gdbarch *gdbarch, struct value *function,
 		  struct type *valtype, struct regcache *regcache,
 		  gdb_byte *readbuf, const gdb_byte *writebuf)
 {
+  const int register_size = gdbarch_tdep (gdbarch)->register_size;
   /* If the return type is a struct, or a union, or would occupy more than two
      registers, the ABI uses the "struct return convention": the calling
      function passes a hidden first parameter to the callee (in R0).  That
@@ -893,7 +900,7 @@ arc_return_value (struct gdbarch *gdbarch, struct value *function,
      stored.  Otherwise, the result is returned in registers.  */
   int is_struct_return = (TYPE_CODE (valtype) == TYPE_CODE_STRUCT
 			  || TYPE_CODE (valtype) == TYPE_CODE_UNION
-			  || TYPE_LENGTH (valtype) > 2 * ARC_REGISTER_SIZE);
+			  || TYPE_LENGTH (valtype) > 2 * register_size);
 
   if (arc_debug)
     debug_printf ("arc: return_value (readbuf = %s, writebuf = %s)\n",
@@ -951,6 +958,7 @@ static bool
 arc_is_in_prologue (struct gdbarch *gdbarch, const struct arc_instruction &insn,
 		    pv_t *regs, struct pv_area *stack)
 {
+  const int register_size = gdbarch_tdep (gdbarch)->register_size;
   /* It might be that currently analyzed address doesn't contain an
      instruction, hence INSN is not valid.  It likely means that address points
      to a data, non-initialized memory, or middle of a 32-bit instruction.  In
@@ -1017,7 +1025,7 @@ arc_is_in_prologue (struct gdbarch *gdbarch, const struct arc_instruction &insn,
 	  else if (insn.data_size_mode == ARC_SCALING_H)
 	    size = 2;
 	  else
-	    size = ARC_REGISTER_SIZE;
+	    size = register_size;
 
 	  stack->store (addr, size, store_value);
 	}
@@ -1028,15 +1036,15 @@ arc_is_in_prologue (struct gdbarch *gdbarch, const struct arc_instruction &insn,
 	      /* If this is a double store, than write N+1 register as well.  */
 	      pv_t store_value1 = regs[insn.operands[0].value];
 	      pv_t store_value2 = regs[insn.operands[0].value + 1];
-	      stack->store (addr, ARC_REGISTER_SIZE, store_value1);
-	      stack->store (pv_add_constant (addr, ARC_REGISTER_SIZE),
-			    ARC_REGISTER_SIZE, store_value2);
+	      stack->store (addr, register_size, store_value1);
+	      stack->store (pv_add_constant (addr, register_size),
+			    register_size, store_value2);
 	    }
 	  else
 	    {
 	      pv_t store_value
 		= pv_constant (arc_insn_get_operand_value (insn, 0));
-	      stack->store (addr, ARC_REGISTER_SIZE * 2, store_value);
+	      stack->store (addr, register_size * 2, store_value);
 	    }
 	}
 
@@ -1118,7 +1126,7 @@ arc_is_in_prologue (struct gdbarch *gdbarch, const struct arc_instruction &insn,
 
       /* Amount of bytes to be allocated to store specified registers.  */
       CORE_ADDR st_size = ((regs_saved + is_fp_saved + is_blink_saved)
-			   * ARC_REGISTER_SIZE);
+			   * register_size);
       pv_t new_sp = pv_add_constant (regs[ARC_SP_REGNUM], -st_size);
 
       /* Assume that if the last register (closest to new SP) can be written,
@@ -1131,21 +1139,21 @@ arc_is_in_prologue (struct gdbarch *gdbarch, const struct arc_instruction &insn,
 
       if (is_fp_saved)
 	{
-	  addr = pv_add_constant (addr, -ARC_REGISTER_SIZE);
-	  stack->store (addr, ARC_REGISTER_SIZE, regs[ARC_FP_REGNUM]);
+	  addr = pv_add_constant (addr, -register_size);
+	  stack->store (addr, register_size, regs[ARC_FP_REGNUM]);
 	}
 
       /* Registers are stored in backward order: from GP (R26) to R13.  */
       for (int i = ARC_R13_REGNUM + regs_saved - 1; i >= ARC_R13_REGNUM; i--)
 	{
-	  addr = pv_add_constant (addr, -ARC_REGISTER_SIZE);
-	  stack->store (addr, ARC_REGISTER_SIZE, regs[i]);
+	  addr = pv_add_constant (addr, -register_size);
+	  stack->store (addr, register_size, regs[i]);
 	}
 
       if (is_blink_saved)
 	{
-	  addr = pv_add_constant (addr, -ARC_REGISTER_SIZE);
-	  stack->store (addr, ARC_REGISTER_SIZE,
+	  addr = pv_add_constant (addr, -register_size);
+	  stack->store (addr, register_size,
 			regs[ARC_BLINK_REGNUM]);
 	}
 
@@ -1880,6 +1888,7 @@ arc_tdesc_init (struct gdbarch_info info, const struct target_desc **tdesc,
      tag.  */
   /* Cannot use arc_mach_is_arcv2 (), because gdbarch is not created yet.  */
   const int is_arcv2 = (info.bfd_arch_info->mach == bfd_mach_arc_arcv2);
+  const int is_arcv3 = (info.bfd_arch_info->mach == bfd_mach_arcv3_64);
   bool is_reduced_rf;
   const char *const *core_regs;
   const char *core_feature_name;
@@ -1907,6 +1916,7 @@ arc_tdesc_init (struct gdbarch_info info, const struct target_desc **tdesc,
      we ignore that because GCC doesn't support that and at the same time
      ARCompact is considered obsolete, so there is not much reason to support
      that.  */
+  /* TODO: Shahab, simplify this mess */
   const struct tdesc_feature *feature
     = tdesc_find_feature (tdesc_loc, core_v2_feature_name);
   if (feature != NULL)
@@ -1968,9 +1978,27 @@ arc_tdesc_init (struct gdbarch_info info, const struct target_desc **tdesc,
 	    }
 	  else
 	    {
-	      arc_print (_("Error: Couldn't find core register feature in "
-			   "supplied target description."));
-	      return false;
+              feature = tdesc_find_feature (tdesc_loc, core_v3_feature_name);
+              if (feature != NULL)
+		{
+		  if (!is_arcv3)
+		    {
+		      arc_print (_("Error: ARCompact target description supplied "
+				   "for non-ARCompact target.\n"));
+		      return false;
+		    }
+		  is_reduced_rf = false;
+      		  core_feature_name = core_v3_feature_name;
+		  /* at the moment, core_v2_register_names is enough for
+		     core_v3  */
+      		  core_regs = core_v2_register_names;
+		}
+	      else
+		{
+		  arc_print (_("Error: Couldn't find core register feature in "
+			       "supplied target description."));
+		  return false;
+		}
 	    }
 	}
     }
@@ -2117,6 +2145,10 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
      GDB target-independent information structure.  */
   struct gdbarch_tdep *tdep = XCNEW (struct gdbarch_tdep);
   tdep->jb_pc = -1; /* No longjmp support by default.  */
+  /* determining the operation mode in bits and register size */
+  tdep->number_of_bits =
+    (info.bfd_arch_info->mach == bfd_mach_arcv3_64) ? 64 : 32;
+  tdep->register_size = tdep->number_of_bits >> 3;
 
   if (!arc_tdesc_init (info, &tdesc, &tdesc_data, tdep))
     {
@@ -2129,15 +2161,15 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   /* Data types.  */
   set_gdbarch_short_bit (gdbarch, 16);
   set_gdbarch_int_bit (gdbarch, 32);
-  set_gdbarch_long_bit (gdbarch, 32);
+  set_gdbarch_long_bit (gdbarch, tdep->number_of_bits);
   set_gdbarch_long_long_bit (gdbarch, 64);
   set_gdbarch_type_align (gdbarch, arc_type_align);
   set_gdbarch_float_bit (gdbarch, 32);
   set_gdbarch_float_format (gdbarch, floatformats_ieee_single);
   set_gdbarch_double_bit (gdbarch, 64);
   set_gdbarch_double_format (gdbarch, floatformats_ieee_double);
-  set_gdbarch_ptr_bit (gdbarch, 32);
-  set_gdbarch_addr_bit (gdbarch, 32);
+  set_gdbarch_ptr_bit (gdbarch, tdep->number_of_bits);
+  set_gdbarch_addr_bit (gdbarch, tdep->number_of_bits);
   set_gdbarch_char_signed (gdbarch, 0);
 
   set_gdbarch_write_pc (gdbarch, arc_write_pc);
@@ -2292,7 +2324,7 @@ arc_dump_tdep (struct gdbarch *gdbarch, struct ui_file *file)
 {
   struct gdbarch_tdep *tdep = gdbarch_tdep (gdbarch);
 
-  fprintf_unfiltered (file, "arc_dump_tdep: jb_pc = %i\n", tdep->jb_pc);
+  fprintf_unfiltered (file, "arc_dump_tdep: jb_pc = %li\n", tdep->jb_pc);
 
   fprintf_unfiltered (file, "arc_dump_tdep: is_sigtramp = <%s>\n",
 		      host_address_to_string (tdep->is_sigtramp));

@@ -94,11 +94,6 @@ enum arc_regnum
     ARC_LAST_CALLEE_SAVED_REGNUM = ARC_R25_REGNUM,
   };
 
-/* Number of bytes in ARC register.  All ARC registers are considered 32-bit.
-   Those registers, which are actually shorter has zero-on-read for extra bits.
-   Longer registers are represented as pairs of 32-bit registers.  */
-#define ARC_REGISTER_SIZE  4
-
 /* STATUS32 register: hardware loops disabled bit.  */
 #define ARC_STATUS32_L_MASK (1 << 12)
 /* STATUS32 register: current instruction is a delay slot.  */
@@ -117,7 +112,7 @@ struct gdbarch_tdep
 {
   /* Offset to PC value in jump buffer.  If this is negative, longjmp
      support will be disabled.  */
-  int jb_pc;
+  CORE_ADDR jb_pc;
 
   /* Whether target has hardware (aka zero-delay) loops.  */
   bool has_hw_loops;
@@ -129,11 +124,22 @@ struct gdbarch_tdep
   CORE_ADDR (*sigcontext_addr) (struct frame_info *);
 
   /* Offset of registers in `struct sigcontext'.  */
+  /* TODO: Shahab, investigate if you should change the "const int *" to "CORE_ADDR" */
   const int *sc_reg_offset;
 
   /* Number of registers in sc_reg_offsets.  Most likely a ARC_LAST_REGNUM,
      but in theory it could be less, so it is kept separate.  */
   int sc_num_regs;
+
+  /* Architecture's bits: 32 or 64  */
+  size_t number_of_bits;
+
+  /* Number of _bytes_ in ARC register.  All registers, given the
+     "number_of_bits", are considered either 32-bit or 64-bit.
+     The registers which are actually shorter than these sizes, has
+     zero-on-read for extra bits.  Longer registers are represented in
+     pairs.  */
+  int register_size;
 };
 
 /* Utility functions used by other ARC-specific modules.  */
