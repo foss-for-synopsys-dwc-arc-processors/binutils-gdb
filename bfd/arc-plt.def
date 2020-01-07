@@ -1,4 +1,4 @@
-/* Arc V2 Related PLT entries.
+/* Arc V2/V3 Related PLT entries.
    Copyright (C) 2016-2020 Free Software Foundation, Inc.
    Contributed by Cupertino Miranda (cmiranda@synopsys.com).
 
@@ -18,6 +18,32 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 51 Franklin Street - Fifth Floor, Boston,
    MA 02110-1301, USA.  */
+
+
+PLT_TYPE_START (ELF_ARCV3_PIC)
+//  ldl r11, [pcl, 0] .got.plt + 8    -- at .got.plt + 0 should be the address of .dynamic
+//  ldl r10, [pcl, 0] .got.plt + 16
+//  j [r10]
+//  padding 
+
+  PLT_ENTRY (0x2730, 0x7f8b, 0x0000, 0x0000) /* ldl %r11, [pcl,0] : 0 to be replaced by _DYNAMIC@GOTPC+4 */
+  PLT_ENTRY (0x2730, 0x7f8a, 0x0000, 0x0000) /* ldl %r10, [pcl,0] : 0 to be replaced by _DYNAMIC@GOTPC+8 */
+  PLT_ENTRY (0x2020, 0x0280)		    /* j [%r10] */
+  PLT_ENTRY (0x0,0x0,0x0,0x0,0x0,0x0)	    /* padding */
+
+//  ldl r12, [pcl, 0]    -- at .got.plt + 0 should be the address of .dynamic
+  PLT_ELEM (0x2730, 0x7f8c, 0x0000, 0x0000) /* ld %r12, [%pc,func@got] */
+  PLT_ELEM (0x2021, 0x0300)		   /* j.d [%r12] */
+  PLT_ELEM (0x240a, 0x1fc0)		   /* mov %r12, %pcl */
+
+  ENTRY_RELOC (4, 32, 0xFFFFFFFF, SGOT | RELATIVE_INSN_32 | MIDDLE_ENDIAN, 8)
+  ENTRY_RELOC (12, 32, 0xFFFFFFFF, SGOT | RELATIVE_INSN_32 | MIDDLE_ENDIAN, 16)
+  ENTRY_RELOC (20, 32, 0xFFFFFFFF, SGOT, 0)
+
+  ELEM_RELOC (4, 32, 0xFFFFFFFF, SGOT | RELATIVE_INSN_32 | MIDDLE_ENDIAN, 0)
+
+PLT_TYPE_END (ELF_ARCV3_PIC)
+
 
 PLT_TYPE_START (ELF_ARCV2_PIC)
   PLT_ENTRY (0x2730, 0x7f8b, 0x0000, 0x0000) /* ld %r11, [pcl,0] : 0 to be replaced by _DYNAMIC@GOTPC+4 */
