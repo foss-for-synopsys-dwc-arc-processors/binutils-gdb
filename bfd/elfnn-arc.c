@@ -28,9 +28,9 @@
 #include "opcode/arc-func.h"
 #include "opcode/arc.h"
 
-#if (NN == 32)
+#define RELA_SIZE sizeof(ElfNN_External_Rela)
+
 #include "arc-plt.h"
-#endif
 
 #define FEATURE_LIST_NAME bfdNN_feature_list
 #define CONFLICT_LIST bfdNN_conflict_list
@@ -2163,7 +2163,6 @@ elf_arc_check_relocs (bfd *			 abfd,
   return TRUE;
 }
 
-#if (ARCH_SIZE == 32)
 static struct plt_version_t *
 arc_get_plt_version (struct bfd_link_info *info)
 {
@@ -2176,6 +2175,14 @@ arc_get_plt_version (struct bfd_link_info *info)
 		 (int) plt_versions[i].elem_size);
     }
 
+  if (bfd_get_mach (info->output_bfd) == bfd_mach_arcv3_64
+      || bfd_get_mach(info->output_bfd) == bfd_mach_arcv3_32)
+    {
+      return &(plt_versions[ELF_ARCV3_PIC]);
+//      if (bfd_link_pic (info))
+//      else
+//	return &(plt_versions[ELF_ARCV2_ABS]);
+    }
   if (bfd_get_mach (info->output_bfd) == bfd_mach_arc_arcv2)
     {
       if (bfd_link_pic (info))
@@ -2190,6 +2197,8 @@ arc_get_plt_version (struct bfd_link_info *info)
       else
 	return &(plt_versions[ELF_ARC_ABS]);
     }
+  BFD_ASSERT(0);
+  return NULL;
 }
 
 static bfd_vma
@@ -2283,7 +2292,7 @@ relocate_plt_for_symbol (bfd *output_bfd,
 
   bfd_vma plt_index = (h->plt.offset  - plt_data->entry_size)
     / plt_data->elem_size;
-  bfd_vma got_offset = (plt_index + 3) * 4;
+  bfd_vma got_offset = (plt_index + 3) * GOT_ENTRY_SIZE;
   bed = get_elf_backend_data (output_bfd);
 
   ARC_DEBUG ("arc_info: PLT_OFFSET = %#lx, PLT_ENTRY_VMA = %#lx, \
@@ -2361,7 +2370,6 @@ relocate_plt_for_entry (bfd *abfd,
   }
   PLT_DO_RELOCS_FOR_ENTRY (abfd, htab, plt_data->entry_relocs);
 }
-#endif
 
 /* Desc : Adjust a symbol defined by a dynamic object and referenced
    by a regular object.  The current definition is in some section of
@@ -2400,8 +2408,6 @@ elf_arc_adjust_dynamic_symbol (struct bfd_link_info *info,
       if (bfd_link_pic (info)
 	  || WILL_CALL_FINISH_DYNAMIC_SYMBOL (1, 0, h))
 	{
-#if (ARCH_SIZE == 32)
-
 	  bfd_vma loc = add_symbol_to_plt (info);
 
 	  if (bfd_link_executable (info) && !h->def_regular)
@@ -2410,7 +2416,6 @@ elf_arc_adjust_dynamic_symbol (struct bfd_link_info *info,
 	      h->root.u.def.value = loc;
 	    }
 	  h->plt.offset = loc;
-#endif
 	}
       else
 	{
@@ -2508,9 +2513,7 @@ elf_arc_finish_dynamic_symbol (bfd * output_bfd,
 
   if (h->plt.offset != (bfd_vma) -1)
     {
-#if (ARCH_SIZE == 32)
       relocate_plt_for_symbol (output_bfd, info, h);
-#endif
 
       if (!h->def_regular)
 	{
@@ -2715,9 +2718,7 @@ elf_arc_finish_dynamic_sections (bfd * output_bfd,
 
       if (htab->splt->size > 0)
 	{
-#if (ARCH_SIZE == 32)
 	  relocate_plt_for_entry (output_bfd, info);
-#endif
 	}
 
       /* TODO: Validate this.  */
@@ -2738,15 +2739,17 @@ elf_arc_finish_dynamic_sections (bfd * output_bfd,
 	{
 	  asection *sec = h->root.u.def.section;
 
-	  if (sdyn == NULL)
-	    bfd_put_32 (output_bfd, (bfd_vma) 0,
+	  if (sdyn == NULL) {
+	    write_in_got(output_bfd, (bfd_vma) 0,
 			sec->contents);
-	  else
-	    bfd_put_32 (output_bfd,
-			sdyn->output_section->vma + sdyn->output_offset,
-			sec->contents);
-	  bfd_put_32 (output_bfd, (bfd_vma) 0, sec->contents + 4);
-	  bfd_put_32 (output_bfd, (bfd_vma) 0, sec->contents + 8);
+	  }
+	  else {
+	    write_in_got(output_bfd,
+			 sdyn->output_section->vma + sdyn->output_offset,
+			 sec->contents);
+	  }
+	  write_in_got(output_bfd, (bfd_vma) 0, sec->contents + (GOT_ENTRY_SIZE));
+	  write_in_got(output_bfd, (bfd_vma) 0, sec->contents + (GOT_ENTRY_SIZE * 2));
 	}
     }
 

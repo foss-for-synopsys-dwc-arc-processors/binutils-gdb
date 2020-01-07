@@ -24,6 +24,16 @@
 
 #define TCB_SIZE (8)
 
+#if ARCH_SIZE == 32
+#define GOT_ENTRY_SIZE 4
+#define write_in_got(A, B, C) bfd_put_32 (A, B, C)
+#else
+#define GOT_ENTRY_SIZE 8
+#define write_in_got(A, B, C) \
+  bfd_put_32 (A, ((B) & 0xffffffff), C); \
+  bfd_put_32 (A, (((B) >> 32) & 0xffffffff), (C)+4);
+#endif
+
 #define	align_power(addr, align)	\
   (((addr) + ((bfd_vma) 1 << (align)) - 1) & (-((bfd_vma) 1 << (align))))
 
@@ -201,7 +211,7 @@ arc_got_entry_type_for_reloc (reloc_howto_type *howto)
   {									\
     if (COND_FOR_RELOC)							\
       {									\
-	htab->srel##SECNAME->size += sizeof (Elf32_External_Rela);	\
+	htab->srel##SECNAME->size += RELA_SIZE;				\
 	  ARC_DEBUG ("arc_info: Added reloc space in "			\
 		     #SECNAME " section at " __FILE__			\
 		     ":%d for symbol %s\n",				\
