@@ -1169,9 +1169,6 @@
 /* add_s R1,b,u6 01001bbb1UUU1uuu.  */
 { "add_s", 0x00004888, 0x0000F888, ARC_OPCODE_ARCv2HS | ARC_OPCODE_ARC64, ARITH, CD2, { R1_S, RB_S, UIMM6_13_S }, { 0 }},
 
-/* add_s b,b,u7 11100bbb0uuuuuuu.  */
-{ "add_s", 0x0000E000, 0x0000F880, ARC_OPCODE_ARCv2HS | ARC_OPCODE_ARC64, ARITH, NONE, { RB_S, RB_Sdup, UIMM7_9_S }, { 0 }},
-
 /* add_s b,b,limm 01110bbb11000011.  */
 { "add_s", 0x000070C3, 0x0000F8FF, ARC_OPCODE_ARCv2HS | ARC_OPCODE_ARC64, ARITH, NONE, { RB_S, RB_Sdup, LIMM_S }, { 0 }},
 
@@ -4147,9 +4144,6 @@
 
 /* cmp_s h,s3 01110ssshhh101HH.  */
 { "cmp_s", 0x00007014, 0x0000F81C, ARC_OPCODE_ARCv2HS | ARC_OPCODE_ARC64, ARITH, NONE, { RH_S, SIMM3_5_S }, { 0 }},
-
-/* cmp_s b,u7 11100bbb1uuuuuuu.  */
-{ "cmp_s", 0x0000E080, 0x0000F880, ARC_OPCODE_ARCv2HS | ARC_OPCODE_ARC64, ARITH, NONE, { RB_S, UIMM7_9_S }, { 0 }},
 
 /* cmp_s b,limm 01110bbb11010011.  */
 { "cmp_s", 0x000070D3, 0x0000F8FF, ARC_OPCODE_ARCv2HS | ARC_OPCODE_ARC64, ARITH, NONE, { RB_S, LIMM_S }, { 0 }},
