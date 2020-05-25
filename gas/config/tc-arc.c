@@ -454,28 +454,29 @@ static struct hash_control *arc_aux_hash;
 /* The hash table of address types.  */
 static struct hash_control *arc_addrtype_hash;
 
-#define ARC_CPU_TYPE_A6xx(NAME,EXTRA)			\
-  { #NAME, ARC_OPCODE_ARC600, bfd_mach_arc_arc600,	\
+#define ARC_CPU_TYPE_A6xx(NAME,EXTRA)				\
+  { #NAME, "arc", ARC_OPCODE_ARC600, bfd_mach_arc_arc600,	\
       E_ARC_MACH_ARC600, EXTRA}
-#define ARC_CPU_TYPE_A7xx(NAME,EXTRA)			\
-  { #NAME, ARC_OPCODE_ARC700,  bfd_mach_arc_arc700,	\
+#define ARC_CPU_TYPE_A7xx(NAME,EXTRA)				\
+  { #NAME, "arc", ARC_OPCODE_ARC700,  bfd_mach_arc_arc700,	\
       E_ARC_MACH_ARC700, EXTRA}
-#define ARC_CPU_TYPE_AV2EM(NAME,EXTRA)			\
-  { #NAME,  ARC_OPCODE_ARCv2EM, bfd_mach_arc_arcv2,	\
+#define ARC_CPU_TYPE_AV2EM(NAME,EXTRA)				\
+  { #NAME, "arc", ARC_OPCODE_ARCv2EM, bfd_mach_arc_arcv2,	\
       EF_ARC_CPU_ARCV2EM, EXTRA}
-#define ARC_CPU_TYPE_AV2HS(NAME,EXTRA)			\
-  { #NAME,  ARC_OPCODE_ARCv2HS, bfd_mach_arc_arcv2,	\
+#define ARC_CPU_TYPE_AV2HS(NAME,EXTRA)				\
+  { #NAME, "arc", ARC_OPCODE_ARCv2HS, bfd_mach_arc_arcv2,	\
       EF_ARC_CPU_ARCV2HS, EXTRA}
-#define ARC_CPU_TYPE_A64x(NAME,EXTRA)			\
-  { #NAME,  ARC_OPCODE_ARC64, bfd_mach_arcv3_64,	\
+#define ARC_CPU_TYPE_A64x(NAME,EXTRA)				\
+  { #NAME, "arc64", ARC_OPCODE_ARC64, bfd_mach_arcv3_64,	\
       EF_ARC_CPU_ARC64, EXTRA}
-#define ARC_CPU_TYPE_NONE				\
-  { 0, 0, 0, 0, 0 }
+#define ARC_CPU_TYPE_NONE			\
+  { 0, 0, 0, 0, 0, 0 }
 
 /* A table of CPU names and opcode sets.  */
 static const struct cpu_type
 {
   const char *name;
+  const char *arch;
   unsigned flags;
   int mach;
   unsigned eflags;
@@ -487,7 +488,7 @@ static const struct cpu_type
 };
 
 /* Information about the cpu/variant we're assembling for.  */
-static struct cpu_type selected_cpu = { 0, 0, 0, E_ARC_OSABI_CURRENT, 0 };
+static struct cpu_type selected_cpu = { 0, 0, 0, 0, E_ARC_OSABI_CURRENT, 0 };
 
 /* TRUE if current assembly code uses RF16 only registers.  */
 static bfd_boolean rf16_only = TRUE;
@@ -859,7 +860,7 @@ static void
 arc_select_cpu (const char *arg, enum mach_selection_type sel)
 {
   int i;
-  static struct cpu_type old_cpu = { 0, 0, 0, E_ARC_OSABI_CURRENT, 0 };
+  static struct cpu_type old_cpu = { 0, 0, 0, 0, E_ARC_OSABI_CURRENT, 0 };
 
   /* We should only set a default if we've not made a selection from some
      other source.  */
@@ -2606,6 +2607,17 @@ declare_addrtype (const char *name, int number)
               name, err);
 }
 
+/* Initialize the default cpu.  */
+
+static void
+init_default_arch (void)
+{
+  if (strcmp (default_arch, "arc64") == 0)
+    arc_select_cpu ("arc64", MACH_SELECTION_FROM_DEFAULT);
+  else
+    arc_select_cpu (TARGET_WITH_CPU, MACH_SELECTION_FROM_DEFAULT);
+}
+
 /* Port-specific assembler initialization.  This function is called
    once, at assembler startup time.  */
 
@@ -2615,7 +2627,7 @@ md_begin (void)
   const struct arc_opcode *opcode = arc_opcodes;
 
   if (mach_selection_mode == MACH_SELECTION_NONE)
-    arc_select_cpu (TARGET_WITH_CPU, MACH_SELECTION_FROM_DEFAULT);
+    init_default_arch ();
 
   /* The endianness can be chosen "at the factory".  */
   target_big_endian = byte_order == BIG_ENDIAN;
@@ -2930,17 +2942,6 @@ insert_operand (unsigned long long insn,
       insn |= ((val & ((1 << operand->bits) - 1)) << operand->shift);
     }
   return insn;
-}
-
-/* Initialize the default cpu.  */
-
-static void
-init_default_arch (void)
-{
-  if (strcmp (default_arch, "arc64") == 0)
-    arc_select_cpu ("arc64", MACH_SELECTION_FROM_DEFAULT);
-  else
-    arc_select_cpu (TARGET_WITH_CPU, MACH_SELECTION_FROM_DEFAULT);
 }
 
 /* Called by TARGET_FORMAT.  */
@@ -3604,6 +3605,9 @@ arc_show_cpu_list (FILE *stream)
     {
       bfd_boolean last = (cpu_types[i + 1].name == NULL);
 
+      if (strcmp (default_arch, cpu_types[i].arch) != 0)
+	continue;
+
       /* If displaying the new cpu name string, and the ', ' (for all
          but the last one) will take us past a target width of 80
          characters, then it's time for a new line.  */
@@ -3618,8 +3622,8 @@ arc_show_cpu_list (FILE *stream)
     }
 }
 
-void
-md_show_usage (FILE *stream)
+static void
+md_show_usage32 (FILE *stream)
 {
   fprintf (stream, _("ARC-specific assembler options:\n"));
 
@@ -3678,6 +3682,26 @@ md_show_usage (FILE *stream)
                      "  -mtelephony\n"
 		     "  -muser-mode-only\n"
                      "  -mxy\n"));
+}
+
+static void
+md_show_usage64 (FILE *stream)
+{
+  fprintf (stream, _("ARC64-specific assembler options:\n"));
+
+  fprintf (stream, "  -mcpu=<cpu name>\t  assemble for CPU <cpu name>,"
+	   "one of:\n");
+  arc_show_cpu_list (stream);
+  fprintf (stream, "\n");
+}
+
+void
+md_show_usage (FILE *stream)
+{
+  if (strcmp (default_arch, "arc64") == 0)
+    md_show_usage64 (stream);
+  else
+    md_show_usage32 (stream);
 }
 
 /* Find the proper relocation for the given opcode.  */
