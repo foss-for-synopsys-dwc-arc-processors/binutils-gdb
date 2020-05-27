@@ -446,6 +446,8 @@ struct arc_pseudo_insn
 
 extern const struct arc_pseudo_insn arc_pseudo_insns[];
 extern const unsigned arc_num_pseudo_insn;
+extern const struct arc_pseudo_insn arc64_pseudo_insns[];
+extern const unsigned arc64_num_pseudo_insn;
 
 /* Structure for AUXILIARY registers.  */
 struct arc_aux_reg

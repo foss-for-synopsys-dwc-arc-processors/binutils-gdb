@@ -2840,6 +2840,20 @@ const struct arc_pseudo_insn arc_pseudo_insns[] =
 const unsigned arc_num_pseudo_insn =
   sizeof (arc_pseudo_insns) / sizeof (*arc_pseudo_insns);
 
+/* ARC64 pseudo instructions.  */
+const struct arc_pseudo_insn arc64_pseudo_insns[] =
+{
+  { "pushl", "stl", ".aw", 5, { { RC, 0, 0, 0 }, { BRAKET, 1, 0, 1 },
+				{ RB, 1, 28, 2 }, { SIMM9_8, 1, -8, 3 },
+				{ BRAKETdup, 1, 0, 4} } },
+  { "popl", "ldl", ".ab", 5, { { RA, 0, 0, 0 }, { BRAKET, 1, 0, 1 },
+			       { RB, 1, 28, 2 }, { SIMM9_8, 1, 8, 3 },
+			       { BRAKETdup, 1, 0, 4} } },
+};
+
+const unsigned arc64_num_pseudo_insn =
+  sizeof (arc64_pseudo_insns) / sizeof (*arc64_pseudo_insns);
+
 const struct arc_aux_reg arc_aux_regs[] =
 {
 #undef DEF
