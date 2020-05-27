@@ -2248,6 +2248,26 @@ find_pseudo_insn (const char *opname,
 	    return pseudo_insn;
 	}
     }
+
+  /* ARC64 pseudo instructions.  */
+  if (strcmp (default_arch, "arc64") != 0)
+    return NULL;
+
+  for (i = 0; i < arc64_num_pseudo_insn; i++)
+    {
+      pseudo_insn = &arc64_pseudo_insns[i];
+      if (strcmp (pseudo_insn->mnemonic_p, opname) == 0)
+	{
+	  op = pseudo_insn->operand;
+	  for (j = 0; j < ntok; ++j)
+	    if (!pseudo_operand_match (&tok[j], &op[j]))
+	      break;
+
+	  /* Found the right instruction.  */
+	  if (j == ntok)
+	    return pseudo_insn;
+	}
+    }
   return NULL;
 }
 
