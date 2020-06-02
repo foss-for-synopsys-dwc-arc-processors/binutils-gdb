@@ -29,9 +29,7 @@
 #define write_in_got(A, B, C) bfd_put_32 (A, B, C)
 #else
 #define GOT_ENTRY_SIZE 8
-#define write_in_got(A, B, C) \
-  bfd_put_32 (A, ((B) & 0xffffffff), C); \
-  bfd_put_32 (A, (((B) >> 32) & 0xffffffff), (C)+4);
+#define write_in_got(A, B, C) bfd_put_64 (A, B, C)
 #endif
 
 #define	align_power(addr, align)	\
@@ -221,7 +219,7 @@ arc_got_entry_type_for_reloc (reloc_howto_type *howto)
       if (H->dynindx == -1 && !H->forced_local)				\
 	if (! bfd_elf_link_record_dynamic_symbol (info, H))		\
 	  return FALSE;							\
-     htab->s##SECNAME->size += 4;					\
+     htab->s##SECNAME->size += GOT_ENTRY_SIZE;				\
    }									\
 
 static bfd_boolean
@@ -391,7 +389,7 @@ relocate_fix_got_relocs_for_got_info (struct got_entry **	   list_p,
 			   (entry->type == GOT_TLS_GD ? "GOT_TLS_GD" :
 			    "GOT_TLS_IE"),
 			   (long) (sym_value - sec_vma),
-			   (long) (htab->sgot->output_section->vma
+			   (void *) (htab->sgot->output_section->vma
 			      + htab->sgot->output_offset
 			      + entry->offset
 			      + (entry->existing_entries == TLS_GOT_MOD_AND_OFF
