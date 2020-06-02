@@ -2724,7 +2724,7 @@ elf_arc_finish_dynamic_sections (bfd * output_bfd,
       /* TODO: Validate this.  */
       if (htab->srelplt->output_section != bfd_abs_section_ptr)
 	elf_section_data (htab->srelplt->output_section)
-	  ->this_hdr.sh_entsize = 12;
+	  ->this_hdr.sh_entsize = GOT_ENTRY_SIZE * 3;
     }
 
   /* Fill in the first three entries in the global offset table.  */
