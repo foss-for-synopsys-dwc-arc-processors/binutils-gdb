@@ -1442,6 +1442,9 @@ elf_arc_relocate_section (bfd *			  output_bfd,
   Elf_Internal_Rela *		 relend;
   struct elf_link_hash_table *   htab = elf_hash_table (info);
 
+  if((input_section->flags & SEC_DEBUGGING) != 0)
+    return TRUE;
+
   symtab_hdr = &((elf_tdata (input_bfd))->symtab_hdr);
   sym_hashes = elf_sym_hashes (input_bfd);
 
@@ -1957,6 +1960,12 @@ elf_arc_check_relocs (bfd *			 abfd,
   bfd *				dynobj;
   asection *			sreloc = NULL;
   struct elf_link_hash_table *	htab = elf_hash_table (info);
+
+  if((sec->flags & SEC_DEBUGGING) != 0)
+    {
+      BFD_ASSERT((sec->flags & SEC_DEBUGGING) != 0);
+      return TRUE;
+    }
 
   if (bfd_link_relocatable (info))
     return TRUE;
