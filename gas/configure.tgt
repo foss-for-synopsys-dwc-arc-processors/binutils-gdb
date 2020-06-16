@@ -138,6 +138,7 @@ case ${generic_target} in
   arc-*-elf*)				fmt=elf ;;
   arc64-*-elf*)				fmt=elf ;;
   arc*-*-linux*)			fmt=elf bfd_gas=yes ;;
+  arc64*-*-linux*)			fmt=elf bfd_gas=yes ;;
 
   arm-*-phoenix*)			fmt=elf ;;
   arm-*-elf)				fmt=elf ;;
