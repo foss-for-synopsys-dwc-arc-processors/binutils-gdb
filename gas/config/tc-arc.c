@@ -1914,8 +1914,12 @@ find_opcode_match (const struct arc_opcode_hash_entry *entry,
 		      goto match_failed;
 		    break;
 		  }
-		/* FALLTHRU */
+		/* By default a symbol is zero extended.  */
+		else if (tok[tokidx].X_op == O_symbol
+		    && tok[tokidx].X_md == O_absent)
+		  goto match_failed;
 
+	      /* FALLTHRU */
 	    case ARC_OPERAND_LIMM:
 	    case ARC_OPERAND_SIGNED:
 	    case ARC_OPERAND_UNSIGNED:
