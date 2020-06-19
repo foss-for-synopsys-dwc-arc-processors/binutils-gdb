@@ -521,7 +521,8 @@ static unsigned cl_features = 0;
 #define O_dtpoff9 O_md10    /* @dtpoff9 relocation.  */
 #define O_dtpoff  O_md11    /* @dtpoff relocation.  */
 #define O_u32     O_md12    /* @u32 modifier.  */
-#define O_last    O_u32
+#define O_s32     O_md13    /* @u32 modifier.  */
+#define O_last    O_md13
 
 /* Used to define a bracket as operand in tokens.  */
 #define O_bracket O_md32
@@ -575,6 +576,7 @@ static const struct arc_reloc_op_tag
   DEF (dtpoff9, BFD_RELOC_ARC_TLS_DTPOFF_S9,	0),
   DEF (dtpoff,  BFD_RELOC_ARC_TLS_DTPOFF,	1),
   DEF (u32,	BFD_RELOC_ARC_LO32_ME,		1),
+  DEF (s32,	BFD_RELOC_ARC_32_ME,		1),
 };
 
 static const int arc_num_reloc_op
@@ -1108,6 +1110,7 @@ debug_exp (expressionS *t)
     case O_dtpoff9:		namemd = "O_dtpoff9";		break;
     case O_dtpoff:		namemd = "O_dtpoff";		break;
     case O_u32:			namemd = "O_u32";		break;
+    case O_s32:			namemd = "O_s32";		break;
     }
 
   pr_debug ("%s (%s, %s, %d, %s)", name,
@@ -1778,6 +1781,7 @@ find_opcode_match (const struct arc_opcode_hash_entry *entry,
   int bkntok, maxerridx = 0;
   expressionS emptyE;
   const char *tmpmsg = NULL;
+  unsigned int tmp = 0;
 
   arc_opcode_hash_entry_iterator_init (&iter);
   memset (&emptyE, 0, sizeof (emptyE));
@@ -1943,9 +1947,14 @@ find_opcode_match (const struct arc_opcode_hash_entry *entry,
 		    const struct arc_aux_reg *auxr;
 
 		    if (opcode->insn_class != AUXREG)
-		      goto de_fault;
-		    p = S_GET_NAME (tok[tokidx].X_add_symbol);
+		      {
+			/* By default a symbol is zero extended.  */
+			if (tok[tokidx].X_md == O_absent)
+			  tok[tokidx].X_md = O_u32;
+			goto de_fault;
+		      }
 
+		    p = S_GET_NAME (tok[tokidx].X_add_symbol);
 		    /* For compatibility reasons, an aux register can
 		       be spelled with upper or lower case
 		       letters.  */
@@ -2057,10 +2066,14 @@ find_opcode_match (const struct arc_opcode_hash_entry *entry,
 
 		  /* Relocs requiring long immediate.  FIXME! make it
 		     generic and move it to a function.  */
+		  tmp = ARC_OPERAND_SIGNED;
 		  switch (tok[tokidx].X_md)
 		    {
+		    case O_s32:
+		      tmp = 0; /* Fail if is not signed.  */
+		      /* Fall through.  */
 		    case O_u32:
-		      if ((operand->flags & ARC_OPERAND_SIGNED))
+		      if ((operand->flags & ARC_OPERAND_SIGNED) == tmp)
 			goto match_failed;
 		      /* Fall through.  */
 		    case O_gotoff:
@@ -4100,8 +4113,9 @@ assemble_insn (const struct arc_opcode *opcode,
 	    case O_gotoff:
 	    case O_gotpc:
 	      needGOTSymbol = TRUE;
-	  /* Fall through.  */
+	      /* Fall through.  */
 	    case O_u32:
+	    case O_s32:
 	      reloc = ARC_RELOC_TABLE (t->X_md)->reloc;
 	      break;
 	    case O_pcl:
