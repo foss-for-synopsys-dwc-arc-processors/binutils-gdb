@@ -1947,12 +1947,7 @@ find_opcode_match (const struct arc_opcode_hash_entry *entry,
 		    const struct arc_aux_reg *auxr;
 
 		    if (opcode->insn_class != AUXREG)
-		      {
-			/* By default a symbol is zero extended.  */
-			if (tok[tokidx].X_md == O_absent)
-			  tok[tokidx].X_md = O_u32;
-			goto de_fault;
-		      }
+		      goto de_fault;
 
 		    p = S_GET_NAME (tok[tokidx].X_add_symbol);
 		    /* For compatibility reasons, an aux register can
