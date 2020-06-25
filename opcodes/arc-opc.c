@@ -1493,9 +1493,11 @@ const struct arc_flag_operand arc_flag_operands[] =
   { "dd", 8, 0, 0, 0 },  /* Fake.  */
 #define F_SIZEL  (F_SIZED + 1)
   { "dl", 8, 0, 0, 0 },  /* Fake.  */
+#define F_SIZEW  (F_SIZEL + 1)
+  { "xx", 4, 0, 0, 0 },  /* Fake.  */
 
   /* Fake Flags.  */
-#define F_NE   (F_SIZEL + 1)
+#define F_NE   (F_SIZEW + 1)
   { "ne", 0, 0, 0, 1 },
 
   /* ARC NPS400 Support: See comment near head of file.  */
@@ -1667,7 +1669,10 @@ const struct arc_flag_class arc_flag_classes[] =
 #define C_ZZ_L      (C_ZZ_D + 1)
   {F_CLASS_IMPLICIT | F_CLASS_ZZ, {F_SIZEL, F_NULL} },
 
-#define C_ZZ_H      (C_ZZ_L + 1)
+#define C_ZZ_W      (C_ZZ_L + 1)
+  {F_CLASS_IMPLICIT | F_CLASS_ZZ, {F_SIZEW, F_NULL} },
+
+#define C_ZZ_H      (C_ZZ_W + 1)
   {F_CLASS_IMPLICIT | F_CLASS_ZZ, {F_H1, F_NULL} },
 
 #define C_ZZ_B      (C_ZZ_H + 1)
