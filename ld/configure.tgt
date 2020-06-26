@@ -112,6 +112,9 @@ arc64-*elf*)		targ_emul=elf64arc
 			targ_extra_emuls=arcelf
 			targ_extra_emuls="${targ_extra_emuls} arclinux arclinux_nps arcv2elf arcv2elfx"
 			;;
+arc64-*-linux*)		targ_emul=arc64linux
+			targ_extra_emuls="${targ_extra_emuls} elf64arc"
+			;;
 arc*-*-linux*)		case "${with_cpu}" in
 			nps400)	targ_emul=arclinux_nps
 				targ_extra_emuls=arclinux

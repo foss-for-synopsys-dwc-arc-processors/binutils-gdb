@@ -136,7 +136,7 @@ case ${generic_target} in
   alpha-*-netbsd* | alpha-*-openbsd*)	fmt=elf em=nbsd ;;
 
   arc-*-elf*)				fmt=elf ;;
-  arc64-*-elf*)				fmt=elf ;;
+  arc64-*-*)				fmt=elf ;;
   arc*-*-linux*)			fmt=elf bfd_gas=yes ;;
 
   arm-*-phoenix*)			fmt=elf ;;
