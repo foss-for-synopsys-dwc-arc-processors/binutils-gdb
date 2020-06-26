@@ -332,7 +332,7 @@ case "${targ}" in
 
   arc64-*-elf* | arc64-*-linux*)
     targ_defvec=arc_elf64_le_vec
-    targ_selvecs="arc_elf32_be_vec arc_elf32_le_vec"
+    targ_selvecs="arc_elf64_le_vec"
     want64=true
     ;;
 #endif
