@@ -1816,6 +1816,8 @@ elf_arc_relocate_section (bfd *			  output_bfd,
 	case R_ARC_32_ME:
 	case R_ARC_PC32:
 	case R_ARC_32_PCREL:
+	case R_ARC_HI32_ME:
+	case R_ARC_LO32_ME:
 	  if (bfd_link_pic (info)
 	      && !resolved_to_zero
 	      && (input_section->flags & SEC_ALLOC) != 0
@@ -2042,6 +2044,8 @@ elf_arc_check_relocs (bfd *			 abfd,
 	case R_ARC_16:
 	case R_ARC_32:
 	case R_ARC_32_ME:
+	case R_ARC_HI32_ME:
+	case R_ARC_LO32_ME:
 	  /* During shared library creation, these relocs should not
 	     appear in a shared library (as memory will be read only
 	     and the dynamic linker can not resolve these.  However
