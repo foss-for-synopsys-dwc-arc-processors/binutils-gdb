@@ -22,7 +22,11 @@
 #ifndef ARC_GOT_H
 #define ARC_GOT_H
 
+#if ARCH_SIZE == 32
 #define TCB_SIZE (8)
+#else
+#define TCB_SIZE (16)
+#endif
 
 #if ARCH_SIZE == 32
 #define GOT_ENTRY_SIZE 4
