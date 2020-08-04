@@ -47,7 +47,7 @@
 
 #define LOG_FILE_ALIGN (ARCH_SIZE == 32 ? 2 : 3)
 
-/* #define ARC_ENABLE_DEBUG 1 */
+#define ARC_ENABLE_DEBUG 1
 #ifdef ARC_ENABLE_DEBUG
 static const char *
 name_for_global_symbol (struct elf_link_hash_entry *h)
@@ -57,7 +57,7 @@ name_for_global_symbol (struct elf_link_hash_entry *h)
     return local_str;
   return h->root.root.string;
 }
-#define ARC_DEBUG(fmt, args...) fprintf (stderr, fmt, ##args)
+#define ARC_DEBUG(fmt, args...) do { if (getenv ("ARC_DEBUG")) fprintf (stderr, fmt, ##args); } while (0)
 #else
 #define ARC_DEBUG(...)
 #endif
