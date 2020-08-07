@@ -1791,8 +1791,7 @@ elf_arc_relocate_section (bfd *			  output_bfd,
 		&& (!IS_ARC_PCREL_TYPE (r_type)
 		    || (h != NULL
 			&& h->dynindx != -1
-			&& !h->def_regular
-			&& (!info->symbolic || !h->def_regular))))
+			&& (!SYMBOL_REFERENCES_LOCAL (info, h)))))
 	      {
 		Elf_Internal_Rela outrel;
 		bfd_byte *loc;
@@ -2048,10 +2047,12 @@ elf_arc_check_relocs (bfd *			 abfd,
 	    /* FALLTHROUGH */
 	  case R_ARC_PC32:
 	  case R_ARC_32_PCREL:
-	    if ((bfd_link_pic (info))
-		&& ((r_type != R_ARC_PC32 && r_type != R_ARC_32_PCREL)
-		    || (h != NULL
-			&& (!info->symbolic || !h->def_regular))))
+
+	    if (!bfd_link_pic (info))
+	      break;
+
+	    if (((r_type != R_ARC_PC32 && r_type != R_ARC_32_PCREL)
+		 || (!SYMBOL_REFERENCES_LOCAL (info, h))))
 	      {
 		if (sreloc == NULL)
 		  {
