@@ -31,9 +31,11 @@
 #if ARCH_SIZE == 32
 #define GOT_ENTRY_SIZE 4
 #define write_in_got(A, B, C) bfd_put_32 (A, B, C)
+#define read_from_got(A, B) bfd_get_32 (A, B)
 #else
 #define GOT_ENTRY_SIZE 8
 #define write_in_got(A, B, C) bfd_put_64 (A, B, C)
+#define read_from_got(A, B) bfd_get_64 (A, B)
 #endif
 
 #define	align_power(addr, align)	\
@@ -347,27 +349,27 @@ relocate_fix_got_relocs_for_got_info (struct got_entry **	   list_p,
 		if (h == NULL || h->forced_local
 		   || !elf_hash_table (info)->dynamic_sections_created)
 		  {
-		    bfd_put_32 (output_bfd,
-			    sym_value - sec_vma
-			    + (elf_hash_table (info)->dynamic_sections_created
-			       ? 0
-			       : (align_power (0,
-					       tls_sec->alignment_power))),
-			    htab->sgot->contents + entry->offset
-			    + (entry->existing_entries == TLS_GOT_MOD_AND_OFF
-			       ? 4 : 0));
+		    write_in_got (output_bfd,
+				  sym_value - sec_vma
+				  + (elf_hash_table (info)->dynamic_sections_created
+				     ? 0
+				     : (align_power (0,
+						     tls_sec->alignment_power))),
+				  htab->sgot->contents + entry->offset
+				  + (entry->existing_entries == TLS_GOT_MOD_AND_OFF
+				     ? GOT_ENTRY_SIZE : 0));
 
 		    ARC_DEBUG ("arc_info: FIXED -> %s value = %#lx "
-			  "@ %lx, for symbol %s\n",
-			  (entry->type == GOT_TLS_GD ? "GOT_TLS_GD" :
-			   "GOT_TLS_IE"),
-			  (long) (sym_value - sec_vma),
-			  (long) (htab->sgot->output_section->vma
-			     + htab->sgot->output_offset
-			     + entry->offset
-			     + (entry->existing_entries == TLS_GOT_MOD_AND_OFF
-				? 4 : 0)),
-			  symbol_name);
+			       "@ %lx, for symbol %s\n",
+			       (entry->type == GOT_TLS_GD ? "GOT_TLS_GD" :
+				"GOT_TLS_IE"),
+			       (long) (sym_value - sec_vma),
+			       (long) (htab->sgot->output_section->vma
+				       + htab->sgot->output_offset
+				       + entry->offset
+				       + (entry->existing_entries == TLS_GOT_MOD_AND_OFF
+					  ? GOT_ENTRY_SIZE : 0)),
+			       symbol_name);
 		  }
 	      }
 	      break;
@@ -378,15 +380,15 @@ relocate_fix_got_relocs_for_got_info (struct got_entry **	   list_p,
 		bfd_vma ATTRIBUTE_UNUSED sec_vma
 		  = tls_sec->output_section->vma;
 
-		bfd_put_32 (output_bfd,
-			    sym_value - sec_vma
-			    + (elf_hash_table (info)->dynamic_sections_created
-			       ? 0
-			       : (align_power (TCB_SIZE,
-					       tls_sec->alignment_power))),
-			    htab->sgot->contents + entry->offset
-			    + (entry->existing_entries == TLS_GOT_MOD_AND_OFF
-			       ? 4 : 0));
+		write_in_got (output_bfd,
+			      sym_value - sec_vma
+			      + (elf_hash_table (info)->dynamic_sections_created
+				 ? 0
+				 : (align_power (TCB_SIZE,
+						 tls_sec->alignment_power))),
+			      htab->sgot->contents + entry->offset
+			      + (entry->existing_entries == TLS_GOT_MOD_AND_OFF
+				 ? GOT_ENTRY_SIZE : 0));
 
 		ARC_DEBUG ("arc_info: FIXED -> %s value = %#lx "
 			   "@ %p, for symbol %s\n",
@@ -397,7 +399,7 @@ relocate_fix_got_relocs_for_got_info (struct got_entry **	   list_p,
 			      + htab->sgot->output_offset
 			      + entry->offset
 			      + (entry->existing_entries == TLS_GOT_MOD_AND_OFF
-				 ? 4 : 0)),
+				 ? GOT_ENTRY_SIZE : 0)),
 			   symbol_name);
 	      }
 	      break;
@@ -420,9 +422,9 @@ relocate_fix_got_relocs_for_got_info (struct got_entry **	   list_p,
 			     (long) entry->offset);
 		else
 		  {
-		    bfd_put_32 (output_bfd,
-				reloc_data->sym_value + sec_vma,
-				htab->sgot->contents + entry->offset);
+		    write_in_got (output_bfd,
+				  reloc_data->sym_value + sec_vma,
+				  htab->sgot->contents + entry->offset);
 		    ARC_DEBUG ("arc_info: PATCHED: %#08lx "
 			       "@ %#08lx for sym %s in got offset %#lx\n",
 			       (long) (reloc_data->sym_value + sec_vma),
@@ -508,12 +510,14 @@ GOT_OFFSET = %#lx, GOT_VMA = %#lx, INDEX = %ld, ADDEND = 0x0\n",
 	  bfd_vma addend = 0;
 	  if (list->type == GOT_TLS_IE)
 	  {
-	    addend = bfd_get_32 (output_bfd,
-				 htab->sgot->contents + got_offset);
+	    /* CZI: I don't understand why we need this.  Adding an
+	       assert to catch the usecase.  */
+	    addend = read_from_got (output_bfd,
+				    htab->sgot->contents + got_offset);
 	  }
 
 	  ADD_RELA (output_bfd, got,
-		    got_offset + (e == TLS_GOT_MOD_AND_OFF ? 4 : 0),
+		    got_offset + (e == TLS_GOT_MOD_AND_OFF ? GOT_ENTRY_SIZE : 0),
 		    dynindx,
 		    (list->type == GOT_TLS_IE ? R_ARC_TLS_TPOFF
 					      : R_ARC_TLS_DTPOFF),
