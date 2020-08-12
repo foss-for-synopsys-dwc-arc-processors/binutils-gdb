@@ -2043,6 +2043,7 @@ elf_arc_check_relocs (bfd *			 abfd,
 	{
 	case R_ARC_8:
 	case R_ARC_16:
+	case R_ARC_32:
 	case R_ARC_64:
 	case R_ARC_32_ME:
 	case R_ARC_HI32_ME:
