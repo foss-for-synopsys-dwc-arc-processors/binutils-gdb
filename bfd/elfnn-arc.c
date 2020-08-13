@@ -2443,8 +2443,6 @@ elf_arc_adjust_dynamic_symbol (struct bfd_link_info *info,
       BFD_ASSERT (def->root.type == bfd_link_hash_defined);
       h->root.u.def.section = def->root.u.def.section;
       h->root.u.def.value = def->root.u.def.value;
-      if (info->nocopyreloc)
-	h->non_got_ref = def->non_got_ref;
       return TRUE;
     }
 
