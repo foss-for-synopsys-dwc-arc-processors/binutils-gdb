@@ -2047,9 +2047,6 @@ elf_arc_check_relocs (bfd *			 abfd,
 	case R_ARC_32_ME:
 	case R_ARC_HI32_ME:
 	case R_ARC_LO32_ME:
-	  // TODO: ARC_PC32 reloc was moved here because busybox on ARC64
-	  //       needs a ARC_COPY reloc to lend an symbol from glibc.
-	case R_ARC_PC32:
 	  /* During shared library creation, these relocs should not
 	     appear in a shared library (as memory will be read only
 	     and the dynamic linker can not resolve these.  However
@@ -2098,6 +2095,7 @@ elf_arc_check_relocs (bfd *			 abfd,
 	    break;
 
 	  /* FALLTHROUGH */
+	case R_ARC_PC32:
 	case R_ARC_32_PCREL:
 	  if (!bfd_link_pic (info))
 	    break;
