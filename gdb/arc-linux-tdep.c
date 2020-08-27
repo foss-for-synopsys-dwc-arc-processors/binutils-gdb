@@ -549,6 +549,33 @@ arc_linux_supply_v2_regset (const struct regset *regset,
   regcache->raw_supply (ARC_R59_REGNUM, buf + REGOFF (2));
 }
 
+/* Populate BUF with register REGNUM from the REGCACHE.  */
+
+static void
+collect_register(const struct regcache *regcache, struct gdbarch *gdbarch,
+		 int regnum, gdb_byte *buf)
+{
+  /* Skip non-existing registers.  */
+  if ((arc_linux_core_reg_offsets[regnum] == ARC_OFFSET_NO_REGISTER))
+    return;
+
+  /* The Address where the execution has stopped is in pseudo-register
+     STOP_PC.  However, when kernel code is returning from the exception,
+     it uses the value from ERET register.  Since, TRAP_S (the breakpoint
+     instruction) commits, the ERET points to the next instruction.  In
+     other words: ERET != STOP_PC.  To jump back from the kernel code to
+     the correct address, ERET must be overwritten by GDB's STOP_PC.  Else,
+     the program will continue at the address after the current instruction.
+     */
+  if (regnum == gdbarch_pc_regnum (gdbarch))
+    {
+      int eret_offset = REGOFF (6);
+      regcache->raw_collect (regnum, buf + eret_offset);
+    }
+  else
+    regcache->raw_collect (regnum, buf + arc_linux_core_reg_offsets[regnum]);
+}
+
 void
 arc_linux_collect_gregset (const struct regset *regset,
 			   const struct regcache *regcache,
@@ -560,27 +587,14 @@ arc_linux_collect_gregset (const struct regset *regset,
   gdb_byte *buf = (gdb_byte *) gregs;
   struct gdbarch *gdbarch = regcache->arch ();
 
-  for (int reg = 0; reg < ARC_LAST_REGNUM; reg++)
-    {
-      /* Skip unexisting registers.  regnum == -1 means writing all regs.  */
-      if ((arc_linux_core_reg_offsets[reg] != ARC_OFFSET_NO_REGISTER)
-	  && (regnum == reg || regnum == -1))
-	{
-	  /* Address where execution has stopped is in pseudo-register
-	     STOP_PC, however when continuing execution kernel uses value
-	     from ERET register.  And because TRAP_S commits, we have that
-	     ERET != STOP_PC, so ERET must be overwritten by the GDB,
-	     otherwise program will continue at address after the current
-	     instruction, which might not be a valid instruction at all.  */
-	  if (gdbarch_pc_regnum (gdbarch) == reg)
-	    {
-	      int eret_offset = REGOFF (6);
-	      regcache->raw_collect (reg, buf + eret_offset);
-	    }
-	  else
-	    regcache->raw_collect (reg, buf + arc_linux_core_reg_offsets[reg]);
-	}
-    }
+  /* regnum == -1 means writing all the registers.  */
+  if (regnum == -1)
+    for (int reg = 0; reg < ARC_LAST_REGNUM; reg++)
+      collect_register (regcache, gdbarch, reg, buf);
+  else if (regnum < ARC_LAST_REGNUM)
+    collect_register (regcache, gdbarch, regnum, buf);
+  else
+    gdb_assert (!"Invalid regnum in arc_linux_collect_gregset.");
 }
 
 void
