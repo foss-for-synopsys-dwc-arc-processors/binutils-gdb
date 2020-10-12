@@ -2784,6 +2784,7 @@ elf_arc_size_dynamic_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
   bfd *dynobj;
   asection *s;
   bfd_boolean relocs_exist = FALSE;
+  bfd_boolean reltext_exist = FALSE;
   struct elf_link_hash_table *htab = elf_hash_table (info);
 
   dynobj = htab->dynobj;
@@ -2838,7 +2839,29 @@ elf_arc_size_dynamic_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
       else if (strncmp (s->name, ".rela", 5) == 0)
 	{
 	  if (s->size != 0 && s != htab->srelplt)
-	    relocs_exist = TRUE;
+	    {
+	      if (!reltext_exist)
+		{
+		  const char *name = s->name + 5;
+		  bfd *ibfd;
+		  for (ibfd = info->input_bfds; ibfd; ibfd = ibfd->link.next)
+		    if (bfd_get_flavour (ibfd) == bfd_target_elf_flavour
+			&& ibfd->flags & DYNAMIC)
+		      {
+			asection *target = bfd_get_section_by_name (ibfd, name);
+			if (target != NULL
+			    && elf_section_data (target)->sreloc == s
+			    && ((target->output_section->flags
+				 & (SEC_READONLY | SEC_ALLOC))
+				== (SEC_READONLY | SEC_ALLOC)))
+			  {
+			    reltext_exist = TRUE;
+			    break;
+			  }
+		      }
+		}
+	      relocs_exist = TRUE;
+	    }
 
 	  /* We use the reloc_count field as a counter if we need to
 	     copy relocs into the output file.  */
