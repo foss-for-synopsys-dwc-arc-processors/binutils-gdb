@@ -1038,7 +1038,7 @@ arc_elf_object_p (bfd * abfd)
     case EM_ARC:
       _bfd_error_handler
 	(_("error: the ARC4 architecture is no longer supported"));
-      return FALSE;
+      return false;
 
     case EM_ARC_COMPACT3_64:
       mach = bfd_mach_arcv3_64;
@@ -2782,6 +2782,7 @@ elf_arc_size_dynamic_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
   bfd *dynobj;
   asection *s;
   bool relocs_exist = false;
+  bool reltext_exist = false;
   struct elf_link_hash_table *htab = elf_hash_table (info);
 
   dynobj = htab->dynobj;
@@ -2836,7 +2837,29 @@ elf_arc_size_dynamic_sections (bfd *output_bfd ATTRIBUTE_UNUSED,
       else if (startswith (s->name, ".rela"))
 	{
 	  if (s->size != 0 && s != htab->srelplt)
-	    relocs_exist = true;
+	    {
+	      if (!reltext_exist)
+		{
+		  const char *name = s->name + 5;
+		  bfd *ibfd;
+		  for (ibfd = info->input_bfds; ibfd; ibfd = ibfd->link.next)
+		    if (bfd_get_flavour (ibfd) == bfd_target_elf_flavour
+			&& ibfd->flags & DYNAMIC)
+		      {
+			asection *target = bfd_get_section_by_name (ibfd, name);
+			if (target != NULL
+			    && elf_section_data (target)->sreloc == s
+			    && ((target->output_section->flags
+				 & (SEC_READONLY | SEC_ALLOC))
+				== (SEC_READONLY | SEC_ALLOC)))
+			  {
+			    reltext_exist = true;
+			    break;
+			  }
+		      }
+		}
+	      relocs_exist = true;
+	    }
 
 	  /* We use the reloc_count field as a counter if we need to
 	     copy relocs into the output file.  */
