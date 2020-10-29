@@ -58,7 +58,7 @@ static const bfd_arch_info_type arch_info_struct[] =
 };
 
 const bfd_arch_info_type bfd_arc_arch =
-  ARC (32, 32, 0, "ARC600", TRUE, &arch_info_struct[0]);
+  ARC (32, 32, bfd_mach_arc_arc600, "ARC600", TRUE, &arch_info_struct[0]);
 
 /* ARC-specific "compatible" function.  The general rule is that if A and B are
    compatible, then this function should return architecture that is more
