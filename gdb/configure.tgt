@@ -57,8 +57,13 @@ alpha*-*-*)
 	cpu_obs="alpha-tdep.o"
 	;;
 
+arc64-*-*)
+	# Target: unidentified 64-bit ARC target
+	cpu_obs="arc64-tdep.o arch/arc.o"
+	;;
+
 arc*-*-*)
-	# Target: Unidentified ARC target
+	# Target: Other unidentified ARC targets
 	cpu_obs="arc-tdep.o arch/arc.o"
 	;;
 
@@ -152,7 +157,7 @@ am33_2.0*-*-linux*)
 			solib-svr4.o"
 	;;
 
-arc*-*-elf32)
+arc*-*-elf*)
 	# Target: baremetal ARC elf32 (newlib) target
 	gdb_target_obs="arc-newlib-tdep.o"
 	;;

@@ -24,7 +24,8 @@
 enum arc_isa
 {
   ARC_ISA_ARCV1 = 1,  /* a.k.a. ARCompact (ARC600, ARC700)  */
-  ARC_ISA_ARCV2	      /* such as ARC EM and ARC HS  */
+  ARC_ISA_ARCV2,      /* such as ARC EM and ARC HS  */
+  ARC_ISA_ARCV3	      /* both 32-bit and 64-bit variants  */
 };
 
 struct arc_arch_features
