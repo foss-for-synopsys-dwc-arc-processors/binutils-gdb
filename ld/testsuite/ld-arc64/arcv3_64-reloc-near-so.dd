@@ -1,0 +1,23 @@
+# an exemplary output
+#
+# test_dynamic.so:     file format elf64-littlearc
+#
+#
+# Disassembly of section .got:
+# 
+# 0000000000002440 <.got>:
+#     2440:	60 23 00 00             	.word	0x00002360
+# 	...
+# 			2458: R_ARC_GLOB_DAT	foo
+# 			2460: R_ARC_GLOB_DAT	bar
+
+[^:]+:\s+file format elf.*-.*arc
+
+
+Disassembly of section .got:
+
+^[0-9a-f]+.*:
+\s*[0-9a-f]+:.*
+\s*\.\.\.
+\s*[0-9a-f]+:\s+R_ARC_GLOB_DAT\s+foo
+\s*[0-9a-f]+:\s+R_ARC_GLOB_DAT\s+bar
