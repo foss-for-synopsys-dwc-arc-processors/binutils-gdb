@@ -1404,10 +1404,30 @@ const struct arc_flag_operand arc_flag_operands[] =
 #define F_FFAKE    (F_FLAG + 1)
   { "f",  0, 0, 0, 1 },
 #define F_AQ       (F_FFAKE + 1)
-  { "a",  1, 1, 15, 1 },
+  { "aq",  1, 1, 15, 1 },
+#define F_RL       (F_AQ + 1)
+  { "rl",  1, 1, 15, 1 },
+
+  /* Atomic operations.  */
+#define F_ATO_ADD      (F_RL + 1)
+  { "add", 0, 3, 0, 1 },
+#define F_ATO_OR      (F_ATO_ADD + 1)
+  { "or", 1, 3, 0, 1 },
+#define F_ATO_AND     (F_ATO_OR + 1)
+  { "and", 2, 3, 0, 1 },
+#define F_ATO_XOR     (F_ATO_AND + 1)
+  { "xor", 3, 3, 0, 1 },
+#define F_ATO_MINU    (F_ATO_XOR + 1)
+  { "minu", 4, 3, 0, 1 },
+#define F_ATO_MAXU    (F_ATO_MINU + 1)
+  { "maxu", 5, 3, 0, 1 },
+#define F_ATO_MIN     (F_ATO_MAXU + 1)
+  { "min", 6, 3, 0, 1 },
+#define F_ATO_MAX      (F_ATO_MIN + 1)
+  { "max", 7, 3, 0, 1 },
 
   /* Delay slot.  */
-#define F_ND	   (F_AQ + 1)
+#define F_ND	   (F_ATO_MAX + 1)
   { "nd", 0, 1, 5, 0 },
 #define F_D	   (F_ND + 1)
   { "d",  1, 1, 5, 1 },
@@ -1702,9 +1722,13 @@ const struct arc_flag_class arc_flag_classes[] =
 #define C_FHARD	    (C_F + 1)
   { F_CLASS_OPTIONAL, { F_FFAKE, F_NULL } },
 #define C_AQ	    (C_FHARD + 1)
-  { F_CLASS_OPTIONAL, { F_AQ, F_NULL } },
+  { F_CLASS_OPTIONAL, { F_AQ, F_RL, F_NULL } },
 
-#define C_T	    (C_AQ + 1)
+#define C_ATOP      (C_AQ + 1)
+  { F_CLASS_REQUIRED, {F_ATO_ADD, F_ATO_OR, F_ATO_AND, F_ATO_XOR, F_ATO_MINU,
+		       F_ATO_MAXU, F_ATO_MIN, F_ATO_MAX, F_NULL}},
+
+#define C_T	    (C_ATOP + 1)
   { F_CLASS_OPTIONAL, { F_NT, F_T, F_NULL } },
 #define C_D	    (C_T + 1)
   { F_CLASS_OPTIONAL, { F_ND, F_D, F_NULL } },
