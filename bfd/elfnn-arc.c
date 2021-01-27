@@ -47,6 +47,9 @@
 
 #define LOG_FILE_ALIGN (ARCH_SIZE == 32 ? 2 : 3)
 
+/* Do not enable this unless you know what you are doing.
+ * Code under this macro is not safe for production. 
+ * */
 /* #define ARC_ENABLE_DEBUG 1 */
 #ifdef ARC_ENABLE_DEBUG
 static const char *
