@@ -232,6 +232,11 @@ struct arc_flags
 
   /* Pointer to arc flags.  */
   const struct arc_flag_operand *flgp;
+
+  /* Pointer to insert function.  */
+  unsigned long long (*insert) (unsigned long long instruction,
+				long long int op,
+				const char **errmsg);
 };
 
 extern const relax_typeS md_relax_table[];
