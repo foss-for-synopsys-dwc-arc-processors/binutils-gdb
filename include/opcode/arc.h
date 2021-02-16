@@ -330,6 +330,9 @@ extern const unsigned arc_NToperand;
 /* Mark the colon position.  */
 #define ARC_OPERAND_COLON       0x4000
 
+/* Mark a floating point register.  */
+#define ARC_OPERAND_FP		0x8000
+
 /* Mask for selecting the type for typecheck purposes.  */
 #define ARC_OPERAND_TYPECHECK_MASK		 \
   (ARC_OPERAND_IR				 \
@@ -374,6 +377,16 @@ struct arc_flag_class
 
   /* List of valid flags (codes).  */
   unsigned flags[256];
+
+  /* Some special cases needs to use insert/extract functions for
+     flags as well.  The function prototypes are identically like the
+     one used for insertion/extraction of an operand.  The reason
+     beeing the ability of reusing these functions.  */
+  unsigned long long (*insert) (unsigned long long instruction,
+				long long int op,
+				const char **errmsg);
+  long long int (*extract) (unsigned long long instruction,
+			    bfd_boolean *invalid);
 };
 
 extern const struct arc_flag_class arc_flag_classes[];
@@ -673,6 +686,105 @@ typedef enum
 } arc_nps_address_type;
 
 #define ARC_NUM_ADDRTYPES 16
+
+/*ARC64 floating point enums.  */
+enum FP_SIZE {
+  P_HALF = 0,
+  P_SINGLE = 1,
+  P_DOUBLE = 2
+};
+
+enum TPOF {
+  TOPF_FMADD = 0,
+  TOPF_FMSUB = 1,
+  TOPF_FNMADD = 2,
+  TOPF_FNMSUB = 3,
+  TOPF_VFMADD = 4,
+  TOPF_VFMSUB = 5,
+  TOPF_VFNMADD = 6,
+  TOPF_VFNMSUB = 7,
+
+  TOPF_VFMADDS = 0xC,
+  TOPF_VFMSUBS = 0xD,
+  TOPF_VFNMADDS = 0xE,
+  TOPF_VFNMSUBS = 0xF
+};
+
+enum DPOF {
+  DOPF_FADD  = 0,
+  DOPF_FSUB  = 1,
+  DOPF_FMUL  = 2,
+  DOPF_FDIV  = 3,
+  DOPF_FCMP  = 4,
+  DOPF_FCMPF = 5,
+  DOPF_FMIN  = 6,
+  DOPF_FMAX  = 7,
+  DOPF_FSGNJ = 8,
+  DOPF_FSGNJN = 10,
+  DOPF_FSGNJX = 11,
+
+  DOPF_VFADD  = 0x10,
+  DOPF_VFSUB  = 0x11,
+  DOPF_VFMUL  = 0x12,
+  DOPF_VFDIV  = 0x13,
+  DOPF_VFADDS  = 0x14,
+  DOPF_VFSUBS  = 0x15,
+  DOPF_VFMULS  = 0x16,
+  DOPF_VFDIVS  = 0x17
+};
+
+enum SOPF {
+  SOPF_FSQRT = 0,
+  SOPF_VFSQRT = 1,
+};
+
+enum COPF {
+  COPF_FMOV = 0,
+  COPF_VFMOV = 1,
+};
+
+enum CONVOPS {
+  FUINT2S = 0,
+  FS2UINT = 0,
+  FINT2S  = 0,
+  FS2INT  = 0,
+  FSRND   = 0,
+  F2UINT_RZ = 0,
+  FSINT_RZ = 0,
+  FSRND_RZ = 0,
+  FMVI2S = 0,
+  FMVS2I = 0,
+  FS2H = 0,
+  FH2S = 0,
+  FS2H_RZ = 0,
+
+  FUINT2D = 1,
+  FS2UL = 1,
+  FINT2D = 1,
+  FS2L = 1,
+  FS2D = 1,
+  FS2UL_RZ = 1,
+  FS2L_RZ = 1,
+
+  FUL2S = 2,
+  FD2UINT = 2,
+  FL2S = 2,
+  FD2INT = 2,
+  FD2S = 2,
+  FD2UINT_RZ = 2,
+  FD2INT_RZ = 2,
+
+  FUL2D = 3,
+  FD2UL = 3,
+  FL2D = 3,
+  FD2L = 3,
+  FDRND = 3,
+  FD2UL_RZ = 3,
+  FD2L_RZ = 3,
+  FDRND_RZ = 3,
+  FMVL2D = 3,
+  FMVD2L = 3,
+};
 
 #ifdef __cplusplus
 }

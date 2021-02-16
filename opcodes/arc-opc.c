@@ -76,6 +76,16 @@ insert_rb_chk (unsigned long long  insn,
   return insn | ((value & 0x07) << 24) | (((value >> 3) & 0x07) << 12);
 }
 
+/* Insert a floating point register into fs2 slot.  */
+
+static unsigned long long
+insert_fs2 (unsigned long long  insn,
+	    long long           value,
+	    const char **       errmsg ATTRIBUTE_UNUSED)
+{
+  return insn | ((value & 0x07) << 24) | (((value >> 3) & 0x03) << 12);
+}
+
 static long long
 extract_rb (unsigned long long  insn,
 	    bfd_boolean *       invalid)
@@ -99,6 +109,17 @@ extract_rbb (unsigned long long  insn,
     *invalid = TRUE; /* A limm operand, it should be extracted in a
 			different way.  */
 
+  return value;
+}
+
+/* Extract the floating point register number from fs2 slot.  */
+
+static long long
+extract_fs2 (unsigned long long  insn,
+	     bfd_boolean *       invalid ATTRIBUTE_UNUSED)
+{
+  long long value;
+  value = (((insn >> 12) & 0x03) << 3) | ((insn >> 24) & 0x07);
   return value;
 }
 
@@ -1645,58 +1666,58 @@ const unsigned arc_num_flag_operands = ARRAY_SIZE (arc_flag_operands);
 const struct arc_flag_class arc_flag_classes[] =
 {
 #define C_EMPTY     0
-  { F_CLASS_NONE, { F_NULL } },
+  { F_CLASS_NONE, { F_NULL }, 0, 0 },
 
 #define C_CC_EQ     (C_EMPTY + 1)
-  {F_CLASS_IMPLICIT | F_CLASS_COND, {F_EQUAL, F_NULL} },
+  {F_CLASS_IMPLICIT | F_CLASS_COND, {F_EQUAL, F_NULL}, 0, 0 },
 
 #define C_CC_GE     (C_CC_EQ + 1)
-  {F_CLASS_IMPLICIT | F_CLASS_COND, {F_GE, F_NULL} },
+  {F_CLASS_IMPLICIT | F_CLASS_COND, {F_GE, F_NULL}, 0, 0 },
 
 #define C_CC_GT     (C_CC_GE + 1)
-  {F_CLASS_IMPLICIT | F_CLASS_COND, {F_GT, F_NULL} },
+  {F_CLASS_IMPLICIT | F_CLASS_COND, {F_GT, F_NULL}, 0, 0},
 
 #define C_CC_HI     (C_CC_GT + 1)
-  {F_CLASS_IMPLICIT | F_CLASS_COND, {F_HI, F_NULL} },
+  {F_CLASS_IMPLICIT | F_CLASS_COND, {F_HI, F_NULL}, 0, 0},
 
 #define C_CC_HS     (C_CC_HI + 1)
-  {F_CLASS_IMPLICIT | F_CLASS_COND, {F_NOTCARRY, F_NULL} },
+  {F_CLASS_IMPLICIT | F_CLASS_COND, {F_NOTCARRY, F_NULL}, 0, 0},
 
 #define C_CC_LE     (C_CC_HS + 1)
-  {F_CLASS_IMPLICIT | F_CLASS_COND, {F_LE, F_NULL} },
+  {F_CLASS_IMPLICIT | F_CLASS_COND, {F_LE, F_NULL}, 0, 0},
 
 #define C_CC_LO     (C_CC_LE + 1)
-  {F_CLASS_IMPLICIT | F_CLASS_COND, {F_CARRY, F_NULL} },
+  {F_CLASS_IMPLICIT | F_CLASS_COND, {F_CARRY, F_NULL}, 0, 0},
 
 #define C_CC_LS     (C_CC_LO + 1)
-  {F_CLASS_IMPLICIT | F_CLASS_COND, {F_LS, F_NULL} },
+  {F_CLASS_IMPLICIT | F_CLASS_COND, {F_LS, F_NULL}, 0, 0},
 
 #define C_CC_LT     (C_CC_LS + 1)
-  {F_CLASS_IMPLICIT | F_CLASS_COND, {F_LT, F_NULL} },
+  {F_CLASS_IMPLICIT | F_CLASS_COND, {F_LT, F_NULL}, 0, 0},
 
 #define C_CC_NE     (C_CC_LT + 1)
-  {F_CLASS_IMPLICIT | F_CLASS_COND, {F_NOTEQUAL, F_NULL} },
+  {F_CLASS_IMPLICIT | F_CLASS_COND, {F_NOTEQUAL, F_NULL}, 0, 0},
 
 #define C_AA_AB     (C_CC_NE + 1)
-  {F_CLASS_IMPLICIT | F_CLASS_WB, {F_AB3, F_NULL} },
+  {F_CLASS_IMPLICIT | F_CLASS_WB, {F_AB3, F_NULL}, 0, 0},
 
 #define C_AA_AW     (C_AA_AB + 1)
-  {F_CLASS_IMPLICIT | F_CLASS_WB, {F_AW3, F_NULL} },
+  {F_CLASS_IMPLICIT | F_CLASS_WB, {F_AW3, F_NULL}, 0, 0},
 
 #define C_ZZ_D      (C_AA_AW + 1)
-  {F_CLASS_IMPLICIT | F_CLASS_ZZ, {F_SIZED, F_NULL} },
+  {F_CLASS_IMPLICIT | F_CLASS_ZZ, {F_SIZED, F_NULL}, 0, 0},
 
 #define C_ZZ_L      (C_ZZ_D + 1)
-  {F_CLASS_IMPLICIT | F_CLASS_ZZ, {F_SIZEL, F_NULL} },
+  {F_CLASS_IMPLICIT | F_CLASS_ZZ, {F_SIZEL, F_NULL}, 0, 0},
 
 #define C_ZZ_W      (C_ZZ_L + 1)
-  {F_CLASS_IMPLICIT | F_CLASS_ZZ, {F_SIZEW, F_NULL} },
+  {F_CLASS_IMPLICIT | F_CLASS_ZZ, {F_SIZEW, F_NULL}, 0, 0},
 
 #define C_ZZ_H      (C_ZZ_W + 1)
-  {F_CLASS_IMPLICIT | F_CLASS_ZZ, {F_H1, F_NULL} },
+  {F_CLASS_IMPLICIT | F_CLASS_ZZ, {F_H1, F_NULL}, 0, 0},
 
 #define C_ZZ_B      (C_ZZ_H + 1)
-  {F_CLASS_IMPLICIT | F_CLASS_ZZ, {F_SIZEB1, F_NULL} },
+  {F_CLASS_IMPLICIT | F_CLASS_ZZ, {F_SIZEB1, F_NULL}, 0, 0},
 
 #define C_CC	    (C_ZZ_B + 1)
   { F_CLASS_OPTIONAL | F_CLASS_EXTEND | F_CLASS_COND,
@@ -1705,160 +1726,173 @@ const struct arc_flag_class arc_flag_classes[] =
       F_CARRY, F_CARRYSET, F_LOWER, F_CARRYCLR,
       F_NOTCARRY, F_HIGHER, F_OVERFLOWSET, F_OVERFLOW,
       F_NOTOVERFLOW, F_OVERFLOWCLR, F_GT, F_GE, F_LT,
-      F_LE, F_HI, F_LS, F_PNZ, F_NJ, F_NM, F_NO_T, F_NULL } },
+      F_LE, F_HI, F_LS, F_PNZ, F_NJ, F_NM, F_NO_T, F_NULL }, 0, 0},
 
 #define C_AA_ADDR3  (C_CC + 1)
 #define C_AA27	    (C_CC + 1)
-  { F_CLASS_OPTIONAL | F_CLASS_WB, { F_A3, F_AW3, F_AB3, F_AS3, F_NULL } },
+  { F_CLASS_OPTIONAL | F_CLASS_WB, { F_A3, F_AW3, F_AB3, F_AS3, F_NULL }, 0, 0},
 #define C_AA_ADDR9  (C_AA_ADDR3 + 1)
 #define C_AA21	     (C_AA_ADDR3 + 1)
-  { F_CLASS_OPTIONAL | F_CLASS_WB, { F_A9, F_AW9, F_AB9, F_AS9, F_NULL } },
+  { F_CLASS_OPTIONAL | F_CLASS_WB, { F_A9, F_AW9, F_AB9, F_AS9, F_NULL }, 0, 0},
 #define C_AA_ADDR22 (C_AA_ADDR9 + 1)
 #define C_AA8	   (C_AA_ADDR9 + 1)
-  { F_CLASS_OPTIONAL | F_CLASS_WB, { F_A22, F_AW22, F_AB22, F_AS22, F_NULL } },
+  { F_CLASS_OPTIONAL | F_CLASS_WB,
+    { F_A22, F_AW22, F_AB22, F_AS22, F_NULL }, 0, 0},
 
 #define C_F	    (C_AA_ADDR22 + 1)
-  { F_CLASS_OPTIONAL, { F_FLAG, F_NULL } },
+  { F_CLASS_OPTIONAL, { F_FLAG, F_NULL }, 0, 0},
 #define C_FHARD	    (C_F + 1)
-  { F_CLASS_OPTIONAL, { F_FFAKE, F_NULL } },
+  { F_CLASS_OPTIONAL, { F_FFAKE, F_NULL }, 0, 0},
 #define C_AQ	    (C_FHARD + 1)
-  { F_CLASS_OPTIONAL, { F_AQ, F_RL, F_NULL } },
+  { F_CLASS_OPTIONAL, { F_AQ, F_RL, F_NULL }, 0, 0},
 
 #define C_ATOP      (C_AQ + 1)
   { F_CLASS_REQUIRED, {F_ATO_ADD, F_ATO_OR, F_ATO_AND, F_ATO_XOR, F_ATO_MINU,
-		       F_ATO_MAXU, F_ATO_MIN, F_ATO_MAX, F_NULL}},
+		       F_ATO_MAXU, F_ATO_MIN, F_ATO_MAX, F_NULL}, 0, 0},
 
 #define C_T	    (C_ATOP + 1)
-  { F_CLASS_OPTIONAL, { F_NT, F_T, F_NULL } },
+  { F_CLASS_OPTIONAL, { F_NT, F_T, F_NULL }, 0, 0},
 #define C_D	    (C_T + 1)
-  { F_CLASS_OPTIONAL, { F_ND, F_D, F_NULL } },
+  { F_CLASS_OPTIONAL, { F_ND, F_D, F_NULL }, 0, 0},
 #define C_DNZ_D     (C_D + 1)
-  { F_CLASS_OPTIONAL, { F_DNZ_ND, F_DNZ_D, F_NULL } },
+  { F_CLASS_OPTIONAL, { F_DNZ_ND, F_DNZ_D, F_NULL }, 0, 0},
 
 #define C_DHARD	    (C_DNZ_D + 1)
-  { F_CLASS_OPTIONAL, { F_DFAKE, F_NULL } },
+  { F_CLASS_OPTIONAL, { F_DFAKE, F_NULL }, 0, 0},
 
 #define C_DI20	    (C_DHARD + 1)
-  { F_CLASS_OPTIONAL, { F_DI11, F_NULL }},
+  { F_CLASS_OPTIONAL, { F_DI11, F_NULL }, 0, 0},
 #define C_DI14	    (C_DI20 + 1)
-  { F_CLASS_OPTIONAL, { F_DI14, F_NULL }},
+  { F_CLASS_OPTIONAL, { F_DI14, F_NULL }, 0, 0},
 #define C_DI16	    (C_DI14 + 1)
-  { F_CLASS_OPTIONAL, { F_DI15, F_NULL }},
+  { F_CLASS_OPTIONAL, { F_DI15, F_NULL }, 0, 0},
 #define C_DI26	    (C_DI16 + 1)
-  { F_CLASS_OPTIONAL, { F_DI5, F_NULL }},
+  { F_CLASS_OPTIONAL, { F_DI5, F_NULL }, 0, 0},
 
 #define C_X25	    (C_DI26 + 1)
-  { F_CLASS_OPTIONAL, { F_SIGN6, F_NULL }},
+  { F_CLASS_OPTIONAL, { F_SIGN6, F_NULL }, 0, 0},
 #define C_X15	   (C_X25 + 1)
-  { F_CLASS_OPTIONAL, { F_SIGN16, F_NULL }},
+  { F_CLASS_OPTIONAL, { F_SIGN16, F_NULL }, 0, 0},
 #define C_XHARD	   (C_X15 + 1)
 #define C_X	   (C_X15 + 1)
-  { F_CLASS_OPTIONAL, { F_SIGNX, F_NULL }},
+  { F_CLASS_OPTIONAL, { F_SIGNX, F_NULL }, 0, 0},
 
 #define C_ZZ13	      (C_X + 1)
-  { F_CLASS_OPTIONAL, { F_SIZEB17, F_SIZEW17, F_H17, F_NULL}},
+  { F_CLASS_OPTIONAL, { F_SIZEB17, F_SIZEW17, F_H17, F_NULL}, 0, 0},
 #define C_ZZ23	      (C_ZZ13 + 1)
-  { F_CLASS_OPTIONAL, { F_SIZEB7, F_SIZEW7, F_H7, F_NULL}},
+  { F_CLASS_OPTIONAL, { F_SIZEB7, F_SIZEW7, F_H7, F_NULL}, 0, 0},
 #define C_ZZ29	      (C_ZZ23 + 1)
-  { F_CLASS_OPTIONAL, { F_SIZEB1, F_SIZEW1, F_H1, F_NULL}},
+  { F_CLASS_OPTIONAL, { F_SIZEB1, F_SIZEW1, F_H1, F_NULL}, 0, 0},
 
 #define C_AS	    (C_ZZ29 + 1)
 #define C_AAHARD13  (C_ZZ29 + 1)
-  { F_CLASS_OPTIONAL, { F_ASFAKE, F_NULL}},
+  { F_CLASS_OPTIONAL, { F_ASFAKE, F_NULL}, 0, 0},
 
 #define C_NE	    (C_AS + 1)
-  { F_CLASS_REQUIRED, { F_NE, F_NULL}},
+  { F_CLASS_REQUIRED, { F_NE, F_NULL}, 0, 0},
 
   /* ARC NPS400 Support: See comment near head of file.  */
 #define C_NPS_CL     (C_NE + 1)
-  { F_CLASS_REQUIRED, { F_NPS_CL, F_NULL}},
+  { F_CLASS_REQUIRED, { F_NPS_CL, F_NULL}, 0, 0},
 
 #define C_NPS_NA     (C_NPS_CL + 1)
-  { F_CLASS_OPTIONAL, { F_NPS_NA, F_NULL}},
+  { F_CLASS_OPTIONAL, { F_NPS_NA, F_NULL}, 0, 0},
 
 #define C_NPS_SR     (C_NPS_NA + 1)
-  { F_CLASS_OPTIONAL, { F_NPS_SR, F_NULL}},
+  { F_CLASS_OPTIONAL, { F_NPS_SR, F_NULL}, 0, 0},
 
 #define C_NPS_M     (C_NPS_SR + 1)
-  { F_CLASS_OPTIONAL, { F_NPS_M, F_NULL}},
+  { F_CLASS_OPTIONAL, { F_NPS_M, F_NULL}, 0, 0},
 
 #define C_NPS_F     (C_NPS_M + 1)
-  { F_CLASS_OPTIONAL, { F_NPS_FLAG, F_NULL}},
+  { F_CLASS_OPTIONAL, { F_NPS_FLAG, F_NULL}, 0, 0},
 
 #define C_NPS_R     (C_NPS_F + 1)
-  { F_CLASS_OPTIONAL, { F_NPS_R, F_NULL}},
+  { F_CLASS_OPTIONAL, { F_NPS_R, F_NULL}, 0, 0},
 
 #define C_NPS_SCHD_RW     (C_NPS_R + 1)
-  { F_CLASS_REQUIRED, { F_NPS_RW, F_NPS_RD, F_NULL}},
+  { F_CLASS_REQUIRED, { F_NPS_RW, F_NPS_RD, F_NULL}, 0, 0},
 
 #define C_NPS_SCHD_TRIG     (C_NPS_SCHD_RW + 1)
-  { F_CLASS_REQUIRED, { F_NPS_WFT, F_NULL}},
+  { F_CLASS_REQUIRED, { F_NPS_WFT, F_NULL}, 0, 0},
 
 #define C_NPS_SCHD_IE     (C_NPS_SCHD_TRIG + 1)
-  { F_CLASS_OPTIONAL, { F_NPS_IE1, F_NPS_IE2, F_NPS_IE12, F_NULL}},
+  { F_CLASS_OPTIONAL, { F_NPS_IE1, F_NPS_IE2, F_NPS_IE12, F_NULL}, 0, 0},
 
 #define C_NPS_SYNC     (C_NPS_SCHD_IE + 1)
-  { F_CLASS_REQUIRED, { F_NPS_SYNC_RD, F_NPS_SYNC_WR, F_NULL}},
+  { F_CLASS_REQUIRED, { F_NPS_SYNC_RD, F_NPS_SYNC_WR, F_NULL}, 0, 0},
 
 #define C_NPS_HWS_OFF     (C_NPS_SYNC + 1)
-  { F_CLASS_REQUIRED, { F_NPS_HWS_OFF, F_NULL}},
+  { F_CLASS_REQUIRED, { F_NPS_HWS_OFF, F_NULL}, 0, 0},
 
 #define C_NPS_HWS_RESTORE     (C_NPS_HWS_OFF + 1)
-  { F_CLASS_REQUIRED, { F_NPS_HWS_RESTORE, F_NULL}},
+  { F_CLASS_REQUIRED, { F_NPS_HWS_RESTORE, F_NULL}, 0, 0},
 
 #define C_NPS_SX     (C_NPS_HWS_RESTORE + 1)
-  { F_CLASS_OPTIONAL, { F_NPS_SX, F_NULL}},
+  { F_CLASS_OPTIONAL, { F_NPS_SX, F_NULL}, 0, 0},
 
 #define C_NPS_AR_AL     (C_NPS_SX + 1)
-  { F_CLASS_REQUIRED, { F_NPS_AR, F_NPS_AL, F_NULL}},
+  { F_CLASS_REQUIRED, { F_NPS_AR, F_NPS_AL, F_NULL}, 0, 0},
 
 #define C_NPS_S    (C_NPS_AR_AL + 1)
-  { F_CLASS_REQUIRED, { F_NPS_S, F_NULL}},
+  { F_CLASS_REQUIRED, { F_NPS_S, F_NULL}, 0, 0},
 
 #define C_NPS_ZNCV    (C_NPS_S + 1)
-  { F_CLASS_REQUIRED, { F_NPS_ZNCV_RD, F_NPS_ZNCV_WR, F_NULL}},
+  { F_CLASS_REQUIRED, { F_NPS_ZNCV_RD, F_NPS_ZNCV_WR, F_NULL}, 0, 0},
 
 #define C_NPS_P0    (C_NPS_ZNCV + 1)
-  { F_CLASS_REQUIRED, { F_NPS_P0, F_NULL }},
+  { F_CLASS_REQUIRED, { F_NPS_P0, F_NULL }, 0, 0},
 
 #define C_NPS_P1    (C_NPS_P0 + 1)
-  { F_CLASS_REQUIRED, { F_NPS_P1, F_NULL }},
+  { F_CLASS_REQUIRED, { F_NPS_P1, F_NULL }, 0, 0},
 
 #define C_NPS_P2    (C_NPS_P1 + 1)
-  { F_CLASS_REQUIRED, { F_NPS_P2, F_NULL }},
+  { F_CLASS_REQUIRED, { F_NPS_P2, F_NULL }, 0, 0},
 
 #define C_NPS_P3    (C_NPS_P2 + 1)
-  { F_CLASS_REQUIRED, { F_NPS_P3, F_NULL }},
+  { F_CLASS_REQUIRED, { F_NPS_P3, F_NULL }, 0, 0},
 
 #define C_NPS_LDBIT_DI    (C_NPS_P3 + 1)
-  { F_CLASS_REQUIRED, { F_NPS_LDBIT_DI, F_NULL }},
+  { F_CLASS_REQUIRED, { F_NPS_LDBIT_DI, F_NULL }, 0, 0},
 
 #define C_NPS_LDBIT_CL1    (C_NPS_LDBIT_DI + 1)
-  { F_CLASS_OPTIONAL, { F_NPS_LDBIT_CL1, F_NULL }},
+  { F_CLASS_OPTIONAL, { F_NPS_LDBIT_CL1, F_NULL }, 0, 0},
 
 #define C_NPS_LDBIT_CL2    (C_NPS_LDBIT_CL1 + 1)
-  { F_CLASS_OPTIONAL, { F_NPS_LDBIT_CL2, F_NULL }},
+  { F_CLASS_OPTIONAL, { F_NPS_LDBIT_CL2, F_NULL }, 0, 0},
 
 #define C_NPS_LDBIT_X_1    (C_NPS_LDBIT_CL2 + 1)
-  { F_CLASS_OPTIONAL, { F_NPS_LDBIT_X2_1, F_NPS_LDBIT_X4_1, F_NULL }},
+  { F_CLASS_OPTIONAL, { F_NPS_LDBIT_X2_1, F_NPS_LDBIT_X4_1, F_NULL }, 0, 0},
 
 #define C_NPS_LDBIT_X_2    (C_NPS_LDBIT_X_1 + 1)
-  { F_CLASS_OPTIONAL, { F_NPS_LDBIT_X2_2, F_NPS_LDBIT_X4_2, F_NULL }},
+  { F_CLASS_OPTIONAL, { F_NPS_LDBIT_X2_2, F_NPS_LDBIT_X4_2, F_NULL }, 0, 0},
 
 #define C_NPS_CORE     (C_NPS_LDBIT_X_2 + 1)
-  { F_CLASS_REQUIRED, { F_NPS_CORE, F_NULL}},
+  { F_CLASS_REQUIRED, { F_NPS_CORE, F_NULL}, 0, 0},
 
 #define C_NPS_CLSR     (C_NPS_CORE + 1)
-  { F_CLASS_REQUIRED, { F_NPS_CLSR, F_NULL}},
+  { F_CLASS_REQUIRED, { F_NPS_CLSR, F_NULL}, 0, 0},
 
 #define C_NPS_ALL     (C_NPS_CLSR + 1)
-  { F_CLASS_REQUIRED, { F_NPS_ALL, F_NULL}},
+  { F_CLASS_REQUIRED, { F_NPS_ALL, F_NULL}, 0, 0},
 
 #define C_NPS_GIC     (C_NPS_ALL + 1)
-  { F_CLASS_REQUIRED, { F_NPS_GIC, F_NULL}},
+  { F_CLASS_REQUIRED, { F_NPS_GIC, F_NULL}, 0, 0},
 
 #define C_NPS_RSPI_GIC     (C_NPS_GIC + 1)
-  { F_CLASS_REQUIRED, { F_NPS_RSPI_GIC, F_NULL}},
+  { F_CLASS_REQUIRED, { F_NPS_RSPI_GIC, F_NULL}, 0, 0},
+
+  /* Conditinal Flags used by floating point conditional move
+     instruction.  */
+#define C_FPCC	    (C_NPS_RSPI_GIC + 1)
+  { F_CLASS_OPTIONAL | F_CLASS_EXTEND | F_CLASS_COND,
+    { F_ALWAYS, F_RA, F_EQUAL, F_ZERO, F_NOTEQUAL,
+      F_NOTZERO, F_POZITIVE, F_PL, F_NEGATIVE, F_MINUS,
+      F_CARRY, F_CARRYSET, F_LOWER, F_CARRYCLR,
+      F_NOTCARRY, F_HIGHER, F_OVERFLOWSET, F_OVERFLOW,
+      F_NOTOVERFLOW, F_OVERFLOWCLR, F_GT, F_GE, F_LT,
+      F_LE, F_HI, F_LS, F_PNZ, F_NJ, F_NM, F_NO_T, F_NULL },
+    insert_fs2, extract_fs2},
 };
 
 const unsigned char flags_none[] = { 0 };
@@ -2650,7 +2684,36 @@ const struct arc_operand arc_operands[] =
 
 #define NPS_PROTO_SIZE         (NPS_UIMM16_0_64 + 1)
   { 6, 16, 0, ARC_OPERAND_UNSIGNED | ARC_OPERAND_NCHK,
-    insert_nps_proto_size, extract_nps_proto_size }
+    insert_nps_proto_size, extract_nps_proto_size },
+
+  /* ARC64's floating point registers.  */
+#define FA  (NPS_PROTO_SIZE + 1)
+  { 5, 6, 0, ARC_OPERAND_IR | ARC_OPERAND_FP, 0, 0 },
+#define FB  (FA + 1)
+  { 5, 0, 0, ARC_OPERAND_IR | ARC_OPERAND_FP, 0, 0 },
+#define FC  (FB + 1)
+  { 5, 0, 0, ARC_OPERAND_IR | ARC_OPERAND_FP, insert_fs2, extract_fs2 },
+#define FD  (FC + 1)
+  { 5, 19, 0, ARC_OPERAND_IR | ARC_OPERAND_FP, 0, 0},
+
+  /* Double 128 registers, the same like above but only the odd ones
+     allowed.  */
+#define FDA  (FD + 1)
+  { 5, 6, 0, ARC_OPERAND_IR | ARC_OPERAND_FP | ARC_OPERAND_TRUNCATE, 0, 0 },
+#define FDB  (FDA + 1)
+  { 5, 0, 0, ARC_OPERAND_IR | ARC_OPERAND_FP | ARC_OPERAND_TRUNCATE, 0, 0 },
+#define FDC  (FDB + 1)
+  { 5, 0, 0, ARC_OPERAND_IR | ARC_OPERAND_FP | ARC_OPERAND_TRUNCATE,
+    insert_fs2, extract_fs2 },
+#define FDD  (FDC + 1)
+  { 5, 19, 0, ARC_OPERAND_IR | ARC_OPERAND_FP | ARC_OPERAND_TRUNCATE, 0, 0},
+
+  /* 5bit integer registers used by fp instructions.  */
+#define FRD   (FDD + 1)
+  { 5, 6, 0, ARC_OPERAND_IR, 0, 0 },
+#define FRB   (FRD + 1)
+  { 5, 0, 0, ARC_OPERAND_IR, insert_fs2, extract_fs2 }
+
 };
 const unsigned arc_num_operands = ARRAY_SIZE (arc_operands);
 
@@ -2737,6 +2800,7 @@ const struct arc_opcode arc_opcodes[] =
 #include "arc-tbl.h"
 #include "arc-nps400-tbl.h"
 #include "arc-ext-tbl.h"
+#include "arc64-fp-tbl.h"
 
   { NULL, 0, 0, 0, 0, 0, { 0 }, { 0 } }
 };

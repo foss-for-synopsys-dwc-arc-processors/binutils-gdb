@@ -1721,6 +1721,7 @@ parse_opcode_flags (const struct arc_opcode *opcode,
                       /* Found it.  */
                       cl_matches++;
                       pflag->flgp = pf;
+		      pflag->insert = cl_flags->insert;
                       lnflg--;
                       break;
                     }
@@ -1744,6 +1745,7 @@ parse_opcode_flags (const struct arc_opcode *opcode,
                     return FALSE;
                   cl_matches++;
                   pflag->flgp = flg_operand;
+		  pflag->insert = cl_flags->insert;
                   lnflg--;
                   break; /* goto next flag class and parsed flag.  */
                 }
@@ -2648,6 +2650,25 @@ declare_register_set (void)
     }
 }
 
+/* Helper use for declaration of fp refisters.  */
+static void
+declare_fp_set (void)
+{
+  int i;
+  for (i = 0; i < 32; ++i)
+    {
+      char name[32];
+
+      sprintf (name, "f%d", i);
+      declare_register (name, i);
+      if ((i & 0x01) == 0)
+	{
+	  sprintf (name, "f%df%d", i, i+1);
+	  declare_register (name, i);
+	}
+    }
+}
+
 /* Construct a symbol for an address type.  */
 
 static void
@@ -2712,7 +2733,10 @@ md_begin (void)
 
   declare_register_set ();
   if (selected_cpu.mach == bfd_mach_arcv3_64)
-    declare_register ("gp", 30);
+    {
+      declare_register ("gp", 30);
+      declare_fp_set ();
+    }
   else
     declare_register ("gp", 26);
   declare_register ("fp", 27);
@@ -4272,8 +4296,22 @@ assemble_insn (const struct arc_opcode *opcode,
 	    }
 	}
       else
-	image |= (flg_operand->code & ((1 << flg_operand->bits) - 1))
-	  << flg_operand->shift;
+	{
+	  unsigned int flag_encoding;
+	  flag_encoding = (flg_operand->code & ((1 << flg_operand->bits) - 1));
+
+	  if (pflags[i].insert)
+	    {
+	      /* We can have a special flag which needs an insertion
+		 function.  */
+	      const char *errmsg = NULL;
+	      image = (*pflags[i].insert) (image, flag_encoding, &errmsg);
+	    }
+	  else
+	    {
+	      image |= flag_encoding << flg_operand->shift;
+	    }
+	}
     }
 
   insn->relax = relax_insn_p (opcode, tok, ntok, pflags, nflg);

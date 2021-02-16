@@ -93,6 +93,14 @@ static const char * const regnames[64] =
   "r56", "r57", "r58", "r59", "lp_count", "reserved", "LIMM", "pcl"
 };
 
+static const char * const fpnames[32] =
+{
+  "f0", "f1", "f2", "f3", "f4", "f5", "f6", "f7",
+  "f8", "f9", "f10", "f11", "f12", "f13", "f14", "f15",
+  "f16", "f17", "f18", "f19", "f20", "f21", "f22", "f23",
+  "f24", "f25", "f26", "f27", "f28", "f29", "f30", "f31"
+};
+
 static const char * const addrtypenames[ARC_NUM_ADDRTYPES] =
 {
   "bd", "jid", "lbd", "mbd", "sd", "sm", "xa", "xd",
@@ -126,7 +134,6 @@ static unsigned enforced_isa_mask = ARC_OPCODE_NONE;
 static bfd_boolean print_hex = FALSE;
 
 /* Macros section.  */
-
 #ifdef DEBUG
 # define pr_debug(fmt, args...) fprintf (stderr, fmt, ##args)
 #else
@@ -283,7 +290,7 @@ find_format_from_table (struct disassemble_info *info,
       if (arc_opcode_len (opcode) != (int) insn_len)
 	continue;
 
-      if ((insn & opcode->mask) != opcode->opcode)
+      if ((insn & opcode->mask) != (opcode->mask & opcode->opcode))
 	continue;
 
       *has_limm = FALSE;
@@ -345,11 +352,15 @@ find_format_from_table (struct disassemble_info *info,
 
 	  for (flgopridx = cl_flags->flags; *flgopridx; ++flgopridx)
 	    {
+	      bfd_boolean tmp = FALSE;
 	      const struct arc_flag_operand *flg_operand =
 		&arc_flag_operands[*flgopridx];
 
-	      value = (insn >> flg_operand->shift)
-		& ((1 << flg_operand->bits) - 1);
+	      if (cl_flags->extract)
+		value = (*cl_flags->extract)(insn, &tmp);
+	      else
+		value = (insn >> flg_operand->shift)
+		  & ((1 << flg_operand->bits) - 1);
 	      if (value == flg_operand->code)
 		foundA = 1;
 	      if (value)
@@ -546,8 +557,14 @@ print_flags (const struct arc_opcode *opcode,
 	  if (!flg_operand->favail)
 	    continue;
 
-	  value = (insn[0] >> flg_operand->shift)
-	    & ((1 << flg_operand->bits) - 1);
+	  if (cl_flags->extract)
+	    {
+	      bfd_boolean tmp = FALSE;
+	      value = (*cl_flags->extract)(insn[0], &tmp);
+	    }
+	  else
+	    value = (insn[0] >> flg_operand->shift)
+	      & ((1 << flg_operand->bits) - 1);
 	  if (value == flg_operand->code)
 	    {
 	       /* FIXME!: print correctly nt/t flag.  */
@@ -675,7 +692,8 @@ arc_insn_length (bfd_byte msb, bfd_byte lsb, struct disassemble_info *info)
       break;
 
     case bfd_mach_arcv3_64:
-      if (major_opcode == 0x0b)
+      if (major_opcode == 0x0b
+	  || major_opcode == 0x1c)
 	return 4;
       /* Fall through.  */
     case bfd_mach_arc_arcv2:
@@ -1281,10 +1299,15 @@ print_insn_arc (bfd_vma memaddr,
 	{
 	  const char *rname;
 
-	  assert (value >=0 && value < 64);
+	  assert (value >= 0 && value < 64);
 	  rname = arcExtMap_coreRegName (value);
 	  if (!rname)
-	    rname = regnames[value];
+	    {
+	      if (operand->flags & ARC_OPERAND_FP)
+		rname = fpnames[value & 0x1f];
+	      else
+		rname = regnames[value];
+	    }
 	  (*info->fprintf_func) (info->stream, "%s", rname);
 
 	  /* Check if we have a double register to print.  */
@@ -1293,7 +1316,9 @@ print_insn_arc (bfd_vma memaddr,
 	      if ((value & 0x01) == 0)
 		{
 		  rname = arcExtMap_coreRegName (value + 1);
-		  if (!rname)
+		  if (operand->flags & ARC_OPERAND_FP)
+		    rname = fpnames[(value + 1) & 0x1f];
+		  else
 		    rname = regnames[value + 1];
 		}
 	      else
