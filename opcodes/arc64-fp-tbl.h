@@ -125,27 +125,37 @@
 #define MINSNFMVI2F (MASK_32BIT (~(FIELDS2 (31) | FIELDD (31))))
 
 /* Define FMVF2I */
-#define INSNFMVF2I(CVTF, BIT) ((0x1C << 27) | (0x07 << 21) | FIELDCVTF (CVTF) \
+#define INSNFMVF2I(CVTF, BIT) ((0x1C << 27) | (0x03 << 21) | FIELDCVTF (CVTF) \
 			       | (1 << 5) | (1 << 4) | (1))
 #define MINSNFMVF2I (MASK_32BIT (~(FIELDS2 (31) | FIELDD (31))))
 
 /* Define FP_LOAD */
 #define FP_LOAD_ENCODING(SIZE)  (0x1C << 27 | ((SIZE & 0x03) << 1))
-#define MSK_FP_LOAD (MASK_32BIT (~(FIELDB (31) | FIELDD (31) | (0x03 << 3) \
+#define MSK_FP_LOAD (MASK_32BIT (~(FIELDB (63) | FIELDD (31) | (0x03 << 3) \
 				   | (0x1F << 15))))
+
+#define FP_LSYM_ENCODING(SIZE)  (0x1C << 27 | ((SIZE & 0x03) << 1) | FIELDB(62))
+#define MSK_FP_SYM  (MASK_32BIT (~(FIELDD (31))))
+
 /* Define FP_STORE */
 #define FP_STORE_ENCODING(SIZE)  ((0x1C << 27) | ((SIZE & 0x03) << 1) | (1))
-#define MSK_FP_STORE (MASK_32BIT (~(FIELDB (31) | FIELDD (31) | (0x03 << 3) \
+#define MSK_FP_STORE (MASK_32BIT (~(FIELDB (63) | FIELDD (31) | (0x03 << 3) \
 				   | (0x1F << 15))))
+#define FP_SSYM_ENCODING(SIZE)  (0x1C << 27 | ((SIZE & 0x03) << 1) \
+				 | FIELDB(62) | (1))
 
 /* FP Load/Store.  */
 #define FP_LOAD(NAME,SIZE)						\
   { #NAME, FP_LOAD_ENCODING(SIZE), MSK_FP_LOAD, ARC_OPCODE_ARC64, LOAD,	\
-    NONE, { FA, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_AA27 } },
+    NONE, { FA, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_AA27 } },		\
+  { #NAME, FP_LSYM_ENCODING(SIZE), MSK_FP_SYM, ARC_OPCODE_ARC64, LOAD,	\
+    NONE, { FA, BRAKET, LIMM, BRAKETdup }, FL_NONE },
 
 #define FP_STORE(NAME,SIZE)						\
   { #NAME, FP_STORE_ENCODING(SIZE), MSK_FP_STORE, ARC_OPCODE_ARC64, STORE, \
-    NONE, { FA, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_AA27 } },
+    NONE, { FA, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_AA27 } },		\
+  { #NAME, FP_SSYM_ENCODING(SIZE), MSK_FP_SYM, ARC_OPCODE_ARC64, LOAD,	\
+    NONE, { FA, BRAKET, LIMM, BRAKETdup }, FL_NONE },
 
 /* Macros used to generate conversion instructions.  */
 #define FMVF2I_INSN(NAME, CPU, CLASS, SCLASS, OPS, BIT, ARG)		\
@@ -402,12 +412,12 @@ FP_CVF2F (fd2s, FD2S, 0x04)
 FP_RND (fsrnd, FSRND, 0x06)
 FP_RND (fdrnd, FDRND, 0x06)
 
-FP_CVF2I (f2uint_rz,  F2UINT_RZ,  0x09)
+FP_CVF2I (fs2uint_rz,  F2UINT_RZ,  0x09)
 FP_CVF2I (fs2ul_rz,   FS2UL_RZ,   0x09)
 FP_CVF2I (fd2uint_rz, FD2UINT_RZ, 0x09)
 FP_CVF2I (fd2ul_rz,   FD2UL_RZ,   0x09)
 
-FP_CVF2I (fsint_rz,  FSINT_RZ,  0x0B)
+FP_CVF2I (fs2int_rz,  FSINT_RZ,  0x0B)
 FP_CVF2I (fs2l_rz,   FS2L_RZ,   0x0B)
 FP_CVF2I (fd2int_rz, FD2INT_RZ, 0x0B)
 FP_CVF2I (fd2l_rz,   FD2L_RZ,   0x0B)
