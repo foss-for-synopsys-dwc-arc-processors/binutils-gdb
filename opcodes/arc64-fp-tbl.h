@@ -132,7 +132,7 @@
 /* Define FP_LOAD */
 #define FP_LOAD_ENCODING(SIZE)  (0x1C << 27 | ((SIZE & 0x03) << 1))
 #define MSK_FP_LOAD (MASK_32BIT (~(FIELDB (63) | FIELDD (31) | (0x03 << 3) \
-				   | (0x1F << 15))))
+				   | (0x1FF << 15))))
 
 #define FP_LSYM_ENCODING(SIZE)  (0x1C << 27 | ((SIZE & 0x03) << 1) | FIELDB(62))
 #define MSK_FP_SYM  (MASK_32BIT (~(FIELDD (31))))
@@ -140,7 +140,7 @@
 /* Define FP_STORE */
 #define FP_STORE_ENCODING(SIZE)  ((0x1C << 27) | ((SIZE & 0x03) << 1) | (1))
 #define MSK_FP_STORE (MASK_32BIT (~(FIELDB (63) | FIELDD (31) | (0x03 << 3) \
-				   | (0x1F << 15))))
+				   | (0x1FF << 15))))
 #define FP_SSYM_ENCODING(SIZE)  (0x1C << 27 | ((SIZE & 0x03) << 1) \
 				 | FIELDB(62) | (1))
 
