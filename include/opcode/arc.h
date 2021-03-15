@@ -498,8 +498,10 @@ extern const unsigned arc_num_relax_opcodes;
 #define FIELDC(word) ((word & 0x3F) << 6)
 #define FIELDF	     (0x01 << 15)
 #define FIELDQ	     (0x1F)
+#define HARD_FIELDF  (0x00)
 
-#define INSN3OP(MOP,SOP)	(((MOP & 0x1F) << 27) | ((SOP & 0x3F) << 16))
+#define INSN3OP(MOP,SOP)	\
+  (((MOP & 0x1F) << 27) | ((SOP & 0x3F) << 16) | HARD_FIELDF)
 #define INSN2OPX(MOP,SOP1,SOP2) (INSN3OP (MOP,SOP1) | (SOP2 & 0x3F))
 #define INSN2OP(MOP,SOP)	(INSN2OPX (MOP,0x2F,SOP))
 
