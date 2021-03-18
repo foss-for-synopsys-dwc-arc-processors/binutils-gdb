@@ -2694,7 +2694,11 @@ const struct arc_operand arc_operands[] =
 #define FRD   (FDD + 1)
   { 5, 6, 0, ARC_OPERAND_IR, 0, 0 },
 #define FRB   (FRD + 1)
-  { 5, 0, 0, ARC_OPERAND_IR, insert_fs2, extract_fs2 }
+  { 5, 0, 0, ARC_OPERAND_IR, insert_fs2, extract_fs2 },
+
+  /* 5bit unsigned immediate used by vfext and vfins.  */
+#define UIMM5_FP   (FRB + 1)
+  {5, 0, 0, ARC_OPERAND_UNSIGNED, insert_fs2, extract_fs2 }
 
 };
 const unsigned arc_num_operands = ARRAY_SIZE (arc_operands);

@@ -100,9 +100,6 @@ extern const char *arc_target_format (void);
    fixp->fx_frag->fr_address.  */
 #define MD_PCREL_FROM_SECTION(FIX, SEC) md_pcrel_from_section (FIX, SEC)
 
-/* [ ] is index operator.  */
-#define NEED_INDEX_OPERATOR
-
 #define MAX_MEM_FOR_RS_ALIGN_CODE (1+2)
 
 /* HANDLE_ALIGN called after all the assembly has been done,
