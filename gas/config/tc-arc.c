@@ -1263,8 +1263,11 @@ tokenize_arguments (char *str,
 	  ++num_args;
 	  break;
 
-	case '{':
 	case '[':
+	  /* Silence the error detection.  */
+	  saw_comma = TRUE;
+	  /* fallthru */
+	case '{':
 	  input_line_pointer++;
 	  if (brk_lvl || num_args == ntok)
 	    goto err;
@@ -1334,8 +1337,8 @@ tokenize_arguments (char *str,
 	  debug_exp (tok);
 
 	  if (tok->X_op == O_illegal
-              || tok->X_op == O_absent
-              || num_args == ntok)
+	      || tok->X_op == O_absent
+	      || num_args == ntok)
 	    goto err;
 
 	  saw_comma = FALSE;
