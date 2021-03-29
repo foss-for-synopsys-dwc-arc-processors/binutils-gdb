@@ -86,6 +86,16 @@ insert_fs2 (unsigned long long  insn,
   return insn | ((value & 0x07) << 24) | (((value >> 3) & 0x03) << 12);
 }
 
+/* Insert address writeback mode for 128-bit load/store.  */
+
+static unsigned long long
+insert_qq (unsigned long long  insn,
+	   long long           value,
+	   const char **       errmsg ATTRIBUTE_UNUSED)
+{
+  return insn | ((value & 0x01) << 11) | ((value & 0x02) << (6-1));
+}
+
 static long long
 extract_rb (unsigned long long  insn,
 	    bfd_boolean *       invalid)
@@ -120,6 +130,17 @@ extract_fs2 (unsigned long long  insn,
 {
   long long value;
   value = (((insn >> 12) & 0x03) << 3) | ((insn >> 24) & 0x07);
+  return value;
+}
+
+/* Extract address writeback mode for 128-bit load/store.  */
+
+static long long
+extract_qq (unsigned long long  insn,
+	    bfd_boolean *       invalid ATTRIBUTE_UNUSED)
+{
+  long long value;
+  value = ((insn & 0x800) >> 11) | ((insn & 0x40) >> (6-1));
   return value;
 }
 
@@ -1495,9 +1516,26 @@ const struct arc_flag_operand arc_flag_operands[] =
   { "as", 3, 2, 22, 1 },
 #define F_ASFAKE   (F_AS22 + 1)
   { "as", 0, 0, 0, 1 },
+/* address writebacks for 128-bit load/stores.
+   ,---.---.----------.
+   | X | D | mnemonic |
+   |---+---+----------|
+   | 0 | 0 | none     |
+   | 0 | 1 | as       |
+   | 1 | 0 | a/aw     |
+   | 1 | 1 | ab       |
+   `---^---^----------'  */
+#define F_AA128     (F_ASFAKE + 1)
+  { "a", 2, 2, 15, 0 },
+#define F_AA128W    (F_AA128 + 1)
+  { "aw", 2, 2, 15, 1 },
+#define F_AA128B    (F_AA128W + 1)
+  { "ab", 3, 2, 15, 1 },
+#define F_AA128S    (F_AA128B + 1)
+  { "as", 1, 2, 15, 1 },
 
   /* Cache bypass.  */
-#define F_DI5     (F_ASFAKE + 1)
+#define F_DI5     (F_AA128S + 1)
   { "di", 1, 1, 5, 1 },
 #define F_DI11    (F_DI5 + 1)
   { "di", 1, 1, 11, 1 },
@@ -1885,6 +1923,15 @@ const struct arc_flag_class arc_flag_classes[] =
       F_NOTOVERFLOW, F_OVERFLOWCLR, F_GT, F_GE, F_LT,
       F_LE, F_HI, F_LS, F_PNZ, F_NJ, F_NM, F_NO_T, F_NULL },
     insert_fs2, extract_fs2},
+
+/* The address writeback for 128-bit load/store.  */
+#define C_AA_128    (C_FPCC + 1)
+  { F_CLASS_OPTIONAL | F_CLASS_WB, { F_AA128, F_AA128W, F_AA128B, F_AA128S, F_NULL }, 0, 0},
+
+/* The scattered version of address writeback for 128-bit load/store.  */
+#define C_AA_128S    (C_AA_128 + 1)
+  { F_CLASS_OPTIONAL | F_CLASS_WB, { F_AA128, F_AA128W, F_AA128B, F_AA128S, F_NULL }, insert_qq, extract_qq},
+
 };
 
 const unsigned char flags_none[] = { 0 };
