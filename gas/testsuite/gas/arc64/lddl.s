@@ -2,9 +2,9 @@
 
   ; Sometimes, there are "odd" numbered registers as the destination.
   ; They are intended to be that way, because such encoding is valid.
-  ; However, the processor may raise an exception encountering them.
-  ; Moreover, the assembler allows using writebacks (a/aw/ab) for
-  ; immediates, which in practice has no effect.
+  ; However, the processor will raise an illegal exception when
+  ; executing those.  The same is true when numbers are used as the
+  ; base register while there are writebacks (a/aw/ab) in place.
 
   lddl r0, [r1,r2]               ; lddl a, [b, c]
   lddl r3, [r2,256]              ; lddl a, [b, limm]  (limm > s9)
