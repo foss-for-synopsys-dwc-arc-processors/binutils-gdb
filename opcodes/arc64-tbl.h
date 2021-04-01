@@ -6821,7 +6821,7 @@
 /* lddl<.aa> a,b,c    00100bbb1111001QQBBBCCCCCCAAAAAA -> lddl a,[b,c]     */
 /* lddl<.aa> a,b,ximm 00100bbb1111001QQBBB111100AAAAAA -> lddl a,[b,c=60]  */
 /* lddl<.aa> a,b,limm 00100bbb1111001QQBBB111110AAAAAA -> lddl a,[b,c=62]  */
-/* lddl<.aa> a,ximm,c 001001101111001QQ111CCCCCCAAAAAA -> lddl a,[b=60,c]  */
+/* lddl<.aa> a,ximm,c 001001001111001QQ111CCCCCCAAAAAA -> lddl a,[b=60,c]  */
 /* lddl<.aa> a,limm,c 001001101111001QQ111CCCCCCAAAAAA -> lddl a,[b=62,c]  */
 { "lddl", 0x20F20000, 0xF8FE0000, ARC_OPCODE_ARC64, LOAD, NONE, { RA_CHK, BRAKET, RB, RC, BRAKETdup }, { C_AA_128 }},
 
