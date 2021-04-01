@@ -3,8 +3,7 @@
   ; Sometimes, there are "odd" numbered registers as the destination.
   ; They are intended to be that way, because such encoding is valid.
   ; However, the processor will raise an illegal exception when
-  ; executing those.  The same is true when numbers are used as the
-  ; base register while there are writebacks (a/aw/ab) in place.
+  ; executing those.
 
   lddl r0, [r1,r2]               ; lddl a, [b, c]
   lddl r3, [r2,256]              ; lddl a, [b, limm]  (limm > s9)
@@ -24,44 +23,26 @@
   lddl.a r0, [r1,r2]
   lddl.a r3, [r2,256]
   lddl.a r2, [r2,-257]
-  lddl.a r4, [0x80000000,r5]
-  lddl.a r4, [-100,r5]
 
   lddl.a r2, [r0]
   lddl.a r6, [r7,255]
   lddl.a r6, [r7,-256]
-  lddl.a r4, [-256,r5]
-  lddl.a r1, [0x13371338]
-  lddl.a r2, [0x80000000]
-  lddl.a r2, [-2147483648]
 
   lddl.aw r0, [r1,r2]
   lddl.aw r3, [r2,256]
   lddl.aw r2, [r2,-257]
-  lddl.aw r4, [0x80000000,r5]
-  lddl.aw r4, [-100,r5]
 
   lddl.aw r2, [r0]
   lddl.aw r6, [r7,255]
   lddl.aw r6, [r7,-256]
-  lddl.aw r4, [-256,r5]
-  lddl.aw r1, [0x13371338]
-  lddl.aw r2, [0x80000000]
-  lddl.aw r2, [-2147483648]
   
   lddl.ab r0, [r1,r2]
   lddl.ab r3, [r2,256]
   lddl.ab r2, [r2,-257]
-  lddl.ab r4, [0x80000000,r5]
-  lddl.ab r4, [-100,r5]
 
   lddl.ab r2, [r0]
   lddl.ab r6, [r7,255]
   lddl.ab r6, [r7,-256]
-  lddl.ab r4, [-256,r5]
-  lddl.ab r1, [0x13371338]
-  lddl.ab r2, [0x80000000]
-  lddl.ab r2, [-2147483648]
 
   lddl.as r0, [r1,r2]
   lddl.as r3, [r2,256]

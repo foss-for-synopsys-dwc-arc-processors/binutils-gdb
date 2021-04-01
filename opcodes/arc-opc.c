@@ -1941,9 +1941,17 @@ const struct arc_flag_class arc_flag_classes[] =
 #define C_AA_128    (C_FPCC + 1)
   { F_CLASS_OPTIONAL | F_CLASS_WB, { F_AA128, F_AA128W, F_AA128B, F_AA128S, F_NULL }, 0, 0},
 
+  /* The address scaling for 128-bit loads.  */
+#define C_AS_128    (C_AA_128 + 1)
+  { F_CLASS_OPTIONAL, { F_AA128S, F_NULL }, 0, 0},
+
 /* The scattered version of address writeback for 128-bit loads.  */
-#define C_AA_128S    (C_AA_128 + 1)
+#define C_AA_128S    (C_AS_128 + 1)
   { F_CLASS_OPTIONAL | F_CLASS_WB, { F_AA128, F_AA128W, F_AA128B, F_AA128S, F_NULL }, insert_qq, extract_qq},
+
+/* The scattered version of address sacling for 128-bit loads.  */
+#define C_AS_128S    (C_AA_128S + 1)
+  { F_CLASS_OPTIONAL, { F_AA128S, F_NULL }, insert_qq, extract_qq},
 
 };
 
