@@ -86,7 +86,7 @@ insert_fs2 (unsigned long long  insn,
   return insn | ((value & 0x07) << 24) | (((value >> 3) & 0x03) << 12);
 }
 
-/* Insert address writeback mode for 128-bit load/store.  */
+/* Insert address writeback mode for 128-bit loads.  */
 
 static unsigned long long
 insert_qq (unsigned long long  insn,
@@ -133,7 +133,7 @@ extract_fs2 (unsigned long long  insn,
   return value;
 }
 
-/* Extract address writeback mode for 128-bit load/store.  */
+/* Extract address writeback mode for 128-bit loads.  */
 
 static long long
 extract_qq (unsigned long long  insn,
@@ -1529,7 +1529,7 @@ const struct arc_flag_operand arc_flag_operands[] =
   { "as", 3, 2, 22, 1 },
 #define F_ASFAKE   (F_AS22 + 1)
   { "as", 0, 0, 0, 1 },
-/* address writebacks for 128-bit load/stores.
+/* address writebacks for 128-bit loads.
    ,---.---.----------.
    | X | D | mnemonic |
    |---+---+----------|
@@ -1937,11 +1937,11 @@ const struct arc_flag_class arc_flag_classes[] =
       F_LE, F_HI, F_LS, F_PNZ, F_NJ, F_NM, F_NO_T, F_NULL },
     insert_fs2, extract_fs2},
 
-/* The address writeback for 128-bit load/store.  */
+/* The address writeback for 128-bit loads.  */
 #define C_AA_128    (C_FPCC + 1)
   { F_CLASS_OPTIONAL | F_CLASS_WB, { F_AA128, F_AA128W, F_AA128B, F_AA128S, F_NULL }, 0, 0},
 
-/* The scattered version of address writeback for 128-bit load/store.  */
+/* The scattered version of address writeback for 128-bit loads.  */
 #define C_AA_128S    (C_AA_128 + 1)
   { F_CLASS_OPTIONAL | F_CLASS_WB, { F_AA128, F_AA128W, F_AA128B, F_AA128S, F_NULL }, insert_qq, extract_qq},
 
