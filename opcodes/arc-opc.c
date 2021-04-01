@@ -1769,8 +1769,10 @@ const struct arc_flag_class arc_flag_classes[] =
 #define C_AA_ADDR3  (C_CC + 1)
 #define C_AA27	    (C_CC + 1)
   { F_CLASS_OPTIONAL | F_CLASS_WB, { F_A3, F_AW3, F_AB3, F_AS3, F_NULL }, 0, 0},
-#define C_AA_ADDR9  (C_AA_ADDR3 + 1)
-#define C_AA21	     (C_AA_ADDR3 + 1)
+#define C_AS27	    (C_AA_ADDR3 + 1)
+  { F_CLASS_OPTIONAL, { F_AS3, F_NULL }, 0, 0},
+#define C_AA_ADDR9  (C_AS27 + 1)
+#define C_AA21	     (C_AS27 + 1)
   { F_CLASS_OPTIONAL | F_CLASS_WB, { F_A9, F_AW9, F_AB9, F_AS9, F_NULL }, 0, 0},
 #define C_AAB21	     (C_AA21 + 1)
   { F_CLASS_OPTIONAL | F_CLASS_WB, { F_A9, F_AW9, F_AB9, F_NULL }, 0, 0},
