@@ -1,5 +1,6 @@
 # 128-bit stores
 
+  stdl r4, [r1]                   ; stdl c, [b, s9=0]
   stdl r0, [r1,255]               ; stdl c, [b, s9]      s9: biggest
   stdl r2, [r4,-256]              ; stdl c, [b, s9]      s9: smallest
   stdl r4, [0x1338]               ; stdl c, [limm]     limm: small positive
