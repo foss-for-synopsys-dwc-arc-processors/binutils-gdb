@@ -6806,13 +6806,12 @@
 { "ldw", 0x1600713E, 0xFF0071BF, ARC_OPCODE_ARC64, LOAD, NONE, { ZA, BRAKET, LIMM, SIMM9_8, BRAKETdup }, { C_ZZ_H, C_DI20, C_AA21, C_X25 }},
 
 
-/* lddl<.aa> a,b,s9 00010bbbssssssssSBBBq1101QAAAAAA -> lddl a,[b,s9]       */
 /* lddl<.aa> a,b    00010bbb000000000BBBq1101QAAAAAA -> lddl a,[b,s9=0]     */
+/* lddl<.aa> a,b,s9 00010bbbssssssssSBBBq1101QAAAAAA -> lddl a,[b,s9]       */
 /* lddl<.as> a,ximm 00010100000000000111q1101QAAAAAA -> lddl a,[b=60,s9=0]  */
 /* lddl<.as> a,limm 00010110000000000111q1101QAAAAAA -> lddl a,[b=62,s9=0]  */
-{ "lddl", 0x10000680, 0xF8000780, ARC_OPCODE_ARC64, LOAD, NONE, { RAD, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_AA_128S }},
-
 { "lddl", 0x10000680, 0xF8FF8780, ARC_OPCODE_ARC64, LOAD, NONE, { RAD, BRAKET, RB, BRAKETdup }, { C_AA_128S }},
+{ "lddl", 0x10000680, 0xF8000780, ARC_OPCODE_ARC64, LOAD, NONE, { RAD, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_AA_128S }},
 
 { "lddl", 0x14007680, 0xFFFFF780, ARC_OPCODE_ARC64, LOAD, NONE, { RAD, BRAKET, XIMM, BRAKETdup }, { C_AS_128S }},
 { "lddl", 0x16007680, 0xFFFFF780, ARC_OPCODE_ARC64, LOAD, NONE, { RAD, BRAKET, LIMM, BRAKETdup }, { C_AS_128S }},
