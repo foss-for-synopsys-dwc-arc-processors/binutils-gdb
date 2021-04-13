@@ -14069,14 +14069,13 @@
 /* stb_sZZ_B b,SP,u7 11000bbb011uuuuu.  */
 { "stb_s", 0x0000C060, 0x0000F8E0, ARC_OPCODE_ARCv2HS | ARC_OPCODE_ARC64, STORE, NONE, { RB_S, BRAKET, SP_S, UIMM7_A32_11_S, BRAKETdup }, { C_ZZ_B }},
 
-/* stdlZZ_D<.aa> c,b 00011bbb000000000BBBCCCCCC1aa111.  */
-{ "stdl", 0x18000027, 0xF8FF8027, ARC_OPCODE_ARC64, STORE, NONE, { RC, BRAKET, RB, BRAKETdup }, { C_AA27 }},
-
+/* stdl<.aa> c,b       00011bbb000000000BBBCCCCCC1aa111 -> stdl c,[b,s9=0]    */
 /* stdl<.aa> c,b,s9    00011bbbssssssssSBBBCCCCCC1aa111 -> stdl c,[b,s9]      */
 /* stdl<.as> c,ximm    00011100000000000111CCCCCC1aa111 -> stdl c,[b=60,s9=0] */
 /* stdl<.as> c,limm    00011110000000000111CCCCCC1aa111 -> stdl c,[b=62,s9=0] */
 /* stdl<.aa> ximm,b,s9 00011bbbssssssssSBBB1111001aa111 -> stdl c=60,[b,s9]   */
 /* stdl<.aa> limm,b,s9 00011bbbssssssssSBBB1111101aa111 -> stdl c=62,[b,s9]   */
+{ "stdl", 0x18000027, 0xF8FF8027, ARC_OPCODE_ARC64, STORE, NONE, { RCD, BRAKET, RB, BRAKETdup }, { C_AA27 }},
 { "stdl", 0x18000027, 0xF8000027, ARC_OPCODE_ARC64, STORE, NONE, { RCD, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_AA27 }},
 
 { "stdl", 0x1C007027, 0xFFFFF027, ARC_OPCODE_ARC64, STORE, NONE, { RCD, BRAKET, XIMM, BRAKETdup }, { C_AS27 }},

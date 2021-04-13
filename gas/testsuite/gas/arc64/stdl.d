@@ -3,6 +3,7 @@
 .*: +file format elf64-.*arc
 
 Disassembly of section .text:
+0x[0-9a-f]+ 1900 0127           	stdl	r4r5,\[r1\]
 0x[0-9a-f]+ 19ff 0027           	stdl	r0r1,\[r1,255\]
 0x[0-9a-f]+ 1c00 80a7           	stdl	r2r3,\[r4,-256\]
 0x[0-9a-f]+ 1c00 7127 0000 1338 	stdl	r4r5,\[4920@s32\]
