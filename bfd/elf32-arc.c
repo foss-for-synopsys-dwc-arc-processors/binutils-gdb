@@ -1442,6 +1442,9 @@ elf_arc_relocate_section (bfd *			  output_bfd,
   Elf_Internal_Rela *		 relend;
   struct elf_link_hash_table *   htab = elf_hash_table (info);
 
+  if((input_section->flags & SEC_DEBUGGING) != 0)
+    return TRUE;
+
   symtab_hdr = &((elf_tdata (input_bfd))->symtab_hdr);
   sym_hashes = elf_sym_hashes (input_bfd);
 
@@ -1788,8 +1791,7 @@ elf_arc_relocate_section (bfd *			  output_bfd,
 		&& (!IS_ARC_PCREL_TYPE (r_type)
 		    || (h != NULL
 			&& h->dynindx != -1
-			&& !h->def_regular
-			&& (!info->symbolic || !h->def_regular))))
+			&& (!SYMBOL_REFERENCES_LOCAL (info, h)))))
 	      {
 		Elf_Internal_Rela outrel;
 		bfd_byte *loc;
@@ -1959,6 +1961,12 @@ elf_arc_check_relocs (bfd *			 abfd,
   asection *			sreloc = NULL;
   struct elf_link_hash_table *	htab = elf_hash_table (info);
 
+  if((sec->flags & SEC_DEBUGGING) != 0)
+    {
+      BFD_ASSERT((sec->flags & SEC_DEBUGGING) != 0);
+      return TRUE;
+    }
+
   if (bfd_link_relocatable (info))
     return TRUE;
 
@@ -2040,10 +2048,12 @@ elf_arc_check_relocs (bfd *			 abfd,
 	    /* FALLTHROUGH */
 	  case R_ARC_PC32:
 	  case R_ARC_32_PCREL:
-	    if ((bfd_link_pic (info))
-		&& ((r_type != R_ARC_PC32 && r_type != R_ARC_32_PCREL)
-		    || (h != NULL
-			&& (!info->symbolic || !h->def_regular))))
+
+	    if (!bfd_link_pic (info))
+	      break;
+
+	    if (((r_type != R_ARC_PC32 && r_type != R_ARC_32_PCREL)
+		 || (!SYMBOL_REFERENCES_LOCAL (info, h))))
 	      {
 		if (sreloc == NULL)
 		  {
