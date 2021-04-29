@@ -14098,7 +14098,10 @@
 /* stlZZ_L c,limm 00011110000000000111CCCCCC000111.  */
 { "stl", 0x1E007007, 0xFFFFF03F, ARC_OPCODE_ARC64, STORE, NONE, { RC, BRAKET, LIMM, BRAKETdup }, { C_ZZ_L }},
 
-/* stlZZ_L<.aa> limm,b,s9 00011bbbssssssssSBBB1111100aa111.  */
+/* stlZZ_L<.aa> ximm,b,s9 00011bbbssssssssSBBB111100 0aa111.  */
+{ "stl", 0x18000F07, 0xF8000FE7, ARC_OPCODE_ARC64, STORE, NONE, { XIMM, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_ZZ_L, C_AA27 }},
+
+/* stlZZ_L<.aa> limm,b,s9 00011bbbssssssssSBBB111110 0aa111.  */
 { "stl", 0x18000F87, 0xF8000FE7, ARC_OPCODE_ARC64, STORE, NONE, { LIMM, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_ZZ_L, C_AA27 }},
 
 /* st_s b,SP,u7 11000bbb010uuuuu.  */
