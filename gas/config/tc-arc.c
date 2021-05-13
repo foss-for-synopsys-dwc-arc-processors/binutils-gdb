@@ -1133,10 +1133,13 @@ parse_reloc_symbol (expressionS *resultP)
   expressionS right;
   symbolS *base;
 
+  /* We want to use @u32 and @s32 to force immediates into long
+     field.  */
   /* A relocation operand has the following form
      @identifier@relocation_type.  The identifier is already in
      tok!  */
-  if (resultP->X_op != O_symbol)
+  if (resultP->X_op != O_constant
+      && resultP->X_op != O_symbol)
     {
       as_bad (_("No valid label relocation operand"));
       resultP->X_op = O_illegal;
@@ -1164,6 +1167,12 @@ parse_reloc_symbol (expressionS *resultP)
     {
       as_bad (_("Unknown relocation operand: @%s"), reloc_name);
       resultP->X_op = O_illegal;
+      return;
+    }
+
+  if (resultP->X_op == O_constant)
+    {
+      resultP->X_md = r->op;
       return;
     }
 
@@ -1981,6 +1990,10 @@ find_opcode_match (const struct arc_opcode_hash_entry *entry,
 		  }
 		  /* Fall through.  */
 		case O_constant:
+		  /* Check if we want limm.  */
+		  if (tok[tokidx].X_md == O_u32
+		      && !(operand->flags & ARC_OPERAND_LIMM))
+		    goto match_failed;
 		  /* Check the range.  */
 		  if (operand->bits != 32
 		      && !(operand->flags & ARC_OPERAND_NCHK))
