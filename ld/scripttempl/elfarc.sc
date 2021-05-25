@@ -393,20 +393,14 @@ test -n "${RELOCATING}" && cat <<EOF
      The options appear in the wrong order to do this with a single symbol -
      ldflags comes after flags injected with per-file stanzas, and thus
      the setting from ldflags prevails.  */
-  .heap :
+  .noinit ${RELOCATING-0}:
   {
-	__start_heap = . ;
-	. = . + (DEFINED(__HEAP_SIZE) ? __HEAP_SIZE : (DEFINED(__DEFAULT_HEAP_SIZE) ? __DEFAULT_HEAP_SIZE : 20k)) ;
-	__end_heap = . ;
+    *(.noinit*)
+    ${RELOCATING+. = ALIGN(${ALIGNMENT});}
+    ${RELOCATING+ PROVIDE (__start_heap = .) ; }
   }
-
-  . = ALIGN(0x8);
-  .stack :
-  {
-	__stack = . ;
-	. = . + (DEFINED(__STACK_SIZE) ? __STACK_SIZE : (DEFINED(__DEFAULT_STACK_SIZE) ? __DEFAULT_STACK_SIZE : 64k)) ;
-	__stack_top = . ;
-  }
+  ${RELOCATING+ PROVIDE (__stack_top = . + (DEFINED(__HEAP_SIZE) ? __HEAP_SIZE : (DEFINED(__DEFAULT_HEAP_SIZE) ? __DEFAULT_HEAP_SIZE : 20k)) + (DEFINED(__STACK_SIZE) ? __STACK_SIZE : 64k));}
+  ${RELOCATING+ PROVIDE (__end_heap = . + (DEFINED(__HEAP_SIZE) ? __HEAP_SIZE : (DEFINED(__DEFAULT_STACK_SIZE) ? __DEFAULT_STACK_SIZE : 20k)));}
 EOF
 
 cat <<EOF
