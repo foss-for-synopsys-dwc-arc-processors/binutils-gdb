@@ -1238,13 +1238,13 @@ arc_special_overflow_checks (const struct arc_relocation_data reloc_data,
 #define MES (0)
 /* P: relative offset to PCL The offset should be to the
    current location aligned to 32 bits.  */
-#define P ((bfd_signed_vma) (						\
-			     (						\
-			      (reloc_data.input_section->output_section != NULL ? \
-			       reloc_data.input_section->output_section->vma : 0) \
-			      + reloc_data.input_section->output_offset	\
-			      + (reloc_data.reloc_offset - (bitsize >= 32 ? 4 : 0))) \
-			     & ~0x3))
+#define P ((bfd_signed_vma)						\
+	   (((reloc_data.input_section->output_section != NULL ?	\
+	      reloc_data.input_section->output_section->vma : 0)	\
+	     + reloc_data.input_section->output_offset			\
+	     + (reloc_data.reloc_offset - (bitsize == 32 ? 4 :		\
+					   (bitsize == 34 ? 2 : 0))))	\
+	    & ~0x3))
 #define PDATA ((bfd_signed_vma) (					\
 				 (reloc_data.input_section->output_section->vma \
 				  + reloc_data.input_section->output_offset \

@@ -652,3 +652,18 @@ ARC_RELOC_HOWTO(ARC_NLO32_ME, 97, \
                 dont, \
                 ( ME ( ( DEREFP - ( ( S + A ) & 4294967295 ) ) ) ))
 
+ARC_RELOC_HOWTO(ARC_PCLO32_ME_2, 98, \
+                2, \
+                34, \
+                replace_word32, \
+                signed, \
+                ( ME ( ( ( ( S + A ) - P ) >> 2 ) & 0xFFFFFFFF ) ) )
+
+
+ARC_RELOC_HOWTO(ARC_PLT34, 99, \
+                2, \
+                34, \
+                replace_word32, \
+                signed, \
+                ( ME ( ( ( ( L + A ) - P ) >> 2 ) & 0xFFFFFFFF ) ) )
+
