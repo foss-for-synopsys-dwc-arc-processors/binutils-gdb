@@ -519,8 +519,9 @@ static unsigned cl_features = 0;
 #define O_dtpoff9 O_md10    /* @dtpoff9 relocation.  */
 #define O_dtpoff  O_md11    /* @dtpoff relocation.  */
 #define O_u32     O_md12    /* @u32 modifier.  */
-#define O_s32     O_md13    /* @u32 modifier.  */
-#define O_last    O_md13
+#define O_s32     O_md13    /* @s32 modifier.  */
+#define O_plt34   O_md14    /* @plt34 relocation.  */
+#define O_last    O_md14
 
 /* Used to define a bracket as operand in tokens.  */
 #define O_bracket O_md32
@@ -575,6 +576,7 @@ static const struct arc_reloc_op_tag
   DEF (dtpoff,  BFD_RELOC_ARC_TLS_DTPOFF,	1),
   DEF (u32,	BFD_RELOC_ARC_LO32_ME,		1),
   DEF (s32,	BFD_RELOC_ARC_32_ME,		1),
+  DEF (plt34,	BFD_RELOC_ARC_PLT34,		0),
 };
 
 static const int arc_num_reloc_op
@@ -1109,6 +1111,7 @@ debug_exp (expressionS *t)
     case O_dtpoff:		namemd = "O_dtpoff";		break;
     case O_u32:			namemd = "O_u32";		break;
     case O_s32:			namemd = "O_s32";		break;
+    case O_plt34:		namemd = "O_plt34";		break;
     }
 
   pr_debug ("%s (%s, %s, %d, %s)", name,
@@ -2091,6 +2094,7 @@ find_opcode_match (const struct arc_opcode_hash_entry *entry,
 		    case O_tlsie:
 		    case O_tlsgd:
 		    case O_pcl:
+		    case O_plt34:
 		    case O_s32:
 		      tmp = 0; /* Fail if is not signed.  */
 		      /* Fall through.  */
@@ -2501,6 +2505,7 @@ autodetect_attributes (const struct arc_opcode *opcode,
 	case O_gotoff:
 	case O_gotpc:
 	case O_plt:
+	case O_plt34:
 	  pic_option = 2;
 	  break;
 	case O_sda:
@@ -2927,6 +2932,7 @@ md_pcrel_from_section (fixS *fixP,
 	case BFD_RELOC_ARC_S7H_PCREL:
 	  base &= ~3;
 	  break;
+
 	default:
 	  as_bad_where (fixP->fx_file, fixP->fx_line,
 			_("unhandled reloc %s in md_pcrel_from_section"),
@@ -3863,6 +3869,7 @@ may_relax_expr (expressionS tok)
     default:
       break;
     case O_plt:
+    case O_plt34:
       return false;
     }
 
@@ -4149,12 +4156,18 @@ assemble_insn (const struct arc_opcode *opcode,
 				  operand->default_reloc);
 	      break;
 
+	    case O_s32:
+	      if ((operand->flags & ARC_OPERAND_SIGNED) == 0)
+		as_bad (_("Unable to use @s32 relocation for insn %s"),
+			opcode->name);
+	      /* Fall-through.  */
+	    case O_u32:
+	      reloc = operand->default_reloc;
+	      break;
+	    case O_plt34:
 	    case O_gotoff:
 	    case O_gotpc:
 	      needGOTSymbol = true;
-	      /* Fall through.  */
-	    case O_u32:
-	    case O_s32:
 	      reloc = ARC_RELOC_TABLE (t->X_md)->reloc;
 	      break;
 	    case O_pcl:
@@ -4433,6 +4446,7 @@ tc_arc_fix_adjustable (fixS *fixP)
     {
     case BFD_RELOC_ARC_GOTPC32:
     case BFD_RELOC_ARC_PLT32:
+    case BFD_RELOC_ARC_PLT34:
     case BFD_RELOC_ARC_S25H_PCREL_PLT:
     case BFD_RELOC_ARC_S21H_PCREL_PLT:
     case BFD_RELOC_ARC_S25W_PCREL_PLT:

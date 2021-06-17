@@ -976,7 +976,8 @@ print_insn_arc (bfd_vma memaddr,
   bool open_braket;
   int size;
   const struct arc_operand *operand;
-  int value, vpcl;
+  int value;
+  bfd_vma vpcl;
   struct arc_operand_iterator iter;
   struct arc_disassemble_info *arc_infop;
   bool rpcl = false, rset = false;
@@ -1285,8 +1286,10 @@ print_insn_arc (bfd_vma memaddr,
 	  rpcl = true;
 	  vpcl = value;
 	  rset = true;
-
-	  info->target = (bfd_vma) (memaddr & ~3) + value;
+	  if ((operand->flags & ARC_OPERAND_LIMM)
+	      && (operand->flags & ARC_OPERAND_ALIGNED32))
+	    vpcl <<= 2;
+	  info->target = (bfd_vma) (memaddr & ~3) + vpcl;
 	}
       else if (!(operand->flags & ARC_OPERAND_IR))
 	{
