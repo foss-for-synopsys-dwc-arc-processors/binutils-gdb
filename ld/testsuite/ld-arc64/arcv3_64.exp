@@ -31,6 +31,18 @@ set arcv3_64_tests {
         "-shared -q" "" "" {arcv3_64-reloc-near.s}
         { { objdump -DRj.got arcv3_64-reloc-near-so.dd } }
         "arcv3_64-reloc-near.so" }
+    { "Solve fixed PLT34 reloc"
+        "-q -T linkscript.ld" "" "" {plt34-reloc.s}
+        { { objdump -drj.text plt34-reloc.dd } }
+        "plt34-reloc.x" }
+    { "Generate PLT entry using PLT34 reloc"
+        "-shared" "" "" {plt34-got.s}
+        { { objdump -dj.text plt34-got.dd } }
+        "plt34-got.so" }
+    { "Solve PCLO32_ME_2 reloc"
+        "-q -T linkscript.ld" "" "" {bl34.s}
+        { { objdump -drj.text bl34.dd } }
+        "bl34.x" }
 }
 
 run_ld_link_tests $arcv3_64_tests

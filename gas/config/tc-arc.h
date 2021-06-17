@@ -129,6 +129,7 @@ extern const char *arc_target_format (void);
 #define TC_VALIDATE_FIX(FIXP,SEG,SKIP)				     \
   if ((FIXP->fx_r_type == BFD_RELOC_ARC_GOTPC32			     \
        || FIXP->fx_r_type == BFD_RELOC_ARC_PLT32		     \
+       || FIXP->fx_r_type == BFD_RELOC_ARC_PLT34		     \
        || FIXP->fx_r_type == BFD_RELOC_ARC_S25W_PCREL_PLT	     \
        || FIXP->fx_r_type == BFD_RELOC_ARC_S25H_PCREL_PLT	     \
        || FIXP->fx_r_type == BFD_RELOC_ARC_S21W_PCREL_PLT	     \
