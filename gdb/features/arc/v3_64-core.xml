@@ -33,27 +33,24 @@
   <reg name="r23" bitsize="64"/>
   <reg name="r24" bitsize="64"/>
   <reg name="r25" bitsize="64"/>
+  <reg name="r26" bitsize="64"/>
 
-  <!-- ARC core data pointer registers.  -->
-  <reg name="gp"  bitsize="64" type="data_ptr"/>
-  <reg name="fp"  bitsize="64" type="data_ptr"/>
-  <reg name="sp"  bitsize="64" type="data_ptr"/>
-
-  <!-- Code pointers.  R30 is general purpose, but it used to be ILINK2 in
-  ARCompact, thus its odd position in between of special purpose registers.
-  GCC does't use this register, so it isn't a member of a general group. -->
-  <reg name="r30"   bitsize="64" group=""/>
+  <!-- Special purpose registers.  -->
+  <reg name="fp"    bitsize="64" type="data_ptr"/>
+  <reg name="sp"    bitsize="64" type="data_ptr"/>
+  <reg name="ilink" bitsize="64" type="code_ptr"/>
+  <reg name="gp"    bitsize="64" type="data_ptr"/>
   <reg name="blink" bitsize="64" type="code_ptr"/>
 
   <!-- Extension core registers: r32 - r57.  -->
-  <!-- ACCL/ACCH registers: r58, r59.  -->
 
-  <!-- Loop counter.  -->
-  <reg name="lp_count" bitsize="64" type="uint64"/>
+  <!-- ACC0: r58.  -->
+
+  <!-- r60 is a signed long immediate value, not a real register.  -->
 
   <!-- r61 is a reserved register address.  -->
 
-  <!-- r62 is a long immediate value, not a real register.  -->
+  <!-- r62 is a zero-extended long immediate value, not a real register.  -->
 
   <!-- 4-byte aligned read-only program counter.  -->
   <reg name="pcl" bitsize="64" type="code_ptr" group=""/>

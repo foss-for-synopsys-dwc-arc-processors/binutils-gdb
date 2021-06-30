@@ -29,7 +29,6 @@
 
   <reg name="pc"       bitsize="64" type="code_ptr"/>
   <reg name="status32" bitsize="32" type="status32_type"/>
-  <reg name="lp_start" bitsize="64" type="code_ptr"/>
-  <reg name="lp_end"   bitsize="64" type="code_ptr"/>
   <reg name="bta"      bitsize="64" type="code_ptr"/>
+  <reg name="eret"     bitsize="64" type="code_ptr"/>
 </feature>
