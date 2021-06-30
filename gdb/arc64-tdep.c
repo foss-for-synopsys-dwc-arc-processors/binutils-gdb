@@ -37,7 +37,7 @@
 /* ARC header files.  */
 #include "opcode/arc.h"
 #include "opcodes/arc-dis.h"
-#include "arc-tdep.h"
+#include "arc64-tdep.h"
 #include "arch/arc.h"
 
 /* Standard headers.  */
@@ -121,23 +121,13 @@ struct arc_register_feature
   std::vector<struct register_info> registers;
 };
 
-/* Obsolete feature names for backward compatibility.  */
-static const char *ARC_CORE_V1_OBSOLETE_FEATURE_NAME
-  = "org.gnu.gdb.arc.core.arcompact";
-static const char *ARC_CORE_V2_OBSOLETE_FEATURE_NAME
-  = "org.gnu.gdb.arc.core.v2";
-static const char *ARC_CORE_V2_REDUCED_OBSOLETE_FEATURE_NAME
-  = "org.gnu.gdb.arc.core-reduced.v2";
-static const char *ARC_AUX_OBSOLETE_FEATURE_NAME
-  = "org.gnu.gdb.arc.aux-minimal";
 /* Modern feature names.  */
 static const char *ARC_CORE_FEATURE_NAME = "org.gnu.gdb.arc.core";
 static const char *ARC_AUX_FEATURE_NAME = "org.gnu.gdb.arc.aux";
 
-/* ARCv1 (ARC600, ARC601, ARC700) general core registers feature set.
-   See also arc_update_acc_reg_names() for "accl/acch" names.  */
+/* ARCv3_64 general core registers feature set.  */
 
-static struct arc_register_feature arc_v1_core_reg_feature =
+static struct arc_register_feature arc_v3_core_reg_feature =
 {
   ARC_CORE_FEATURE_NAME,
   {
@@ -167,85 +157,11 @@ static struct arc_register_feature arc_v1_core_reg_feature =
     { ARC_R0_REGNUM + 23, { "r23" }, false },
     { ARC_R0_REGNUM + 24, { "r24" }, false },
     { ARC_R0_REGNUM + 25, { "r25" }, false },
-    { ARC_R0_REGNUM + 26, { "gp" }, true },
-    { ARC_R0_REGNUM + 27, { "fp" }, true },
-    { ARC_R0_REGNUM + 28, { "sp" }, true },
-    { ARC_R0_REGNUM + 29, { "ilink1" }, false },
-    { ARC_R0_REGNUM + 30, { "ilink2" }, false },
-    { ARC_R0_REGNUM + 31, { "blink" }, true },
-    { ARC_R0_REGNUM + 32, { "r32" }, false },
-    { ARC_R0_REGNUM + 33, { "r33" }, false },
-    { ARC_R0_REGNUM + 34, { "r34" }, false },
-    { ARC_R0_REGNUM + 35, { "r35" }, false },
-    { ARC_R0_REGNUM + 36, { "r36" }, false },
-    { ARC_R0_REGNUM + 37, { "r37" }, false },
-    { ARC_R0_REGNUM + 38, { "r38" }, false },
-    { ARC_R0_REGNUM + 39, { "r39" }, false },
-    { ARC_R0_REGNUM + 40, { "r40" }, false },
-    { ARC_R0_REGNUM + 41, { "r41" }, false },
-    { ARC_R0_REGNUM + 42, { "r42" }, false },
-    { ARC_R0_REGNUM + 43, { "r43" }, false },
-    { ARC_R0_REGNUM + 44, { "r44" }, false },
-    { ARC_R0_REGNUM + 45, { "r45" }, false },
-    { ARC_R0_REGNUM + 46, { "r46" }, false },
-    { ARC_R0_REGNUM + 47, { "r47" }, false },
-    { ARC_R0_REGNUM + 48, { "r48" }, false },
-    { ARC_R0_REGNUM + 49, { "r49" }, false },
-    { ARC_R0_REGNUM + 50, { "r50" }, false },
-    { ARC_R0_REGNUM + 51, { "r51" }, false },
-    { ARC_R0_REGNUM + 52, { "r52" }, false },
-    { ARC_R0_REGNUM + 53, { "r53" }, false },
-    { ARC_R0_REGNUM + 54, { "r54" }, false },
-    { ARC_R0_REGNUM + 55, { "r55" }, false },
-    { ARC_R0_REGNUM + 56, { "r56" }, false },
-    { ARC_R0_REGNUM + 57, { "r57" }, false },
-    { ARC_R0_REGNUM + 58, { "r58", "accl" }, false },
-    { ARC_R0_REGNUM + 59, { "r59", "acch" }, false },
-    { ARC_R0_REGNUM + 60, { "lp_count" }, false },
-    { ARC_R0_REGNUM + 61, { "reserved" }, false },
-    { ARC_R0_REGNUM + 62, { "limm" }, false },
-    { ARC_R0_REGNUM + 63, { "pcl" }, true }
-  }
-};
-
-/* ARCv2 (ARCHS) general core registers feature set.  See also
-   arc_update_acc_reg_names() for "accl/acch" names.  */
-
-static struct arc_register_feature arc_v2_core_reg_feature =
-{
-  ARC_CORE_FEATURE_NAME,
-  {
-    { ARC_R0_REGNUM + 0, { "r0" }, true },
-    { ARC_R0_REGNUM + 1, { "r1" }, true },
-    { ARC_R0_REGNUM + 2, { "r2" }, true },
-    { ARC_R0_REGNUM + 3, { "r3" }, true },
-    { ARC_R0_REGNUM + 4, { "r4" }, false },
-    { ARC_R0_REGNUM + 5, { "r5" }, false },
-    { ARC_R0_REGNUM + 6, { "r6" }, false },
-    { ARC_R0_REGNUM + 7, { "r7" }, false },
-    { ARC_R0_REGNUM + 8, { "r8" }, false },
-    { ARC_R0_REGNUM + 9, { "r9" }, false },
-    { ARC_R0_REGNUM + 10, { "r10" }, true },
-    { ARC_R0_REGNUM + 11, { "r11" }, true },
-    { ARC_R0_REGNUM + 12, { "r12" }, true },
-    { ARC_R0_REGNUM + 13, { "r13" }, true },
-    { ARC_R0_REGNUM + 14, { "r14" }, true },
-    { ARC_R0_REGNUM + 15, { "r15" }, true },
-    { ARC_R0_REGNUM + 16, { "r16" }, false },
-    { ARC_R0_REGNUM + 17, { "r17" }, false },
-    { ARC_R0_REGNUM + 18, { "r18" }, false },
-    { ARC_R0_REGNUM + 19, { "r19" }, false },
-    { ARC_R0_REGNUM + 20, { "r20" }, false },
-    { ARC_R0_REGNUM + 21, { "r21" }, false },
-    { ARC_R0_REGNUM + 22, { "r22" }, false },
-    { ARC_R0_REGNUM + 23, { "r23" }, false },
-    { ARC_R0_REGNUM + 24, { "r24" }, false },
-    { ARC_R0_REGNUM + 25, { "r25" }, false },
-    { ARC_R0_REGNUM + 26, { "gp" }, true },
+    { ARC_R0_REGNUM + 26, { "r26" }, false },
     { ARC_R0_REGNUM + 27, { "fp" }, true },
     { ARC_R0_REGNUM + 28, { "sp" }, true },
     { ARC_R0_REGNUM + 29, { "ilink" }, false },
-    { ARC_R0_REGNUM + 30, { "r30" }, true },
+    { ARC_R0_REGNUM + 30, { "gp" }, true },
     { ARC_R0_REGNUM + 31, { "blink" }, true },
     { ARC_R0_REGNUM + 32, { "r32" }, false },
     { ARC_R0_REGNUM + 33, { "r33" }, false },
@@ -273,17 +189,17 @@ static struct arc_register_feature arc_v2_core_reg_feature =
     { ARC_R0_REGNUM + 55, { "r55" }, false },
     { ARC_R0_REGNUM + 56, { "r56" }, false },
     { ARC_R0_REGNUM + 57, { "r57" }, false },
-    { ARC_R0_REGNUM + 58, { "r58", "accl" }, false },
-    { ARC_R0_REGNUM + 59, { "r59", "acch" }, false },
-    { ARC_R0_REGNUM + 60, { "lp_count" }, false },
-    { ARC_R0_REGNUM + 61, { "reserved" }, false },
-    { ARC_R0_REGNUM + 62, { "limm" }, false },
+    { ARC_R0_REGNUM + 58, { "r58", "acc0" }, false },
+    /* "r59" is reserved and must never be referenced.  */
+    /* "r60" is a sign-extended immediate and not a real register.  */
+    /* "r61" is reserved and must never be referenced.  */
+    /* "r62" is a zero-extended immediate and not a real register.  */
     { ARC_R0_REGNUM + 63, { "pcl" }, true }
   }
 };
 
 /* The common auxiliary registers feature set.  The REGNUM field
-   must match the ARC_REGNUM enum in arc-tdep.h.  */
+   must match the ARC_REGNUM enum in arc64-tdep.h.  */
 
 static const struct arc_register_feature arc_common_aux_reg_feature =
 {
@@ -291,9 +207,8 @@ static const struct arc_register_feature arc_common_aux_reg_feature =
   {
     { ARC_FIRST_AUX_REGNUM + 0, { "pc" }, true },
     { ARC_FIRST_AUX_REGNUM + 1, { "status32" }, true },
-    { ARC_FIRST_AUX_REGNUM + 2, { "lp_start" }, false },
-    { ARC_FIRST_AUX_REGNUM + 3, { "lp_end" }, false },
-    { ARC_FIRST_AUX_REGNUM + 4, { "bta" }, false }
+    { ARC_FIRST_AUX_REGNUM + 2, { "bta" }, false },
+    { ARC_FIRST_AUX_REGNUM + 3, { "eret" }, false }
   }
 };
 
@@ -864,7 +779,9 @@ arc_cannot_fetch_register (struct gdbarch *gdbarch, int regnum)
      GDB-servers.  */
   switch (regnum)
     {
-    case ARC_RESERVED_REGNUM:
+    case ARC_RESERVED_1_REGNUM:
+    case ARC_RESERVED_2_REGNUM:
+    case ARC_XIMM_REGNUM:
     case ARC_LIMM_REGNUM:
       return true;
     default:
@@ -881,7 +798,9 @@ arc_cannot_store_register (struct gdbarch *gdbarch, int regnum)
      arc_cannot_fetch_register about LIMM and RESERVED.  */
   switch (regnum)
     {
-    case ARC_RESERVED_REGNUM:
+    case ARC_RESERVED_1_REGNUM:
+    case ARC_RESERVED_2_REGNUM:
+    case ARC_XIMM_REGNUM:
     case ARC_LIMM_REGNUM:
     case ARC_PCL_REGNUM:
       return true;
@@ -1445,7 +1364,7 @@ arc_analyze_prologue (struct gdbarch *gdbarch, const CORE_ADDR entrypoint,
 }
 
 /* Estimated maximum prologue length in bytes.  This should include:
-   1) Store instruction for each callee-saved register (R25 - R13 + 1)
+   1) Store instruction for each callee-saved register (R27 - R13 + 1)
    2) Two instructions for FP
    3) One for BLINK
    4) Three substract instructions for SP (for variadic args, for
@@ -1460,8 +1379,8 @@ arc_analyze_prologue (struct gdbarch *gdbarch, const CORE_ADDR entrypoint,
    limit will be rarely reached.  */
 
 const static int MAX_PROLOGUE_LENGTH
-  = 4 * (ARC_R25_REGNUM - ARC_R13_REGNUM + 1 + 2 + 1 + 6
-	 + ARC_LAST_ARG_REGNUM - ARC_FIRST_ARG_REGNUM + 1);
+  = 4 * (ARC_LAST_CALLEE_SAVED_REGNUM - ARC_FIRST_CALLEE_SAVED_REGNUM + 1
+	 + 2 + 1 + 6 + ARC_LAST_ARG_REGNUM - ARC_FIRST_ARG_REGNUM + 1);
 
 /* Implement the "skip_prologue" gdbarch method.
 
@@ -1601,8 +1520,7 @@ arc_breakpoint_kind_from_pc (struct gdbarch *gdbarch, CORE_ADDR *pcptr)
   /* Replace 16-bit instruction with BRK_S, replace 32-bit instructions with
      BRK.  LIMM is part of instruction length, so it can be either 4 or 8
      bytes for 32-bit instructions.  */
-  if ((length_with_limm == 4 || length_with_limm == 8)
-      && !arc_mach_is_arc600 (gdbarch))
+  if (length_with_limm == 4 || length_with_limm == 8)
     return sizeof (arc_brk_le);
   else
     return sizeof (arc_brk_s_le);
@@ -1871,8 +1789,8 @@ mach_type_to_arc_isa (const unsigned long mach)
 arc_arch_features
 arc_arch_features_create (const bfd *abfd, const unsigned long mach)
 {
-  /* Use 4 as a fallback value.  */
-  int reg_size = 4;
+  /* Use 8 as a fallback value.  */
+  int reg_size = 8;
 
   /* Try to guess the features parameters by looking at the binary to be
      executed.  If the user is providing a binary that does not match the
@@ -1900,33 +1818,6 @@ arc_arch_features_create (const bfd *abfd, const unsigned long mach)
   return arc_arch_features (reg_size, isa);
 }
 
-/* Look for obsolete core feature names in TDESC.  */
-
-static const struct tdesc_feature *
-find_obsolete_core_names (const struct target_desc *tdesc)
-{
-  const struct tdesc_feature *feat = nullptr;
-
-  feat = tdesc_find_feature (tdesc, ARC_CORE_V1_OBSOLETE_FEATURE_NAME);
-
-  if (feat == nullptr)
-    feat = tdesc_find_feature (tdesc, ARC_CORE_V2_OBSOLETE_FEATURE_NAME);
-
-  if (feat == nullptr)
-    feat = tdesc_find_feature
-      (tdesc, ARC_CORE_V2_REDUCED_OBSOLETE_FEATURE_NAME);
-
-  return feat;
-}
-
-/* Look for obsolete aux feature names in TDESC.  */
-
-static const struct tdesc_feature *
-find_obsolete_aux_names (const struct target_desc *tdesc)
-{
-  return tdesc_find_feature (tdesc, ARC_AUX_OBSOLETE_FEATURE_NAME);
-}
-
 /* Based on the MACH value, determines which core register features set
    must be used.  */
 
@@ -1935,11 +1826,8 @@ determine_core_reg_feature_set (const unsigned long mach)
 {
   switch (mach_type_to_arc_isa (mach))
     {
-    case ARC_ISA_ARCV1:
-      return &arc_v1_core_reg_feature;
-    case ARC_ISA_ARCV2:
     case ARC_ISA_ARCV3:
-      return &arc_v2_core_reg_feature;
+      return &arc_v3_core_reg_feature;
     default:
       gdb_assert_not_reached
 	("Unknown machine type to determine the core feature set.");
@@ -1953,31 +1841,6 @@ static const arc_register_feature *
 determine_aux_reg_feature_set ()
 {
   return &arc_common_aux_reg_feature;
-}
-
-/* Update accumulator register names (ACCH/ACCL) for r58 and r59 in the
-   register sets.  The endianness determines the assignment:
-
-        ,------.------.
-        | acch | accl |
-   ,----|------+------|
-   | LE | r59  | r58  |
-   | BE | r58  | r59  |
-   `----^------^------'  */
-
-static void
-arc_update_acc_reg_names (const int byte_order)
-{
-  const char *r58_alias
-    = byte_order == BFD_ENDIAN_LITTLE ? "accl" : "acch";
-  const char *r59_alias
-    = byte_order == BFD_ENDIAN_LITTLE ? "acch" : "accl";
-
-  /* Subscript 1 must be OK because those registers have 2 names.  */
-  arc_v1_core_reg_feature.registers[ARC_R58_REGNUM].names[1] = r58_alias;
-  arc_v1_core_reg_feature.registers[ARC_R59_REGNUM].names[1] = r59_alias;
-  arc_v2_core_reg_feature.registers[ARC_R58_REGNUM].names[1] = r58_alias;
-  arc_v2_core_reg_feature.registers[ARC_R59_REGNUM].names[1] = r59_alias;
 }
 
 /* Go through all the registers in REG_SET and check if they exist
@@ -2023,35 +1886,6 @@ arc_check_tdesc_feature (struct tdesc_arch_data *tdesc_data,
   return true;
 }
 
-/* Check for the existance of "lp_start" and "lp_end" in target description.
-   If both are present, assume there is hardware loop support in the target.
-   This can be improved by looking into "lpc_size" field of "isa_config"
-   auxiliary register.  */
-
-static bool
-arc_check_for_hw_loops (const struct target_desc *tdesc,
-			struct tdesc_arch_data *data)
-{
-  const auto feature_aux = tdesc_find_feature (tdesc, ARC_AUX_FEATURE_NAME);
-  const auto aux_regset = determine_aux_reg_feature_set ();
-
-  if (feature_aux == nullptr)
-    return false;
-
-  bool hw_loop_p = false;
-  const auto lp_start_name =
-    aux_regset->registers[ARC_LP_START_REGNUM - ARC_FIRST_AUX_REGNUM].names[0];
-  const auto lp_end_name =
-    aux_regset->registers[ARC_LP_END_REGNUM - ARC_FIRST_AUX_REGNUM].names[0];
-
-  hw_loop_p = tdesc_numbered_register (feature_aux, data,
-				       ARC_LP_START_REGNUM, lp_start_name);
-  hw_loop_p &= tdesc_numbered_register (feature_aux, data,
-				       ARC_LP_END_REGNUM, lp_end_name);
-
-  return hw_loop_p;
-}
-
 /* Initialize target description for the ARC.
 
    Returns true if input TDESC was valid and in this case it will assign TDESC
@@ -2081,12 +1915,6 @@ arc_tdesc_init (struct gdbarch_info info, const struct target_desc **tdesc,
   const struct tdesc_feature *feature_aux
     = tdesc_find_feature (tdesc_loc, ARC_AUX_FEATURE_NAME);
 
-  /* Maybe there still is a chance to salvage the input.  */
-  if (feature_core == nullptr)
-    feature_core = find_obsolete_core_names (tdesc_loc);
-  if (feature_aux == nullptr)
-    feature_aux = find_obsolete_aux_names (tdesc_loc);
-
   if (feature_core == nullptr)
     {
       arc_print (_("Error: Cannot find required feature '%s' in supplied "
@@ -2107,8 +1935,6 @@ arc_tdesc_init (struct gdbarch_info info, const struct target_desc **tdesc,
     = determine_aux_reg_feature_set ();
 
   tdesc_arch_data_up tdesc_data_loc = tdesc_data_alloc ();
-
-  arc_update_acc_reg_names (info.byte_order);
 
   bool valid_p = arc_check_tdesc_feature (tdesc_data_loc.get (),
 					  feature_core,
@@ -2176,7 +2002,6 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   gdb::unique_xmalloc_ptr<struct gdbarch_tdep> tdep
     (XCNEW (struct gdbarch_tdep));
   tdep->jb_pc = -1; /* No longjmp support by default.  */
-  tdep->has_hw_loops = arc_check_for_hw_loops (tdesc, tdesc_data.get ());
   struct gdbarch *gdbarch = gdbarch_alloc (&info, tdep.release ());
 
   /* Data types.  */
@@ -2223,11 +2048,7 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   set_gdbarch_breakpoint_kind_from_pc (gdbarch, arc_breakpoint_kind_from_pc);
   set_gdbarch_sw_breakpoint_from_kind (gdbarch, arc_sw_breakpoint_from_kind);
 
-  /* On ARC 600 BRK_S instruction advances PC, unlike other ARC cores.  */
-  if (!arc_mach_is_arc600 (gdbarch))
-    set_gdbarch_decr_pc_after_break (gdbarch, 0);
-  else
-    set_gdbarch_decr_pc_after_break (gdbarch, 2);
+  set_gdbarch_decr_pc_after_break (gdbarch, 2);
 
   set_gdbarch_frame_align (gdbarch, arc_frame_align);
 

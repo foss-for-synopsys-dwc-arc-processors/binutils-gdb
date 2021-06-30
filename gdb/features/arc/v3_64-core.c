@@ -35,12 +35,12 @@ create_feature_arc_v3_64_core (struct target_desc *result, long regnum)
   tdesc_create_reg (feature, "r23", regnum++, 1, NULL, 64, "int");
   tdesc_create_reg (feature, "r24", regnum++, 1, NULL, 64, "int");
   tdesc_create_reg (feature, "r25", regnum++, 1, NULL, 64, "int");
-  tdesc_create_reg (feature, "gp", regnum++, 1, NULL, 64, "data_ptr");
+  tdesc_create_reg (feature, "r26", regnum++, 1, NULL, 64, "int");
   tdesc_create_reg (feature, "fp", regnum++, 1, NULL, 64, "data_ptr");
   tdesc_create_reg (feature, "sp", regnum++, 1, NULL, 64, "data_ptr");
-  tdesc_create_reg (feature, "r30", regnum++, 1, NULL, 64, "int");
+  tdesc_create_reg (feature, "ilink", regnum++, 1, NULL, 64, "code_ptr");
+  tdesc_create_reg (feature, "gp", regnum++, 1, NULL, 64, "data_ptr");
   tdesc_create_reg (feature, "blink", regnum++, 1, NULL, 64, "code_ptr");
-  tdesc_create_reg (feature, "lp_count", regnum++, 1, NULL, 64, "uint64");
   tdesc_create_reg (feature, "pcl", regnum++, 1, NULL, 64, "code_ptr");
   return regnum;
 }
