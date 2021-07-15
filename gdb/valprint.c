@@ -1186,7 +1186,7 @@ val_print_type_code_flags (struct type *type, struct value *original_value,
 	    {
 	      unsigned field_len = TYPE_FIELD_BITSIZE (type, field);
 	      ULONGEST field_val
-		= val >> (TYPE_FIELD_BITPOS (type, field) - field_len + 1);
+		= val >> TYPE_FIELD_BITPOS (type, field);
 
 	      if (field_len < sizeof (ULONGEST) * TARGET_CHAR_BIT)
 		field_val &= ((ULONGEST) 1 << field_len) - 1;
