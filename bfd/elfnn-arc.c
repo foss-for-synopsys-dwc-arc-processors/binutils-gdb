@@ -1920,7 +1920,8 @@ elf_arc_relocate_section (bfd *			  output_bfd,
       /* Make sure we have with a dynamic linker.  In case of GOT and PLT
 	 the sym_section should point to .got or .plt respectively.  */
       if ((is_reloc_for_GOT (howto) || is_reloc_for_PLT (howto))
-	  && reloc_data.sym_section == NULL)
+	  && reloc_data.sym_section == NULL
+	  && !resolved_to_zero)
 	{
 	  _bfd_error_handler
 	    (_("GOT and PLT relocations cannot be fixed with a non dynamic" \
