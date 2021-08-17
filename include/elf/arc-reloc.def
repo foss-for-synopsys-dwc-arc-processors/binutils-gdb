@@ -65,7 +65,7 @@ ARC_RELOC_HOWTO(ARC_32, 4, \
                 ( S + A ))
 
 ARC_RELOC_HOWTO(ARC_64, 5, \
-                2, \
+                4, \
                 64, \
                 replace_word64, \
                 bitfield, \

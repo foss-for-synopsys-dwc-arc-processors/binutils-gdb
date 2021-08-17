@@ -213,9 +213,11 @@ struct elf_arc_link_hash_entry
 #define arc_bfd_get_8(A,B,C) bfd_get_8(A,B)
 #define arc_bfd_get_16(A,B,C) bfd_get_16(A,B)
 #define arc_bfd_get_32(A,B,C) bfd_get_32(A,B)
+#define arc_bfd_get_64(A,B,C) bfd_get_64(A,B)
 #define arc_bfd_put_8(A,B,C,D) bfd_put_8(A,B,C)
 #define arc_bfd_put_16(A,B,C,D) bfd_put_16(A,B,C)
 #define arc_bfd_put_32(A,B,C,D) bfd_put_32(A,B,C)
+#define arc_bfd_put_64(A,B,C,D) bfd_put_64(A,B,C)
 
 
 static bfd_reloc_status_type
@@ -400,7 +402,7 @@ static const struct arc_reloc_map arc_reloc_map[] =
 
 #undef ARC_RELOC_HOWTO
 
-typedef ATTRIBUTE_UNUSED unsigned (*replace_func) (unsigned, int ATTRIBUTE_UNUSED);
+typedef ATTRIBUTE_UNUSED bfd_vma (*replace_func) (bfd_vma, bfd_vma ATTRIBUTE_UNUSED);
 
 #define ARC_RELOC_HOWTO(TYPE, VALUE, SIZE, BITSIZE, RELOC_FUNCTION, OVERFLOW, FORMULA) \
   case TYPE:								\
@@ -1344,6 +1346,11 @@ arc_do_relocation (bfd_byte * contents,
 
   switch (reloc_data.howto->size)
     {
+    case 4:
+      insn = arc_bfd_get_64 (abfd,
+			     contents + reloc_data.reloc_offset,
+			     reloc_data.input_section);
+      break;
     case 2:
       insn = arc_bfd_get_32 (abfd,
 			     contents + reloc_data.reloc_offset,
@@ -1400,6 +1407,11 @@ arc_do_relocation (bfd_byte * contents,
   /* Write updated instruction back to memory.  */
   switch (reloc_data.howto->size)
     {
+    case 4:
+      arc_bfd_put_64 (abfd, insn,
+		      contents + reloc_data.reloc_offset,
+		      reloc_data.input_section);
+      break;
     case 2:
       arc_bfd_put_32 (abfd, insn,
 		      contents + reloc_data.reloc_offset,

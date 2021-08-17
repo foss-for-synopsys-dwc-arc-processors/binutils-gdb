@@ -105,11 +105,10 @@ replace_word32 (unsigned insn, int value ATTRIBUTE_UNUSED)
 /* mask  = 1111111111111111111111111111111111111111111111111111111111111111.  */
 #ifndef REPLACE_word64
 #define REPLACE_word64
-ATTRIBUTE_UNUSED static unsigned
-replace_word64 (unsigned insn, int value ATTRIBUTE_UNUSED)
+ATTRIBUTE_UNUSED static bfd_vma
+replace_word64 (bfd_vma insn, bfd_vma value)
 {
-  insn = insn & ~0xffffffffffffffff;
-  insn |= ((value >> 0) & 0xffffffff) << 0;
+  insn |= value;
 
   return insn;
 }
