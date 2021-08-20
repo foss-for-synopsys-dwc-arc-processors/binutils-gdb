@@ -92,8 +92,12 @@ const bfd_arch_info_type bfd_arc_arch =
    warning.  */
 
 static const bfd_arch_info_type *
-arc_compatible (const bfd_arch_info_type *a, const bfd_arch_info_type *b)
+arc_compatible (const bfd_arch_info_type *a ATTRIBUTE_UNUSED,
+		const bfd_arch_info_type *b ATTRIBUTE_UNUSED)
 {
+/* ARCv1/2 and ARCv3 must be consolidated.  See P10019563-47884 on JIRA.  */
+/* ARCv1/2 */
+#if 0
   const bfd_arch_info_type * const em = &arch_info_struct[5];
   const bfd_arch_info_type * const hs = &arch_info_struct[6];
 
@@ -115,7 +119,7 @@ arc_compatible (const bfd_arch_info_type *a, const bfd_arch_info_type *b)
   if ((a->mach == bfd_mach_arc_arcv2 && b == hs)
       || (b->mach == bfd_mach_arc_arcv2 && a == hs))
     return hs;
-
+#endif
   /* Machine compatibilitu is checked in merge_private_bfd_data.  */
   return a;
 }
