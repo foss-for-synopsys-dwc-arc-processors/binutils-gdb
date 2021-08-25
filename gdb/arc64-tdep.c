@@ -124,6 +124,7 @@ struct arc_register_feature
 /* Modern feature names.  */
 static const char *ARC_CORE_FEATURE_NAME = "org.gnu.gdb.arc.core";
 static const char *ARC_AUX_FEATURE_NAME = "org.gnu.gdb.arc.aux";
+static const char *ARC_FPU_FEATURE_NAME = "org.gnu.gdb.arc.fpu";
 
 /* ARCv3_64 general core registers feature set.  */
 
@@ -209,6 +210,47 @@ static const struct arc_register_feature arc_common_aux_reg_feature =
     { ARC_FIRST_AUX_REGNUM + 1, { "status32" }, true },
     { ARC_FIRST_AUX_REGNUM + 2, { "bta" }, false },
     { ARC_FIRST_AUX_REGNUM + 3, { "eret" }, false }
+  }
+};
+
+/* The fpu registers feature set.  */
+
+static const struct arc_register_feature arc64_fpu_reg_feature =
+{
+  ARC_FPU_FEATURE_NAME,
+  {
+    { ARC_FIRST_FP_REGNUM + 0, { "f0" }, true },
+    { ARC_FIRST_FP_REGNUM + 1, { "f1" }, true },
+    { ARC_FIRST_FP_REGNUM + 2, { "f2" }, true },
+    { ARC_FIRST_FP_REGNUM + 3, { "f3" }, true },
+    { ARC_FIRST_FP_REGNUM + 4, { "f4" }, true },
+    { ARC_FIRST_FP_REGNUM + 5, { "f5" }, true },
+    { ARC_FIRST_FP_REGNUM + 6, { "f6" }, true },
+    { ARC_FIRST_FP_REGNUM + 7, { "f7" }, true },
+    { ARC_FIRST_FP_REGNUM + 8, { "f8" }, false },
+    { ARC_FIRST_FP_REGNUM + 9, { "f9" }, false },
+    { ARC_FIRST_FP_REGNUM + 10, { "f10" }, false },
+    { ARC_FIRST_FP_REGNUM + 11, { "f11" }, false },
+    { ARC_FIRST_FP_REGNUM + 12, { "f12" }, false },
+    { ARC_FIRST_FP_REGNUM + 13, { "f13" }, false },
+    { ARC_FIRST_FP_REGNUM + 14, { "f14" }, false },
+    { ARC_FIRST_FP_REGNUM + 15, { "f15" }, false },
+    { ARC_FIRST_FP_REGNUM + 16, { "f16" }, false },
+    { ARC_FIRST_FP_REGNUM + 17, { "f17" }, false },
+    { ARC_FIRST_FP_REGNUM + 18, { "f18" }, false },
+    { ARC_FIRST_FP_REGNUM + 19, { "f19" }, false },
+    { ARC_FIRST_FP_REGNUM + 20, { "f20" }, false },
+    { ARC_FIRST_FP_REGNUM + 21, { "f21" }, false },
+    { ARC_FIRST_FP_REGNUM + 22, { "f22" }, false },
+    { ARC_FIRST_FP_REGNUM + 23, { "f23" }, false },
+    { ARC_FIRST_FP_REGNUM + 24, { "f24" }, false },
+    { ARC_FIRST_FP_REGNUM + 25, { "f25" }, false },
+    { ARC_FIRST_FP_REGNUM + 26, { "f26" }, false },
+    { ARC_FIRST_FP_REGNUM + 27, { "f27" }, false },
+    { ARC_FIRST_FP_REGNUM + 28, { "f28" }, false },
+    { ARC_FIRST_FP_REGNUM + 29, { "f29" }, false },
+    { ARC_FIRST_FP_REGNUM + 30, { "f30" }, false },
+    { ARC_FIRST_FP_REGNUM + 31, { "f31" }, false },
   }
 };
 
@@ -1740,6 +1782,19 @@ arc_dwarf2_frame_init_reg (struct gdbarch *gdbarch, int regnum,
     reg->how = DWARF2_FRAME_REG_CFA;
 }
 
+/* Implement the "dwarf2_reg_to_regnum" gdbarch method.  */
+
+static int
+arc64_dwarf_reg_to_regnum (struct gdbarch *gdbarch, int regnum)
+{
+  if (regnum <= ARC64_DWARF_REGNUM_R31)
+    return ARC_R0_REGNUM + (regnum - ARC64_DWARF_REGNUM_R0);
+  else if (regnum <= ARC64_DWARF_REGNUM_F31)
+    return ARC_FIRST_FP_REGNUM + (regnum - ARC64_DWARF_REGNUM_F0);
+
+  return -1;
+}
+
 /* Structure defining the ARC ordinary frame unwind functions.  Since we are
    the fallback unwinder, we use the default frame sniffer, which always
    accepts the frame.  */
@@ -1843,6 +1898,16 @@ determine_aux_reg_feature_set ()
   return &arc_common_aux_reg_feature;
 }
 
+
+/* At the moment, there is only one fpu register features set.
+   This is a place holder for future extendability.  */
+
+static const arc_register_feature *
+determine_fpu_reg_feature_set ()
+{
+  return &arc64_fpu_reg_feature;
+}
+
 /* Go through all the registers in REG_SET and check if they exist
    in FEATURE.  The TDESC_DATA is updated with the register number
    in REG_SET if it is found in the feature.  If a required register
@@ -1914,6 +1979,8 @@ arc_tdesc_init (struct gdbarch_info info, const struct target_desc **tdesc,
     = tdesc_find_feature (tdesc_loc, ARC_CORE_FEATURE_NAME);
   const struct tdesc_feature *feature_aux
     = tdesc_find_feature (tdesc_loc, ARC_AUX_FEATURE_NAME);
+  const struct tdesc_feature *feature_fpu
+    = tdesc_find_feature (tdesc_loc, ARC_FPU_FEATURE_NAME);
 
   if (feature_core == nullptr)
     {
@@ -1933,6 +2000,8 @@ arc_tdesc_init (struct gdbarch_info info, const struct target_desc **tdesc,
     = determine_core_reg_feature_set (info.bfd_arch_info->mach);
   const arc_register_feature *arc_aux_reg_feature
     = determine_aux_reg_feature_set ();
+  const arc_register_feature *arc_fpu_reg_feature
+    = determine_fpu_reg_feature_set ();
 
   tdesc_arch_data_up tdesc_data_loc = tdesc_data_alloc ();
 
@@ -1943,6 +2012,13 @@ arc_tdesc_init (struct gdbarch_info info, const struct target_desc **tdesc,
   valid_p &= arc_check_tdesc_feature (tdesc_data_loc.get (),
 				      feature_aux,
 				      arc_aux_reg_feature);
+
+  if (feature_fpu != nullptr)
+    {
+      valid_p &= arc_check_tdesc_feature (tdesc_data_loc.get (),
+					  feature_fpu,
+					  arc_fpu_reg_feature);
+    }
 
   if (!valid_p)
     {
@@ -2021,6 +2097,9 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   set_gdbarch_write_pc (gdbarch, arc_write_pc);
 
   set_gdbarch_virtual_frame_pointer (gdbarch, arc_virtual_frame_pointer);
+  
+  /* Internal <-> external register number maps.  */
+  set_gdbarch_dwarf2_reg_to_regnum (gdbarch, arc64_dwarf_reg_to_regnum);
 
   /* tdesc_use_registers expects gdbarch_num_regs to return number of registers
      parsed by gdbarch_init, and then it will add all of the remaining

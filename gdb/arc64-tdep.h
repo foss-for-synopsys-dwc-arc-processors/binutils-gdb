@@ -33,63 +33,77 @@
    saved in function prologue.  */
 
 enum arc_regnum
-  {
-    /* Core registers.  */
-    ARC_R0_REGNUM = 0,
-    ARC_R1_REGNUM = 1,
-    ARC_R4_REGNUM = 4,
-    ARC_R7_REGNUM = 7,
-    ARC_R9_REGNUM = 9,
-    ARC_R13_REGNUM = 13,
-    ARC_R16_REGNUM = 16,
-    ARC_R26_REGNUM = 26,
-    /* Frame pointer.  */
-    ARC_FP_REGNUM,
-    /* Stack pointer.  */
-    ARC_SP_REGNUM,
-    /* Return address from interrupt.  */
-    ARC_ILINK_REGNUM,
-    /* Global data pointer.  */
-    ARC_GP_REGNUM,
-    /* Return address from function.  */
-    ARC_BLINK_REGNUM,
-    /* Accumulator registers.  */
-    ARC_R58_REGNUM = 58,
-    /* Reserved register numbers.  There should never be a register with such
-       numbers, this name is needed only for a sanity check in
-      arc_cannot_(fetch|store)_register.  */
-    ARC_RESERVED_1_REGNUM = 59,
-    ARC_RESERVED_2_REGNUM = 61,
-    /* Long-immediate value.  This is not a physical register - if instruction
-       has register 60 or 62 as an operand, then this operand is a literal value
-       stored in the instruction memory right after the instruction itself.
-       This value is required in this enumeration as an architectural number
-       for instruction analysis.  */
-    ARC_XIMM_REGNUM = 60,     /* Sign extended.  */
-    ARC_LIMM_REGNUM = 62,     /* Zero extended.  */
-    /* Program counter, aligned to 4-bytes, read-only.  */
-    ARC_PCL_REGNUM,
-    ARC_LAST_CORE_REGNUM = ARC_PCL_REGNUM,
+{
+  /* Core registers.  */
+  ARC_R0_REGNUM = 0,
+  ARC_R1_REGNUM = 1,
+  ARC_R4_REGNUM = 4,
+  ARC_R7_REGNUM = 7,
+  ARC_R9_REGNUM = 9,
+  ARC_R13_REGNUM = 13,
+  ARC_R16_REGNUM = 16,
+  ARC_R26_REGNUM = 26,
+  /* Frame pointer.  */
+  ARC_FP_REGNUM,
+  /* Stack pointer.  */
+  ARC_SP_REGNUM,
+  /* Return address from interrupt.  */
+  ARC_ILINK_REGNUM,
+  /* Global data pointer.  */
+  ARC_GP_REGNUM,
+  /* Return address from function.  */
+  ARC_BLINK_REGNUM,
+  /* Accumulator registers.  */
+  ARC_R58_REGNUM = 58,
+  /* Reserved register numbers.  There should never be a register with such
+     numbers, this name is needed only for a sanity check in
+    arc_cannot_(fetch|store)_register.  */
+  ARC_RESERVED_1_REGNUM = 59,
+  ARC_RESERVED_2_REGNUM = 61,
+  /* Long-immediate value.  This is not a physical register - if instruction
+     has register 60 or 62 as an operand, then this operand is a literal value
+     stored in the instruction memory right after the instruction itself.
+     This value is required in this enumeration as an architectural number
+     for instruction analysis.  */
+  ARC_XIMM_REGNUM = 60,     /* Sign extended.  */
+  ARC_LIMM_REGNUM = 62,     /* Zero extended.  */
+  /* Program counter, aligned to 4-bytes, read-only.  */
+  ARC_PCL_REGNUM,
+  ARC_LAST_CORE_REGNUM = ARC_PCL_REGNUM,
 
-    /* AUX registers.  */
-    /* Actual program counter.  */
-    ARC_PC_REGNUM,
-    ARC_FIRST_AUX_REGNUM = ARC_PC_REGNUM,
-    /* Status register.  */
-    ARC_STATUS32_REGNUM,
-    /* Branch target address.  */
-    ARC_BTA_REGNUM,
-    /* Exception return address.  */
-    ARC_ERET_REGNUM,
-    ARC_LAST_AUX_REGNUM = ARC_ERET_REGNUM,
-    ARC_LAST_REGNUM = ARC_LAST_AUX_REGNUM,
+  /* Floating point registers.  */
+  ARC_FIRST_FP_REGNUM,
+  ARC_LAST_FP_REGNUM = ARC_FIRST_FP_REGNUM+31,
 
-    /* Additional ABI constants.  */
-    ARC_FIRST_ARG_REGNUM = ARC_R0_REGNUM,
-    ARC_LAST_ARG_REGNUM = ARC_R7_REGNUM,
-    ARC_FIRST_CALLEE_SAVED_REGNUM = ARC_R13_REGNUM,
-    ARC_LAST_CALLEE_SAVED_REGNUM = ARC_R26_REGNUM,
-  };
+  /* AUX registers.  */
+  /* Actual program counter.  */
+  ARC_PC_REGNUM,
+  ARC_FIRST_AUX_REGNUM = ARC_PC_REGNUM,
+  /* Status register.  */
+  ARC_STATUS32_REGNUM,
+  /* Branch target address.  */
+  ARC_BTA_REGNUM,
+  /* Exception return address.  */
+  ARC_ERET_REGNUM,
+  ARC_LAST_AUX_REGNUM = ARC_ERET_REGNUM,
+
+  ARC_LAST_REGNUM = ARC_LAST_AUX_REGNUM,
+
+  /* Additional ABI constants.  */
+  ARC_FIRST_ARG_REGNUM = ARC_R0_REGNUM,
+  ARC_LAST_ARG_REGNUM = ARC_R7_REGNUM,
+  ARC_FIRST_CALLEE_SAVED_REGNUM = ARC_R13_REGNUM,
+  ARC_LAST_CALLEE_SAVED_REGNUM = ARC_R26_REGNUM
+};
+
+/* arc64 DWARF register numbers.  */
+enum
+{
+  ARC64_DWARF_REGNUM_R0 = 0,
+  ARC64_DWARF_REGNUM_R31 = 31,
+  ARC64_DWARF_REGNUM_F0 = 128,
+  ARC64_DWARF_REGNUM_F31 = ARC64_DWARF_REGNUM_F0+31
+};
 
 /* Number of bytes in ARC register.  All ARC registers are considered 32-bit.
    Those registers, which are actually shorter has zero-on-read for extra bits.
