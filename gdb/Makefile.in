@@ -700,6 +700,7 @@ ALL_64_TARGET_OBS = \
 	alpha-netbsd-tdep.o \
 	alpha-obsd-tdep.o \
 	alpha-tdep.o \
+	arc64-linux-tdep.o \
 	arc64-newlib-tdep.o \
 	arc64-tdep.o \
 	amd64-darwin-tdep.o \
@@ -1649,6 +1650,7 @@ ALLDEPFILES = \
 	amd64-tdep.c \
 	arc-linux-nat.c \
 	arc-tdep.c \
+	arc64-linux-tdep.c \
 	arc64-tdep.c \
 	arm-bsd-tdep.c \
 	arm-fbsd-nat.c \
