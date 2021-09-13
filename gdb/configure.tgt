@@ -166,9 +166,14 @@ arc*-*-elf*)
 	gdb_target_obs="arc-newlib-tdep.o"
 	;;
 
-arc*-*-linux*)
-	# Target: ARC machine running Linux
+arc-*-linux*)
+	# Target: ARCv2 elf32 machine running Linux
 	gdb_target_obs="arc-linux-tdep.o linux-tdep.o solib-svr4.o"
+	;;
+
+arc64-*-linux*)
+	# Target: ARCv3 elf63 machine running Linux
+	gdb_target_obs="arc64-linux-tdep.o linux-tdep.o solib-svr4.o"
 	;;
 
 arm*-wince-pe | arm*-*-mingw32ce*)
