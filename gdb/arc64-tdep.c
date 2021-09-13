@@ -257,7 +257,7 @@ static const struct arc_register_feature arc64_fpu_reg_feature =
 static char *arc_disassembler_options = NULL;
 
 /* Functions are sorted in the order as they are used in the
-   _initialize_arc_tdep (), which uses the same order as gdbarch.h.  Static
+   _initialize_arc64_tdep (), which uses the same order as gdbarch.h.  Static
    functions are defined before the first invocation.  */
 
 /* Returns an unsigned value of OPERAND_NUM in instruction INSN.
@@ -2063,7 +2063,7 @@ arc_type_align (struct gdbarch *gdbarch, struct type *type)
 /* Implement the "init" gdbarch method.  */
 
 static struct gdbarch *
-arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
+arc64_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 {
   const struct target_desc *tdesc;
   tdesc_arch_data_up tdesc_data;
@@ -2097,7 +2097,7 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   set_gdbarch_write_pc (gdbarch, arc_write_pc);
 
   set_gdbarch_virtual_frame_pointer (gdbarch, arc_virtual_frame_pointer);
-  
+
   /* Internal <-> external register number maps.  */
   set_gdbarch_dwarf2_reg_to_regnum (gdbarch, arc64_dwarf_reg_to_regnum);
 
@@ -2177,7 +2177,7 @@ arc_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
 	     `set disassembler-options' hence this code is the only place
 	     where options are changed.  It also changes options for all
 	     existing gdbarches, which also can be problematic, if
-	     arc_gdbarch_init will start reusing existing gdbarch
+	     arc64_gdbarch_init will start reusing existing gdbarch
 	     instances.  */
 	  /* Target description specifies a BFD architecture, which is
 	     different from ARC cpu, as accepted by disassembler (and most
@@ -2253,11 +2253,11 @@ dump_arc_instruction_command (const char *args, int from_tty)
   arc_insn_dump (insn);
 }
 
-void _initialize_arc_tdep ();
+void _initialize_arc64_tdep ();
 void
-_initialize_arc_tdep ()
+_initialize_arc64_tdep ()
 {
-  gdbarch_register (bfd_arch_arc, arc_gdbarch_init, arc_dump_tdep);
+  gdbarch_register (bfd_arch_arc, arc64_gdbarch_init, arc_dump_tdep);
 
   /* Register ARC-specific commands with gdb.  */
 

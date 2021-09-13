@@ -18,8 +18,8 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#ifndef ARC_TDEP_H
-#define ARC_TDEP_H
+#ifndef ARC64_TDEP_H
+#define ARC64_TDEP_H
 
 /* Need disassemble_info.  */
 #include "dis-asm.h"
@@ -180,4 +180,4 @@ CORE_ADDR arc_insn_get_linear_next_pc (const struct arc_instruction &insn);
 arc_arch_features arc_arch_features_create (const bfd *abfd,
 					    const unsigned long mach);
 
-#endif /* ARC_TDEP_H */
+#endif /* ARC64_TDEP_H */
