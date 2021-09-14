@@ -70,12 +70,12 @@ const bfd_arch_info_type bfd_arc_arch =
 
 static const bfd_arch_info_type arch_info_struct[] =
 {
-  ARC (64, 64, bfd_mach_arcv3_64, "ARCv3_64", FALSE, &arch_info_struct[1]),
-  ARC (32, 32, bfd_mach_arcv3_32, "ARCv3_32", FALSE, NULL),
+  ARC (64, 64, bfd_mach_arcv3_64, "ARCv3_64", false, &arch_info_struct[1]),
+  ARC (32, 32, bfd_mach_arcv3_32, "ARCv3_32", false, NULL),
 };
 
 const bfd_arch_info_type bfd_arc_arch =
-  ARC (64, 64, bfd_mach_arcv3_64, "arc64", TRUE, &arch_info_struct[0]);
+  ARC (64, 64, bfd_mach_arcv3_64, "arc64", true, &arch_info_struct[0]);
 
 /* ARCv3 */
 #endif

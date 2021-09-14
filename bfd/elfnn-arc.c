@@ -1467,15 +1467,15 @@ arc_do_relocation (bfd_byte * contents,
    local_section : is an array giving the section in the input file
    corresponding to the st_shndx field of each
    local symbol.  */
-static bool
-elf_arc_relocate_section (bfd *			  output_bfd,
-			  struct bfd_link_info *  info,
-			  bfd *			  input_bfd,
-			  asection *		  input_section,
-			  bfd_byte *		  contents,
-			  Elf_Internal_Rela *     relocs,
-			  Elf_Internal_Sym *      local_syms,
-			  asection **		  local_sections)
+static int
+elf_arc_relocate_section (bfd *output_bfd,
+			  struct bfd_link_info *info,
+			  bfd *input_bfd,
+			  asection *input_section,
+			  bfd_byte *contents,
+			  Elf_Internal_Rela *relocs,
+			  Elf_Internal_Sym *local_syms,
+			  asection **local_sections)
 {
   Elf_Internal_Shdr *		 symtab_hdr;
   struct elf_link_hash_entry **  sym_hashes;

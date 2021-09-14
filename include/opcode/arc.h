@@ -385,7 +385,7 @@ struct arc_flag_class
 				long long int op,
 				const char **errmsg);
   long long int (*extract) (unsigned long long instruction,
-			    bfd_boolean *invalid);
+			    bool *invalid);
 };
 
 extern const struct arc_flag_class arc_flag_classes[];

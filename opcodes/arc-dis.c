@@ -60,7 +60,7 @@ struct arc_disassemble_info
   /* Instruction length w/o limm field.  */
   unsigned insn_len;
 
-  /* TRUE if we have limm.  */
+  /* true if we have limm.  */
   bool limm_p;
 
   /* LIMM value, if exists.  */
@@ -183,7 +183,7 @@ add_to_decodelist (insn_class_t     insn_class,
   decodelist = t;
 }
 
-/* Return TRUE if we need to skip the opcode from being
+/* Return true if we need to skip the opcode from being
    disassembled.  */
 
 static bool
@@ -320,7 +320,7 @@ find_format_from_table (struct disassemble_info *info,
 		|| (isa_mask & ARC_OPCODE_ARC64
 		    && (value == REG_S32) && (insn_len == 4)))
 	      {
-		invalid = TRUE;
+		invalid = true;
 		break;
 	      }
 
@@ -352,7 +352,7 @@ find_format_from_table (struct disassemble_info *info,
 
 	  for (flgopridx = cl_flags->flags; *flgopridx; ++flgopridx)
 	    {
-	      bfd_boolean tmp = FALSE;
+	      bool tmp = false;
 	      const struct arc_flag_operand *flg_operand =
 		&arc_flag_operands[*flgopridx];
 
@@ -413,15 +413,15 @@ find_format_from_table (struct disassemble_info *info,
    the found opcode requires a LIMM then the LIMM value will be loaded into a
    field of ITER.
 
-   This function returns TRUE in almost all cases, FALSE is reserved to
+   This function returns true in almost all cases, false is reserved to
    indicate an error (failing to find an opcode is not an error) a returned
-   result of FALSE would indicate that the disassembler can't continue.
+   result of false would indicate that the disassembler can't continue.
 
-   If no matching opcode is found then the returned result will be TRUE, the
+   If no matching opcode is found then the returned result will be true, the
    value placed into OPCODE_RESULT will be NULL, ITER will be undefined, and
    INSN_LEN will be unchanged.
 
-   If a matching opcode is found, then the returned result will be TRUE, the
+   If a matching opcode is found, then the returned result will be true, the
    opcode pointer is placed into OPCODE_RESULT, INSN_LEN will be increased by
    4 if the instruction requires a LIMM, and the LIMM value will have been
    loaded into a field of ITER.  Finally, ITER will have been initialised so
@@ -559,7 +559,7 @@ print_flags (const struct arc_opcode *opcode,
 
 	  if (cl_flags->extract)
 	    {
-	      bfd_boolean tmp = FALSE;
+	      bool tmp = false;
 	      value = (*cl_flags->extract)(insn[0], &tmp);
 	    }
 	  else
@@ -747,8 +747,8 @@ extract_operand_value (const struct arc_operand *operand,
   return value;
 }
 
-/* Find the next operand, and the operands value from ITER.  Return TRUE if
-   there is another operand, otherwise return FALSE.  If there is an
+/* Find the next operand, and the operands value from ITER.  Return true if
+   there is another operand, otherwise return false.  If there is an
    operand returned then the operand is placed into OPERAND, and the value
    into VALUE.  If there is no operand returned then OPERAND and VALUE are
    unchanged.  */
