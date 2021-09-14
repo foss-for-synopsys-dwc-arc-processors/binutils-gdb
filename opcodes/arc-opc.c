@@ -111,12 +111,12 @@ extract_rb (unsigned long long insn,
 
 static long long
 extract_rbb (unsigned long long  insn,
-	    bfd_boolean *       invalid)
+	    bool *       invalid)
 {
   int value = (((insn >> 1) & 0x07) << 3) | ((insn >> 8) & 0x07);
 
   if (value == 0x3e && invalid)
-    *invalid = TRUE; /* A limm operand, it should be extracted in a
+    *invalid = true; /* A limm operand, it should be extracted in a
 			different way.  */
 
   return value;
@@ -126,7 +126,7 @@ extract_rbb (unsigned long long  insn,
 
 static long long
 extract_fs2 (unsigned long long  insn,
-	     bfd_boolean *       invalid ATTRIBUTE_UNUSED)
+	     bool *       invalid ATTRIBUTE_UNUSED)
 {
   long long value;
   value = (((insn >> 12) & 0x03) << 3) | ((insn >> 24) & 0x07);
@@ -137,7 +137,7 @@ extract_fs2 (unsigned long long  insn,
 
 static long long
 extract_qq (unsigned long long  insn,
-	    bfd_boolean *       invalid ATTRIBUTE_UNUSED)
+	    bool *       invalid ATTRIBUTE_UNUSED)
 {
   long long value;
   value = ((insn & 0x800) >> 11) | ((insn & 0x40) >> (6-1));

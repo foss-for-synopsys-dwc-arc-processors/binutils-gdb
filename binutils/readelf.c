@@ -2713,9 +2713,6 @@ get_machine_name (unsigned e_machine)
     case EM_ADAPTEVA_EPIPHANY:	return "Adapteva EPIPHANY";
     case EM_CYGNUS_FRV:		return "Fujitsu FR-V";
     case EM_S12Z:               return "Freescale S12Z";
-    case EM_CSKY:		return "C-SKY";
-    case EM_ARC_COMPACT3:	return "ARCv3_32";
-    case EM_ARC_COMPACT3_64:	return "ARCv3_64";
 
     default:
       snprintf (buff, sizeof (buff), _("<unknown>: 0x%x"), e_machine);

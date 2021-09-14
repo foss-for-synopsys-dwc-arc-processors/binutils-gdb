@@ -276,48 +276,6 @@ arc_fill_got_info_for_reloc (enum tls_type_e type,
   return true;
 }
 
-struct arc_static_sym_data {
-  bfd_vma sym_value;
-  const char *symbol_name;
-};
-
-static struct arc_static_sym_data
-get_static_sym_data (unsigned long  r_symndx,
-		     Elf_Internal_Sym  *local_syms,
-		     asection **local_sections,
-		     struct elf_link_hash_entry *h,
-		     struct arc_relocation_data *reloc_data)
-{
-  static const char local_name[] = "(local)";
-  struct arc_static_sym_data ret = { 0, NULL };
-
-  if (h != NULL)
-    {
-      BFD_ASSERT (h->root.type != bfd_link_hash_undefweak
-		  && h->root.type != bfd_link_hash_undefined);
-      /* TODO: This should not be here.  */
-      reloc_data->sym_value = h->root.u.def.value;
-      reloc_data->sym_section = h->root.u.def.section;
-
-      ret.sym_value = h->root.u.def.value
-	+ h->root.u.def.section->output_section->vma
-	+ h->root.u.def.section->output_offset;
-
-      ret.symbol_name = h->root.root.string;
-    }
-  else
-  {
-    Elf_Internal_Sym *sym = local_syms + r_symndx;
-    asection *sec = local_sections[r_symndx];
-
-    ret.sym_value = sym->st_value
-      + sec->output_section->vma
-      + sec->output_offset;
-
-    ret.symbol_name = local_name;
-  }
-  return ret;
-}
 
 static bfd_vma
 relocate_fix_got_relocs_for_got_info (struct got_entry **	   list_p,
@@ -346,7 +304,38 @@ relocate_fix_got_relocs_for_got_info (struct got_entry **	   list_p,
 	      && SYMBOL_REFERENCES_LOCAL (info, h))))
     {
       const char ATTRIBUTE_UNUSED *symbol_name;
-      asection *tls_sec = elf_hash_table (info)->tls_sec;
+      static const char local_name[] = "(local)";
+      asection *tls_sec = NULL;
+      bfd_vma sym_value = 0;
+
+      if (h != NULL)
+	{
+	  /* TODO: This should not be here.  */
+	  reloc_data->sym_value = h->root.u.def.value;
+	  reloc_data->sym_section = h->root.u.def.section;
+
+	  sym_value = h->root.u.def.value
+	    + h->root.u.def.section->output_section->vma
+	    + h->root.u.def.section->output_offset;
+
+	  tls_sec = elf_hash_table (info)->tls_sec;
+
+	  symbol_name = h->root.root.string;
+	}
+      else
+	{
+	  Elf_Internal_Sym *sym = local_syms + r_symndx;
+	  asection *sec = local_sections[r_symndx];
+
+	  sym_value = sym->st_value
+	    + sec->output_section->vma
+	    + sec->output_offset;
+
+	  tls_sec = elf_hash_table (info)->tls_sec;
+
+	  symbol_name = local_name;
+	}
+
 
       if (entry && !entry->processed)
 	{

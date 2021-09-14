@@ -1340,7 +1340,7 @@ insert_uimm9_a32_11_s (unsigned long long insn ATTRIBUTE_UNUSED,
 #define EXTRACT_UIMM9_A32_11_S
 ATTRIBUTE_UNUSED static long long int
 extract_uimm9_a32_11_s (unsigned long long insn ATTRIBUTE_UNUSED,
-                        bfd_boolean *invalid ATTRIBUTE_UNUSED)
+                        bool *invalid ATTRIBUTE_UNUSED)
 {
   unsigned value = 0;
   value |= ((insn >> 0) & 0x001f) << 2;
@@ -1369,7 +1369,7 @@ insert_uimm10_13_s (unsigned long long insn ATTRIBUTE_UNUSED,
 #define EXTRACT_UIMM10_13_S
 ATTRIBUTE_UNUSED static long long int
 extract_uimm10_13_s (unsigned long long insn ATTRIBUTE_UNUSED,
-                     bfd_boolean *invalid ATTRIBUTE_UNUSED)
+                     bool *invalid ATTRIBUTE_UNUSED)
 {
   unsigned value = 0;
   value |= ((insn >> 0) & 0x0007) << 0;
