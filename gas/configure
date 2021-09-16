@@ -11972,6 +11972,12 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
 	;;
+      arc64)
+	# Set for which architecture we compile
+
+$as_echo "#define TARGET_ARCv3_64 1" >>confdefs.h
+
+	;;
     esac
 
     if test ${this_target} = $target ; then
