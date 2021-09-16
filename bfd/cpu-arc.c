@@ -46,8 +46,6 @@ arc_compatible (const bfd_arch_info_type *a, const bfd_arch_info_type *b);
 
 /* ARCv1/2 and ARCv3 must be consolidated.  See P10019563-47884 on JIRA.  */
 /* ARCv1/2 */
-#if 0
-
 static const bfd_arch_info_type arch_info_struct[] =
 {
   ARC (32, 32, bfd_mach_arc_arc600, "A6"    , false, &arch_info_struct[1]),
@@ -63,22 +61,6 @@ static const bfd_arch_info_type arch_info_struct[] =
 
 const bfd_arch_info_type bfd_arc_arch =
   ARC (32, 32, bfd_mach_arc_arc600, "ARC600", true, &arch_info_struct[0]);
-
-/* ARCv1/2 */
-#else
-/* ARCv3 */
-
-static const bfd_arch_info_type arch_info_struct[] =
-{
-  ARC (64, 64, bfd_mach_arcv3_64, "ARCv3_64", false, &arch_info_struct[1]),
-  ARC (32, 32, bfd_mach_arcv3_32, "ARCv3_32", false, NULL),
-};
-
-const bfd_arch_info_type bfd_arc_arch =
-  ARC (64, 64, bfd_mach_arcv3_64, "arc64", true, &arch_info_struct[0]);
-
-/* ARCv3 */
-#endif
 
 /* ARC-specific "compatible" function.  The general rule is that if A and B are
    compatible, then this function should return architecture that is more
