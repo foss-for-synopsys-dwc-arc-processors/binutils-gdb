@@ -93,6 +93,21 @@ static const char * const regnames[64] =
   "r56", "r57", "r58", "r59", "lp_count", "reserved", "LIMM", "pcl"
 };
 
+typedef struct regmod
+{
+  const unsigned int index;
+  const unsigned int isa;
+  const char *rname;
+} regmod_t;
+
+static regmod_t regmods[] =
+{
+  { 26, ARC_OPCODE_ARCV1 | ARC_OPCODE_ARCV2, "gp" },
+  { 29, ARC_OPCODE_ARCV1, "ilink1" },
+  { 30, ARC_OPCODE_ARCV1, "ilink2" },
+  { 0, ARC_OPCODE_NONE, 0 }
+};
+
 static const char * const fpnames[32] =
 {
   "f0", "f1", "f2", "f3", "f4", "f5", "f6", "f7",
@@ -154,6 +169,21 @@ static bool print_hex = false;
 #define REG_S32    60
 
 /* Functions implementation.  */
+
+static const char *
+getregname (unsigned int index, unsigned int isa_mask)
+{
+  regmod_t *iregmods = regmods;
+  while (iregmods->rname)
+    {
+      if (index == iregmods->index
+	  && (isa_mask & iregmods->isa))
+	return iregmods->rname;
+      iregmods ++;
+    }
+
+  return regnames [index % 64];
+}
 
 /* Initialize private data.  */
 static bool
@@ -1315,7 +1345,7 @@ print_insn_arc (bfd_vma memaddr,
 	      if (operand->flags & ARC_OPERAND_FP)
 		rname = fpnames[value & 0x1f];
 	      else
-		rname = regnames[value];
+		rname = getregname (value, isa_mask);
 	    }
 	  (*info->fprintf_func) (info->stream, "%s", rname);
 
@@ -1328,7 +1358,7 @@ print_insn_arc (bfd_vma memaddr,
 		  if (operand->flags & ARC_OPERAND_FP)
 		    rname = fpnames[(value + 1) & 0x1f];
 		  else
-		    rname = regnames[value + 1];
+		    rname = getregname (value + 1, isa_mask);
 		}
 	      else
 		rname = _("\nWarning: illegal use of double register "
@@ -1395,7 +1425,8 @@ print_insn_arc (bfd_vma memaddr,
 		  break;
 		default:
 		  (*info->fprintf_func) (info->stream, "r13-%s",
-					 regnames[13 + value - 1]);
+					 getregname (13 + value - 1,
+						     isa_mask));
 		  break;
 		}
 	      rpcl = false;
