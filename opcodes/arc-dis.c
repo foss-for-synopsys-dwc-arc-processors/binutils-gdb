@@ -438,10 +438,16 @@ find_format (bfd_vma                       memaddr,
              struct arc_operand_iterator * iter)
 {
   const struct arc_opcode *opcode = NULL;
+  const struct arc_opcode *opcodeList = NULL;
   bool needs_limm = false;
   const extInstruction_t *einsn, *i;
   unsigned limm = 0;
   struct arc_disassemble_info *arc_infop = info->private_data;
+
+  if (isa_mask & ARC_OPCODE_ARC64)
+    opcodeList = arc64_opcodes;
+  else
+    opcodeList = arc_opcodes;
 
   /* First, try the extension instructions.  */
   if (*insn_len == 4)
@@ -468,7 +474,7 @@ find_format (bfd_vma                       memaddr,
 
   /* Then, try finding the first match in the opcode table.  */
   if (opcode == NULL)
-    opcode = find_format_from_table (info, arc_opcodes, insn, *insn_len,
+    opcode = find_format_from_table (info, opcodeList, insn, *insn_len,
 				     isa_mask, &needs_limm, true);
 
   if (opcode != NULL && needs_limm)

@@ -2865,12 +2865,16 @@ const unsigned char arg_32bit_limm[] = { LIMM };
    nps extension instructions.  */
 const struct arc_opcode arc_opcodes[] =
 {
- /* ARC64 needs to be included first as there are new instructions
-    which can be interpreted as ARCv2 insns.  */
-#include "arc64-tbl.h"
 #include "arc-tbl.h"
 #include "arc-nps400-tbl.h"
 #include "arc-ext-tbl.h"
+
+  { NULL, 0, 0, 0, 0, 0, { 0 }, { 0 } }
+};
+
+const struct arc_opcode arc64_opcodes[] =
+{
+#include "arc64-tbl.h"
 #include "arc64-fp-tbl.h"
 
   { NULL, 0, 0, 0, 0, 0, { 0 }, { 0 } }
