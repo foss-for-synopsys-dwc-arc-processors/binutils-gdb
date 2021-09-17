@@ -3499,14 +3499,12 @@ arc_elf_relax_section (bfd *abfd, asection *sec,
 #define ELF_TARGET_ID	    ARC_ELF_DATA
 
 #if ARCH_SIZE == 32
-# define ELF_MACHINE_CODE    EM_ARC_COMPACT
-# define ELF_MACHINE_ALT1    EM_ARC_COMPACT2
-# define ELF_MACHINE_ALT2    EM_ARC_COMPACT3_64
+# define ELF_MACHINE_CODE    EM_ARC_COMPACT2
+# define ELF_MACHINE_ALT1    EM_ARC_COMPACT3
+# define ELF_MACHINE_ALT2    EM_ARC_COMPACT
 #else
 # define ELF_MACHINE_CODE    EM_ARC_COMPACT3_64
-# define ELF_MACHINE_ALT1    EM_ARC_COMPACT2
-/* To be deprecated and instead used for ARCv3 32 bit machine.  */
-# define ELF_MACHINE_ALT2    EM_ARC_COMPACT
+# define ELF_MACHINE_ALT1    EM_ARC_COMPACT3
 #endif
 
 #define ELF_MAXPAGESIZE     0x2000
