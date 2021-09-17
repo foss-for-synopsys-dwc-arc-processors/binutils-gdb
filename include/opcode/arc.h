@@ -189,6 +189,7 @@ struct arc_opcode
    in the order in which the disassembler should consider
    instructions.  */
 extern const struct arc_opcode arc_opcodes[];
+extern const struct arc_opcode arc64_opcodes[];
 
 /* Return length of an instruction represented by OPCODE, in bytes.  */
 extern int arc_opcode_len (const struct arc_opcode *opcode);
