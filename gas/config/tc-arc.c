@@ -201,21 +201,21 @@ const char *md_shortopts = "";
 
 enum options
 {
-  OPTION_EB = OPTION_MD_BASE,
-  OPTION_EL,
+  OPTION_MCPU = OPTION_MD_BASE,
 
+  OPTION_CD,
+  OPTION_RELAX,
+  OPTION_LINKER_RELAX,
+
+#ifndef TARGET_ARCv3_64
+  OPTION_EB,
+  OPTION_EL,
   OPTION_ARC600,
   OPTION_ARC601,
   OPTION_ARC700,
   OPTION_ARCEM,
   OPTION_ARCHS,
-
-  OPTION_MCPU,
-  OPTION_CD,
-  OPTION_RELAX,
   OPTION_NPS400,
-  OPTION_LINKER_RELAX,
-
   OPTION_SPFP,
   OPTION_DPFP,
   OPTION_FPUDA,
@@ -242,13 +242,19 @@ enum options
   OPTION_LOCK,
   OPTION_SWAPE,
   OPTION_RTSC
+#endif
 };
 
 struct option md_longopts[] =
 {
+  { "mcpu",		required_argument, NULL, OPTION_MCPU },
+  { "mcode-density",	no_argument,	   NULL, OPTION_CD },
+  { "mrelax",           no_argument,       NULL, OPTION_RELAX },
+  { "mlinker-relax",    no_argument,       NULL, OPTION_LINKER_RELAX },
+
+#ifndef TARGET_ARCv3_64
   { "EB",		no_argument,	   NULL, OPTION_EB },
   { "EL",		no_argument,	   NULL, OPTION_EL },
-  { "mcpu",		required_argument, NULL, OPTION_MCPU },
   { "mA6",		no_argument,	   NULL, OPTION_ARC600 },
   { "mARC600",		no_argument,	   NULL, OPTION_ARC600 },
   { "mARC601",		no_argument,	   NULL, OPTION_ARC601 },
@@ -256,10 +262,7 @@ struct option md_longopts[] =
   { "mA7",		no_argument,	   NULL, OPTION_ARC700 },
   { "mEM",		no_argument,	   NULL, OPTION_ARCEM },
   { "mHS",		no_argument,	   NULL, OPTION_ARCHS },
-  { "mcode-density",	no_argument,	   NULL, OPTION_CD },
-  { "mrelax",           no_argument,       NULL, OPTION_RELAX },
   { "mnps400",          no_argument,       NULL, OPTION_NPS400 },
-  { "mlinker-relax",    no_argument,       NULL, OPTION_LINKER_RELAX },
 
   /* Floating point options */
   { "mspfp", no_argument, NULL, OPTION_SPFP},
@@ -304,6 +307,7 @@ struct option md_longopts[] =
   { "mlock", no_argument, NULL, OPTION_LOCK},
   { "mswape", no_argument, NULL, OPTION_SWAPE},
   { "mrtsc", no_argument, NULL, OPTION_RTSC},
+#endif
 
   { NULL,		no_argument, NULL, 0 }
 };
@@ -3607,31 +3611,8 @@ md_parse_option (int c, const char *arg ATTRIBUTE_UNUSED)
 {
   switch (c)
     {
-    case OPTION_ARC600:
-    case OPTION_ARC601:
-      return md_parse_option (OPTION_MCPU, "arc600");
-
-    case OPTION_ARC700:
-      return md_parse_option (OPTION_MCPU, "arc700");
-
-    case OPTION_ARCEM:
-      return md_parse_option (OPTION_MCPU, "arcem");
-
-    case OPTION_ARCHS:
-      return md_parse_option (OPTION_MCPU, "archs");
-
     case OPTION_MCPU:
-      {
-        arc_select_cpu (arg, MACH_SELECTION_FROM_COMMAND_LINE);
-	break;
-      }
-
-    case OPTION_EB:
-      byte_order = BIG_ENDIAN;
-      break;
-
-    case OPTION_EL:
-      byte_order = LITTLE_ENDIAN;
+      arc_select_cpu (arg, MACH_SELECTION_FROM_COMMAND_LINE);
       break;
 
     case OPTION_CD:
@@ -3648,6 +3629,28 @@ md_parse_option (int c, const char *arg ATTRIBUTE_UNUSED)
     case OPTION_LINKER_RELAX:
       relaxation_state = FALSE;
       do_linker_relax = (do_linker_relax == 0) ? 1 : do_linker_relax;
+      break;
+
+#ifndef TARGET_ARCv3_64
+    case OPTION_ARC600:
+    case OPTION_ARC601:
+      return md_parse_option (OPTION_MCPU, "arc600");
+
+    case OPTION_ARC700:
+      return md_parse_option (OPTION_MCPU, "arc700");
+
+    case OPTION_ARCEM:
+      return md_parse_option (OPTION_MCPU, "arcem");
+
+    case OPTION_ARCHS:
+      return md_parse_option (OPTION_MCPU, "archs");
+
+    case OPTION_EB:
+      byte_order = BIG_ENDIAN;
+      break;
+
+    case OPTION_EL:
+      byte_order = LITTLE_ENDIAN;
       break;
 
     case OPTION_NPS400:
@@ -3696,6 +3699,7 @@ md_parse_option (int c, const char *arg ATTRIBUTE_UNUSED)
     case OPTION_SWAPE:
     case OPTION_RTSC:
       break;
+#endif
 
     default:
       return 0;
