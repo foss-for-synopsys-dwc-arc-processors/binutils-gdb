@@ -1747,8 +1747,9 @@ enum bfd_architecture
 #define bfd_mach_arc_arc601    4
 #define bfd_mach_arc_arc700    3
 #define bfd_mach_arc_arcv2     5
-#define bfd_mach_arcv3_64      0x10
-#define bfd_mach_arcv3_32      0x20
+  bfd_arch_arc64,     /* ARCv3 32/64 Cores.  */
+#define bfd_mach_arcv3_64      1
+#define bfd_mach_arcv3_32      2
  bfd_arch_m32c,       /* Renesas M16C/M32C.  */
 #define bfd_mach_m16c          0x75
 #define bfd_mach_m32c          0x78

@@ -181,7 +181,8 @@ case "${targ_cpu}" in
 aarch64*)	 targ_archs="bfd_aarch64_arch bfd_arm_arch";;
 alpha*)		 targ_archs=bfd_alpha_arch ;;
 am33_2.0*)	 targ_archs=bfd_mn10300_arch ;;
-arc*)		 targ_archs=bfd_arc_arch ;;
+arc|arceb)	 targ_archs=bfd_arc_arch ;;
+arc64)		 targ_archs=bfd_arc64_arch ;;
 arm*)		 targ_archs=bfd_arm_arch ;;
 bfin*)		 targ_archs=bfd_bfin_arch ;;
 c30*)		 targ_archs=bfd_tic30_arch ;;
@@ -343,19 +344,19 @@ case "${targ}" in
 #ifdef BFD64
   arceb-*-elf* | arceb-*-linux*)
     targ_defvec=arc_elf32_be_vec
-    targ_selvecs="arc_elf32_le_vec arc_elf64_le_vec"
+    targ_selvecs=arc_elf32_le_vec
     want64=true
     ;;
 
   arc-*-elf* | arc-*-linux*)
     targ_defvec=arc_elf32_le_vec
-    targ_selvecs="arc_elf32_be_vec arc_elf64_le_vec"
+    targ_selvecs=arc_elf32_be_vec
     want64=true
     ;;
 
   arc64-*-*)
-    targ_defvec=arc_elf64_le_vec
-    targ_selvecs="arc_elf32_be_vec arc_elf32_le_vec"
+    targ_defvec=arc64_elf64_le_vec
+    targ_selvecs=arc64_elf32_le_vec
     want64=true
     ;;
 #endif
