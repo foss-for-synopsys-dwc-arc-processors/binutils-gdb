@@ -44,8 +44,6 @@ arc_compatible (const bfd_arch_info_type *a, const bfd_arch_info_type *b);
     0 /* Maximum offset of a reloc from the start of an insn.  */	\
 }
 
-/* ARCv1/2 and ARCv3 must be consolidated.  See P10019563-47884 on JIRA.  */
-/* ARCv1/2 */
 static const bfd_arch_info_type arch_info_struct[] =
 {
   ARC (32, 32, bfd_mach_arc_arc600, "A6"    , false, &arch_info_struct[1]),
@@ -54,9 +52,7 @@ static const bfd_arch_info_type arch_info_struct[] =
   ARC (32, 32, bfd_mach_arc_arc700, "A7",     false, &arch_info_struct[4]),
   ARC (32, 32, bfd_mach_arc_arcv2,  "ARCv2",  false, &arch_info_struct[5]),
   ARC (32, 32, bfd_mach_arc_arcv2,  "EM",     false, &arch_info_struct[6]),
-  ARC (32, 32, bfd_mach_arc_arcv2,  "HS",     false, &arch_info_struct[7]),
-  ARC (32, 32, bfd_mach_arcv3_32, "ARCv3_32", false, &arch_info_struct[8]),
-  ARC (64, 64, bfd_mach_arcv3_64, "ARCv3_64", false, NULL),
+  ARC (32, 32, bfd_mach_arc_arcv2,  "HS",     false, NULL),
 };
 
 const bfd_arch_info_type bfd_arc_arch =
@@ -77,9 +73,6 @@ static const bfd_arch_info_type *
 arc_compatible (const bfd_arch_info_type *a ATTRIBUTE_UNUSED,
 		const bfd_arch_info_type *b ATTRIBUTE_UNUSED)
 {
-/* ARCv1/2 and ARCv3 must be consolidated.  See P10019563-47884 on JIRA.  */
-/* ARCv1/2 */
-#if 0
   const bfd_arch_info_type * const em = &arch_info_struct[5];
   const bfd_arch_info_type * const hs = &arch_info_struct[6];
 
@@ -101,7 +94,6 @@ arc_compatible (const bfd_arch_info_type *a ATTRIBUTE_UNUSED,
   if ((a->mach == bfd_mach_arc_arcv2 && b == hs)
       || (b->mach == bfd_mach_arc_arcv2 && a == hs))
     return hs;
-#endif
-  /* Machine compatibilitu is checked in merge_private_bfd_data.  */
-  return a;
+
+  return bfd_default_compatible (a, b);
 }

@@ -153,6 +153,11 @@ disassembler (enum bfd_architecture a,
       disassemble = arc_get_disassembler (abfd);
       break;
 #endif
+#ifdef ARCH_arc64
+    case bfd_arch_arc64:
+      disassemble = arc_get_disassembler (abfd);
+      break;
+#endif
 #ifdef ARCH_arm
     case bfd_arch_arm:
       if (big)

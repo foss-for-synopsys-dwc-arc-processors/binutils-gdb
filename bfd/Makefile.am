@@ -98,6 +98,7 @@ ALL_MACHINES = \
 	cpu-aarch64.lo \
 	cpu-alpha.lo \
 	cpu-arc.lo \
+	cpu-arc64.lo \
 	cpu-arm.lo \
 	cpu-avr.lo \
 	cpu-bfin.lo \
@@ -183,6 +184,7 @@ ALL_MACHINES_CFILES = \
 	cpu-aarch64.c \
 	cpu-alpha.c \
 	cpu-arc.c \
+	cpu-arc64.c \
 	cpu-arm.c \
 	cpu-avr.c \
 	cpu-bfin.c \
@@ -541,7 +543,8 @@ BFD64_BACKENDS = \
 	elf32-aarch64.lo \
 	elf64-aarch64.lo \
 	elfxx-aarch64.lo \
-	elf64-arc.lo \
+	elf32-arc64.lo \
+	elf64-arc64.lo \
 	aix5ppc-core.lo \
 	aout64.lo \
 	coff-alpha.lo \
@@ -680,7 +683,7 @@ SOURCE_CFILES = \
 
 BUILD_CFILES = \
 	elf32-aarch64.c elf64-aarch64.c \
-	elf32-arc.c elf64-arc.c \
+	elf32-arc.c elf64-arc64.c elf32-arc64.c\
 	elf32-ia64.c elf64-ia64.c \
 	elf32-loongarch.c elf64-loongarch.c \
 	elf32-riscv.c elf64-riscv.c \
@@ -864,14 +867,20 @@ elf64-aarch64.c : elfnn-aarch64.c
 elf32-arc.c : elfnn-arc.c
 	rm -f elf32-arc.c
 	echo "#line 1 \"$(srcdir)/elfnn-arc.c\"" > elf32-arc.new
-	sed -e s/NN/32/g < $(srcdir)/elfnn-arc.c >> elf32-arc.new
+	sed -e s/NN/32/g -e s/AA//g < $(srcdir)/elfnn-arc.c >> elf32-arc.new
 	mv -f elf32-arc.new elf32-arc.c
 
-elf64-arc.c : elfnn-arc.c
-	rm -f elf64-arc.c
-	echo "#line 1 \"$(srcdir)/elfnn-arc.c\"" > elf64-arc.new
-	sed -e s/NN/64/g < $(srcdir)/elfnn-arc.c >> elf64-arc.new
-	mv -f elf64-arc.new elf64-arc.c
+elf64-arc64.c : elfnn-arc.c
+	rm -f elf64-arc64.c
+	echo "#line 1 \"$(srcdir)/elfnn-arc.c\"" > elf64-arc64.new
+	sed -e s/NN/64/g -e s/AA/64/g < $(srcdir)/elfnn-arc.c >> elf64-arc64.new
+	mv -f elf64-arc64.new elf64-arc64.c
+
+elf32-arc64.c : elfnn-arc.c
+	rm -f elf32-arc64.c
+	echo "#line 1 \"$(srcdir)/elfnn-arc.c\"" > elf32-arc64.new
+	sed -e s/NN/32/g -e s/AA/64/g < $(srcdir)/elfnn-arc.c >> elf32-arc64.new
+	mv -f elf32-arc64.new elf32-arc64.c
 
 elf32-ia64.c : elfnn-ia64.c
 	$(AM_V_at)echo "#line 1 \"elfnn-ia64.c\"" > $@

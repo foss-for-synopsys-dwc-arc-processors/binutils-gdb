@@ -34,7 +34,11 @@
 
 /* This macro is the BFD architecture to pass to
    `bfd_set_arch_mach'.  */
-#define TARGET_ARCH bfd_arch_arc
+#ifdef TARGET_ARCv3_64
+# define TARGET_ARCH bfd_arch_arc64
+#else
+# define TARGET_ARCH bfd_arch_arc
+#endif
 
 /* The `extsym - .' expressions can be emitted using PC-relative
    relocs.  */
@@ -54,14 +58,19 @@
 #define TARGET_BYTES_BIG_ENDIAN 0
 #endif
 
-#if TARGET_BYTES_BIG_ENDIAN == 1
-# define DEFAULT_TARGET_FORMAT  "elf32-bigarc"
-# define DEFAULT_BYTE_ORDER     BIG_ENDIAN
-#else
-# define DEFAULT_TARGET_FORMAT  "elf32-littlearc"
+#if TARGET_ARCv3_64
+# define DEFAULT_TARGET_FORMAT  "elf64-littlearc"
 # define DEFAULT_BYTE_ORDER     LITTLE_ENDIAN
-
+#else
+# if TARGET_BYTES_BIG_ENDIAN == 1
+#  define DEFAULT_TARGET_FORMAT  "elf32-bigarc"
+#  define DEFAULT_BYTE_ORDER     BIG_ENDIAN
+# else
+#  define DEFAULT_TARGET_FORMAT  "elf32-littlearc"
+#  define DEFAULT_BYTE_ORDER     LITTLE_ENDIAN
 #endif /* TARGET_BYTES_BIG_ENDIAN.  */
+
+#endif /* TARGET_ARCv3_64.  */
 
 /* This macro is the BFD target name to use when creating the output
    file.  This will normally depend upon the `OBJ_FMT' macro.  */

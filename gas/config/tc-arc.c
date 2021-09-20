@@ -924,7 +924,7 @@ arc_select_cpu (const char *arg, enum mach_selection_type sel)
       && (old_cpu.mach != selected_cpu.mach))
     {
       bfd_find_target (arc_target_format (), stdoutput);
-      if (! bfd_set_arch_mach (stdoutput, bfd_arch_arc, selected_cpu.mach))
+      if (! bfd_set_arch_mach (stdoutput, TARGET_ARCH, selected_cpu.mach))
 	as_warn (_("Could not set architecture and machine"));
     }
 
@@ -2753,7 +2753,7 @@ md_begin (void)
   /* The endianness can be chosen "at the factory".  */
   target_big_endian = byte_order == BIG_ENDIAN;
 
-  if (!bfd_set_arch_mach (stdoutput, bfd_arch_arc, selected_cpu.mach))
+  if (!bfd_set_arch_mach (stdoutput, TARGET_ARCH, selected_cpu.mach))
     as_warn (_("could not set architecture and machine"));
 
   /* Set elf header flags.  */

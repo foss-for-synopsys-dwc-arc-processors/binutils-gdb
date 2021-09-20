@@ -36,8 +36,13 @@
 #define CONFLICT_LIST bfdNN_conflict_list
 #include "opcode/arc-attrs.h"
 
-
+/* Arc's architecture size.  */
 #define ARCH_SIZE NN
+
+/* Arc's BFD backend.  There are two different backends, one for
+   ARCv1/v2 and the second for the ARCv3/64/32.  They are
+   incompatible.  */
+#define ARC_BFD_ARCH bfd_arch_arcAA
 
 /* The name of the dynamic interpreter.  This is put in the .interp
    section.  */
@@ -968,7 +973,7 @@ arc_elf_merge_private_bfd_data (bfd *ibfd, struct bfd_link_info *info)
 
   if (bfd_get_mach (obfd) < bfd_get_mach (ibfd))
     {
-      return bfd_set_arch_mach (obfd, bfd_arch_arc, bfd_get_mach (ibfd));
+      return bfd_set_arch_mach (obfd, ARC_BFD_ARCH, bfd_get_mach (ibfd));
     }
 
   return true;
@@ -1059,7 +1064,7 @@ arc_elf_object_p (bfd * abfd)
 	   "use default machine"));
     }
 
-  return bfd_default_set_arch_mach (abfd, bfd_arch_arc, mach);
+  return bfd_default_set_arch_mach (abfd, ARC_BFD_ARCH, mach);
 }
 
 /* The final processing done just before writing out an ARC ELF object file.
@@ -3491,11 +3496,11 @@ arc_elf_relax_section (bfd *abfd, asection *sec,
   return false;
 }
 
-#define TARGET_LITTLE_SYM   arc_elfNN_le_vec
+#define TARGET_LITTLE_SYM   arcAA_elfNN_le_vec
 #define TARGET_LITTLE_NAME  "elfNN-littlearc"
 #define TARGET_BIG_SYM	    arc_elfNN_be_vec
 #define TARGET_BIG_NAME     "elfNN-bigarc"
-#define ELF_ARCH	    bfd_arch_arc
+#define ELF_ARCH	    ARC_BFD_ARCH
 #define ELF_TARGET_ID	    ARC_ELF_DATA
 
 #if ARCH_SIZE == 32
