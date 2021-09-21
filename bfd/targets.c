@@ -994,8 +994,6 @@ static const bfd_target * const _bfd_target_vector[] =
 	&aarch64_elf64_le_cloudabi_vec,
 	&aarch64_mach_o_vec,
 
-	&arc_elf32_be_vec,
-	&arc_elf32_le_vec,
 	&arc64_elf32_le_vec,
 	&arc64_elf64_le_vec,
 #endif
@@ -1015,6 +1013,9 @@ static const bfd_target * const _bfd_target_vector[] =
 	   which kind of a.out file it is.  */
 	&aout_vec,
 #endif
+
+	&arc_elf32_be_vec,
+	&arc_elf32_le_vec,
 
 	&arm_elf32_be_vec,
 	&arm_elf32_le_vec,
