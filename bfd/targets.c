@@ -690,6 +690,8 @@ extern const bfd_target amdgcn_elf64_le_vec;
 extern const bfd_target aout_vec;
 extern const bfd_target arc_elf32_be_vec;
 extern const bfd_target arc_elf32_le_vec;
+extern const bfd_target arc64_elf32_le_vec;
+extern const bfd_target arc64_elf64_le_vec;
 extern const bfd_target arm_elf32_be_vec;
 extern const bfd_target arm_elf32_le_vec;
 extern const bfd_target arm_elf32_fdpic_be_vec;
@@ -992,6 +994,10 @@ static const bfd_target * const _bfd_target_vector[] =
 	&aarch64_elf64_le_cloudabi_vec,
 	&aarch64_mach_o_vec,
 	&aarch64_pei_vec,
+	&arc_elf32_be_vec,
+	&arc_elf32_le_vec,
+	&arc64_elf32_le_vec,
+	&arc64_elf64_le_vec,
 #endif
 
 #ifdef BFD64
