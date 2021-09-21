@@ -18,7 +18,9 @@
 # MA 02110-1301, USA.
 #
 
-if { ![istarget arc*-*-*] } {
+if { ![istarget arc*-*-*]
+     || [istarget arc64-*-*]
+     || [istarget arc32-*-*]} {
     return
 }
 

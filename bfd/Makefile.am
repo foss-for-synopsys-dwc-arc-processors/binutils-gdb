@@ -93,6 +93,7 @@ ALL_MACHINES = \
 	cpu-aarch64.lo \
 	cpu-alpha.lo \
 	cpu-arc.lo \
+	cpu-arc64.lo \
 	cpu-arm.lo \
 	cpu-avr.lo \
 	cpu-bfin.lo \
@@ -178,6 +179,7 @@ ALL_MACHINES_CFILES = \
 	cpu-aarch64.c \
 	cpu-alpha.c \
 	cpu-arc.c \
+	cpu-arc64.c \
 	cpu-arm.c \
 	cpu-avr.c \
 	cpu-bfin.c \
@@ -262,6 +264,7 @@ ALL_MACHINES_CFILES = \
 # The .o files needed by all of the 32 bit vectors that are configured into
 # target_vector in targets.c if configured with --enable-targets=all.
 BFD32_BACKENDS = \
+	arc-plt.lo \
 	aout-cris.lo \
 	aout-ns32k.lo \
 	aout32.lo \
@@ -395,6 +398,7 @@ BFD32_BACKENDS = \
 	xtensa-modules.lo
 
 BFD32_BACKENDS_CFILES = \
+	arc-plt.c \
 	aout-cris.c \
 	aout-ns32k.c \
 	aout32.c \
@@ -426,7 +430,6 @@ BFD32_BACKENDS_CFILES = \
 	elf-vxworks.c \
 	elf.c \
 	elf32-am33lin.c \
-	elf32-arc.c \
 	elf32-arm.c \
 	elf32-avr.c \
 	elf32-bfin.c \
@@ -535,6 +538,8 @@ BFD64_BACKENDS = \
 	elf32-aarch64.lo \
 	elf64-aarch64.lo \
 	elfxx-aarch64.lo \
+	elf32-arc64.lo \
+	elf64-arc64.lo \
 	aix5ppc-core.lo \
 	aout64.lo \
 	coff-alpha.lo \
@@ -673,6 +678,7 @@ SOURCE_CFILES = \
 
 BUILD_CFILES = \
 	elf32-aarch64.c elf64-aarch64.c \
+	elf32-arc.c elf64-arc64.c elf32-arc64.c\
 	elf32-ia64.c elf64-ia64.c \
 	elf32-loongarch.c elf64-loongarch.c \
 	elf32-riscv.c elf64-riscv.c \
@@ -852,6 +858,21 @@ elf32-aarch64.c : elfnn-aarch64.c
 elf64-aarch64.c : elfnn-aarch64.c
 	$(AM_V_at)echo "#line 1 \"elfnn-aarch64.c\"" > $@
 	$(AM_V_GEN)$(SED) -e s/NN/64/g < $< >> $@
+
+elf32-arc.c : elfnn-arc.c
+	rm -f elf32-arc.c
+	$(AM_V_at)echo "#line 1 \"$(srcdir)/elfnn-arc.c\"" > $@
+	$(AM_V_GEN)$(SED) -e s/NN/32/g -e s/AA//g < $< >> $@
+
+elf64-arc64.c : elfnn-arc.c
+	rm -f elf64-arc64.c
+	$(AM_V_at)echo "#line 1 \"$(srcdir)/elfnn-arc.c\"" > $@
+	$(AM_V_GEN)$(SED) -e s/NN/64/g -e s/AA/64/g < $< >> $@
+
+elf32-arc64.c : elfnn-arc.c
+	rm -f elf32-arc64.c
+	$(AM_V_at)echo "#line 1 \"$(srcdir)/elfnn-arc.c\"" > $@
+	$(AM_V_GEN)$(SED) -e s/NN/32/g -e s/AA/64/g < $< >> $@
 
 elf32-ia64.c : elfnn-ia64.c
 	$(AM_V_at)echo "#line 1 \"elfnn-ia64.c\"" > $@
