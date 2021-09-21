@@ -1019,6 +1019,9 @@ static const bfd_target * const _bfd_target_vector[] =
 	&aout_vec,
 #endif
 
+	&arc_elf32_be_vec,
+	&arc_elf32_le_vec,
+
 	&arm_elf32_be_vec,
 	&arm_elf32_le_vec,
 	&arm_elf32_fdpic_be_vec,

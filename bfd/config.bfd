@@ -343,19 +343,17 @@ case "${targ}" in
     targ_defvec=am33_elf32_linux_vec
     ;;
 
-#ifdef BFD64
   arceb-*-elf* | arceb-*-linux*)
     targ_defvec=arc_elf32_be_vec
     targ_selvecs=arc_elf32_le_vec
-    want64=true
     ;;
 
   arc-*-elf* | arc-*-linux*)
     targ_defvec=arc_elf32_le_vec
     targ_selvecs=arc_elf32_be_vec
-    want64=true
     ;;
 
+#ifdef BFD64
   arc64-*-*)
     targ_defvec=arc64_elf64_le_vec
     targ_selvecs=arc64_elf32_le_vec
