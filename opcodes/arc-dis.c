@@ -474,10 +474,7 @@ find_format (bfd_vma                       memaddr,
   unsigned limm = 0;
   struct arc_disassemble_info *arc_infop = info->private_data;
 
-  if (isa_mask & ARC_OPCODE_ARC64)
-    opcodeList = arc64_opcodes;
-  else
-    opcodeList = arc_opcodes;
+  opcodeList = arc_opcodes;
 
   /* First, try the extension instructions.  */
   if (*insn_len == 4)
