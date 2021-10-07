@@ -698,39 +698,58 @@ arc_insn_length (bfd_byte msb, bfd_byte lsb, struct disassemble_info *info)
 {
   bfd_byte major_opcode = msb >> 3;
 
-  switch (info->mach)
+  switch (info->arch)
     {
-    case bfd_mach_arc_arc700:
-      /* The nps400 extension set requires this special casing of the
-	 instruction length calculation.  Right now this is not causing any
-	 problems as none of the known extensions overlap in opcode space,
-	 but, if they ever do then we might need to start carrying
-	 information around in the elf about which extensions are in use.  */
-      if (major_opcode == 0xb)
-        {
-          bfd_byte minor_opcode = lsb & 0x1f;
+    case bfd_arch_arc:
+      switch (info->mach)
+	{
+	case bfd_mach_arc_arc700:
+	  /* The nps400 extension set requires this special casing of
+	     the instruction length calculation.  Right now this is
+	     not causing any problems as none of the known extensions
+	     overlap in opcode space, but, if they ever do then we
+	     might need to start carrying information around in the
+	     elf about which extensions are in use.  */
+	  if (major_opcode == 0xb)
+	    {
+	      bfd_byte minor_opcode = lsb & 0x1f;
 
-	  if (minor_opcode < 4)
-	    return 6;
-	  else if (minor_opcode == 0x10 || minor_opcode == 0x11)
-	    return 8;
-        }
-      if (major_opcode == 0xa)
-        {
-          return 8;
-        }
-      /* Fall through.  */
-    case bfd_mach_arc_arc600:
-      return (major_opcode > 0xb) ? 2 : 4;
+	      if (minor_opcode < 4)
+		return 6;
+	      else if (minor_opcode == 0x10 || minor_opcode == 0x11)
+		return 8;
+	    }
+	  if (major_opcode == 0xa)
+	    {
+	      return 8;
+	    }
+	  /* Fall through.  */
+	case bfd_mach_arc_arc600:
+	  return (major_opcode > 0xb) ? 2 : 4;
+	  break;
+
+	case bfd_mach_arc_arcv2:
+	  return (major_opcode > 0x7) ? 2 : 4;
+	  break;
+
+	default:
+	  return 0;
+	}
       break;
 
-    case bfd_mach_arcv3_64:
-      if (major_opcode == 0x0b
-	  || major_opcode == 0x1c)
-	return 4;
-      /* Fall through.  */
-    case bfd_mach_arc_arcv2:
-      return (major_opcode > 0x7) ? 2 : 4;
+    case bfd_arch_arc64:
+      switch (info->mach)
+	{
+	case bfd_mach_arcv3_32:
+	case bfd_mach_arcv3_64:
+	  if (major_opcode == 0x0b
+	      || major_opcode == 0x1c)
+	    return 4;
+	  return (major_opcode > 0x7) ? 2 : 4;
+
+	default:
+	  return 0;
+	}
       break;
 
     default:
@@ -1038,29 +1057,54 @@ print_insn_arc (bfd_vma memaddr,
       if (info->section && info->section->owner)
 	header = elf_elfheader (info->section->owner);
 
-      switch (info->mach)
+      switch (info->arch)
 	{
-	case bfd_mach_arc_arc700:
-	  isa_mask = ARC_OPCODE_ARC700;
+	case bfd_arch_arc:
+	  switch (info->mach)
+	    {
+	    case bfd_mach_arc_arc700:
+	      isa_mask = ARC_OPCODE_ARC700;
+	      break;
+
+	    case bfd_mach_arc_arc600:
+	      isa_mask = ARC_OPCODE_ARC600;
+	      break;
+
+	    case bfd_mach_arc_arcv2:
+	    default:
+	      isa_mask = ARC_OPCODE_ARCv2EM;
+	      /* TODO: Perhaps remove definition of header since it is
+		 only used at this location.  */
+	      if (header != NULL
+		  && (header->e_flags & EF_ARC_MACH_MSK) == EF_ARC_CPU_ARCV2HS)
+		isa_mask = ARC_OPCODE_ARCv2HS;
+	      break;
+	    }
 	  break;
 
-	case bfd_mach_arc_arc600:
-	  isa_mask = ARC_OPCODE_ARC600;
+	case bfd_arch_arc64:
+	  switch (info->mach)
+	    {
+	    case bfd_mach_arcv3_64:
+	      isa_mask = ARC_OPCODE_ARC64;
+	      break;
+
+	    case bfd_mach_arcv3_32:
+	      isa_mask = ARC_OPCODE_ARC32;
+	      break;
+
+	    default:
+	      /* xgettext:c-format */
+	      opcodes_error_handler (_("unrecognised arc64 disassembler \
+variant"));
+	      return -1;
+	    }
 	  break;
 
-	case bfd_mach_arcv3_64:
-	  isa_mask = ARC_OPCODE_ARC64;
-	  break;
-
-	case bfd_mach_arc_arcv2:
 	default:
-	  isa_mask = ARC_OPCODE_ARCv2EM;
-	  /* TODO: Perhaps remove definition of header since it is only used at
-	     this location.  */
-	  if (header != NULL
-	      && (header->e_flags & EF_ARC_MACH_MSK) == EF_ARC_CPU_ARCV2HS)
-	    isa_mask = ARC_OPCODE_ARCv2HS;
-	  break;
+	  /* xgettext:c-format */
+	  opcodes_error_handler (_("unrecognised disassembler architecture"));
+	  return -1;
 	}
     }
   else
