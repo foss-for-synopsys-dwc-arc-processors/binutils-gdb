@@ -52,9 +52,9 @@ arc_create_target_description (const struct arc_arch_features &features)
   else if (features.isa == ARC_ISA_ARCV2 && features.reg_size == 4)
       arch_name = "arc:ARCv2";
   else if (features.isa == ARC_ISA_ARCV3 && features.reg_size == 4)
-      arch_name = "arc:ARCv3_32";
+      arch_name = "arcv3:32";
   else if (features.isa == ARC_ISA_ARCV3 && features.reg_size == 8)
-      arch_name = "arc:ARCv3_64";
+      arch_name = "arcv3:64";
   else
     {
       std::string msg = string_printf
