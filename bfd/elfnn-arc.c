@@ -36,8 +36,19 @@
 #define CONFLICT_LIST bfdNN_conflict_list
 #include "opcode/arc-attrs.h"
 
+/* Possible ARC architectures.  */
+enum
+  {
+    ARC = 0,
+    ARC32,
+    ARC64
+  };
+
 /* Arc's architecture size.  */
 #define ARCH_SIZE NN
+
+/* Arc's architecture type.  */
+#define ARCH_TYPE ARCAA
 
 /* Arc's BFD backend.  There are two different backends, one for
    ARCv1/v2 and the second for the ARCv3/64/32.  They are
@@ -1014,12 +1025,6 @@ arc_elf_object_p (bfd * abfd)
   unsigned long arch = elf_elfheader (abfd)->e_flags & EF_ARC_MACH_MSK;
   unsigned  e_machine = elf_elfheader (abfd)->e_machine;
 
-#if ARCH_SIZE == 32
-  mach = bfd_mach_arc_arc700;
-#else
-  mach = bfd_mach_arcv3_64;
-#endif
-
   switch (e_machine)
     {
     case EM_ARC_COMPACT:
@@ -1060,8 +1065,8 @@ arc_elf_object_p (bfd * abfd)
 
     default:
       _bfd_error_handler
-	(_("warning: unset or old architecture flags; "
-	   "use default machine"));
+	(_("error: unset or old architecture flags."));
+      return false;
     }
 
   return bfd_default_set_arch_mach (abfd, ARC_BFD_ARCH, mach);
@@ -3497,19 +3502,20 @@ arc_elf_relax_section (bfd *abfd, asection *sec,
 }
 
 #define TARGET_LITTLE_SYM   arcAA_elfNN_le_vec
-#define TARGET_LITTLE_NAME  "elfNN-littlearc"
+#define TARGET_LITTLE_NAME  "elfNN-littlearcAA"
 #define TARGET_BIG_SYM	    arc_elfNN_be_vec
 #define TARGET_BIG_NAME     "elfNN-bigarc"
 #define ELF_ARCH	    ARC_BFD_ARCH
 #define ELF_TARGET_ID	    ARC_ELF_DATA
 
-#if ARCH_SIZE == 32
+#if (ARCH_TYPE == ARC) && (ARCH_SIZE == 32)
 # define ELF_MACHINE_CODE    EM_ARC_COMPACT2
-# define ELF_MACHINE_ALT1    EM_ARC_COMPACT3
-# define ELF_MACHINE_ALT2    EM_ARC_COMPACT
-#else
+# define ELF_MACHINE_ALT1    EM_ARC_COMPACT
+#elif (ARCH_TYPE == ARC32) || (ARCH_TYPE == ARC64)
 # define ELF_MACHINE_CODE    EM_ARC_COMPACT3_64
 # define ELF_MACHINE_ALT1    EM_ARC_COMPACT3
+#else
+# error "Unsupported ARC architecture"
 #endif
 
 #define ELF_MAXPAGESIZE     0x2000

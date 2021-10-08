@@ -1,6 +1,6 @@
 #objdump: -dr --prefix-addresses --show-raw-insn
 
-.*: +file format elf64-.*arc
+.*: +file format elf64-.*arc64
 
 Disassembly of section .text:
 0x[0-9a-f]+ 21f2 0080           	lddl	r0r1,\[r1,r2\]

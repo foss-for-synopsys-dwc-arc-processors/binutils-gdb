@@ -2,7 +2,7 @@ ARCH=arc
 
 SCRIPT_NAME=elf
 ELFSIZE=64
-OUTPUT_FORMAT="elf64-littlearc"
+OUTPUT_FORMAT="elf64-littlearc64"
 
 TEMPLATE_NAME=elf
 
@@ -18,5 +18,5 @@ ENTRY=__start
 
 # To support RELRO security feature.
 NO_SMALL_DATA=yes
-SEPARATE_GOTPLT=4 #FIXME! what is the true value here?
+SEPARATE_GOTPLT=8 #FIXME! what is the true value here?
 GENERATE_COMBRELOC_SCRIPT=yes
