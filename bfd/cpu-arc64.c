@@ -77,4 +77,4 @@ static const bfd_arch_info_type arch_info_struct[] =
 #endif
 
 const bfd_arch_info_type bfd_arc64_arch =
-  ARC64 (64, bfd_mach_arcv3_64, "arc64:64", true, NULL);
+  ARC64 (64, bfd_mach_arcv3_64, "arcv3:64", true, NULL);
