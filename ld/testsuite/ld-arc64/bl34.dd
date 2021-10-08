@@ -1,4 +1,4 @@
-[^:]+:\s+file format elf64-.*arc
+[^:]+:\s+file format elf64-.*arc64
 
 
 Disassembly of section .text:

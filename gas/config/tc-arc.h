@@ -59,7 +59,7 @@
 #endif
 
 #if TARGET_ARCv3_64
-# define DEFAULT_TARGET_FORMAT  "elf64-littlearc"
+# define DEFAULT_TARGET_FORMAT  "elf64-littlearc64"
 # define DEFAULT_BYTE_ORDER     LITTLE_ENDIAN
 #else
 # if TARGET_BYTES_BIG_ENDIAN == 1

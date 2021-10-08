@@ -1,6 +1,6 @@
 # an exemplary output
 #
-# test_static.exe:     file format elf64-littlearc
+# test_static.exe:     file format elf64-littlearc64
 #
 #
 # Disassembly of section .text:
@@ -14,7 +14,7 @@
 #     1012:	78e0                	nop_s
 #     1014:	0000 0000           	b	0	;1014 <__start+0x14>
 
-[^:]+:\s+file format elf.*-.*arc
+[^:]+:\s+file format elf.*-.*arc64
 
 
 Disassembly of section .text:

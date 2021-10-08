@@ -162,8 +162,6 @@ static bfd_boolean relaxation_state = FALSE;
    attribute found).  */
 static int do_linker_relax = 0;
 
-extern int arc_get_mach (char *);
-
 /* Forward declarations.  */
 static void arc_lcomm (int);
 static void arc_option (int);
@@ -473,6 +471,9 @@ static htab_t arc_addrtype_hash;
 #define ARC_CPU_TYPE_A64x(NAME,EXTRA)				\
   { #NAME, "arc64", ARC_OPCODE_ARC64, bfd_mach_arcv3_64,	\
       EF_ARC_CPU_ARC64, EXTRA}
+#define ARC_CPU_TYPE_A32x(NAME,EXTRA)				\
+  { #NAME, "arc32", ARC_OPCODE_ARC64, bfd_mach_arcv3_32,	\
+      0x00, EXTRA}
 #define ARC_CPU_TYPE_NONE			\
   { 0, 0, 0, 0, 0, 0 }
 
@@ -3071,13 +3072,20 @@ arc_target_format (void)
   if (selected_cpu.name == NULL)
     return DEFAULT_TARGET_FORMAT;
 
+#if TARGET_ARCv3_64
   if (selected_cpu.mach == bfd_mach_arcv3_64)
-    return "elf64-littlearc";
+    return "elf64-littlearc64";
 
+  if (selected_cpu.mach == bfd_mach_arcv3_32)
+    return "elf32-littlearc64";
+
+  return DEFAULT_TARGET_FORMAT;
+#else
   if (byte_order == LITTLE_ENDIAN)
     return "elf32-littlearc";
 
   return "elf32-bigarc";
+#endif
 }
 
 /* Apply a fixup to the object code.  At this point all symbol values
