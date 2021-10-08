@@ -195,6 +195,11 @@ arc-*-linux* | arceb-*-linux*)
 	gdb_target_obs="arc-linux-tdep.o linux-tdep.o solib-svr4.o"
 	;;
 
+arc64-*-elf*)
+	# Target: baremetal arc64 elf64 (newlib) target
+	gdb_target_obs="arc64-newlib-tdep.o"
+	;;
+
 arm*-wince-pe | arm*-*-mingw32ce*)
 	# Target: ARM based machine running Windows CE (win32)
 	gdb_target_obs="arm-wince-tdep.o windows-tdep.o"
