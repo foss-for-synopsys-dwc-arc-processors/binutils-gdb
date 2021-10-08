@@ -1824,12 +1824,6 @@ mach_type_to_arc_isa (const unsigned long mach)
 {
   switch (mach)
     {
-    case bfd_mach_arc_arc600:
-    case bfd_mach_arc_arc601:
-    case bfd_mach_arc_arc700:
-      return ARC_ISA_ARCV1;
-    case bfd_mach_arc_arcv2:
-      return ARC_ISA_ARCV2;
     case bfd_mach_arcv3_32:
     case bfd_mach_arcv3_64:
       return ARC_ISA_ARCV3;
@@ -2161,59 +2155,6 @@ arc64_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   if (gdbarch_tdep (gdbarch)->jb_pc >= 0)
     set_gdbarch_get_longjmp_target (gdbarch, arc_get_longjmp_target);
 
-  /* Disassembler options.  Enforce CPU if it was specified in XML target
-     description, otherwise use default method of determining CPU (ELF private
-     header).  */
-  if (info.target_desc != NULL)
-    {
-      const struct bfd_arch_info *tdesc_arch
-	= tdesc_architecture (info.target_desc);
-      if (tdesc_arch != NULL)
-	{
-	  xfree (arc_disassembler_options);
-	  /* FIXME: It is not really good to change disassembler options
-	     behind the scene, because that might override options
-	     specified by the user.  However as of now ARC doesn't support
-	     `set disassembler-options' hence this code is the only place
-	     where options are changed.  It also changes options for all
-	     existing gdbarches, which also can be problematic, if
-	     arc64_gdbarch_init will start reusing existing gdbarch
-	     instances.  */
-	  /* Target description specifies a BFD architecture, which is
-	     different from ARC cpu, as accepted by disassembler (and most
-	     other ARC tools), because cpu values are much more fine grained -
-	     there can be multiple cpu values per single BFD architecture.  As
-	     a result this code should translate architecture to some cpu
-	     value.  Since there is no info on exact cpu configuration, it is
-	     best to use the most feature-rich CPU, so that disassembler will
-	     recognize all instructions available to the specified
-	     architecture.  */
-	  switch (tdesc_arch->mach)
-	    {
-	    case bfd_mach_arc_arc601:
-	      arc_disassembler_options = xstrdup ("cpu=arc601");
-	      break;
-	    case bfd_mach_arc_arc600:
-	      arc_disassembler_options = xstrdup ("cpu=arc600");
-	      break;
-	    case bfd_mach_arc_arc700:
-	      arc_disassembler_options = xstrdup ("cpu=arc700");
-	      break;
-	    case bfd_mach_arc_arcv2:
-	      /* Machine arcv2 has three arches: ARCv2, EM and HS; where ARCv2
-		 is treated as EM.  */
-	      if (arc_arch_is_hs (tdesc_arch))
-		arc_disassembler_options = xstrdup ("cpu=hs38_linux");
-	      else
-		arc_disassembler_options = xstrdup ("cpu=em4_fpuda");
-	      break;
-	    default:
-	      arc_disassembler_options = NULL;
-	      break;
-	    }
-	}
-    }
-
   set_gdbarch_disassembler_options (gdbarch, &arc_disassembler_options);
   set_gdbarch_valid_disassembler_options (gdbarch,
 					  disassembler_options_arc ());
@@ -2257,7 +2198,7 @@ void _initialize_arc64_tdep ();
 void
 _initialize_arc64_tdep ()
 {
-  gdbarch_register (bfd_arch_arc, arc64_gdbarch_init, arc_dump_tdep);
+  gdbarch_register (bfd_arch_arc64, arc64_gdbarch_init, arc_dump_tdep);
 
   /* Register ARC-specific commands with gdb.  */
 

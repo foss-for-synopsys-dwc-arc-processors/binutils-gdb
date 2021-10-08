@@ -161,6 +161,11 @@ am33_2.0*-*-linux*)
 			solib-svr4.o"
 	;;
 
+arc64-*-elf*)
+	# Target: baremetal ARCv3 elf64 (newlib) target
+	gdb_target_obs="arc64-newlib-tdep.o"
+	;;
+
 arc*-*-elf*)
 	# Target: baremetal ARC elf32 (newlib) target
 	gdb_target_obs="arc-newlib-tdep.o"
