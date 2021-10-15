@@ -27,6 +27,7 @@
 #define ARCH_aarch64
 #define ARCH_alpha
 #define ARCH_arc
+#define ARCH_arc64
 #define ARCH_arm
 #define ARCH_avr
 #define ARCH_bfin

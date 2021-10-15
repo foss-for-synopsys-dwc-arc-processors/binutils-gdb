@@ -1027,6 +1027,7 @@ arc_elf_object_p (bfd * abfd)
 
   switch (e_machine)
     {
+#if (ARCH_TYPE == ARC) && (ARCH_SIZE == 32)
     case EM_ARC_COMPACT:
     case EM_ARC_COMPACT2:
       switch (arch)
@@ -1055,6 +1056,7 @@ arc_elf_object_p (bfd * abfd)
 	(_("error: the ARC4 architecture is no longer supported"));
       return false;
 
+#else /* New ARCv3 arches.  */
     case EM_ARC_COMPACT3_64:
       mach = bfd_mach_arcv3_64;
       break;
@@ -1062,6 +1064,7 @@ arc_elf_object_p (bfd * abfd)
     case EM_ARC_COMPACT3:
       mach = bfd_mach_arcv3_32;
       break;
+#endif
 
     default:
       _bfd_error_handler
