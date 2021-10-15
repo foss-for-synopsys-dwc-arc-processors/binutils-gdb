@@ -456,24 +456,33 @@ static htab_t arc_aux_hash;
 /* The hash table of address types.  */
 static htab_t arc_addrtype_hash;
 
-#define ARC_CPU_TYPE_A6xx(NAME,EXTRA)				\
+#ifndef TARGET_ARCv3_64
+# define ARC_CPU_TYPE_A6xx(NAME,EXTRA)				\
   { #NAME, "arc", ARC_OPCODE_ARC600, bfd_mach_arc_arc600,	\
-      E_ARC_MACH_ARC600, EXTRA}
-#define ARC_CPU_TYPE_A7xx(NAME,EXTRA)				\
+      E_ARC_MACH_ARC600, EXTRA},
+# define ARC_CPU_TYPE_A7xx(NAME,EXTRA)				\
   { #NAME, "arc", ARC_OPCODE_ARC700,  bfd_mach_arc_arc700,	\
-      E_ARC_MACH_ARC700, EXTRA}
-#define ARC_CPU_TYPE_AV2EM(NAME,EXTRA)				\
+      E_ARC_MACH_ARC700, EXTRA},
+# define ARC_CPU_TYPE_AV2EM(NAME,EXTRA)				\
   { #NAME, "arc", ARC_OPCODE_ARCv2EM, bfd_mach_arc_arcv2,	\
-      EF_ARC_CPU_ARCV2EM, EXTRA}
-#define ARC_CPU_TYPE_AV2HS(NAME,EXTRA)				\
+      EF_ARC_CPU_ARCV2EM, EXTRA},
+# define ARC_CPU_TYPE_AV2HS(NAME,EXTRA)				\
   { #NAME, "arc", ARC_OPCODE_ARCv2HS, bfd_mach_arc_arcv2,	\
-      EF_ARC_CPU_ARCV2HS, EXTRA}
-#define ARC_CPU_TYPE_A64x(NAME,EXTRA)				\
+      EF_ARC_CPU_ARCV2HS, EXTRA},
+# define ARC_CPU_TYPE_A64x(NAME,EXTRA)
+# define ARC_CPU_TYPE_A32x(NAME,EXTRA)
+#else
+# define ARC_CPU_TYPE_A6xx(NAME,EXTRA)
+# define ARC_CPU_TYPE_A7xx(NAME,EXTRA)
+# define ARC_CPU_TYPE_AV2EM(NAME,EXTRA)
+# define ARC_CPU_TYPE_AV2HS(NAME,EXTRA)
+# define ARC_CPU_TYPE_A64x(NAME,EXTRA)				\
   { #NAME, "arc64", ARC_OPCODE_ARC64, bfd_mach_arcv3_64,	\
-      EF_ARC_CPU_ARC64, EXTRA}
-#define ARC_CPU_TYPE_A32x(NAME,EXTRA)				\
-  { #NAME, "arc32", ARC_OPCODE_ARC64, bfd_mach_arcv3_32,	\
-      0x00, EXTRA}
+      EF_ARC_CPU_ARC64, EXTRA},
+# define ARC_CPU_TYPE_A32x(NAME,EXTRA)				\
+  { #NAME, "arc64", ARC_OPCODE_ARC32, bfd_mach_arcv3_32,	\
+      0x00, EXTRA},
+#endif
 #define ARC_CPU_TYPE_NONE			\
   { 0, 0, 0, 0, 0, 0 }
 
@@ -2777,13 +2786,10 @@ md_begin (void)
 
   declare_register_set ();
 #ifdef TARGET_ARCv3_64
-  if (selected_cpu.mach == bfd_mach_arcv3_64)
-    {
-      declare_register ("gp", 30);
-      declare_fp_set ();
-    }
+  declare_register ("gp", 30);
+  declare_fp_set ();
 #else
-    declare_register ("gp", 26);
+  declare_register ("gp", 26);
 #endif
   declare_register ("fp", 27);
   declare_register ("sp", 28);
