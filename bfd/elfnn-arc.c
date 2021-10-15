@@ -1086,11 +1086,19 @@ arc_elf_final_write_processing (bfd *abfd)
 					Tag_ARC_ABI_osver);
   flagword e_flags = elf_elfheader (abfd)->e_flags & ~EF_ARC_OSABI_MSK;
 
+#if (ARCH_TYPE == ARC) && (ARCH_SIZE == 32)
   switch (bfd_get_mach (abfd))
     {
     case bfd_mach_arc_arcv2:
       emf = EM_ARC_COMPACT2;
       break;
+    default:
+      emf = EM_ARC_COMPACT;
+      break;
+    }
+#else
+  switch (bfd_get_mach (abfd))
+    {
     case bfd_mach_arcv3_64:
       emf = EM_ARC_COMPACT3_64;
       break;
@@ -1098,10 +1106,11 @@ arc_elf_final_write_processing (bfd *abfd)
       emf = EM_ARC_COMPACT3;
       break;
     default:
-      emf = EM_ARC_COMPACT;
-      break;
+      _bfd_error_handler (_("Unknown ARC architecture"));
+      bfd_set_error (bfd_error_sorry);
+      return false;
     }
-
+#endif
   elf_elfheader (abfd)->e_machine = emf;
 
   /* Record whatever is the current syscall ABI version.  */
