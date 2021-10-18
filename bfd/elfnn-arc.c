@@ -37,12 +37,9 @@
 #include "opcode/arc-attrs.h"
 
 /* Possible ARC architectures.  */
-enum
-  {
-    ARC = 0,
-    ARC32,
-    ARC64
-  };
+#define ARC   0
+#define ARC32 1
+#define ARC64 2
 
 /* Arc's architecture size.  */
 #define ARCH_SIZE NN
@@ -992,7 +989,7 @@ arc_elf_merge_private_bfd_data (bfd *ibfd, struct bfd_link_info *info)
 
 /* Return a best guess for the machine number based on the attributes.  */
 
-static unsigned int
+static ATTRIBUTE_UNUSED unsigned int
 bfd_arc_get_mach_from_attributes (bfd * abfd)
 {
   int arch = bfd_elf_get_obj_attr_int (abfd, OBJ_ATTR_PROC, Tag_ARC_CPU_base);
@@ -1022,7 +1019,8 @@ static bool
 arc_elf_object_p (bfd * abfd)
 {
   unsigned int mach;
-  unsigned long arch = elf_elfheader (abfd)->e_flags & EF_ARC_MACH_MSK;
+  unsigned long ATTRIBUTE_UNUSED arch =
+    elf_elfheader (abfd)->e_flags & EF_ARC_MACH_MSK;
   unsigned  e_machine = elf_elfheader (abfd)->e_machine;
 
   switch (e_machine)
