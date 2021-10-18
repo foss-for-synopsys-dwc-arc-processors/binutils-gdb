@@ -3048,10 +3048,6 @@ decode_ARC_machine_flags (unsigned e_flags, unsigned e_machine, char buf[])
       strcat (buf, ", ARC700");
       break;
 
-    case EF_ARC_CPU_ARC64:
-      strcat (buf, ", ARC 64");
-      break;
-
       /* The only times we should end up here are (a) A corrupt ELF, (b) A
          new ELF with new architecture being read by an old version of
          readelf, or (c) An ELF built with non-GNU compiler that does not
@@ -3587,10 +3583,16 @@ get_machine_flags (Filedata * filedata, unsigned e_flags, unsigned e_machine)
 	default:
 	  break;
 
+	case EM_ARC_COMPACT3:
+	  strcat (buf, ", HS5x");
+	  break;
+
+	case EM_ARC_COMPACT3_64:
+	  strcat (buf, ", HS6x");
+	  break;
+
 	case EM_ARC_COMPACT2:
 	case EM_ARC_COMPACT:
-	case EM_ARC_COMPACT3:
-	case EM_ARC_COMPACT3_64:
           decode_ARC_machine_flags (e_flags, e_machine, buf);
           break;
 

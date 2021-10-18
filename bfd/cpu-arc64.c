@@ -57,7 +57,7 @@ compatible (const bfd_arch_info_type *a ATTRIBUTE_UNUSED,
     8,	/* 8 bits in a byte  */						\
     bfd_arch_arc64,							\
     MACH,								\
-    "arc64",								\
+    "arcv3",								\
     PRINT_NAME,								\
     4, /* section alignment power  */					\
     DEFAULT_P,								\
@@ -68,13 +68,8 @@ compatible (const bfd_arch_info_type *a ATTRIBUTE_UNUSED,
     0 /* Maximum offset of a reloc from the start of an insn.  */	\
 }
 
-#if 0
-static const bfd_arch_info_type arch_info_struct[] =
-{
-  ARC64 (32, bfd_mach_arcv3_32, "arc64:32", false, &arch_info_struct[1]),
-  ARC64 (64, bfd_mach_arcv3_64, "arc64:64", false, NULL),
-};
-#endif
+static const bfd_arch_info_type bfd_arc64_arch_32 =
+  ARC64 (32, bfd_mach_arcv3_32, "arcv3:32", false, NULL);
 
 const bfd_arch_info_type bfd_arc64_arch =
-  ARC64 (64, bfd_mach_arcv3_64, "arcv3:64", true, NULL);
+  ARC64 (64, bfd_mach_arcv3_64, "arcv3:64", true, &bfd_arc64_arch_32);
