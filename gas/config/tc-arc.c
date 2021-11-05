@@ -2123,7 +2123,8 @@ find_opcode_match (const struct arc_opcode_hash_entry *entry,
 #ifdef TARGET_ARCv3_64
 		    case O_plt34:
 		    case O_s32:
-		      tmp = 0; /* Fail if is not signed.  */
+		      /* Fail if is not signed (ARC64 only).  */
+		      tmp = (selected_cpu.mach == bfd_mach_arcv3_64) ? 0 : tmp;
 		      /* Fall through.  */
 		    case O_u32:
 		      if ((operand->flags & ARC_OPERAND_SIGNED) == tmp)
