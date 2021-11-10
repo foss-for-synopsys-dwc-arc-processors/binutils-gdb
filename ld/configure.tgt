@@ -111,12 +111,12 @@ arc-*-elf* | arc[be]*-*-elf*)	targ_emul=arcelf
 			targ_extra_emuls=elf64arc
 			targ_extra_emuls="${targ_extra_emuls} arclinux arclinux_nps arcv2elf arcv2elfx"
 			;;
-arc64-*-elf*)		targ_emul=elf64arc
-			targ_extra_emuls="arc64linux"
+arc64-*-elf*)		targ_emul=arc64elf64
+			targ_extra_emuls="arc64elf32 arc64linux64"
 			targ_extra_libpath=$targ_extra_emuls
 			;;
-arc64-*-linux*)		targ_emul=arc64linux
-			targ_extra_emuls="elf64arc"
+arc64-*-linux*)		targ_emul=arc64linux64
+			targ_extra_emuls="arc64elf64 arc64elf32"
 			targ_extra_libpath=$targ_extra_emuls
 			;;
 arc-*-linux* | arc[eb]*-linux*)
