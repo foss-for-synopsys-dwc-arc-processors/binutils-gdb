@@ -61,7 +61,7 @@
 #define LOG_FILE_ALIGN (ARCH_SIZE == 32 ? 2 : 3)
 
 /* Do not enable this unless you know what you are doing.
- * Code under this macro is not safe for production. 
+ * Code under this macro is not safe for production.
  * */
 /* #define ARC_ENABLE_DEBUG 1 */
 #ifdef ARC_ENABLE_DEBUG
@@ -893,6 +893,15 @@ arc_elf_merge_private_bfd_data (bfd *ibfd, struct bfd_link_info *info)
   /* Check if we have the same endianess.  */
   if (! _bfd_generic_verify_endian_match (ibfd, info))
     return false;
+
+  if (strcmp (bfd_get_target (ibfd), bfd_get_target (obfd)) != 0)
+    {
+      _bfd_error_handler
+	(_("%pB: ABI is incompatible with the selected emulation:\n"
+	   "  target emulation '%s' does not match '%s'"),
+	 ibfd, bfd_get_target (ibfd), bfd_get_target (obfd));
+      return false;
+    }
 
   if (bfd_get_flavour (ibfd) != bfd_target_elf_flavour
       || bfd_get_flavour (obfd) != bfd_target_elf_flavour)
