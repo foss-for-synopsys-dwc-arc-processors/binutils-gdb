@@ -341,8 +341,7 @@ find_format_from_table (struct disassemble_info *info,
 
 	  /* Check for (short) LIMM indicator.  If it is there, then
 	     make sure we pick the right format.  */
-	  slimmind = (isa_mask & (ARC_OPCODE_ARCV2 | ARC_OPCODE_ARC64)) ?
-	    REG_LIMM_S : REG_LIMM;
+	  slimmind = (isa_mask & ARC_OPCODE_ARCVx) ?  REG_LIMM_S : REG_LIMM;
 	  if (operand->flags & ARC_OPERAND_IR
 	      && !(operand->flags & ARC_OPERAND_LIMM))
 	    if ((value == REG_LIMM && insn_len == 4)
