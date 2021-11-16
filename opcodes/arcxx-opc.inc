@@ -1788,8 +1788,11 @@ const struct arc_flag_class arc_flag_classes[] =
   { F_CLASS_OPTIONAL, { F_FLAG, F_NULL }, 0, 0},
 #define C_FHARD	    (C_F + 1)
   { F_CLASS_OPTIONAL, { F_FFAKE, F_NULL }, 0, 0},
-#define C_AQ	    (C_FHARD + 1)
-  { F_CLASS_OPTIONAL, { F_AQ, F_RL, F_NULL }, 0, 0},
+
+#define C_RL	    (C_FHARD + 1)
+  { F_CLASS_OPTIONAL, { F_RL, F_NULL }, 0, 0},
+#define C_AQ	    (C_RL + 1)
+  { F_CLASS_OPTIONAL, { F_AQ, F_NULL }, 0, 0},
 
 #define C_ATOP      (C_AQ + 1)
   { F_CLASS_REQUIRED, {F_ATO_ADD, F_ATO_OR, F_ATO_AND, F_ATO_XOR, F_ATO_MINU,
