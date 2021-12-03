@@ -2739,7 +2739,7 @@ static void
 init_default_arch (void)
 {
   if (strcmp (default_arch, "arc64") == 0)
-    arc_select_cpu ("arc64", MACH_SELECTION_FROM_DEFAULT);
+    arc_select_cpu ("hs6x", MACH_SELECTION_FROM_DEFAULT);
   else
     arc_select_cpu (TARGET_WITH_CPU, MACH_SELECTION_FROM_DEFAULT);
 }
