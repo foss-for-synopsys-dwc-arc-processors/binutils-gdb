@@ -174,7 +174,7 @@ const pseudo_typeS md_pseudo_table[] =
 {
   /* Make sure that .word is 32 bits.  */
   { "word", cons, 4 },
-#ifdef TARGET_ARCv3_64
+#if defined(TARGET_ARCv3_64) || defined(TARGET_ARCv3_32)
   { "xword", cons, 8},
 #endif
 
@@ -205,7 +205,7 @@ enum options
   OPTION_RELAX,
   OPTION_LINKER_RELAX,
 
-#ifndef TARGET_ARCv3_64
+#if !defined(TARGET_ARCv3_64) && !defined(TARGET_ARCv3_32)
   OPTION_EB,
   OPTION_EL,
   OPTION_ARC600,
@@ -250,7 +250,7 @@ struct option md_longopts[] =
   { "mrelax",           no_argument,       NULL, OPTION_RELAX },
   { "mlinker-relax",    no_argument,       NULL, OPTION_LINKER_RELAX },
 
-#ifndef TARGET_ARCv3_64
+#if !defined(TARGET_ARCv3_64) && !defined(TARGET_ARCv3_32)
   { "EB",		no_argument,	   NULL, OPTION_EB },
   { "EL",		no_argument,	   NULL, OPTION_EL },
   { "mA6",		no_argument,	   NULL, OPTION_ARC600 },
@@ -456,7 +456,7 @@ static htab_t arc_aux_hash;
 /* The hash table of address types.  */
 static htab_t arc_addrtype_hash;
 
-#ifndef TARGET_ARCv3_64
+#if !defined(TARGET_ARCv3_64) && !defined(TARGET_ARCv3_32)
 # define ARC_CPU_TYPE_A6xx(NAME,EXTRA)				\
   { #NAME, "arc", ARC_OPCODE_ARC600, bfd_mach_arc_arc600,	\
       E_ARC_MACH_ARC600, EXTRA},
@@ -534,7 +534,7 @@ static unsigned cl_features = 0;
 #define O_tpoff   O_md9     /* @tpoff relocation.  */
 #define O_dtpoff9 O_md10    /* @dtpoff9 relocation.  */
 #define O_dtpoff  O_md11    /* @dtpoff relocation.  */
-#ifdef TARGET_ARCv3_64
+#if defined(TARGET_ARCv3_64) || defined(TARGET_ARCv3_32)
 # define O_u32     O_md12    /* @u32 modifier.  */
 # define O_s32     O_md13    /* @s32 modifier.  */
 # define O_plt34   O_md14    /* @plt34 relocation.  */
@@ -594,7 +594,7 @@ static const struct arc_reloc_op_tag
   DEF (tpoff,   BFD_RELOC_ARC_TLS_LE_32,	1),
   DEF (dtpoff9, BFD_RELOC_ARC_TLS_DTPOFF_S9,	0),
   DEF (dtpoff,  BFD_RELOC_ARC_TLS_DTPOFF,	1),
-#ifdef TARGET_ARCv3_64
+#if defined(TARGET_ARCv3_64) || defined(TARGET_ARCv3_32)
   DEF (u32,	BFD_RELOC_ARC_LO32_ME,		1),
   DEF (s32,	BFD_RELOC_ARC_32_ME,		1),
   DEF (plt34,	BFD_RELOC_ARC_PLT34,		0),
@@ -1131,7 +1131,7 @@ debug_exp (expressionS *t)
     case O_tpoff:		namemd = "O_tpoff";		break;
     case O_dtpoff9:		namemd = "O_dtpoff9";		break;
     case O_dtpoff:		namemd = "O_dtpoff";		break;
-#ifdef TARGET_ARCv3_64
+#if defined(TARGET_ARCv3_64) || defined(TARGET_ARCv3_32)
     case O_u32:			namemd = "O_u32";		break;
     case O_s32:			namemd = "O_s32";		break;
     case O_plt34:		namemd = "O_plt34";		break;
@@ -2017,7 +2017,7 @@ find_opcode_match (const struct arc_opcode_hash_entry *entry,
 		  }
 		  /* Fall through.  */
 		case O_constant:
-#ifdef TARGET_ARCv3_64
+#if defined(TARGET_ARCv3_64) || defined(TARGET_ARCv3_32)
 		  /* Check if we want limm.  */
 		  if (tok[tokidx].X_md == O_u32
 		      && !(operand->flags & ARC_OPERAND_LIMM))
@@ -2120,7 +2120,7 @@ find_opcode_match (const struct arc_opcode_hash_entry *entry,
 		    case O_tlsie:
 		    case O_tlsgd:
 		    case O_pcl:
-#ifdef TARGET_ARCv3_64
+#if defined(TARGET_ARCv3_64) || defined(TARGET_ARCv3_32)
 		    case O_plt34:
 		    case O_s32:
 		      /* Fail if is not signed (ARC64 only).  */
@@ -2320,7 +2320,7 @@ find_pseudo_insn (const char *opname,
 	}
     }
 
-#ifdef TARGET_ARCv3_64
+#if defined(TARGET_ARCv3_64) || defined(TARGET_ARCv3_32)
   /* ARC64 pseudo instructions.  */
   for (i = 0; i < arc64_num_pseudo_insn; i++)
     {
@@ -2534,7 +2534,7 @@ autodetect_attributes (const struct arc_opcode *opcode,
 	case O_gotoff:
 	case O_gotpc:
 	case O_plt:
-#ifdef TARGET_ARCv3_64
+#if defined(TARGET_ARCv3_64) || defined(TARGET_ARCv3_32)
 	case O_plt34:
 #endif
 	  pic_option = 2;
@@ -2700,7 +2700,7 @@ declare_register_set (void)
     }
 }
 
-#ifdef TARGET_ARCv3_64
+#if defined(TARGET_ARCv3_64) || defined(TARGET_ARCv3_32)
 /* Helper use for declaration of fp refisters.  */
 static void
 declare_fp_set (void)
@@ -2739,7 +2739,11 @@ static void
 init_default_arch (void)
 {
   if (strcmp (default_arch, "arc64") == 0)
+#ifdef TARGET_ARCv3_32
+    arc_select_cpu ("hs5x", MACH_SELECTION_FROM_DEFAULT);
+#else
     arc_select_cpu ("hs6x", MACH_SELECTION_FROM_DEFAULT);
+#endif
   else
     arc_select_cpu (TARGET_WITH_CPU, MACH_SELECTION_FROM_DEFAULT);
 }
@@ -2786,7 +2790,7 @@ md_begin (void)
   arc_reg_hash = str_htab_create ();
 
   declare_register_set ();
-#ifdef TARGET_ARCv3_64
+#if defined(TARGET_ARCv3_64) || defined(TARGET_ARCv3_32)
   declare_register ("gp", 30);
   declare_fp_set ();
 #else
@@ -2795,7 +2799,7 @@ md_begin (void)
   declare_register ("fp", 27);
   declare_register ("sp", 28);
   declare_register ("ilink", 29);
-#ifndef TARGET_ARCv3_64
+#if !defined(TARGET_ARCv3_64) && !defined(TARGET_ARCv3_32)
   if (selected_cpu.mach == bfd_mach_arc_arc600
       || selected_cpu.mach == bfd_mach_arc_arc700)
     {
@@ -3079,7 +3083,7 @@ arc_target_format (void)
   if (selected_cpu.name == NULL)
     return DEFAULT_TARGET_FORMAT;
 
-#if TARGET_ARCv3_64
+#if defined(TARGET_ARCv3_64) || defined(TARGET_ARCv3_32)
   if (selected_cpu.mach == bfd_mach_arcv3_64)
     return "elf64-littlearc64";
 
@@ -3642,7 +3646,7 @@ md_parse_option (int c, const char *arg ATTRIBUTE_UNUSED)
       do_linker_relax = (do_linker_relax == 0) ? 1 : do_linker_relax;
       break;
 
-#ifndef TARGET_ARCv3_64
+#if !defined(TARGET_ARCv3_64) && !defined(TARGET_ARCv3_32)
     case OPTION_ARC600:
     case OPTION_ARC601:
       return md_parse_option (OPTION_MCPU, "arc600");
@@ -3753,7 +3757,7 @@ arc_show_cpu_list (FILE *stream)
 void
 md_show_usage (FILE *stream)
 {
-#ifndef TARGET_ARCv3_64
+#if !defined(TARGET_ARCv3_64) && !defined(TARGET_ARCv3_32)
   fprintf (stream, _("ARC-specific assembler options:\n"));
 
   fprintf (stream, "  -mcpu=<cpu name>\t  (default: %s), assemble for"
@@ -3901,7 +3905,7 @@ may_relax_expr (expressionS tok)
     default:
       break;
     case O_plt:
-#ifdef TARGET_ARCv3_64
+#if defined(TARGET_ARCv3_64) || defined(TARGET_ARCv3_32)
     case O_plt34:
 #endif
       return false;
@@ -4190,7 +4194,7 @@ assemble_insn (const struct arc_opcode *opcode,
 				  operand->default_reloc);
 	      break;
 
-#ifdef TARGET_ARCv3_64
+#if defined(TARGET_ARCv3_64) || defined(TARGET_ARCv3_32)
 	    case O_s32:
 	      if ((operand->flags & ARC_OPERAND_SIGNED) == 0)
 		as_bad (_("Unable to use @s32 relocation for insn %s"),
@@ -4482,7 +4486,7 @@ tc_arc_fix_adjustable (fixS *fixP)
     {
     case BFD_RELOC_ARC_GOTPC32:
     case BFD_RELOC_ARC_PLT32:
-#ifdef TARGET_ARCv3_64
+#if defined(TARGET_ARCv3_64) || defined(TARGET_ARCv3_32)
     case BFD_RELOC_ARC_PLT34:
 #endif
     case BFD_RELOC_ARC_S25H_PCREL_PLT:

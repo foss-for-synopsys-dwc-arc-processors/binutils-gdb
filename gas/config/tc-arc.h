@@ -34,7 +34,7 @@
 
 /* This macro is the BFD architecture to pass to
    `bfd_set_arch_mach'.  */
-#ifdef TARGET_ARCv3_64
+#if defined(TARGET_ARCv3_64) || defined(TARGET_ARCv3_32)
 # define TARGET_ARCH bfd_arch_arc64
 #else
 # define TARGET_ARCH bfd_arch_arc
@@ -58,8 +58,11 @@
 #define TARGET_BYTES_BIG_ENDIAN 0
 #endif
 
-#if TARGET_ARCv3_64
+#ifdef TARGET_ARCv3_64
 # define DEFAULT_TARGET_FORMAT  "elf64-littlearc64"
+# define DEFAULT_BYTE_ORDER     LITTLE_ENDIAN
+#elif defined(TARGET_ARCv3_32)
+# define DEFAULT_TARGET_FORMAT  "elf64-littlearc32"
 # define DEFAULT_BYTE_ORDER     LITTLE_ENDIAN
 #else
 # if TARGET_BYTES_BIG_ENDIAN == 1

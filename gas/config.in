@@ -231,6 +231,9 @@
 /* Target alias. */
 #undef TARGET_ALIAS
 
+/* Using ARCv3/32 architecture. */
+#undef TARGET_ARCv3_32
+
 /* Using ARCv3/64 architecture. */
 #undef TARGET_ARCv3_64
 

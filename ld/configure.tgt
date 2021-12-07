@@ -114,6 +114,10 @@ arc64-*-elf*)		targ_emul=arc64elf64
 			targ_extra_emuls="arc64elf32 arc64linux64"
 			targ_extra_libpath=$targ_extra_emuls
 			;;
+arc32-*-elf*)		targ_emul=arc64elf32
+			targ_extra_emuls="arc64elf64 arc64linux64"
+			targ_extra_libpath=$targ_extra_emuls
+			;;
 arc64-*-linux*)		targ_emul=arc64linux64
 			targ_extra_emuls="arc64elf64 arc64elf32"
 			targ_extra_libpath=$targ_extra_emuls
