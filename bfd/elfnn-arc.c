@@ -2225,15 +2225,15 @@ arc_get_plt_version (struct bfd_link_info *info)
 		 (int) plt_versions[i].elem_size);
     }
 
-  if (bfd_get_mach (info->output_bfd) == bfd_mach_arcv3_64
-      || bfd_get_mach(info->output_bfd) == bfd_mach_arcv3_32)
+  if (bfd_get_mach (info->output_bfd) == bfd_mach_arcv3_64)
     {
       return &(plt_versions[ELF_ARCV3_PIC]);
 //      if (bfd_link_pic (info))
 //      else
 //	return &(plt_versions[ELF_ARCV2_ABS]);
     }
-  if (bfd_get_mach (info->output_bfd) == bfd_mach_arc_arcv2)
+  else if (bfd_get_mach (info->output_bfd) == bfd_mach_arc_arcv2
+	   || bfd_get_mach(info->output_bfd) == bfd_mach_arcv3_32)
     {
       if (bfd_link_pic (info))
 	return &(plt_versions[ELF_ARCV2_PIC]);
