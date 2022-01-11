@@ -27,6 +27,8 @@
 #include "features/arc/v1-aux.c"
 #include "features/arc/v2-core.c"
 #include "features/arc/v2-aux.c"
+#include "features/arc/v3_32-core.c"
+#include "features/arc/v3_32-aux.c"
 #include "features/arc/v3_64-core.c"
 #include "features/arc/v3_64-aux.c"
 
@@ -79,7 +81,13 @@ arc_create_target_description (const struct arc_arch_features &features)
       regnum = create_feature_arc_v2_aux (tdesc.get (), regnum);
       break;
     case ARC_ISA_ARCV3:
-      if (features.reg_size == 8)
+      if (features.reg_size == 4)
+	{
+	  regnum = create_feature_arc_v3_32_core (tdesc.get (), regnum);
+	  regnum = create_feature_arc_v3_32_aux (tdesc.get (), regnum);
+	  break;
+	}
+      else if (features.reg_size == 8)
 	{
 	  regnum = create_feature_arc_v3_64_core (tdesc.get (), regnum);
 	  regnum = create_feature_arc_v3_64_aux (tdesc.get (), regnum);
