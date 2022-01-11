@@ -67,8 +67,8 @@ alpha*-*-*)
 	cpu_obs="alpha-tdep.o"
 	;;
 
-arc*-*-*)
-	# Target: Unidentified ARC target
+arc-*-* | arceb-*-*)
+	# Target: Other unidentified ARC targets
 	cpu_obs="arc-tdep.o arch/arc.o"
 	;;
 
@@ -180,13 +180,13 @@ am33_2.0*-*-linux*)
 			solib-svr4.o"
 	;;
 
-arc*-*-elf32)
+arc-*-elf* | arceb-*-elf*)
 	# Target: baremetal ARC elf32 (newlib) target
 	gdb_target_obs="arc-newlib-tdep.o"
 	;;
 
-arc*-*-linux*)
-	# Target: ARC machine running Linux
+arc-*-linux* | arceb-*-linux*)
+	# Target: ARCv2 elf32 machine running Linux
 	gdb_target_obs="arc-linux-tdep.o linux-tdep.o solib-svr4.o"
 	;;
 
