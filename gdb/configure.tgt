@@ -72,7 +72,7 @@ arc-*-* | arceb-*-*)
 	cpu_obs="arc-tdep.o arch/arc.o"
 	;;
 
-arc64-*-*)
+arc32-*-* | arc64-*-*)
 	# Target: Unidentified arc64 target
 	cpu_obs="arc64-tdep.o arch/arc.o"
 	;;
@@ -195,8 +195,8 @@ arc-*-linux* | arceb-*-linux*)
 	gdb_target_obs="arc-linux-tdep.o linux-tdep.o solib-svr4.o"
 	;;
 
-arc64-*-elf*)
-	# Target: baremetal arc64 elf64 (newlib) target
+arc32-*-elf* | arc64-*-elf*)
+	# Target: baremetal arc64 elf32/64 (newlib) target
 	gdb_target_obs="arc64-newlib-tdep.o"
 	;;
 
