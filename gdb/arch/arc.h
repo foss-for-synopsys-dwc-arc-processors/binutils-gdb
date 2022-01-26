@@ -23,7 +23,8 @@
 /* Supported ARC ISAs.  */
 enum arc_isa
 {
-  ARC_ISA_ARCV1 = 1,  /* a.k.a. ARCompact (ARC600, ARC700)  */
+  ARC_ISA_NONE = 0,   /* Resembles uninitialized data.  */
+  ARC_ISA_ARCV1,      /* a.k.a. ARCompact (ARC600, ARC700)  */
   ARC_ISA_ARCV2	      /* such as ARC EM and ARC HS  */
 };
 
