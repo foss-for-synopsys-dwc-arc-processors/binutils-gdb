@@ -4511,6 +4511,19 @@
 /* ldhZZ_H<.x><.di><.aa> 0,limm,s9 00010110ssssssssS111Daa10X111110.  */
 { "ldw", 0x1600713E, 0xFF0071BF, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, LOAD, NONE, { ZA, BRAKET, LIMM, SIMM9_8, BRAKETdup }, { C_ZZ_H, C_DI20, C_AA21, C_X25 }},
 
+/* ldd<.aa><.di>  a,b      00010bbb000000000BBBDaa110AAAAAA -> ldd a,[b,s9=0]    */
+/* ldd<.aa><.di>  a,b,s9   00010bbbssssssssSBBBDaa110AAAAAA -> ldd a,[b,s9]      */
+/* ldd<.aa><.di>  a,limm   00010110000000000111Daa110AAAAAA -> ldd a,[b=62,s9=0] */
+{ "ldd", 0x10000180, 0xF8FF81C0, ARC_OPCODE_ARC32, LOAD, NONE, { RAD, BRAKET, RB, BRAKETdup }, { C_DI20, C_AA21 }},
+{ "ldd", 0x10000180, 0xF80001C0, ARC_OPCODE_ARC32, LOAD, NONE, { RAD, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_DI20, C_AA21 }},
+{ "ldd", 0x16007180, 0xFFFFF1C0, ARC_OPCODE_ARC32, LOAD, NONE, { RAD, BRAKET, LIMM, BRAKETdup }, { C_DI20, C_AA21 }},
+
+/* ldd<.aa><.di>  a,b,c    00100bbbaa110110DBBBCCCCCCAAAAAA -> ldd a,[b,c]    */
+/* ldd<.aa><.di>  a,b,limm 00100bbbaa110110DBBB111110AAAAAA -> ldd a,[b,c=62] */
+/* ldd<.aa><.di>  a,limm,c 00100110aa110110D111CCCCCCAAAAAA -> ldd a,[b=62,c] */
+{ "ldd", 0x20360000, 0xF83F0000, ARC_OPCODE_ARC32, LOAD, NONE, { RAD, BRAKET, RB, RC, BRAKETdup }, { C_DI16, C_AA8 }},
+{ "ldd", 0x20360F80, 0xF83F0FC0, ARC_OPCODE_ARC32, LOAD, NONE, { RAD, BRAKET, RB, LIMM, BRAKETdup }, { C_DI16, C_AA8 }},
+{ "ldd", 0x26367000, 0xFF3F7000, ARC_OPCODE_ARC32, LOAD, NONE, { RAD, BRAKET, LIMM, RC, BRAKETdup }, { C_DI16, C_AA8 }},
 
 /* lddl<.aa> a,b    00010bbb000000000BBBq1101QAAAAAA -> lddl a,[b,s9=0]     */
 /* lddl<.aa> a,b,s9 00010bbbssssssssSBBBq1101QAAAAAA -> lddl a,[b,s9]       */

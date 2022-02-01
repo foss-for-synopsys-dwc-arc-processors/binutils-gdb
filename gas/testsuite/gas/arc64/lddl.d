@@ -1,3 +1,5 @@
+#as: -mcpu=hs6x
+#source: lddl.s
 #objdump: -dr --prefix-addresses --show-raw-insn
 
 .*: +file format elf64-.*arc64
