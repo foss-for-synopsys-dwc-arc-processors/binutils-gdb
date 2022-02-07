@@ -9594,15 +9594,15 @@
 /* st<zz><.di><.aa> c,b,s9       00011bbbssssssssSBBBCCCCCCDaaZZ0 -> st c   ,[b,s9]    */
 /* st<zz><.di><.aa> w6,b,s9      00011bbbssssssssSBBBwwwwwwDaaZZ1 -> st w6  ,[b,s9]    */
 /* st<zz><.di><.aa> limm,b,s9    00011bbbssssssssSBBB111110DaaZZ0 -> st c=62,[b,s9]    */
-/* st<zz><.di><.aa> c,limm,s9    00011110ssssssssS111CCCCCCDaaZZ0 -> st c   ,[b=62,s9] */
-/* st<zz><.di><.aa> w6,limm,s9   00011110ssssssssS111wwwwwwDaaZZ1 -> st w6  ,[b=62,s9] */
-/* st<zz><.di><.aa> limm,limm,s9 00011110ssssssssS111111110DaaZZ0 -> st c=62,[b=62,s9] */
+/* st<zz><.di><.aa> c,limm,s9    00011110ssssssssS111CCCCCCDRRZZ0 -> st c   ,[b=62,s9] */
+/* st<zz><.di><.aa> w6,limm,s9   00011110ssssssssS111wwwwwwDRRZZ1 -> st w6  ,[b=62,s9] */
+/* st<zz><.di><.aa> limm,limm,s9 00011110ssssssssS111111110DRRZZ0 -> st c=62,[b=62,s9] */
 { "st", 0x18000000, 0xF8000001, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, STORE, NONE, { RC, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_ZZ29, C_DI26, C_AA27 }},
 { "st", 0x18000001, 0xF8000001, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, STORE, NONE, { W6, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_ZZ29, C_DI26, C_AA27 }},
 { "st", 0x18000F80, 0xF8000FC1, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, STORE, NONE, { LIMM, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_ZZ29, C_DI26, C_AA27 }},
-{ "st", 0x1E007000, 0xFF007001, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, STORE, NONE, { RC, BRAKET, LIMM, SIMM9_8, BRAKETdup }, { C_ZZ29, C_DI26, C_AA27 }},
-{ "st", 0x1E007001, 0xFF007001, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, STORE, NONE, { W6, BRAKET, LIMM, SIMM9_8, BRAKETdup }, { C_ZZ29, C_DI26, C_AA27 }},
-{ "st", 0x1E007F80, 0xFF007FC1, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, STORE, NONE, { LIMM, BRAKET, LIMMdup, SIMM9_8, BRAKETdup }, { C_ZZ29, C_DI26, C_AA27 }},
+{ "st", 0x1E007000, 0xFF007001, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, STORE, NONE, { RC, BRAKET, LIMM, SIMM9_8, BRAKETdup }, { C_ZZ29, C_DI26 }},
+{ "st", 0x1E007001, 0xFF007001, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, STORE, NONE, { W6, BRAKET, LIMM, SIMM9_8, BRAKETdup }, { C_ZZ29, C_DI26 }},
+{ "st", 0x1E007F80, 0xFF007FC1, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, STORE, NONE, { LIMM, BRAKET, LIMMdup, SIMM9_8, BRAKETdup }, { C_ZZ29, C_DI26 }},
 
 /* stb_sZZ_B c,b,u5 10101bbbcccuuuuu.  */
 { "stb_s", 0x0000A800, 0x0000F800,ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, STORE, NONE, { RC_S, BRAKET, RB_S, UIMM5_11_S, BRAKETdup }, { C_ZZ_B }},
@@ -9610,32 +9610,30 @@
 /* stb_sZZ_B b,SP,u7 11000bbb011uuuuu.  */
 { "stb_s", 0x0000C060, 0x0000F8E0,ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, STORE, NONE, { RB_S, BRAKET, SP_S, UIMM7_A32_11_S, BRAKETdup }, { C_ZZ_B }},
 
-/* std<.aa>.<di> w6,b       00011bbb000000000BBBwwwwwwDaa111 -> std w6,[b,s9=0]       */
-/* std<.aa>.<di> w6,limm    00011110000000000111wwwwwwDaa111 -> std w6,[b=62,s9=0]    */
-{ "std", 0x18000007, 0xF8FF8007, ARC_OPCODE_ARC32, STORE, NONE, { W6, BRAKET, RB, BRAKETdup }, { C_DI26, C_AA27 }},
-{ "std", 0x1E007007, 0xFFFFF007, ARC_OPCODE_ARC32, STORE, NONE, { W6, BRAKET, LIMM, BRAKETdup }, { C_DI26, C_AA27 }},
-
-/* std<.aa>.<di> c,b,s9       00011bbbssssssssSBBBwwwwwwDaa111 -> std w6,[b,s9]       */
-/* std<.aa>.<di> c,limm,s9    00011110ssssssssS111wwwwwwDaa111 -> std w6,[b=62,s9]    */
-{ "std", 0x18000007, 0xF8000007, ARC_OPCODE_ARC32, STORE, NONE, { W6, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_DI26, C_AA27 }},
-{ "std", 0x1E007007, 0xFF007007, ARC_OPCODE_ARC32, STORE, NONE, { W6, BRAKET, LIMM, SIMM9_8, BRAKETdup }, { C_DI26, C_AA27 }},
-
 /* std<.aa>.<di> c,b       00011bbb000000000BBBCCCCCCDaa110 -> std c,[b,s9=0]       */
+/* std<.aa>.<di> w6,b      00011bbb000000000BBBwwwwwwDaa111 -> std w6,[b,s9=0]      */
 /* std<.aa>.<di> limm,b    00011bbb000000000BBB111110Daa110 -> std c=62,[b,s9=0]    */
 /* std<.aa>.<di> c,limm    00011110000000000111CCCCCCDaa110 -> std c,[b=62,s9=0]    */
+/* std<.aa>.<di> w6,limm   00011110000000000111wwwwwwDaa111 -> std w6,[b=62,s9=0]   */
 /* std<.aa>.<di> limm,limm 00011110000000000111111110Daa110 -> std c=62,[b=62,s9=0] */
 { "std", 0x18000006, 0xF8FF8007, ARC_OPCODE_ARC32, STORE, NONE, { RCD, BRAKET, RB, BRAKETdup }, { C_DI26, C_AA27 }},
+{ "std", 0x18000007, 0xF8FF8007, ARC_OPCODE_ARC32, STORE, NONE, { W6, BRAKET, RB, BRAKETdup }, { C_DI26, C_AA27 }},
 { "std", 0x18000F86, 0xF8FF8FC7, ARC_OPCODE_ARC32, STORE, NONE, { LIMM, BRAKET, RB, BRAKETdup }, { C_DI26, C_AA27 }},
 { "std", 0x1E007006, 0xFFFFF007, ARC_OPCODE_ARC32, STORE, NONE, { RCD, BRAKET, LIMM, BRAKETdup }, { C_DI26, C_AA27 }},
+{ "std", 0x1E007007, 0xFFFFF007, ARC_OPCODE_ARC32, STORE, NONE, { W6, BRAKET, LIMM, BRAKETdup }, { C_DI26, C_AA27 }},
 { "std", 0x1E007F86, 0xFFFFFFC7, ARC_OPCODE_ARC32, STORE, NONE, { LIMM, BRAKET, LIMMdup, BRAKETdup }, { C_DI26, C_AA27 }},
 
 /* std<.aa>.<di> c,b,s9       00011bbbssssssssSBBBCCCCCCDaa110 -> std c,[b,s9]       */
+/* std<.aa>.<di> w6,b,s9      00011bbbssssssssSBBBwwwwwwDaa111 -> std w6,[b,s9]      */
 /* std<.aa>.<di> limm,b,s9    00011bbbssssssssSBBB111110Daa110 -> std c=62,[b,s9]    */
 /* std<.aa>.<di> c,limm,s9    00011110ssssssssS111CCCCCCDaa110 -> std c,[b=62,s9]    */
+/* std<.aa>.<di> w6,limm,s9   00011110ssssssssS111wwwwwwDaa111 -> std w6,[b=62,s9]   */
 /* std<.aa>.<di> limm,limm,s9 00011110ssssssssS111111110Daa110 -> std c=62,[b=62,s9] */
 { "std", 0x18000006, 0xF8000007, ARC_OPCODE_ARC32, STORE, NONE, { RCD, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_DI26, C_AA27 }},
+{ "std", 0x18000007, 0xF8000007, ARC_OPCODE_ARC32, STORE, NONE, { W6, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_DI26, C_AA27 }},
 { "std", 0x18000F86, 0xF8000FC7, ARC_OPCODE_ARC32, STORE, NONE, { LIMM, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_DI26, C_AA27 }},
 { "std", 0x1E007006, 0xFF007007, ARC_OPCODE_ARC32, STORE, NONE, { RCD, BRAKET, LIMM, SIMM9_8, BRAKETdup }, { C_DI26, C_AA27 }},
+{ "std", 0x1E007007, 0xFF007007, ARC_OPCODE_ARC32, STORE, NONE, { W6, BRAKET, LIMM, SIMM9_8, BRAKETdup }, { C_DI26, C_AA27 }},
 { "std", 0x1E007F86, 0xFF007FC7, ARC_OPCODE_ARC32, STORE, NONE, { LIMM, BRAKET, LIMMdup, SIMM9_8, BRAKETdup }, { C_DI26, C_AA27 }},
 
 /* stdl<.aa> c,b       00011bbb000000000BBBCCCCCC1aa111 -> stdl c,[b,s9=0]    */

@@ -35,9 +35,9 @@
   
   st.as r0, [r1,255]
   st.as r2, [r4,-256]
-  st.as r4, [0x1338]
-  st.as r6, [0x7fffffff]
-  st.as r8, [-1024]
+  st    r4, [0x1338]
+  st    r6, [0x7fffffff]
+  st    r8, [-1024]
   st.as 0x12345678, [r2, -256]
   st.as     -42000, [r1, 255]
 
