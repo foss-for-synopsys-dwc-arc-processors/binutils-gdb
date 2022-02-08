@@ -9654,23 +9654,39 @@
 /* sth_sZZ_H c,b,u6 10110bbbcccuuuuu.  */
 { "sth_s", 0x0000B000, 0x0000F800,ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, STORE, NONE, { RC_S, BRAKET, RB_S, UIMM6_A16_11_S, BRAKETdup }, { C_ZZ_H }},
 
-/* stlZZ_L<.aa> c,b 00011bbb000000000BBBCCCCCC0aa111.  */
-{ "stl", 0x18000007, 0xF8FF8027, ARC_OPCODE_ARC64, STORE, NONE, { RC, BRAKET, RB, BRAKETdup }, { C_ZZ_L, C_AA27 }},
+/* stl<.aa> c,b        00011bbb000000000BBBCCCCCC0aa111 -> stl c   , [b   , s9=0] */
+/* stl      c,ximm     00011100000000000111CCCCCC0RR111 -> stl c   , [b=60, s9=0] */
+/* stl      c,limm     00011110000000000111CCCCCC0RR111 -> stl c   , [b=62, s9=0] */
+/* stl<.aa> w6,b       00011bbb000000000BBBwwwwww0aa110 -> stl w6  , [b   , s9=0] */
+/* stl<.aa> ximm,b     00011bbb000000000BBB1111000aa111 -> stl c=60, [b   , s9=0] */
+/* stl<.aa> limm,b     00011bbb000000000BBB1111100aa111 -> stl c=62, [b   , s9=0] */
+/* stl      ximm,ximm  000111000000000001111111000RR111 -> stl c=60, [b=60, s9=0] */
+/* stl      limm,limm  000111100000000001111111100RR111 -> stl c=62, [b=62, s9=0] */
+{ "stl", 0x18000007, 0xF8FF8027, ARC_OPCODE_ARC64, STORE, NONE, { RC,   BRAKET, RB,      BRAKETdup }, { C_ZZ_L, C_AA27 }},
+{ "stl", 0x1C007007, 0xFFFFF03F, ARC_OPCODE_ARC64, STORE, NONE, { RC,   BRAKET, XIMM,    BRAKETdup }, { C_ZZ_L         }},
+{ "stl", 0x1E007007, 0xFFFFF03F, ARC_OPCODE_ARC64, STORE, NONE, { RC,   BRAKET, LIMM,    BRAKETdup }, { C_ZZ_L         }},
+{ "stl", 0x18000006, 0xF8FF8027, ARC_OPCODE_ARC64, STORE, NONE, { W6,   BRAKET, RB,      BRAKETdup }, { C_ZZ_L, C_AA27 }},
+{ "stl", 0x18000F07, 0xF8FF8FE7, ARC_OPCODE_ARC64, STORE, NONE, { XIMM, BRAKET, RB,      BRAKETdup }, { C_ZZ_L, C_AA27 }},
+{ "stl", 0x18000F87, 0xF8FF8FE7, ARC_OPCODE_ARC64, STORE, NONE, { LIMM, BRAKET, RB,      BRAKETdup }, { C_ZZ_L, C_AA27 }},
+{ "stl", 0x1C007F07, 0xFFFFFFE7, ARC_OPCODE_ARC64, STORE, NONE, { XIMM, BRAKET, XIMMdup, BRAKETdup }, { C_ZZ_L         }},
+{ "stl", 0x1E007F87, 0xFFFFFFE7, ARC_OPCODE_ARC64, STORE, NONE, { LIMM, BRAKET, LIMMdup, BRAKETdup }, { C_ZZ_L         }},
 
-/* stlZZ_L<.aa> c,b,s9 00011bbbssssssssSBBBCCCCCC0aa111.  */
-{ "stl", 0x18000007, 0xF8000027, ARC_OPCODE_ARC64, STORE, NONE, { RC, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_ZZ_L, C_AA27 }},
-
-/* stlZZ_L c,ximm 00011100000000000111CCCCCC000111.  */
-{ "stl", 0x1C007007, 0xFFFFF03F, ARC_OPCODE_ARC64, STORE, NONE, { RC, BRAKET, XIMM, BRAKETdup }, { C_ZZ_L }},
-
-/* stlZZ_L c,limm 00011110000000000111CCCCCC000111.  */
-{ "stl", 0x1E007007, 0xFFFFF03F, ARC_OPCODE_ARC64, STORE, NONE, { RC, BRAKET, LIMM, BRAKETdup }, { C_ZZ_L }},
-
-/* stlZZ_L<.aa> ximm,b,s9 00011bbbssssssssSBBB111100 0aa111.  */
-{ "stl", 0x18000F07, 0xF8000FE7, ARC_OPCODE_ARC64, STORE, NONE, { XIMM, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_ZZ_L, C_AA27 }},
-
-/* stlZZ_L<.aa> limm,b,s9 00011bbbssssssssSBBB111110 0aa111.  */
-{ "stl", 0x18000F87, 0xF8000FE7, ARC_OPCODE_ARC64, STORE, NONE, { LIMM, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_ZZ_L, C_AA27 }},
+/* stl<.aa> c,b,s9        00011bbbssssssssSBBBCCCCCC0aa111 -> stl c   , [b   , s9] */
+/* stl<.aa> c,ximm,s9     00011100ssssssssS111CCCCCC0aa111 -> stl c   , [b=60, s9] */
+/* stl<.aa> c,limm,s9     00011110ssssssssS111CCCCCC0aa111 -> stl c   , [b=62, s9] */
+/* stl<.aa> w6,b,s9       00011bbbssssssssSBBBwwwwww0aa110 -> stl w6  , [b   , s9] */
+/* stl<.aa> ximm,b,s9     00011bbbssssssssSBBB1111000aa111 -> stl c=60, [b   , s9] */
+/* stl<.aa> limm,b,s9     00011bbbssssssssSBBB1111100aa111 -> stl c=62, [b   , s9] */
+/* stl<.aa> ximm,ximm,s9  00011100ssssssssS1111111000aa111 -> stl c=60, [b=60, s9] */
+/* stl<.aa> limm,limm,s9  00011110ssssssssS1111111100aa111 -> stl c=62, [b=62, s9] */
+{ "stl", 0x18000007, 0xF8000027, ARC_OPCODE_ARC64, STORE, NONE, { RC,   BRAKET, RB,      SIMM9_8, BRAKETdup }, { C_ZZ_L, C_AA27 }},
+{ "stl", 0x1C007007, 0xFF007027, ARC_OPCODE_ARC64, STORE, NONE, { RC,   BRAKET, XIMM,    SIMM9_8, BRAKETdup }, { C_ZZ_L, C_AA27 }},
+{ "stl", 0x1E007007, 0xFF007027, ARC_OPCODE_ARC64, STORE, NONE, { RC,   BRAKET, LIMM,    SIMM9_8, BRAKETdup }, { C_ZZ_L, C_AA27 }},
+{ "stl", 0x18000006, 0xF8000027, ARC_OPCODE_ARC64, STORE, NONE, { W6,   BRAKET, RB,      SIMM9_8, BRAKETdup }, { C_ZZ_L, C_AA27 }},
+{ "stl", 0x18000F07, 0xF8000FE7, ARC_OPCODE_ARC64, STORE, NONE, { XIMM, BRAKET, RB,      SIMM9_8, BRAKETdup }, { C_ZZ_L, C_AA27 }},
+{ "stl", 0x18000F87, 0xF8000FE7, ARC_OPCODE_ARC64, STORE, NONE, { LIMM, BRAKET, RB,      SIMM9_8, BRAKETdup }, { C_ZZ_L, C_AA27 }},
+{ "stl", 0x1C007F07, 0xFF007FE7, ARC_OPCODE_ARC64, STORE, NONE, { XIMM, BRAKET, XIMMdup, SIMM9_8, BRAKETdup }, { C_ZZ_L, C_AA27 }},
+{ "stl", 0x1E007F87, 0xFF007FE7, ARC_OPCODE_ARC64, STORE, NONE, { LIMM, BRAKET, LIMMdup, SIMM9_8, BRAKETdup }, { C_ZZ_L, C_AA27 }},
 
 /* st_s b,SP,u7 11000bbb010uuuuu.  */
 { "st_s", 0x0000C040, 0x0000F8E0,ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, STORE, NONE, { RB_S, BRAKET, SP_S, UIMM7_A32_11_S, BRAKETdup }, { 0 }},

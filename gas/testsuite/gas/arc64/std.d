@@ -38,6 +38,7 @@ Disassembly of section .text:
 0x[0-9a-f]+ 1e00 721e ffff fc00 	std.as	r8r9,\[0xfffffc00]
 0x[0-9a-f]+ 1a00 8f9e 1234 5678 	std.as	0x12345678,\[r2,-256\]
 0x[0-9a-f]+ 19ff 0f9e ffff 5bf0 	std.as	0xffff5bf0,\[r1,255\]
+0x[0-9a-f]+ 1e0f 7fbe 0000 4321 	std.di.as	0x4321,\[0x4321,15\]
 0x[0-9a-f]+ 1900 07c7           	std	31,\[r1\]
 0x[0-9a-f]+ 1900 0807           	std	-32,\[r1\]
 0x[0-9a-f]+ 19ff 0807           	std	-32,\[r1,255\]

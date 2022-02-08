@@ -1,4 +1,4 @@
-# common stores
+; common stores
 
   st r4, [r1]                  ; st c, [b]
   st r4, [0x1338]              ; st c, [limm]         limm: small
@@ -41,6 +41,7 @@
   st.as 0x12345678, [r2, -256]
   st.as     -42000, [r1, 255]
 
+  ; st w6, ...
   st  31, [r1]                  ; st w6, [b, s9=0]  w6: biggest 
   st -32, [r1]                  ; st w6, [b, s9=0]  w6: smallest
   st -32, [r1,255]              ; st w6, [b, s9]    s9: biggest

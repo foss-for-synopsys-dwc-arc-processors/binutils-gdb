@@ -1,4 +1,4 @@
-# 128-bit stores
+; 128-bit double stores
 
   stdl r4, [r1]                   ; stdl c, [b, s9=0]
   stdl r0, [r1,255]               ; stdl c, [b, s9]      s9: biggest

@@ -1,3 +1,5 @@
+; 64-bit double loads
+
 ; ldd a, [b]
 ldd       r0, [r1]
 ldd.di    r0, [r1]

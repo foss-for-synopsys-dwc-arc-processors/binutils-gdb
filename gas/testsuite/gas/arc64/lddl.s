@@ -1,4 +1,4 @@
-# 128-bit loads
+; 128-bit double loads
 
   lddl r0, [r1,r2]               ; lddl a, [b, c]
   lddl r6, [r2,256]              ; lddl a, [b, limm]  (limm > s9)

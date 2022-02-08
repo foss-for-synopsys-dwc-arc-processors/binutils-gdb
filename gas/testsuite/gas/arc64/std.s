@@ -1,4 +1,4 @@
-# 64-bit stores
+; 64-bit double stores
 
   std r4, [r1]                  ; std c, [b]
   std r4, [0x1338]              ; std c, [limm]         limm: small
@@ -40,7 +40,9 @@
   std.as r8, [-1024]
   std.as 0x12345678, [r2, -256]
   std.as     -42000, [r1, 255]
+  std.as.di  0x4321, [0x4321, 15]
 
+  ; std w6, ...
   std  31, [r1]                  ; std w6, [b, s9=0]  w6: biggest 
   std -32, [r1]                  ; std w6, [b, s9=0]  w6: smallest
   std -32, [r1,255]              ; std w6, [b, s9]    s9: biggest
