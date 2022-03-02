@@ -514,6 +514,15 @@ const struct arc_opcode arc_opcodes[] =
   FP_DOP (vfhmuls, VFMULS, HALF)
   FP_DOP (vfhdivs, VFDIVS, HALF)
 
+  FP_DOP (vfhunpkl , VFUNPKL , HALF)
+  FP_DOP (vfhunpkm , VFUNPKM , HALF)
+  FP_DOP (vfhpackl , VFPACKL , HALF)
+  FP_DOP (vfhpackm , VFPACKM , HALF)
+  FP_DOP (vfhbflyl , VFBFLYL , HALF)
+  FP_DOP (vfhbflym , VFBFLYM , HALF)
+  FP_DOP (vfhaddsub, VFADDSUB, HALF)
+  FP_DOP (vfhsubadd, VFSUBADD, HALF)
+
   FP_DOP (vfsadd , VFADD , SINGLE)
   FP_DOP (vfssub , VFSUB , SINGLE)
   FP_DOP (vfsmul , VFMUL , SINGLE)
@@ -522,6 +531,15 @@ const struct arc_opcode arc_opcodes[] =
   FP_DOP (vfssubs, VFSUBS, SINGLE)
   FP_DOP (vfsmuls, VFMULS, SINGLE)
   FP_DOP (vfsdivs, VFDIVS, SINGLE)
+
+  FP_DOP (vfsunpkl , VFUNPKL , SINGLE)
+  FP_DOP (vfsunpkm , VFUNPKM , SINGLE)
+  FP_DOP (vfspackl , VFPACKL , SINGLE)
+  FP_DOP (vfspackm , VFPACKM , SINGLE)
+  FP_DOP (vfsbflyl , VFBFLYL , SINGLE)
+  FP_DOP (vfsbflym , VFBFLYM , SINGLE)
+  FP_DOP (vfsaddsub, VFADDSUB, SINGLE)
+  FP_DOP (vfssubadd, VFSUBADD, SINGLE)
 
   FP_DOP_D (vfdadd , VFADD , DOUBLE)
   FP_DOP_D (vfdsub , VFSUB , DOUBLE)
@@ -532,12 +550,25 @@ const struct arc_opcode arc_opcodes[] =
   FP_DOP_D (vfdmuls, VFMULS, DOUBLE)
   FP_DOP_D (vfddivs, VFDIVS, DOUBLE)
 
+  FP_DOP_D (vfdunpkl , VFUNPKL , DOUBLE)
+  FP_DOP_D (vfdunpkm , VFUNPKM , DOUBLE)
+  FP_DOP_D (vfdpackl , VFPACKL , DOUBLE)
+  FP_DOP_D (vfdpackm , VFPACKM , DOUBLE)
+  FP_DOP_D (vfdbflyl , VFBFLYL , DOUBLE)
+  FP_DOP_D (vfdbflym , VFBFLYM , DOUBLE)
+  FP_DOP_D (vfdaddsub, VFADDSUB, DOUBLE)
+  FP_DOP_D (vfdsubadd, VFSUBADD, DOUBLE)
+
   FP_SOP (fhsqrt, FSQRT, HALF)
   FP_SOP (fssqrt, FSQRT, SINGLE)
   FP_SOP (fdsqrt, FSQRT, DOUBLE)
   FP_SOP (vfhsqrt, VFSQRT, HALF)
   FP_SOP (vfssqrt, VFSQRT, SINGLE)
   FP_SOP_D (vfdsqrt, VFSQRT,DOUBLE)
+
+  FP_SOP (vfhexch, VFEXCH, HALF)
+  FP_SOP (vfsexch, VFEXCH, SINGLE)
+  FP_SOP_D (vfdexch, VFEXCH, DOUBLE)
 
   FP_COP (fhmov, FMOV, HALF)
   FP_COP (fsmov, FMOV, SINGLE)
@@ -631,6 +662,12 @@ const struct arc_opcode arc_opcodes[] =
 
   EXTINSN3OP ("vpack2wl", ARC_OPCODE_ARC64, MOVE, NONE, 5, 0x38)
   EXTINSN3OP ("vpack2wm", ARC_OPCODE_ARC64, MOVE, NONE, 5, 0x39)
+
+#undef HARD_FIELDF
+#define HARD_FIELDF (0x0)
+
+  EXTINSN3OP ("vmax2", ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MOVE, NONE, 4, 0x0B)
+  EXTINSN3OP ("vmin2", ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MOVE, NONE, 4, 0x11)
 
   { NULL, 0, 0, 0, 0, 0, { 0 }, { 0 } }
 };
