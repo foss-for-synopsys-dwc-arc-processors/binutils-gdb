@@ -76,10 +76,12 @@ case "${gdbserver_host}" in
 			srv_linux_usrregs=yes
 			srv_linux_thread_db=yes
 			;;
-  arc64-*-linux*)
+  arc32-*-linux* | arc64-*-linux*)
 			srv_regobj=""
 			srv_tgtobj="linux-arc64-low.o arch/arc.o $srv_linux_obj"
-			srv_xmlfiles="arc/v3_64-core.xml"
+			srv_xmlfiles="arc/v3_32-core.xml"
+			srv_xmlfiles="${srv_xmlfiles} arc/v3_32-aux.xml"
+			srv_xmlfiles="${srv_xmlfiles} arc/v3_64-core.xml"
 			srv_xmlfiles="${srv_xmlfiles} arc/v3_64-aux.xml"
 			srv_linux_regsets=yes
 			srv_linux_usrregs=yes
