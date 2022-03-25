@@ -671,3 +671,188 @@ const struct arc_opcode arc_opcodes[] =
 
   { NULL, 0, 0, 0, 0, 0, { 0 }, { 0 } }
 };
+
+#ifdef PRINT_TABLES_FOR_QEMU
+
+#define C_NAME(NAME) \
+  case NAME : \
+    return #NAME; \
+    break;
+static char *print_insn_class(insn_class_t class) {
+  switch(class) {
+    C_NAME(ACL)
+    C_NAME(ARITH)
+    C_NAME(AUXREG)
+    C_NAME(BBIT0)
+    C_NAME(BBIT1)
+    C_NAME(BI)
+    C_NAME(BIH)
+    C_NAME(BITOP)
+    C_NAME(BITSTREAM)
+    C_NAME(BMU)
+    C_NAME(BRANCH)
+    C_NAME(BRCC)
+    C_NAME(CONTROL)
+    C_NAME(DIVREM)
+    C_NAME(DMA)
+    C_NAME(DPI)
+    C_NAME(DSP)
+    C_NAME(EI)
+    C_NAME(ENTER)
+    C_NAME(FLOAT)
+    C_NAME(INVALID)
+    C_NAME(JLI)
+    C_NAME(JUMP)
+    C_NAME(KERNEL)
+    C_NAME(LEAVE)
+    C_NAME(LLOCK)
+    C_NAME(LOAD)
+    C_NAME(LOGICAL)
+    C_NAME(LOOP)
+    C_NAME(MEMORY)
+    C_NAME(MISC)
+    C_NAME(MOVE)
+    C_NAME(MPY)
+    C_NAME(NET)
+    C_NAME(PROTOCOL_DECODE)
+    C_NAME(PMU)
+    C_NAME(POP)
+    C_NAME(PUSH)
+    C_NAME(SCOND)
+    C_NAME(SJLI)
+    C_NAME(STORE)
+    C_NAME(SUB)
+    C_NAME(SWITCH)
+    C_NAME(ULTRAIP)
+    C_NAME(XY)
+  }
+}
+#undef C_NAME
+#define SC_NAME(NAME) \
+  case NAME : \
+    return #NAME; \
+    break;
+static char *print_insn_subclass(insn_subclass_t subclass) {
+  switch(subclass) {
+    SC_NAME(NONE)
+    SC_NAME(CVT)
+    SC_NAME(BTSCN)
+    SC_NAME(CD)
+    SC_NAME(COND)
+    SC_NAME(DIV)
+    SC_NAME(DP)
+    SC_NAME(DPA)
+    SC_NAME(DPX)
+    SC_NAME(FASTMATH)
+    SC_NAME(LL64)
+    SC_NAME(MPY1E)
+    SC_NAME(MPY6E)
+    SC_NAME(MPY7E)
+    SC_NAME(MPY8E)
+    SC_NAME(MPY9E)
+    SC_NAME(NPS400)
+    SC_NAME(QUARKSE1)
+    SC_NAME(QUARKSE2)
+    SC_NAME(SHFT1)
+    SC_NAME(SHFT2)
+    SC_NAME(SWAP)
+    SC_NAME(SP)
+    SC_NAME(SPX)
+  }
+}
+#undef SC_NAME
+
+#define CPU_PRESENT(NAME) \
+  if((cpu & NAME) != 0) { \
+    sprintf(str, "%s%s" #NAME, str, printed_already == 1 ? " | " : ""); \
+    printed_already = 1; \
+  }
+void prep_string_for_cpu(unsigned cpu, char *str) {
+  int printed_already = 0;
+  strcpy(str, "");
+CPU_PRESENT(ARC_OPCODE_NONE)
+CPU_PRESENT(ARC_OPCODE_ARC600)
+CPU_PRESENT(ARC_OPCODE_ARC700)
+CPU_PRESENT(ARC_OPCODE_ARCv2EM)
+CPU_PRESENT(ARC_OPCODE_ARCv2HS)
+CPU_PRESENT(ARC_OPCODE_ARC64)
+CPU_PRESENT(ARC_OPCODE_ARC32)
+}
+#undef CPU_PRESENT
+
+#include "opcode/arc.h"
+void
+print_opcode_table(const char *filename)
+{
+  char opcode_bits[63];
+  char operands[100];
+  char operands_no_space[100];
+  char flags[100];
+  char flags_comment[100];
+  char cpu_types[200];
+
+  FILE *file = fopen(filename, "w");
+  if(file == NULL) {
+    printf("FAILED\n");
+    return;
+  }
+
+  for(int i = 0; arc_opcodes[i].name != NULL; i++) {
+
+    memset(operands, 0, sizeof(operands));
+    memset(operands_no_space, 0, sizeof(operands));
+    for(int j = 0; arc_opcodes[i].operands[j] != 0; j++) {
+      sprintf(operands, "%s%s%s", operands, j > 0 ? ", " : "", arc_operand_name[arc_opcodes[i].operands[j]]);
+      sprintf(operands_no_space, "%s%s%s", operands_no_space, j > 0 ? "," : "", arc_operand_name[arc_opcodes[i].operands[j]]);
+    }
+
+    memset(flags, 0, sizeof(flags));
+    memset(flags_comment, 0, sizeof(flags));
+    if(arc_opcodes[i].flags[0] == 0) {
+      strcpy(flags, "0");
+    } else {
+      for(int j = 0; arc_opcodes[i].flags[j] != 0; j++) {
+        sprintf(flags, "%s%s%s", flags, j > 0 ? ", " : "", flag_operand_name[arc_opcodes[i].flags[j]]);
+	if(arc_flag_operands[arc_opcodes[i].flags[j]].favail != 0)
+	  sprintf(flags_comment, "%s<.%s>", flags_comment, 
+	  	arc_flag_operands[arc_opcodes[i].flags[j]].name);
+      }
+    }
+    
+    int opcode_size = 32;
+    if((arc_opcodes[i].opcode >> 16) == 0 && (arc_opcodes[i].mask >> 16) == 0)
+      opcode_size = 16;
+
+    memset(opcode_bits, 0, sizeof(opcode_bits));
+    for(int j = 0; j < opcode_size; j++) {
+      if(((arc_opcodes[i].mask >> (opcode_size - j - 1)) & 1) == 0) 
+	opcode_bits[j] = 'x';
+      else if(((arc_opcodes[i].opcode >> (opcode_size - j - 1)) & 1) == 1)
+	opcode_bits[j] = '1';
+      else
+	opcode_bits[j] = '0';
+    }
+    prep_string_for_cpu(arc_opcodes[i].cpu, cpu_types);
+
+    fprintf(file, "/* %s%s %s %s */\n",
+	      arc_opcodes[i].name, 
+	      flags_comment,
+	      operands_no_space,
+	      opcode_bits 
+	   );
+    fprintf(file, "{ \"%s\", 0x%08x, 0x%08x, %s, %s, %s, { %s }, { %s } }\n", 
+	      arc_opcodes[i].name, 
+	      (unsigned int) arc_opcodes[i].opcode,
+	      (unsigned int) arc_opcodes[i].mask,
+	      cpu_types,
+	      print_insn_class(arc_opcodes[i].insn_class),
+	      print_insn_subclass(arc_opcodes[i].subclass),
+	      operands,
+	      flags);
+    fprintf(file, "\n");
+
+  }
+  printf("FINISHED\n");
+  fclose(file);
+}
+#endif
