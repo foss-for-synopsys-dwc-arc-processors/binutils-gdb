@@ -304,7 +304,9 @@ arc64_linux_init_osabi (struct gdbarch_info info, struct gdbarch *gdbarch)
 
   /* GNU/Linux uses SVR4-style shared libraries...  */
   set_solib_svr4_fetch_link_map_offsets (gdbarch,
-					 linux_lp64_fetch_link_map_offsets);
+					 (arc64_isa_reg_size (gdbarch) == 4
+					 ? linux_ilp32_fetch_link_map_offsets
+					 : linux_lp64_fetch_link_map_offsets));
 }
 
 /* Suppress warning from -Wmissing-prototypes.  */
