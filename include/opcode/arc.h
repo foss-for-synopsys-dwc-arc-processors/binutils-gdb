@@ -691,114 +691,98 @@ typedef enum
 #define ARC_NUM_ADDRTYPES 16
 
 /*ARC64 floating point enums.  */
-enum FP_SIZE {
-  P_HALF = 0,
-  P_SINGLE = 1,
-  P_DOUBLE = 2
-};
+#define P_HALF 0
+#define P_SINGLE 1
+#define P_DOUBLE 2
 
-enum TPOF {
-  TOPF_FMADD = 0,
-  TOPF_FMSUB = 1,
-  TOPF_FNMADD = 2,
-  TOPF_FNMSUB = 3,
-  TOPF_VFMADD = 4,
-  TOPF_VFMSUB = 5,
-  TOPF_VFNMADD = 6,
-  TOPF_VFNMSUB = 7,
+#define TOPF_FMADD 0
+#define TOPF_FMSUB 1
+#define TOPF_FNMADD 2
+#define TOPF_FNMSUB 3
+#define TOPF_VFMADD 4
+#define TOPF_VFMSUB 5
+#define TOPF_VFNMADD 6
+#define TOPF_VFNMSUB 7
+#define TOPF_VFMADDS 0xC
+#define TOPF_VFMSUBS 0xD
+#define TOPF_VFNMADDS 0xE
+#define TOPF_VFNMSUBS 0xF
 
-  TOPF_VFMADDS = 0xC,
-  TOPF_VFMSUBS = 0xD,
-  TOPF_VFNMADDS = 0xE,
-  TOPF_VFNMSUBS = 0xF
-};
+#define DOPF_FADD  0
+#define DOPF_FSUB  1
+#define DOPF_FMUL  2
+#define DOPF_FDIV  3
+#define DOPF_FCMP  4
+#define DOPF_FCMPF 5
+#define DOPF_FMIN  6
+#define DOPF_FMAX  7
+#define DOPF_FSGNJ 8
+#define DOPF_FSGNJN 10
+#define DOPF_FSGNJX 11
+#define DOPF_VFADD  0x10
+#define DOPF_VFSUB  0x11
+#define DOPF_VFMUL  0x12
+#define DOPF_VFDIV  0x13
+#define DOPF_VFADDS  0x14
+#define DOPF_VFSUBS  0x15
+#define DOPF_VFMULS  0x16
+#define DOPF_VFDIVS  0x17
+#define DOPF_VFUNPKL 0x18
+#define DOPF_VFUNPKM 0x19
+#define DOPF_VFPACKL 0x1a
+#define DOPF_VFPACKM 0x1b
+#define DOPF_VFBFLYL 0x1c
+#define DOPF_VFBFLYM 0x1d
+#define DOPF_VFADDSUB 0x1e
+#define DOPF_VFSUBADD 0x1f
 
-enum DPOF {
-  DOPF_FADD  = 0,
-  DOPF_FSUB  = 1,
-  DOPF_FMUL  = 2,
-  DOPF_FDIV  = 3,
-  DOPF_FCMP  = 4,
-  DOPF_FCMPF = 5,
-  DOPF_FMIN  = 6,
-  DOPF_FMAX  = 7,
-  DOPF_FSGNJ = 8,
-  DOPF_FSGNJN = 10,
-  DOPF_FSGNJX = 11,
+#define SOPF_FSQRT 0
+#define SOPF_VFSQRT 1
+#define SOPF_VFEXCH 2
 
-  DOPF_VFADD  = 0x10,
-  DOPF_VFSUB  = 0x11,
-  DOPF_VFMUL  = 0x12,
-  DOPF_VFDIV  = 0x13,
-  DOPF_VFADDS  = 0x14,
-  DOPF_VFSUBS  = 0x15,
-  DOPF_VFMULS  = 0x16,
-  DOPF_VFDIVS  = 0x17,
+#define  COPF_FMOV 0
+#define  COPF_VFMOV 1
 
-  DOPF_VFUNPKL = 0x18,
-  DOPF_VFUNPKM = 0x19,
-  DOPF_VFPACKL = 0x1a,
-  DOPF_VFPACKM = 0x1b,
-  DOPF_VFBFLYL = 0x1c,
-  DOPF_VFBFLYM = 0x1d,
-  DOPF_VFADDSUB = 0x1e,
-  DOPF_VFSUBADD = 0x1f
+#define FUINT2S 0
+#define FS2UINT 0
+#define FINT2S  0
+#define FS2INT  0
+#define FSRND   0
+#define F2UINT_RZ 0
+#define FSINT_RZ 0
+#define FSRND_RZ 0
+#define FMVI2S 0
+#define FMVS2I 0
+#define FS2H 0
+#define FH2S 0
+#define FS2H_RZ 0
 
-};
+#define FUINT2D 1
+#define FS2UL 1
+#define FINT2D 1
+#define FS2L 1
+#define FS2D 1
+#define FS2UL_RZ 1
+#define FS2L_RZ 1
 
-enum SOPF {
-  SOPF_FSQRT = 0,
-  SOPF_VFSQRT = 1,
-  SOPF_VFEXCH = 2
-};
+#define FUL2S 2
+#define FD2UINT 2
+#define FL2S 2
+#define FD2INT 2
+#define FD2S 2
+#define FD2UINT_RZ 2
+#define FD2INT_RZ 2
 
-enum COPF {
-  COPF_FMOV = 0,
-  COPF_VFMOV = 1,
-};
-
-enum CONVOPS {
-  FUINT2S = 0,
-  FS2UINT = 0,
-  FINT2S  = 0,
-  FS2INT  = 0,
-  FSRND   = 0,
-  F2UINT_RZ = 0,
-  FSINT_RZ = 0,
-  FSRND_RZ = 0,
-  FMVI2S = 0,
-  FMVS2I = 0,
-  FS2H = 0,
-  FH2S = 0,
-  FS2H_RZ = 0,
-
-  FUINT2D = 1,
-  FS2UL = 1,
-  FINT2D = 1,
-  FS2L = 1,
-  FS2D = 1,
-  FS2UL_RZ = 1,
-  FS2L_RZ = 1,
-
-  FUL2S = 2,
-  FD2UINT = 2,
-  FL2S = 2,
-  FD2INT = 2,
-  FD2S = 2,
-  FD2UINT_RZ = 2,
-  FD2INT_RZ = 2,
-
-  FUL2D = 3,
-  FD2UL = 3,
-  FL2D = 3,
-  FD2L = 3,
-  FDRND = 3,
-  FD2UL_RZ = 3,
-  FD2L_RZ = 3,
-  FDRND_RZ = 3,
-  FMVL2D = 3,
-  FMVD2L = 3,
-};
+#define FUL2D 3
+#define FD2UL 3
+#define FL2D 3
+#define FD2L 3
+#define FDRND 3
+#define FD2UL_RZ 3
+#define FD2L_RZ 3
+#define FDRND_RZ 3
+#define FMVL2D 3
+#define FMVD2L 3
 
 #ifdef __cplusplus
 }
