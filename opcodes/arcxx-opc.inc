@@ -1383,6 +1383,15 @@ enum arc_flag_operand_enum {
 };
 #undef FLAG
 
+/* The flag operands name. */
+#define FLAG(NAME, NAMESTR, CODE, BITS, SHIFT, FAVAIL) \
+		"F_" #NAME,
+const char *flag_operand_name[F_SIZE] = {
+	"F_NULL",
+#include "arc-flag.def"
+};
+#undef FLAG
+
 /* The flag operands table.
 
    The format of the table is
@@ -1438,6 +1447,15 @@ enum arc_operand_enum {
   UNUSED = 0,
 #include "arc-operands.def"
   ARC_OPERAND_SIZE
+};
+#undef ARC_OPERAND
+
+/* The operands name. */
+#define ARC_OPERAND(NAME, BITS, SHIFT, RELO, FLAGS, INSERT_FN, EXTRACT_FN) \
+  #NAME,
+const char *arc_operand_name[ARC_OPERAND_SIZE] = {
+  "UNUSED",
+#include "arc-operands.def"
 };
 #undef ARC_OPERAND
 /* The operands table.
