@@ -91,7 +91,12 @@ arc_target::low_supports_breakpoints ()
 CORE_ADDR
 arc_target::low_get_pc (regcache *regcache)
 {
-  return linux_get_pc_64bit (regcache);
+  elf_gregset_t regset;
+
+  if (sizeof (regset[0]) == 8)
+    return linux_get_pc_64bit (regcache);
+  else
+    return linux_get_pc_32bit (regcache);
 }
 
 void
@@ -103,7 +108,7 @@ arc_target::low_set_pc (regcache *regcache, CORE_ADDR pc)
 static const struct target_desc *
 arc_linux_read_description (void)
 {
-  arc_arch_features features (8, ARC_ISA_ARCV3);
+  arc_arch_features features (sizeof (elf_greg_t), ARC_ISA_ARCV3);
   target_desc_up tdesc = arc_create_target_description (features);
 
   static const char *expedite_regs[] = { "sp", "status32", "pc", nullptr };
