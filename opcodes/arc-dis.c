@@ -742,6 +742,7 @@ arc_insn_length (bfd_byte msb, bfd_byte lsb, struct disassemble_info *info)
 	case bfd_mach_arcv3_32:
 	case bfd_mach_arcv3_64:
 	  if (major_opcode == 0x0b
+	      || major_opcode == 0x0d
 	      || major_opcode == 0x1c)
 	    return 4;
 	  return (major_opcode > 0x7) ? 2 : 4;
