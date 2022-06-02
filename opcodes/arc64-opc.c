@@ -21,6 +21,28 @@
 
 #include "arcxx-opc.inc"
 
+#define F32_BR0 0x00
+#define F32_BR1 0x01
+#define F32_LD_OFFSET 0x02
+#define F32_ST_OFFSET 0x03
+#define F32_GEN4 0x04
+#define F32_EXT5 0x05
+#define F32_EXT6 0x06
+#define F32_APEX 0x07
+
+#define F16_COMPACT0 0x08
+#define F16_COMPACT1 0x08
+#define F16_MOVL 0x08
+
+#define F16_LD_ADD_SUB 0x09
+
+#define LD_ST_R01 0x0A
+#define LDI_S 0x0A
+#define JLI_S_U10 0x0A
+
+#define F16_JLI_EI 0x0B
+#define F32_GEN_OP64 0x0B
+
 /* Macros required for ARCv3 floating point instructions.  */
 /* Flags.  */
 #define FL_NONE { 0 }
@@ -133,32 +155,35 @@
 			       | (1 << 5) | (1 << 4) | (1))
 #define MINSNFMVF2I (MASK_32BIT (~(FIELDS2 (31) | FIELDD (31))))
 
-/* Define FP_LOAD.  */
-#define FP_LOAD_ENCODING(SIZE)  (0x1C << 27 | ((SIZE & 0x03) << 1))
+/* Define FP_LOAD */
+#define FP_LOAD_ENCODING(SIZE, D) (0x0D << 27 | ((SIZE & 0x03) << 1)	\
+				   | ((D & 0x01) << 5))
 #define MSK_FP_LOAD (MASK_32BIT (~(FIELDB (63) | FIELDD (31) | (0x03 << 3) \
 				   | (0x1FF << 15))))
 
-#define FP_LSYM_ENCODING(SIZE)  (0x1C << 27 | ((SIZE & 0x03) << 1) | FIELDB(62))
-#define MSK_FP_SYM  (MASK_32BIT (~(FIELDD (31))))
+#define FP_LSYM_ENCODING(SIZE, D) (0x0D << 27 | ((SIZE & 0x03) << 1)	\
+				   | FIELDB(62) | ((D & 0x01) << 5))
+#define MSK_FP_SYM (MASK_32BIT (~(FIELDD (31))))
 
-/* Define FP_STORE.  */
-#define FP_STORE_ENCODING(SIZE)  ((0x1C << 27) | ((SIZE & 0x03) << 1) | (1))
+/* Define FP_STORE */
+#define FP_STORE_ENCODING(SIZE, D) ((0x0D << 27) | ((SIZE & 0x03) << 1)	\
+				    | ((D & 0x01) << 5) | (1))
 #define MSK_FP_STORE (MASK_32BIT (~(FIELDB (63) | FIELDD (31) | (0x03 << 3) \
 				   | (0x1FF << 15))))
-#define FP_SSYM_ENCODING(SIZE)  (0x1C << 27 | ((SIZE & 0x03) << 1) \
-				 | FIELDB(62) | (1))
+#define FP_SSYM_ENCODING(SIZE, D) (0x0D << 27 | ((SIZE & 0x03) << 1)	\
+				   | FIELDB(62) | ((D & 0x01) << 5) | (1))
 
 /* FP Load/Store.  */
-#define FP_LOAD(NAME,SIZE)						\
-  { #NAME, FP_LOAD_ENCODING (SIZE), MSK_FP_LOAD, ARC_OPCODE_ARC64, LOAD, \
+#define FP_LOAD(NAME, SIZE, D)						\
+  { #NAME, FP_LOAD_ENCODING (SIZE, D), MSK_FP_LOAD, ARC_OPCODE_ARC64, LOAD, \
     NONE, { FA, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_AA27 } },		\
-  { #NAME, FP_LSYM_ENCODING (SIZE), MSK_FP_SYM, ARC_OPCODE_ARC64, LOAD,	\
+  { #NAME, FP_LSYM_ENCODING (SIZE, D), MSK_FP_SYM, ARC_OPCODE_ARC64, LOAD, \
     NONE, { FA, BRAKET, LIMM, BRAKETdup }, FL_NONE },
 
-#define FP_STORE(NAME,SIZE)						\
-  { #NAME, FP_STORE_ENCODING (SIZE), MSK_FP_STORE, ARC_OPCODE_ARC64, STORE, \
+#define FP_STORE(NAME, SIZE, D)						\
+  { #NAME, FP_STORE_ENCODING (SIZE, D), MSK_FP_STORE, ARC_OPCODE_ARC64, STORE, \
     NONE, { FA, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_AA27 } },		\
-  { #NAME, FP_SSYM_ENCODING (SIZE), MSK_FP_SYM, ARC_OPCODE_ARC64, LOAD,	\
+  { #NAME, FP_SSYM_ENCODING (SIZE, D), MSK_FP_SYM, ARC_OPCODE_ARC64, LOAD, \
     NONE, { FA, BRAKET, LIMM, BRAKETdup }, FL_NONE },
 
 /* Macros used to generate conversion instructions.  */
@@ -322,6 +347,11 @@
 #define ARG_32BIT_RBLIMM { RB, LIMM }
 #define ARG_32BIT_ZALIMM { ZA, LIMM }
 
+#define ARG_32BIT_RAXIMMRC	{ RA, XIMM, RC }
+#define ARG_32BIT_RARBXIMM	{ RA, RB, XIMM }
+#define ARG_32BIT_RBRBXIMM	{ RB, RBdup, XIMM }
+#define ARG_32BIT_RAXIMMU6	{ RA, XIMM, UIMM6_20 }
+
 /* Macro to generate 2 operand extension instruction.  */
 #define EXTINSN2OPF(NAME, CPU, CLASS, SCLASS, MOP, SOP, FL)	 \
   { NAME, INSN2OP_BC (MOP,SOP), MINSN2OP_BC, CPU, CLASS, SCLASS, \
@@ -383,6 +413,115 @@
   { NAME, INSN3OP_C0LL (MOP,SOP), MINSN3OP_C0LL, CPU, CLASS, SCLASS,	\
       ARG_32BIT_ZALIMMLIMM, FLAGS_CCF },
 
+
+/* Generate sign extend 32-bit immediate instructions.  */
+#define INSN3OP_AXC(MOP,SOP)  (INSN3OP (MOP,SOP) | FIELDB (60))
+#define INSN3OP_ABX(MOP,SOP)  (INSN3OP (MOP,SOP) | FIELDC (60))
+#define INSN3OP_CBBX(MOP,SOP) (INSN3OP (MOP,SOP) | (0x03 << 22) | FIELDC (60))
+#define INSN3OP_AXU(MOP,SOP)  (INSN3OP (MOP,SOP) | (0x01 << 22) | FIELDB (60))
+
+/* Macro to generate 3 operand 64bit instruction.  */
+#define OP64INSN3OP(NAME, CPU, CLASS, SCLASS, MOP, SOP)			\
+  { NAME, INSN3OP_ABC (MOP,SOP),  MINSN3OP_ABC,  CPU, CLASS, SCLASS,	\
+      ARG_32BIT_RARBRC,     FLAGS_F },					\
+  { NAME, INSN3OP_0BC (MOP,SOP),  MINSN3OP_0BC,  CPU, CLASS, SCLASS,	\
+      ARG_32BIT_ZARBRC,     FLAGS_F   },				\
+  { NAME, INSN3OP_CBBC (MOP,SOP), MINSN3OP_CBBC, CPU, CLASS, SCLASS,	\
+      ARG_32BIT_RBRBRC,     FLAGS_CCF },				\
+  { NAME, INSN3OP_ABU (MOP,SOP),  MINSN3OP_ABU,  CPU, CLASS, SCLASS,	\
+      ARG_32BIT_RARBU6,     FLAGS_F   },				\
+  { NAME, INSN3OP_0BU (MOP,SOP),  MINSN3OP_0BU,  CPU, CLASS, SCLASS,	\
+      ARG_32BIT_ZARBU6,     FLAGS_F   },				\
+  { NAME, INSN3OP_CBBU (MOP,SOP), MINSN3OP_CBBU, CPU, CLASS, SCLASS,	\
+      ARG_32BIT_RBRBU6,     FLAGS_CCF },				\
+  { NAME, INSN3OP_BBS (MOP,SOP),  MINSN3OP_BBS,  CPU, CLASS, SCLASS,	\
+      ARG_32BIT_RBRBS12,    FLAGS_F   },				\
+  { NAME, INSN3OP_AXC (MOP,SOP),  MINSN3OP_ALC,  CPU, CLASS, SCLASS,	\
+      ARG_32BIT_RAXIMMRC,   FLAGS_F   },				\
+  { NAME, INSN3OP_ABX (MOP,SOP),  MINSN3OP_ABL,  CPU, CLASS, SCLASS,	\
+      ARG_32BIT_RARBXIMM,   FLAGS_F   },				\
+  { NAME, INSN3OP_CBBX (MOP,SOP), MINSN3OP_CBBL, CPU, CLASS, SCLASS,	\
+      ARG_32BIT_RBRBXIMM,   FLAGS_CCF },				\
+  { NAME, INSN3OP_AXU (MOP,SOP),  MINSN3OP_ALU,  CPU, CLASS, SCLASS,	\
+      ARG_32BIT_RAXIMMU6,   FLAGS_F   },				\
+  { NAME, INSN3OP_ALC (MOP,SOP),  MINSN3OP_ALC,  CPU, CLASS, SCLASS,	\
+      ARG_32BIT_RALIMMRC,   FLAGS_F   },				\
+  { NAME, INSN3OP_ABL (MOP,SOP),  MINSN3OP_ABL,  CPU, CLASS, SCLASS,	\
+      ARG_32BIT_RARBLIMM,   FLAGS_F   },				\
+  { NAME, INSN3OP_CBBL (MOP,SOP), MINSN3OP_CBBL, CPU, CLASS, SCLASS,	\
+      ARG_32BIT_RBRBLIMM,   FLAGS_CCF },				\
+  { NAME, INSN3OP_ALU (MOP,SOP),  MINSN3OP_ALU,  CPU, CLASS, SCLASS,	\
+      ARG_32BIT_RALIMMU6,   FLAGS_F   },
+
+
+#define STDL_ENCODING(K, ZZ) ((F32_ST_OFFSET << 27) | (1 << 5) | (ZZ << 1) \
+			      | (K))
+#define MSK_STDL (MASK_32BIT (~(FIELDB (63) | (0x1ff << 15) | FIELDC (63) \
+				| (0x3 << 3))))
+#define STDL_ASYM_ENCODING(K, ZZ, X) ((F32_ST_OFFSET << 27) | FIELDB (X) \
+				   | (1 << 5) | (ZZ << 1) | (K))
+#define STDL_DIMM_ENCODING(K, ZZ, X) ((F32_ST_OFFSET << 27) | FIELDC (X) \
+				   | (1 << 5) | (ZZ << 1) | (K))
+
+/* stdl<.aa> c,[b,s9]
+   stdl<.aa> w6,[b,s9]
+   stdl<.as> c,[ximm]
+   stdl<.as> w6,[ximm]
+   stdl<.aa> ximm,[b,s9]
+   stdl<.aa> limm,[b,s9]
+*/
+#define STDL								\
+  { "stdl", STDL_ENCODING (0, 0x03), MSK_STDL, ARC_OPCODE_ARC64, STORE, \
+    NONE, { RCD, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_AA27 }},		\
+  { "stdl", STDL_ENCODING (1, 0x02), MSK_STDL, ARC_OPCODE_ARC64, STORE, \
+      NONE, { W6, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_AA27 }},	\
+  { "stdl", STDL_ASYM_ENCODING (0, 0x03, 60), 0xFF007027, ARC_OPCODE_ARC64, \
+      STORE, NONE, { RCD, BRAKET, XIMM, BRAKETdup }, {C_AS27 }},	\
+  { "stdl", STDL_ASYM_ENCODING (1, 0x02, 60), 0xFF007027, ARC_OPCODE_ARC64, \
+      STORE, NONE, { W6, BRAKET, XIMM, BRAKETdup }, { C_AS27 }},	\
+  { "stdl", STDL_ASYM_ENCODING (0, 0x03, 62), 0xFF007027, ARC_OPCODE_ARC64, \
+      STORE, NONE, { RCD, BRAKET, LIMM, BRAKETdup }, {C_AS27 }},	\
+  { "stdl", STDL_ASYM_ENCODING (1, 0x02, 62), 0xFF007027, ARC_OPCODE_ARC64, \
+      STORE, NONE, { W6, BRAKET, LIMM, BRAKETdup }, { C_AS27 }},	\
+  { "stdl", STDL_DIMM_ENCODING (0, 0x03, 60), 0XF8000FC7, ARC_OPCODE_ARC64, \
+      STORE, NONE, { XIMM, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_AA27 }}, \
+  { "stdl", STDL_DIMM_ENCODING (0, 0x03, 62), 0xF8000FC7, ARC_OPCODE_ARC64, \
+      STORE, NONE, { LIMM, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_AA27 }},
+
+#define STL_ENCODING(DI) ((F32_ST_OFFSET << 27) | (DI << 5) | (0X03 << 1) \
+			  | (1))
+#define MSK_STL (MASK_32BIT (~(FIELDB (63) | (0x1ff << 15) | FIELDC (63) \
+			       | (0x03 << 3))))
+#define STL_ASYM_ENCODING(DI, X) ((F32_ST_OFFSET << 27) | (DI << 5) \
+				  | (0X03 << 1) | FIELDB (X) | (1))
+#define STL_DSYM_ENCODING(X) ((F32_ST_OFFSET << 27) | (0X03 << 1)	\
+			       | FIELDC (X) | (1))
+
+/* stl<.aa> c,[b,s9]
+   stl<.aa> w6,[b,s9]
+   stl<.as> c,[ximm]
+   stl<.as> w6,[ximm]
+   stl<.aa> ximm,[b,s9]
+   stl<.aa> limm,[b,s9]
+*/
+#define STL								\
+  { "stl", STL_ENCODING (0), MSK_STL, ARC_OPCODE_ARC64, STORE, NONE,	\
+    { RC, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_AA27 }},		\
+  { "stl", STL_ENCODING (1), MSK_STL, ARC_OPCODE_ARC64, STORE, NONE,	\
+    { W6, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_AA27 }},		\
+  { "stl", STL_ASYM_ENCODING (0, 60), 0xFFFFF03F, ARC_OPCODE_ARC64, STORE, \
+      NONE, { RC, BRAKET, XIMM, BRAKETdup }, { C_AS27 }},		\
+  { "stl", STL_ASYM_ENCODING (1, 60), 0xFFFFF03F, ARC_OPCODE_ARC64, STORE, \
+      NONE, { W6, BRAKET, XIMM, BRAKETdup }, { C_AS27 }},		\
+  { "stl", STL_ASYM_ENCODING (0, 62), 0xFFFFF03F, ARC_OPCODE_ARC64, STORE, \
+      NONE, { RC, BRAKET, LIMM, BRAKETdup }, { C_AS27 }},		\
+  { "stl", STL_ASYM_ENCODING (1, 62), 0xFFFFF03F, ARC_OPCODE_ARC64, STORE, \
+      NONE, { W6, BRAKET, LIMM, BRAKETdup }, { C_AS27 }},		\
+  { "stl", STL_DSYM_ENCODING (60), 0xF8000FC7, ARC_OPCODE_ARC64, STORE,	\
+      NONE, { XIMM, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_AA27 }},	\
+  { "stl", STL_DSYM_ENCODING (62), 0xF8000FC7, ARC_OPCODE_ARC64, STORE,	\
+      NONE, { LIMM, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_AA27 }},
+
 /* The opcode table.
 
    The format of the opcode table is:
@@ -421,6 +560,11 @@
 
 const struct arc_opcode arc_opcodes[] =
 {
+
+  /* STL and STDL instructions.  */
+  STL
+  STDL
+
 #include "arc64-tbl.h"
 
   FP_TOP (fhmadd , FMADD , HALF)
@@ -626,15 +770,17 @@ const struct arc_opcode arc_opcodes[] =
   FP_CVF2F (fh2s, FH2S, 0x15)
   FP_CVF2F (fs2h_rz, FS2H_RZ, 0x1C)
 
-  FP_LOAD (fld16, 0x02)
-  FP_LOAD (fld32, 0x00)
-  FP_LOAD (fld64, 0x01)
-  FP_LOAD (fld128, 0x03)
+  FP_LOAD (fld16, 0x02, 0)
+  FP_LOAD (fld32, 0x00, 0)
+  FP_LOAD (fld64, 0x01, 0)
+  FP_LOAD (fldd32, 0x00, 1)
+  FP_LOAD (fldd64, 0x01, 1)
 
-  FP_STORE (fst16, 0x02)
-  FP_STORE (fst32, 0x00)
-  FP_STORE (fst64, 0x01)
-  FP_STORE (fst128, 0x03)
+  FP_STORE (fst16, 0x02, 0)
+  FP_STORE (fst32, 0x00, 0)
+  FP_STORE (fst64, 0x01, 0)
+  FP_STORE (fstd32, 0x00, 1)
+  FP_STORE (fstd64, 0x01, 1)
 
   FP_EXT (vfhext, HALF)
   FP_EXT (vfsext, SINGLE)
@@ -660,14 +806,28 @@ const struct arc_opcode arc_opcodes[] =
 #undef HARD_FIELDF
 #define HARD_FIELDF (0x01 << 15)
 
-  EXTINSN3OP ("vpack2wl", ARC_OPCODE_ARC64, MOVE, NONE, 5, 0x38)
-  EXTINSN3OP ("vpack2wm", ARC_OPCODE_ARC64, MOVE, NONE, 5, 0x39)
+  EXTINSN3OP ("vmin2", ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MOVE, NONE,
+	      F32_EXT5, 0x38)
+  EXTINSN3OP ("vmax2", ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MOVE, NONE,
+	      F32_EXT5, 0x39)
+
+  EXTINSN3OP ("vpack4hl", ARC_OPCODE_ARC64, MOVE, NONE, F32_GEN_OP64, 0x30)
+  EXTINSN3OP ("vpack4hm", ARC_OPCODE_ARC64, MOVE, NONE, F32_GEN_OP64, 0x31)
+  EXTINSN3OP ("vpack2wl", ARC_OPCODE_ARC64, MOVE, NONE, F32_GEN_OP64, 0x32)
+  EXTINSN3OP ("vpack2wm", ARC_OPCODE_ARC64, MOVE, NONE, F32_GEN_OP64, 0x33)
+  EXTINSN3OP ("vpack2hm", ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MOVE, NONE,
+	      F32_EXT5, 0x29)
 
 #undef HARD_FIELDF
 #define HARD_FIELDF (0x0)
 
-  EXTINSN3OP ("vmax2", ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MOVE, NONE, 4, 0x0B)
-  EXTINSN3OP ("vmin2", ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MOVE, NONE, 4, 0x11)
+  OP64INSN3OP ("mpyl", ARC_OPCODE_ARC64, ARITH, NONE, F32_GEN_OP64, 0x30)
+  OP64INSN3OP ("mpyml", ARC_OPCODE_ARC64, ARITH, NONE, F32_GEN_OP64, 0x31)
+  OP64INSN3OP ("mpymul", ARC_OPCODE_ARC64, ARITH, NONE, F32_GEN_OP64, 0x32)
+  OP64INSN3OP ("mpymsul", ARC_OPCODE_ARC64, ARITH, NONE, F32_GEN_OP64, 0x33)
+
+  EXTINSN3OP ("vpack2hl", ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MOVE, NONE,
+	      F32_EXT5, 0x29)
 
   { NULL, 0, 0, 0, 0, 0, { 0 }, { 0 } }
 };

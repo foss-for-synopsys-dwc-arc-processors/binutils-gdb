@@ -931,9 +931,6 @@
 /* add_s h,h,s3 01110ssshhh001HH.  */
 { "add_s", 0x00007004, 0x0000F81C,ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, ARITH, NONE, { RH_S, RH_Sdup, SIMM3_5_S }, { 0 }},
 
-/* add_s c,b,u3 01101bbbccc00uuu.  */
-{ "add_s", 0x00006800, 0x0000F818,ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, ARITH, NONE, { RC_S, RB_S, UIMM3_13_S }, { 0 }},
-
 /* add_s R0,b,u6 01001bbb0UUU1uuu.  */
 { "add_s", 0x00004808, 0x0000F888,ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, ARITH, CD2, { R0_S, RB_S, UIMM6_13_S }, { 0 }},
 
@@ -1387,9 +1384,6 @@
 /* asl_s b,b,c 01111bbbccc11000.  */
 { "asl_s", 0x00007818, 0x0000F81F,ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, LOGICAL, SHFT2, { RB_S, RB_Sdup, RC_S }, { 0 }},
 
-/* asl_s c,b,u3 01101bbbccc10uuu.  */
-{ "asl_s", 0x00006810, 0x0000F818,ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, LOGICAL, SHFT2, { RC_S, RB_S, UIMM3_13_S }, { 0 }},
-
 /* asl_s b,b,u5 10111bbb000uuuuu.  */
 { "asl_s", 0x0000B800, 0x0000F8E0,ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, LOGICAL, SHFT2, { RB_S, RB_Sdup, UIMM5_11_S }, { 0 }},
 
@@ -1635,9 +1629,6 @@
 
 /* asr_s b,b,c 01111bbbccc11010.  */
 { "asr_s", 0x0000781A, 0x0000F81F,ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, LOGICAL, SHFT2, { RB_S, RB_Sdup, RC_S }, { 0 }},
-
-/* asr_s c,b,u3 01101bbbccc11uuu.  */
-{ "asr_s", 0x00006818, 0x0000F818,ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, LOGICAL, SHFT2, { RC_S, RB_S, UIMM3_13_S }, { 0 }},
 
 /* asr_s b,b,u5 10111bbb010uuuuu.  */
 { "asr_s", 0x0000B840, 0x0000F8E0,ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, LOGICAL, SHFT2, { RB_S, RB_Sdup, UIMM5_11_S }, { 0 }},
@@ -4390,8 +4381,8 @@
 /* ldZZ_W<.x><.aa> 0,limm,s9 00010110ssssssssS1110aa00X111110.  */
 { "ld", 0x1600703E, 0xFF0079BF, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, LOAD, NONE, { ZA, BRAKET, LIMM, SIMM9_8, BRAKETdup }, { C_ZZ_W, C_AA21, C_X25 }},
 
-/* ld ZZ_W<.x><.aa> 0,limm,c 00100110aa11000X0111CCCCCC111110.  */
-{ "ld ", 0x2630703E, 0xFF3EF03F, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, LOAD, NONE, { ZA, LIMM, RC }, { C_ZZ_W, C_AA8, C_X15 }},
+/* ldZZ_W<.x><.aa> 0,limm,c 00100110aa11000X0111CCCCCC111110.  */
+{ "ld", 0x2630703E, 0xFF3EF03F, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, LOAD, NONE, { ZA, LIMM, RC }, { C_ZZ_W, C_AA8, C_X15 }},
 
 /* ldbZZ_B<.x><.di><.aa> a,b 00010bbb000000000BBBDaa01XAAAAAA.  */
 { "ldb", 0x10000080, 0xF8FF8180, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, LOAD, NONE, { RA_CHK, BRAKET, RB, BRAKETdup }, { C_ZZ_B, C_DI20, C_AAB21, C_X25 }},
@@ -5934,105 +5925,6 @@
 /* mpydu<.f><.cc> 0,limm,limm 0010111011011001F1111111100QQQQQ.  */
 { "mpydu", 0x2ED97F80, 0xFFFF7FE0,ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MPY, MPY8E, { ZA, LIMM, LIMMdup }, { C_F, C_CC }},
 
-/* mpyl<.f> RA,RB,RC 01011bbb00110000FBBBccccccaaaaaa.  */
-{ "mpyl", 0x58300000, 0xF8FF0000, ARC_OPCODE_ARC64, ARITH, NONE, { RA, RB, RC }, { C_F }},
-
-/* mpyl<.f> 0,RB,RC 01011bbb00110000FBBBcccccc111110.  */
-{ "mpyl", 0x5830003E, 0xF8FF003F, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, RB, RC }, { C_F }},
-
-/* mpyl<.f><.cc> RB,RB,RC 01011bbb11110000FBBBcccccc0QQQQQ.  */
-{ "mpyl", 0x58F00000, 0xF8FF0020, ARC_OPCODE_ARC64, ARITH, NONE, { RB, RBdup, RC }, { C_F, C_CC }},
-
-/* mpyl<.f> RA,RB,u6 01011bbb01110000FBBBuuuuuuaaaaaa.  */
-{ "mpyl", 0x58700000, 0xF8FF0000, ARC_OPCODE_ARC64, ARITH, NONE, { RA, RB, UIMM6_20 }, { C_F }},
-
-/* mpyl<.f> 0,RB,u6 01011bbb01110000FBBBuuuuuu111110.  */
-{ "mpyl", 0x5870003E, 0xF8FF003F, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, RB, UIMM6_20 }, { C_F }},
-
-/* mpyl<.f><.cc> RB,RB,u6 01011bbb11110000FBBBuuuuuu1QQQQQ.  */
-{ "mpyl", 0x58F00020, 0xF8FF0020, ARC_OPCODE_ARC64, ARITH, NONE, { RB, RBdup, UIMM6_20 }, { C_F, C_CC }},
-
-/* mpyl<.f> RB,RB,s12 01011bbb10110000FBBBssssssSSSSSS.  */
-{ "mpyl", 0x58B00000, 0xF8FF0000, ARC_OPCODE_ARC64, ARITH, NONE, { RB, RBdup, SIMM12_20 }, { C_F }},
-
-/* mpyl<.f> RA,ximm,RC 0101110000110000F111ccccccaaaaaa.  */
-{ "mpyl", 0x5C307000, 0xFFFF7000, ARC_OPCODE_ARC64, ARITH, NONE, { RA, XIMM, RC }, { C_F }},
-
-/* mpyl<.f> RA,RB,ximm 01011bbb00110000FBBB111100aaaaaa.  */
-{ "mpyl", 0x58300F00, 0xF8FF0FC0, ARC_OPCODE_ARC64, ARITH, NONE, { RA, RB, XIMM }, { C_F }},
-
-/* mpyl<.f> 0,ximm,RC 0101110000110000F111cccccc111110.  */
-{ "mpyl", 0x5C30703E, 0xFFFF703F, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, XIMM, RC }, { C_F }},
-
-/* mpyl<.f> 0,RB,ximm 01011bbb00110000FBBB111100111110.  */
-{ "mpyl", 0x58300F3E, 0xF8FF0FFF, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, RB, XIMM }, { C_F }},
-
-/* mpyl<.f><.cc> 0,ximm,RC 0101110011110000F111cccccc0QQQQQ.  */
-{ "mpyl", 0x5CF07000, 0xFFFF7020, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, XIMM, RC }, { C_F, C_CC }},
-
-/* mpyl<.f><.cc> RB,RB,ximm 01011bbb11110000FBBB1111000QQQQQ.  */
-{ "mpyl", 0x58F00F00, 0xF8FF0FE0, ARC_OPCODE_ARC64, ARITH, NONE, { RB, RBdup, XIMM }, { C_F, C_CC }},
-
-/* mpyl<.f> RA,ximm,u6 0101110001110000F111uuuuuuaaaaaa.  */
-{ "mpyl", 0x5C707000, 0xFFFF7000, ARC_OPCODE_ARC64, ARITH, NONE, { RA, XIMM, UIMM6_20 }, { C_F }},
-
-/* mpyl<.f> 0,ximm,u6 0101110001110000F111uuuuuu111110.  */
-{ "mpyl", 0x5C70703E, 0xFFFF703F, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, XIMM, UIMM6_20 }, { C_F }},
-
-/* mpyl<.f><.cc> 0,ximm,u6 0101110011110000F111uuuuuu1QQQQQ.  */
-{ "mpyl", 0x5CF07020, 0xFFFF7020, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, XIMM, UIMM6_20 }, { C_F, C_CC }},
-
-/* mpyl<.f> RA,limm,RC 0101111000110000F111ccccccaaaaaa.  */
-{ "mpyl", 0x5E307000, 0xFFFF7000, ARC_OPCODE_ARC64, ARITH, NONE, { RA, LIMM, RC }, { C_F }},
-
-/* mpyl<.f> RA,RB,limm 01011bbb00110000FBBB111110aaaaaa.  */
-{ "mpyl", 0x58300F80, 0xF8FF0FC0, ARC_OPCODE_ARC64, ARITH, NONE, { RA, RB, LIMM }, { C_F }},
-
-/* mpyl<.f> 0,limm,RC 0101111000110000F111cccccc111110.  */
-{ "mpyl", 0x5E30703E, 0xFFFF703F, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, LIMM, RC }, { C_F }},
-
-/* mpyl<.f> 0,RB,limm 01011bbb00110000FBBB111110111110.  */
-{ "mpyl", 0x58300FBE, 0xF8FF0FFF, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, RB, LIMM }, { C_F }},
-
-/* mpyl<.f><.cc> 0,limm,RC 0101111011110000F111cccccc0QQQQQ.  */
-{ "mpyl", 0x5EF07000, 0xFFFF7020, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, LIMM, RC }, { C_F, C_CC }},
-
-/* mpyl<.f><.cc> RB,RB,limm 01011bbb11110000FBBB1111100QQQQQ.  */
-{ "mpyl", 0x58F00F80, 0xF8FF0FE0, ARC_OPCODE_ARC64, ARITH, NONE, { RB, RBdup, LIMM }, { C_F, C_CC }},
-
-/* mpyl<.f> RA,limm,u6 0101111001110000F111uuuuuuaaaaaa.  */
-{ "mpyl", 0x5E707000, 0xFFFF7000, ARC_OPCODE_ARC64, ARITH, NONE, { RA, LIMM, UIMM6_20 }, { C_F }},
-
-/* mpyl<.f> 0,limm,u6 0101111001110000F111uuuuuu111110.  */
-{ "mpyl", 0x5E70703E, 0xFFFF703F, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, LIMM, UIMM6_20 }, { C_F }},
-
-/* mpyl<.f><.cc> 0,limm,u6 0101111011110000F111uuuuuu1QQQQQ.  */
-{ "mpyl", 0x5EF07020, 0xFFFF7020, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, LIMM, UIMM6_20 }, { C_F, C_CC }},
-
-/* mpyl<.f> 0,ximm,s12 0101110010110000F111ssssssSSSSSS.  */
-{ "mpyl", 0x5CB07000, 0xFFFF7000, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, XIMM, SIMM12_20 }, { C_F }},
-
-/* mpyl<.f> 0,limm,s12 0101111010110000F111ssssssSSSSSS.  */
-{ "mpyl", 0x5EB07000, 0xFFFF7000, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, LIMM, SIMM12_20 }, { C_F }},
-
-/* mpyl<.f> RA,ximm,ximm 0101110000110000F111111100aaaaaa.  */
-{ "mpyl", 0x5C307F00, 0xFFFF7FC0, ARC_OPCODE_ARC64, ARITH, NONE, { RA, XIMM, XIMMdup }, { C_F }},
-
-/* mpyl<.f> 0,ximm,ximm 0101110000110000F111111100111110.  */
-{ "mpyl", 0x5C307F3E, 0xFFFF7FFF, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, XIMM, XIMMdup }, { C_F }},
-
-/* mpyl<.f><.cc> 0,ximm,ximm 0101110011110000F1111111000QQQQQ.  */
-{ "mpyl", 0x5CF07F00, 0xFFFF7FE0, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, XIMM, XIMMdup }, { C_F, C_CC }},
-
-/* mpyl<.f> RA,limm,limm 0101111000110000F111111110aaaaaa.  */
-{ "mpyl", 0x5E307F80, 0xFFFF7FC0, ARC_OPCODE_ARC64, ARITH, NONE, { RA, LIMM, LIMMdup }, { C_F }},
-
-/* mpyl<.f> 0,limm,limm 0101111000110000F111111110111110.  */
-{ "mpyl", 0x5E307FBE, 0xFFFF7FFF, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, LIMM, LIMMdup }, { C_F }},
-
-/* mpyl<.f><.cc> 0,limm,limm 0101111011110000F1111111100QQQQQ.  */
-{ "mpyl", 0x5EF07F80, 0xFFFF7FE0, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, LIMM, LIMMdup }, { C_F, C_CC }},
-
 /* mpym<.f> a,b,c 00100bbb00011011FBBBCCCCCCAAAAAA.  */
 { "mpym", 0x201B0000, 0xF8FF0000,ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MPY, MPY6E, { RA_CHK, RB, RC }, { C_F }},
 
@@ -6093,204 +5985,6 @@
 /* mpym<.f><.cc> 0,limm,limm 0010011011011011F1111111100QQQQQ.  */
 { "mpym", 0x26DB7F80, 0xFFFF7FE0,ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MPY, MPY6E, { ZA, LIMM, LIMMdup }, { C_F, C_CC }},
 
-/* mpyml RA,RB,RC 01011bbb001100010BBBccccccaaaaaa.  */
-{ "mpyml", 0x58310000, 0xF8FF8000, ARC_OPCODE_ARC64, ARITH, NONE, { RA, RB, RC }, { 0 }},
-
-/* mpyml 0,RB,RC 01011bbb001100010BBBcccccc111110.  */
-{ "mpyml", 0x5831003E, 0xF8FF803F, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, RB, RC }, { 0 }},
-
-/* mpyml<.cc> RB,RB,RC 01011bbb111100010BBBcccccc0QQQQQ.  */
-{ "mpyml", 0x58F10000, 0xF8FF8020, ARC_OPCODE_ARC64, ARITH, NONE, { RB, RBdup, RC }, { C_CC }},
-
-/* mpyml RA,RB,u6 01011bbb011100010BBBuuuuuuaaaaaa.  */
-{ "mpyml", 0x58710000, 0xF8FF8000, ARC_OPCODE_ARC64, ARITH, NONE, { RA, RB, UIMM6_20 }, { 0 }},
-
-/* mpyml 0,RB,u6 01011bbb011100010BBBuuuuuu111110.  */
-{ "mpyml", 0x5871003E, 0xF8FF803F, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, RB, UIMM6_20 }, { 0 }},
-
-/* mpyml<.cc> RB,RB,u6 01011bbb111100010BBBuuuuuu1QQQQQ.  */
-{ "mpyml", 0x58F10020, 0xF8FF8020, ARC_OPCODE_ARC64, ARITH, NONE, { RB, RBdup, UIMM6_20 }, { C_CC }},
-
-/* mpyml RB,RB,s12 01011bbb101100010BBBssssssSSSSSS.  */
-{ "mpyml", 0x58B10000, 0xF8FF8000, ARC_OPCODE_ARC64, ARITH, NONE, { RB, RBdup, SIMM12_20 }, { 0 }},
-
-/* mpyml RA,ximm,RC 01011100001100010111ccccccaaaaaa.  */
-{ "mpyml", 0x5C317000, 0xFFFFF000, ARC_OPCODE_ARC64, ARITH, NONE, { RA, XIMM, RC }, { 0 }},
-
-/* mpyml RA,RB,ximm 01011bbb001100010BBB111100aaaaaa.  */
-{ "mpyml", 0x58310F00, 0xF8FF8FC0, ARC_OPCODE_ARC64, ARITH, NONE, { RA, RB, XIMM }, { 0 }},
-
-/* mpyml 0,ximm,RC 01011100001100010111cccccc111110.  */
-{ "mpyml", 0x5C31703E, 0xFFFFF03F, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, XIMM, RC }, { 0 }},
-
-/* mpyml 0,RB,ximm 01011bbb001100010BBB111100111110.  */
-{ "mpyml", 0x58310F3E, 0xF8FF8FFF, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, RB, XIMM }, { 0 }},
-
-/* mpyml<.cc> 0,ximm,RC 01011100111100010111cccccc0QQQQQ.  */
-{ "mpyml", 0x5CF17000, 0xFFFFF020, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, XIMM, RC }, { C_CC }},
-
-/* mpyml<.cc> RB,RB,ximm 01011bbb111100010BBB1111000QQQQQ.  */
-{ "mpyml", 0x58F10F00, 0xF8FF8FE0, ARC_OPCODE_ARC64, ARITH, NONE, { RB, RBdup, XIMM }, { C_CC }},
-
-/* mpyml RA,ximm,u6 01011100011100010111uuuuuuaaaaaa.  */
-{ "mpyml", 0x5C717000, 0xFFFFF000, ARC_OPCODE_ARC64, ARITH, NONE, { RA, XIMM, UIMM6_20 }, { 0 }},
-
-/* mpyml 0,ximm,u6 01011100011100010111uuuuuu111110.  */
-{ "mpyml", 0x5C71703E, 0xFFFFF03F, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, XIMM, UIMM6_20 }, { 0 }},
-
-/* mpyml<.cc> 0,ximm,u6 01011100111100010111uuuuuu1QQQQQ.  */
-{ "mpyml", 0x5CF17020, 0xFFFFF020, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, XIMM, UIMM6_20 }, { C_CC }},
-
-/* mpyml RA,limm,RC 01011110001100010111ccccccaaaaaa.  */
-{ "mpyml", 0x5E317000, 0xFFFFF000, ARC_OPCODE_ARC64, ARITH, NONE, { RA, LIMM, RC }, { 0 }},
-
-/* mpyml RA,RB,limm 01011bbb001100010BBB111110aaaaaa.  */
-{ "mpyml", 0x58310F80, 0xF8FF8FC0, ARC_OPCODE_ARC64, ARITH, NONE, { RA, RB, LIMM }, { 0 }},
-
-/* mpyml 0,limm,RC 01011110001100010111cccccc111110.  */
-{ "mpyml", 0x5E31703E, 0xFFFFF03F, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, LIMM, RC }, { 0 }},
-
-/* mpyml 0,RB,limm 01011bbb001100010BBB111110111110.  */
-{ "mpyml", 0x58310FBE, 0xF8FF8FFF, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, RB, LIMM }, { 0 }},
-
-/* mpyml<.cc> 0,limm,RC 01011110111100010111cccccc0QQQQQ.  */
-{ "mpyml", 0x5EF17000, 0xFFFFF020, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, LIMM, RC }, { C_CC }},
-
-/* mpyml<.cc> RB,RB,limm 01011bbb111100010BBB1111100QQQQQ.  */
-{ "mpyml", 0x58F10F80, 0xF8FF8FE0, ARC_OPCODE_ARC64, ARITH, NONE, { RB, RBdup, LIMM }, { C_CC }},
-
-/* mpyml RA,limm,u6 01011110011100010111uuuuuuaaaaaa.  */
-{ "mpyml", 0x5E717000, 0xFFFFF000, ARC_OPCODE_ARC64, ARITH, NONE, { RA, LIMM, UIMM6_20 }, { 0 }},
-
-/* mpyml 0,limm,u6 01011110011100010111uuuuuu111110.  */
-{ "mpyml", 0x5E71703E, 0xFFFFF03F, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, LIMM, UIMM6_20 }, { 0 }},
-
-/* mpyml<.cc> 0,limm,u6 01011110111100010111uuuuuu1QQQQQ.  */
-{ "mpyml", 0x5EF17020, 0xFFFFF020, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, LIMM, UIMM6_20 }, { C_CC }},
-
-/* mpyml 0,ximm,s12 01011100101100010111ssssssSSSSSS.  */
-{ "mpyml", 0x5CB17000, 0xFFFFF000, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, XIMM, SIMM12_20 }, { 0 }},
-
-/* mpyml 0,limm,s12 01011110101100010111ssssssSSSSSS.  */
-{ "mpyml", 0x5EB17000, 0xFFFFF000, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, LIMM, SIMM12_20 }, { 0 }},
-
-/* mpyml RA,ximm,ximm 01011100001100010111111100aaaaaa.  */
-{ "mpyml", 0x5C317F00, 0xFFFFFFC0, ARC_OPCODE_ARC64, ARITH, NONE, { RA, XIMM, XIMMdup }, { 0 }},
-
-/* mpyml 0,ximm,ximm 01011100001100010111111100111110.  */
-{ "mpyml", 0x5C317F3E, 0xFFFFFFFF, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, XIMM, XIMMdup }, { 0 }},
-
-/* mpyml<.cc> 0,ximm,ximm 010111001111000101111111000QQQQQ.  */
-{ "mpyml", 0x5CF17F00, 0xFFFFFFE0, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, XIMM, XIMMdup }, { C_CC }},
-
-/* mpyml RA,limm,limm 01011110001100010111111110aaaaaa.  */
-{ "mpyml", 0x5E317F80, 0xFFFFFFC0, ARC_OPCODE_ARC64, ARITH, NONE, { RA, LIMM, LIMMdup }, { 0 }},
-
-/* mpyml 0,limm,limm 01011110001100010111111110111110.  */
-{ "mpyml", 0x5E317FBE, 0xFFFFFFFF, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, LIMM, LIMMdup }, { 0 }},
-
-/* mpyml<.cc> 0,limm,limm 010111101111000101111111100QQQQQ.  */
-{ "mpyml", 0x5EF17F80, 0xFFFFFFE0, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, LIMM, LIMMdup }, { C_CC }},
-
-/* mpymsul RA,RB,RC 01011bbb001100110BBBccccccaaaaaa.  */
-{ "mpymsul", 0x58330000, 0xF8FF8000, ARC_OPCODE_ARC64, ARITH, NONE, { RA, RB, RC }, { 0 }},
-
-/* mpymsul 0,RB,RC 01011bbb001100110BBBcccccc111110.  */
-{ "mpymsul", 0x5833003E, 0xF8FF803F, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, RB, RC }, { 0 }},
-
-/* mpymsul<.cc> RB,RB,RC 01011bbb111100110BBBcccccc0QQQQQ.  */
-{ "mpymsul", 0x58F30000, 0xF8FF8020, ARC_OPCODE_ARC64, ARITH, NONE, { RB, RBdup, RC }, { C_CC }},
-
-/* mpymsul RA,RB,u6 01011bbb011100110BBBuuuuuuaaaaaa.  */
-{ "mpymsul", 0x58730000, 0xF8FF8000, ARC_OPCODE_ARC64, ARITH, NONE, { RA, RB, UIMM6_20 }, { 0 }},
-
-/* mpymsul 0,RB,u6 01011bbb011100110BBBuuuuuu111110.  */
-{ "mpymsul", 0x5873003E, 0xF8FF803F, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, RB, UIMM6_20 }, { 0 }},
-
-/* mpymsul<.cc> RB,RB,u6 01011bbb111100110BBBuuuuuu1QQQQQ.  */
-{ "mpymsul", 0x58F30020, 0xF8FF8020, ARC_OPCODE_ARC64, ARITH, NONE, { RB, RBdup, UIMM6_20 }, { C_CC }},
-
-/* mpymsul RB,RB,s12 01011bbb101100110BBBssssssSSSSSS.  */
-{ "mpymsul", 0x58B30000, 0xF8FF8000, ARC_OPCODE_ARC64, ARITH, NONE, { RB, RBdup, SIMM12_20 }, { 0 }},
-
-/* mpymsul RA,ximm,RC 01011100001100110111ccccccaaaaaa.  */
-{ "mpymsul", 0x5C337000, 0xFFFFF000, ARC_OPCODE_ARC64, ARITH, NONE, { RA, XIMM, RC }, { 0 }},
-
-/* mpymsul RA,RB,ximm 01011bbb001100110BBB111100aaaaaa.  */
-{ "mpymsul", 0x58330F00, 0xF8FF8FC0, ARC_OPCODE_ARC64, ARITH, NONE, { RA, RB, XIMM }, { 0 }},
-
-/* mpymsul 0,ximm,RC 01011100001100110111cccccc111110.  */
-{ "mpymsul", 0x5C33703E, 0xFFFFF03F, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, XIMM, RC }, { 0 }},
-
-/* mpymsul 0,RB,ximm 01011bbb001100110BBB111100111110.  */
-{ "mpymsul", 0x58330F3E, 0xF8FF8FFF, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, RB, XIMM }, { 0 }},
-
-/* mpymsul<.cc> 0,ximm,RC 01011100111100110111cccccc0QQQQQ.  */
-{ "mpymsul", 0x5CF37000, 0xFFFFF020, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, XIMM, RC }, { C_CC }},
-
-/* mpymsul<.cc> RB,RB,ximm 01011bbb111100110BBB1111000QQQQQ.  */
-{ "mpymsul", 0x58F30F00, 0xF8FF8FE0, ARC_OPCODE_ARC64, ARITH, NONE, { RB, RBdup, XIMM }, { C_CC }},
-
-/* mpymsul RA,ximm,u6 01011100011100110111uuuuuuaaaaaa.  */
-{ "mpymsul", 0x5C737000, 0xFFFFF000, ARC_OPCODE_ARC64, ARITH, NONE, { RA, XIMM, UIMM6_20 }, { 0 }},
-
-/* mpymsul 0,ximm,u6 01011100011100110111uuuuuu111110.  */
-{ "mpymsul", 0x5C73703E, 0xFFFFF03F, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, XIMM, UIMM6_20 }, { 0 }},
-
-/* mpymsul<.cc> 0,ximm,u6 01011100111100110111uuuuuu1QQQQQ.  */
-{ "mpymsul", 0x5CF37020, 0xFFFFF020, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, XIMM, UIMM6_20 }, { C_CC }},
-
-/* mpymsul RA,limm,RC 01011110001100110111ccccccaaaaaa.  */
-{ "mpymsul", 0x5E337000, 0xFFFFF000, ARC_OPCODE_ARC64, ARITH, NONE, { RA, LIMM, RC }, { 0 }},
-
-/* mpymsul RA,RB,limm 01011bbb001100110BBB111110aaaaaa.  */
-{ "mpymsul", 0x58330F80, 0xF8FF8FC0, ARC_OPCODE_ARC64, ARITH, NONE, { RA, RB, LIMM }, { 0 }},
-
-/* mpymsul 0,limm,RC 01011110001100110111cccccc111110.  */
-{ "mpymsul", 0x5E33703E, 0xFFFFF03F, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, LIMM, RC }, { 0 }},
-
-/* mpymsul 0,RB,limm 01011bbb001100110BBB111110111110.  */
-{ "mpymsul", 0x58330FBE, 0xF8FF8FFF, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, RB, LIMM }, { 0 }},
-
-/* mpymsul<.cc> 0,limm,RC 01011110111100110111cccccc0QQQQQ.  */
-{ "mpymsul", 0x5EF37000, 0xFFFFF020, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, LIMM, RC }, { C_CC }},
-
-/* mpymsul<.cc> RB,RB,limm 01011bbb111100110BBB1111100QQQQQ.  */
-{ "mpymsul", 0x58F30F80, 0xF8FF8FE0, ARC_OPCODE_ARC64, ARITH, NONE, { RB, RBdup, LIMM }, { C_CC }},
-
-/* mpymsul RA,limm,u6 01011110011100110111uuuuuuaaaaaa.  */
-{ "mpymsul", 0x5E737000, 0xFFFFF000, ARC_OPCODE_ARC64, ARITH, NONE, { RA, LIMM, UIMM6_20 }, { 0 }},
-
-/* mpymsul 0,limm,u6 01011110011100110111uuuuuu111110.  */
-{ "mpymsul", 0x5E73703E, 0xFFFFF03F, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, LIMM, UIMM6_20 }, { 0 }},
-
-/* mpymsul<.cc> 0,limm,u6 01011110111100110111uuuuuu1QQQQQ.  */
-{ "mpymsul", 0x5EF37020, 0xFFFFF020, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, LIMM, UIMM6_20 }, { C_CC }},
-
-/* mpymsul 0,ximm,s12 01011100101100110111ssssssSSSSSS.  */
-{ "mpymsul", 0x5CB37000, 0xFFFFF000, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, XIMM, SIMM12_20 }, { 0 }},
-
-/* mpymsul 0,limm,s12 01011110101100110111ssssssSSSSSS.  */
-{ "mpymsul", 0x5EB37000, 0xFFFFF000, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, LIMM, SIMM12_20 }, { 0 }},
-
-/* mpymsul RA,ximm,ximm 01011100001100110111111100aaaaaa.  */
-{ "mpymsul", 0x5C337F00, 0xFFFFFFC0, ARC_OPCODE_ARC64, ARITH, NONE, { RA, XIMM, XIMMdup }, { 0 }},
-
-/* mpymsul 0,ximm,ximm 01011100001100110111111100111110.  */
-{ "mpymsul", 0x5C337F3E, 0xFFFFFFFF, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, XIMM, XIMMdup }, { 0 }},
-
-/* mpymsul<.cc> 0,ximm,ximm 010111001111001101111111000QQQQQ.  */
-{ "mpymsul", 0x5CF37F00, 0xFFFFFFE0, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, XIMM, XIMMdup }, { C_CC }},
-
-/* mpymsul RA,limm,limm 01011110001100110111111110aaaaaa.  */
-{ "mpymsul", 0x5E337F80, 0xFFFFFFC0, ARC_OPCODE_ARC64, ARITH, NONE, { RA, LIMM, LIMMdup }, { 0 }},
-
-/* mpymsul 0,limm,limm 01011110001100110111111110111110.  */
-{ "mpymsul", 0x5E337FBE, 0xFFFFFFFF, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, LIMM, LIMMdup }, { 0 }},
-
-/* mpymsul<.cc> 0,limm,limm 010111101111001101111111100QQQQQ.  */
-{ "mpymsul", 0x5EF37F80, 0xFFFFFFE0, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, LIMM, LIMMdup }, { C_CC }},
-
 /* mpymu<.f> a,b,c 00100bbb00011100FBBBCCCCCCAAAAAA.  */
 { "mpymu", 0x201C0000, 0xF8FF0000,ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MPY, MPY6E, { RA_CHK, RB, RC }, { C_F }},
 
@@ -6350,105 +6044,6 @@
 
 /* mpymu<.f><.cc> 0,limm,limm 0010011011011100F1111111100QQQQQ.  */
 { "mpymu", 0x26DC7F80, 0xFFFF7FE0,ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MPY, MPY6E, { ZA, LIMM, LIMMdup }, { C_F, C_CC }},
-
-/* mpymul RA,RB,RC 01011bbb001100100BBBccccccaaaaaa.  */
-{ "mpymul", 0x58320000, 0xF8FF8000, ARC_OPCODE_ARC64, ARITH, NONE, { RA, RB, RC }, { 0 }},
-
-/* mpymul 0,RB,RC 01011bbb001100100BBBcccccc111110.  */
-{ "mpymul", 0x5832003E, 0xF8FF803F, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, RB, RC }, { 0 }},
-
-/* mpymul<.cc> RB,RB,RC 01011bbb111100100BBBcccccc0QQQQQ.  */
-{ "mpymul", 0x58F20000, 0xF8FF8020, ARC_OPCODE_ARC64, ARITH, NONE, { RB, RBdup, RC }, { C_CC }},
-
-/* mpymul RA,RB,u6 01011bbb011100100BBBuuuuuuaaaaaa.  */
-{ "mpymul", 0x58720000, 0xF8FF8000, ARC_OPCODE_ARC64, ARITH, NONE, { RA, RB, UIMM6_20 }, { 0 }},
-
-/* mpymul 0,RB,u6 01011bbb011100100BBBuuuuuu111110.  */
-{ "mpymul", 0x5872003E, 0xF8FF803F, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, RB, UIMM6_20 }, { 0 }},
-
-/* mpymul<.cc> RB,RB,u6 01011bbb111100100BBBuuuuuu1QQQQQ.  */
-{ "mpymul", 0x58F20020, 0xF8FF8020, ARC_OPCODE_ARC64, ARITH, NONE, { RB, RBdup, UIMM6_20 }, { C_CC }},
-
-/* mpymul RB,RB,s12 01011bbb101100100BBBssssssSSSSSS.  */
-{ "mpymul", 0x58B20000, 0xF8FF8000, ARC_OPCODE_ARC64, ARITH, NONE, { RB, RBdup, SIMM12_20 }, { 0 }},
-
-/* mpymul RA,ximm,RC 01011100001100100111ccccccaaaaaa.  */
-{ "mpymul", 0x5C327000, 0xFFFFF000, ARC_OPCODE_ARC64, ARITH, NONE, { RA, XIMM, RC }, { 0 }},
-
-/* mpymul RA,RB,ximm 01011bbb001100100BBB111100aaaaaa.  */
-{ "mpymul", 0x58320F00, 0xF8FF8FC0, ARC_OPCODE_ARC64, ARITH, NONE, { RA, RB, XIMM }, { 0 }},
-
-/* mpymul 0,ximm,RC 01011100001100100111cccccc111110.  */
-{ "mpymul", 0x5C32703E, 0xFFFFF03F, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, XIMM, RC }, { 0 }},
-
-/* mpymul 0,RB,ximm 01011bbb001100100BBB111100111110.  */
-{ "mpymul", 0x58320F3E, 0xF8FF8FFF, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, RB, XIMM }, { 0 }},
-
-/* mpymul<.cc> 0,ximm,RC 01011100111100100111cccccc0QQQQQ.  */
-{ "mpymul", 0x5CF27000, 0xFFFFF020, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, XIMM, RC }, { C_CC }},
-
-/* mpymul<.cc> RB,RB,ximm 01011bbb111100100BBB1111000QQQQQ.  */
-{ "mpymul", 0x58F20F00, 0xF8FF8FE0, ARC_OPCODE_ARC64, ARITH, NONE, { RB, RBdup, XIMM }, { C_CC }},
-
-/* mpymul RA,ximm,u6 01011100011100100111uuuuuuaaaaaa.  */
-{ "mpymul", 0x5C727000, 0xFFFFF000, ARC_OPCODE_ARC64, ARITH, NONE, { RA, XIMM, UIMM6_20 }, { 0 }},
-
-/* mpymul 0,ximm,u6 01011100011100100111uuuuuu111110.  */
-{ "mpymul", 0x5C72703E, 0xFFFFF03F, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, XIMM, UIMM6_20 }, { 0 }},
-
-/* mpymul<.cc> 0,ximm,u6 01011100111100100111uuuuuu1QQQQQ.  */
-{ "mpymul", 0x5CF27020, 0xFFFFF020, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, XIMM, UIMM6_20 }, { C_CC }},
-
-/* mpymul RA,limm,RC 01011110001100100111ccccccaaaaaa.  */
-{ "mpymul", 0x5E327000, 0xFFFFF000, ARC_OPCODE_ARC64, ARITH, NONE, { RA, LIMM, RC }, { 0 }},
-
-/* mpymul RA,RB,limm 01011bbb001100100BBB111110aaaaaa.  */
-{ "mpymul", 0x58320F80, 0xF8FF8FC0, ARC_OPCODE_ARC64, ARITH, NONE, { RA, RB, LIMM }, { 0 }},
-
-/* mpymul 0,limm,RC 01011110001100100111cccccc111110.  */
-{ "mpymul", 0x5E32703E, 0xFFFFF03F, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, LIMM, RC }, { 0 }},
-
-/* mpymul 0,RB,limm 01011bbb001100100BBB111110111110.  */
-{ "mpymul", 0x58320FBE, 0xF8FF8FFF, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, RB, LIMM }, { 0 }},
-
-/* mpymul<.cc> 0,limm,RC 01011110111100100111cccccc0QQQQQ.  */
-{ "mpymul", 0x5EF27000, 0xFFFFF020, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, LIMM, RC }, { C_CC }},
-
-/* mpymul<.cc> RB,RB,limm 01011bbb111100100BBB1111100QQQQQ.  */
-{ "mpymul", 0x58F20F80, 0xF8FF8FE0, ARC_OPCODE_ARC64, ARITH, NONE, { RB, RBdup, LIMM }, { C_CC }},
-
-/* mpymul RA,limm,u6 01011110011100100111uuuuuuaaaaaa.  */
-{ "mpymul", 0x5E727000, 0xFFFFF000, ARC_OPCODE_ARC64, ARITH, NONE, { RA, LIMM, UIMM6_20 }, { 0 }},
-
-/* mpymul 0,limm,u6 01011110011100100111uuuuuu111110.  */
-{ "mpymul", 0x5E72703E, 0xFFFFF03F, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, LIMM, UIMM6_20 }, { 0 }},
-
-/* mpymul<.cc> 0,limm,u6 01011110111100100111uuuuuu1QQQQQ.  */
-{ "mpymul", 0x5EF27020, 0xFFFFF020, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, LIMM, UIMM6_20 }, { C_CC }},
-
-/* mpymul 0,ximm,s12 01011100101100100111ssssssSSSSSS.  */
-{ "mpymul", 0x5CB27000, 0xFFFFF000, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, XIMM, SIMM12_20 }, { 0 }},
-
-/* mpymul 0,limm,s12 01011110101100100111ssssssSSSSSS.  */
-{ "mpymul", 0x5EB27000, 0xFFFFF000, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, LIMM, SIMM12_20 }, { 0 }},
-
-/* mpymul RA,ximm,ximm 01011100001100100111111100aaaaaa.  */
-{ "mpymul", 0x5C327F00, 0xFFFFFFC0, ARC_OPCODE_ARC64, ARITH, NONE, { RA, XIMM, XIMMdup }, { 0 }},
-
-/* mpymul 0,ximm,ximm 01011100001100100111111100111110.  */
-{ "mpymul", 0x5C327F3E, 0xFFFFFFFF, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, XIMM, XIMMdup }, { 0 }},
-
-/* mpymul<.cc> 0,ximm,ximm 010111001111001001111111000QQQQQ.  */
-{ "mpymul", 0x5CF27F00, 0xFFFFFFE0, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, XIMM, XIMMdup }, { C_CC }},
-
-/* mpymul RA,limm,limm 01011110001100100111111110aaaaaa.  */
-{ "mpymul", 0x5E327F80, 0xFFFFFFC0, ARC_OPCODE_ARC64, ARITH, NONE, { RA, LIMM, LIMMdup }, { 0 }},
-
-/* mpymul 0,limm,limm 01011110001100100111111110111110.  */
-{ "mpymul", 0x5E327FBE, 0xFFFFFFFF, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, LIMM, LIMMdup }, { 0 }},
-
-/* mpymul<.cc> 0,limm,limm 010111101111001001111111100QQQQQ.  */
-{ "mpymul", 0x5EF27F80, 0xFFFFFFE0, ARC_OPCODE_ARC64, ARITH, NONE, { ZA, LIMM, LIMMdup }, { C_CC }},
 
 /* mpyu<.f> a,b,c 00100bbb00011101FBBBCCCCCCAAAAAA.  */
 { "mpyu", 0x201D0000, 0xF8FF0000,ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MPY, MPY6E, { RA_CHK, RB, RC }, { C_F }},
@@ -9598,19 +9193,6 @@
 /* srl RB,limm 01011bbb001010110BBB111110RRRRRR.  */
 { "srl", 0x582B0F80, 0xF8FF8FC0, ARC_OPCODE_ARC64, AUXREG, NONE, { RB_CHK, BRAKET, LIMM, BRAKETdup }, { 0 }},
 
-/* st<zz><.di><.aa> c,b        00011bbb000000000BBBCCCCCCDaaZZ0 -> st c   ,[b,s9=0]    */
-/* st<zz><.di><.aa> w6,b       00011bbb000000000BBBwwwwwwDaaZZ1 -> st w6  ,[b,s9=0]    */
-/* st<zz><.di><.aa> limm,b     00011bbb000000000BBB111110DaaZZ0 -> st c=62,[b,s9=0]    */
-/* st<zz><.di>      c,limm     00011110000000000111CCCCCCDRRZZ0 -> st c   ,[b=62,s9=0] */
-/* st<zz><.di>      w6,limm    00011110000000000111wwwwwwDRRZZ1 -> st w6  ,[b=62,s9=0] */
-/* st<zz><.di>      limm,limm  00011110000000000111111110DRRZZ0 -> st c=62,[b=62,s9=0] */
-{ "st", 0x18000000, 0xF8FF8001, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, STORE, NONE, { RC, BRAKET, RB, BRAKETdup }, { C_ZZ29, C_DI26, C_AA27 }},
-{ "st", 0x18000001, 0xF8FF8001, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, STORE, NONE, { W6, BRAKET, RB, BRAKETdup }, { C_ZZ29, C_DI26, C_AA27 }},
-{ "st", 0x18000F80, 0xF8FF8FC1, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, STORE, NONE, { LIMM, BRAKET, RB, BRAKETdup }, { C_ZZ29, C_DI26, C_AA27 }},
-{ "st", 0x1E007000, 0xFFFFF001, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, STORE, NONE, { RC, BRAKET, LIMM, BRAKETdup }, { C_ZZ29, C_DI26 }},
-{ "st", 0x1E007001, 0xFFFFF001, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, STORE, NONE, { W6, BRAKET, LIMM, BRAKETdup }, { C_ZZ29, C_DI26 }},
-{ "st", 0x1E007F80, 0xFFFFFFC1, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, STORE, NONE, { LIMM, BRAKET, LIMMdup, BRAKETdup }, { C_ZZ29, C_DI26 }},
-
 /* st<zz><.di><.aa> c,b,s9       00011bbbssssssssSBBBCCCCCCDaaZZ0 -> st c   ,[b,s9]    */
 /* st<zz><.di><.aa> w6,b,s9      00011bbbssssssssSBBBwwwwwwDaaZZ1 -> st w6  ,[b,s9]    */
 /* st<zz><.di><.aa> limm,b,s9    00011bbbssssssssSBBB111110DaaZZ0 -> st c=62,[b,s9]    */
@@ -9618,10 +9200,12 @@
 /* st<zz><.di><.aa> w6,limm,s9   00011110ssssssssS111wwwwwwDRRZZ1 -> st w6  ,[b=62,s9] */
 /* st<zz><.di><.aa> limm,limm,s9 00011110ssssssssS111111110DRRZZ0 -> st c=62,[b=62,s9] */
 { "st", 0x18000000, 0xF8000001, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, STORE, NONE, { RC, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_ZZ29, C_DI26, C_AA27 }},
-{ "st", 0x18000001, 0xF8000001, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, STORE, NONE, { W6, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_ZZ29, C_DI26, C_AA27 }},
+{ "st", 0x18000001, 0xF8000001, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, STORE, NONE, { W6, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_ZZW6, C_DI26, C_AA27 }},
+{ "st", 0x18000001, 0xF8000021, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, STORE, NONE, { W6, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_ZZH1, C_AA27 }},
 { "st", 0x18000F80, 0xF8000FC1, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, STORE, NONE, { LIMM, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_ZZ29, C_DI26, C_AA27 }},
 { "st", 0x1E007000, 0xFF007001, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, STORE, NONE, { RC, BRAKET, LIMM, SIMM9_8, BRAKETdup }, { C_ZZ29, C_DI26 }},
-{ "st", 0x1E007001, 0xFF007001, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, STORE, NONE, { W6, BRAKET, LIMM, SIMM9_8, BRAKETdup }, { C_ZZ29, C_DI26 }},
+{ "st", 0x1E007001, 0xFF007001, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, STORE, NONE, { W6, BRAKET, LIMM, SIMM9_8, BRAKETdup }, { C_ZZW6, C_DI26 }},
+{ "st", 0x1E007001, 0xFF007021, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, STORE, NONE, { W6, BRAKET, LIMM, SIMM9_8, BRAKETdup }, { C_ZZH1 }},
 { "st", 0x1E007F80, 0xFF007FC1, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, STORE, NONE, { LIMM, BRAKET, LIMMdup, SIMM9_8, BRAKETdup }, { C_ZZ29, C_DI26 }},
 
 /* stb_sZZ_B c,b,u5 10101bbbcccuuuuu.  */
@@ -9656,80 +9240,8 @@
 { "std", 0x1E007007, 0xFF007007, ARC_OPCODE_ARC32, STORE, NONE, { W6, BRAKET, LIMM, SIMM9_8, BRAKETdup }, { C_DI26, C_AA27 }},
 { "std", 0x1E007F86, 0xFF007FC7, ARC_OPCODE_ARC32, STORE, NONE, { LIMM, BRAKET, LIMMdup, SIMM9_8, BRAKETdup }, { C_DI26, C_AA27 }},
 
-/* stdl<.aa> c,b       00011bbb000000000BBBCCCCCC1aa111 -> stdl c   , [b,    s9=0] */
-/* stdl<.aa> ximm,b    00011bbb000000000BBB1111001aa111 -> stdl c=60, [b,    s9=0] */
-/* stdl<.aa> limm,b    00011bbb000000000BBB1111101aa111 -> stdl c=62, [b,    s9=0] */
-/* stdl<.as> c,ximm    00011100000000000111CCCCCC1aa111 -> stdl c   , [b=60, s9=0] */
-/* stdl<.as> c,limm    00011110000000000111CCCCCC1aa111 -> stdl c   , [b=62, s9=0] */
-/* stdl<.as> ximm,ximm 000111000000000001111111001aa111 -> stdl c=60, [b=60, s9=0] */
-/* stdl<.as> limm,limm 000111100000000001111111101aa111 -> stdl c=62, [b=62, s9=0] */
-{ "stdl", 0x18000027, 0xF8FF8027, ARC_OPCODE_ARC64, STORE, NONE, { RCD,  BRAKET, RB,      BRAKETdup }, { C_AA27 }},
-{ "stdl", 0x18000F27, 0xF8FF8FE7, ARC_OPCODE_ARC64, STORE, NONE, { XIMM, BRAKET, RB,      BRAKETdup }, { C_AA27 }},
-{ "stdl", 0x18000FA7, 0xF8FF8FE7, ARC_OPCODE_ARC64, STORE, NONE, { LIMM, BRAKET, RB,      BRAKETdup }, { C_AA27 }},
-{ "stdl", 0x1C007027, 0xFFFFF027, ARC_OPCODE_ARC64, STORE, NONE, { RCD,  BRAKET, XIMM,    BRAKETdup }, { C_AS27 }},
-{ "stdl", 0x1E007027, 0xFFFFF027, ARC_OPCODE_ARC64, STORE, NONE, { RCD,  BRAKET, LIMM,    BRAKETdup }, { C_AS27 }},
-{ "stdl", 0x1C007F27, 0xFFFFFFE7, ARC_OPCODE_ARC64, STORE, NONE, { XIMM, BRAKET, XIMMdup, BRAKETdup }, { C_AA27 }},
-{ "stdl", 0x1E007FA7, 0xFFFFFFE7, ARC_OPCODE_ARC64, STORE, NONE, { LIMM, BRAKET, LIMMdup, BRAKETdup }, { C_AA27 }},
-
-/* stdl<.aa> c,b,s9       00011bbbssssssssSBBBCCCCCC1aa111 -> stdl c   , [b,    s9] */
-/* stdl<.aa> ximm,b,s9    00011bbbssssssssSBBB1111001aa111 -> stdl c=60, [b,    s9] */
-/* stdl<.aa> limm,b,s9    00011bbbssssssssSBBB1111101aa111 -> stdl c=62, [b,    s9] */
-/* stdl<.as> c,ximm,s9    00011100ssssssssS111CCCCCC1aa111 -> stdl c   , [b=60, s9] */
-/* stdl<.as> c,limm,s9    00011110ssssssssS111CCCCCC1aa111 -> stdl c   , [b=62, s9] */
-/* stdl<.as> ximm,ximm,s9 00011100ssssssssS1111111001aa111 -> stdl c=60, [b=60, s9] */
-/* stdl<.as> limm,limm,s9 00011110ssssssssS1111111101aa111 -> stdl c=62, [b=62, s9] */
-{ "stdl", 0x18000027, 0xF8000027, ARC_OPCODE_ARC64, STORE, NONE, { RCD,  BRAKET, RB,      SIMM9_8, BRAKETdup }, { C_AA27 }},
-{ "stdl", 0x18000F27, 0xF8000FE7, ARC_OPCODE_ARC64, STORE, NONE, { XIMM, BRAKET, RB,      SIMM9_8, BRAKETdup }, { C_AA27 }},
-{ "stdl", 0x18000FA7, 0xF8000FE7, ARC_OPCODE_ARC64, STORE, NONE, { LIMM, BRAKET, RB,      SIMM9_8, BRAKETdup }, { C_AA27 }},
-{ "stdl", 0x1C007027, 0xFF007027, ARC_OPCODE_ARC64, STORE, NONE, { RCD,  BRAKET, XIMM,    SIMM9_8, BRAKETdup }, { C_AS27 }},
-{ "stdl", 0x1E007027, 0xFF007027, ARC_OPCODE_ARC64, STORE, NONE, { RCD,  BRAKET, LIMM,    SIMM9_8, BRAKETdup }, { C_AS27 }},
-{ "stdl", 0x1C007F27, 0xFF007FE7, ARC_OPCODE_ARC64, STORE, NONE, { XIMM, BRAKET, XIMMdup, SIMM9_8, BRAKETdup }, { C_AS27 }},
-{ "stdl", 0x1E007FA7, 0xFF007FE7, ARC_OPCODE_ARC64, STORE, NONE, { LIMM, BRAKET, LIMMdup, SIMM9_8, BRAKETdup }, { C_AS27 }},
-
 /* sth_sZZ_H c,b,u6 10110bbbcccuuuuu.  */
 { "sth_s", 0x0000B000, 0x0000F800,ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, STORE, NONE, { RC_S, BRAKET, RB_S, UIMM6_A16_11_S, BRAKETdup }, { C_ZZ_H }},
-
-/* stl c,b        00011bbb000000000BBBCCCCCC0aa111 -> stl c   , [b   , s9=0] */
-/* stl w6,b       00011bbb000000000BBBwwwwww0aa110 -> stl w6  , [b   , s9=0] */
-/* stl ximm,b     00011bbb000000000BBB1111000aa111 -> stl c=60, [b   , s9=0] */
-/* stl limm,b     00011bbb000000000BBB1111100aa111 -> stl c=62, [b   , s9=0] */
-/* stl c,ximm     00011100000000000111CCCCCC0RR111 -> stl c   , [b=60, s9=0] */
-/* stl w6,ximm    00011100000000000111wwwwww0RR110 -> stl w6  , [b=60, s9=0] */
-/* stl c,limm     00011110000000000111CCCCCC0RR111 -> stl c   , [b=62, s9=0] */
-/* stl w6,limm    00011110000000000111wwwwww0RR110 -> stl w6  , [b=62, s9=0] */
-/* stl ximm,ximm  000111000000000001111111000RR111 -> stl c=60, [b=60, s9=0] */
-/* stl limm,limm  000111100000000001111111100RR111 -> stl c=62, [b=62, s9=0] */
-{ "stl", 0x18000007, 0xF8FF8027, ARC_OPCODE_ARC64, STORE, NONE, { RC,   BRAKET, RB,      BRAKETdup }, { C_ZZ_L }},
-//{ "stl", 0x18000006, 0xF8FF8027, ARC_OPCODE_ARC64, STORE, NONE, { W6,   BRAKET, RB,      BRAKETdup }, { C_ZZ_L }},
-{ "stl", 0x18000F07, 0xF8FF8FE7, ARC_OPCODE_ARC64, STORE, NONE, { XIMM, BRAKET, RB,      BRAKETdup }, { C_ZZ_L }},
-{ "stl", 0x18000F87, 0xF8FF8FE7, ARC_OPCODE_ARC64, STORE, NONE, { LIMM, BRAKET, RB,      BRAKETdup }, { C_ZZ_L }},
-{ "stl", 0x1C007007, 0xFFFFF03F, ARC_OPCODE_ARC64, STORE, NONE, { RC,   BRAKET, XIMM,    BRAKETdup }, { C_ZZ_L }},
-{ "stl", 0x1C007006, 0xFFFFF03F, ARC_OPCODE_ARC64, STORE, NONE, { W6,   BRAKET, XIMM,    BRAKETdup }, { C_ZZ_L }},
-{ "stl", 0x1E007007, 0xFFFFF03F, ARC_OPCODE_ARC64, STORE, NONE, { RC,   BRAKET, LIMM,    BRAKETdup }, { C_ZZ_L }},
-{ "stl", 0x1E007006, 0xFFFFF03F, ARC_OPCODE_ARC64, STORE, NONE, { W6,   BRAKET, LIMM,    BRAKETdup }, { C_ZZ_L }},
-{ "stl", 0x1C007F07, 0xFFFFFFE7, ARC_OPCODE_ARC64, STORE, NONE, { XIMM, BRAKET, XIMMdup, BRAKETdup }, { C_ZZ_L }},
-{ "stl", 0x1E007F87, 0xFFFFFFE7, ARC_OPCODE_ARC64, STORE, NONE, { LIMM, BRAKET, LIMMdup, BRAKETdup }, { C_ZZ_L }},
-
-/* stl<.aa> c,b,s9        00011bbbssssssssSBBBCCCCCC0aa111 -> stl c   , [b   , s9] */
-/* stl<.aa> w6,b,s9       00011bbbssssssssSBBBwwwwww0aa110 -> stl w6  , [b   , s9] */
-/* stl<.aa> ximm,b,s9     00011bbbssssssssSBBB1111000aa111 -> stl c=60, [b   , s9] */
-/* stl<.aa> limm,b,s9     00011bbbssssssssSBBB1111100aa111 -> stl c=62, [b   , s9] */
-/* stl<.aa> c,ximm,s9     00011100ssssssssS111CCCCCC0aa111 -> stl c   , [b=60, s9] */
-/* stl<.aa> w6,ximm,s9    00011100ssssssssS111wwwwww0aa110 -> stl w6  , [b=60, s9] */
-/* stl<.aa> c,limm,s9     00011110ssssssssS111CCCCCC0aa111 -> stl c   , [b=62, s9] */
-/* stl<.aa> w6,limm,s9    00011110ssssssssS111wwwwww0aa110 -> stl w6  , [b=62, s9] */
-/* stl<.aa> ximm,ximm,s9  00011100ssssssssS1111111000aa111 -> stl c=60, [b=60, s9] */
-/* stl<.aa> limm,limm,s9  00011110ssssssssS1111111100aa111 -> stl c=62, [b=62, s9] */
-{ "stl", 0x18000007, 0xF8000027, ARC_OPCODE_ARC64, STORE, NONE, { RC,   BRAKET, RB,      SIMM9_8, BRAKETdup }, { C_ZZ_L, C_AA27 }},
-//{ "stl", 0x18000006, 0xF8000027, ARC_OPCODE_ARC64, STORE, NONE, { W6,   BRAKET, RB,      SIMM9_8, BRAKETdup }, { C_ZZ_L, C_AA27 }},
-{ "stl", 0x18000F07, 0xF8000FE7, ARC_OPCODE_ARC64, STORE, NONE, { XIMM, BRAKET, RB,      SIMM9_8, BRAKETdup }, { C_ZZ_L, C_AA27 }},
-{ "stl", 0x18000F87, 0xF8000FE7, ARC_OPCODE_ARC64, STORE, NONE, { LIMM, BRAKET, RB,      SIMM9_8, BRAKETdup }, { C_ZZ_L, C_AA27 }},
-{ "stl", 0x1C007007, 0xFF007027, ARC_OPCODE_ARC64, STORE, NONE, { RC,   BRAKET, XIMM,    SIMM9_8, BRAKETdup }, { C_ZZ_L, C_AA27 }},
-{ "stl", 0x1C007006, 0xFF007027, ARC_OPCODE_ARC64, STORE, NONE, { W6,   BRAKET, XIMM,    SIMM9_8, BRAKETdup }, { C_ZZ_L, C_AA27 }},
-{ "stl", 0x1E007007, 0xFF007027, ARC_OPCODE_ARC64, STORE, NONE, { RC,   BRAKET, LIMM,    SIMM9_8, BRAKETdup }, { C_ZZ_L, C_AA27 }},
-{ "stl", 0x1E007006, 0xFF007027, ARC_OPCODE_ARC64, STORE, NONE, { W6,   BRAKET, LIMM,    SIMM9_8, BRAKETdup }, { C_ZZ_L, C_AA27 }},
-{ "stl", 0x1C007F07, 0xFF007FE7, ARC_OPCODE_ARC64, STORE, NONE, { XIMM, BRAKET, XIMMdup, SIMM9_8, BRAKETdup }, { C_ZZ_L, C_AA27 }},
-{ "stl", 0x1E007F87, 0xFF007FE7, ARC_OPCODE_ARC64, STORE, NONE, { LIMM, BRAKET, LIMMdup, SIMM9_8, BRAKETdup }, { C_ZZ_L, C_AA27 }},
 
 /* st_s b,SP,u7 11000bbb010uuuuu.  */
 { "st_s", 0x0000C040, 0x0000F8E0,ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, STORE, NONE, { RB_S, BRAKET, SP_S, UIMM7_A32_11_S, BRAKETdup }, { 0 }},
@@ -10390,9 +9902,6 @@
 
 /* sub_s a,b,c 01001bbbccc10aaa.  */
 { "sub_s", 0x00004810, 0x0000F818,ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, SUB, CD2, { RA_S, RB_S, RC_S }, { 0 }},
-
-/* sub_s c,b,u3 01101bbbccc01uuu.  */
-{ "sub_s", 0x00006808, 0x0000F818,ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, SUB, NONE, { RC_S, RB_S, UIMM3_13_S }, { 0 }},
 
 /* sub_s b,b,u5 10111bbb011uuuuu.  */
 { "sub_s", 0x0000B860, 0x0000F8E0,ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, SUB, NONE, { RB_S, RB_Sdup, UIMM5_11_S }, { 0 }},
@@ -11173,126 +10682,6 @@
 /* vmpy2hu<.cc> 0,limm,limm 001011101101110101111111100QQQQQ.  */
 { "vmpy2hu", 0x2EDD7F80, 0xFFFFFFE0,ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MPY, MPY8E, { ZA, LIMM, LIMMdup }, { C_CC }},
 
-/* vpack4hl a,b,c 00101bbb001010010BBBCCCCCCAAAAAA.  */
-{ "vpack4hl", 0x28290000, 0xF8FF8000, ARC_OPCODE_ARC64, MOVE, NONE, { RA_CHK, RB, RC }, { 0 }},
-
-/* vpack4hl 0,b,c 00101bbb001010010BBBCCCCCC111110.  */
-{ "vpack4hl", 0x2829003E, 0xF8FF803F, ARC_OPCODE_ARC64, MOVE, NONE, { ZA, RB, RC }, { 0 }},
-
-/* vpack4hl<.cc> b,b,c 00101bbb111010010BBBCCCCCC0QQQQQ.  */
-{ "vpack4hl", 0x28E90000, 0xF8FF8020, ARC_OPCODE_ARC64, MOVE, NONE, { RB_CHK, RBdup, RC }, { C_CC }},
-
-/* vpack4hl a,b,u6 00101bbb011010010BBBuuuuuuAAAAAA.  */
-{ "vpack4hl", 0x28690000, 0xF8FF8000, ARC_OPCODE_ARC64, MOVE, NONE, { RA_CHK, RB, UIMM6_20 }, { 0 }},
-
-/* vpack4hl 0,b,u6 00101bbb011010010BBBuuuuuu111110.  */
-{ "vpack4hl", 0x2869003E, 0xF8FF803F, ARC_OPCODE_ARC64, MOVE, NONE, { ZA, RB, UIMM6_20 }, { 0 }},
-
-/* vpack4hl<.cc> b,b,u6 00101bbb111010010BBBuuuuuu1QQQQQ.  */
-{ "vpack4hl", 0x28E90020, 0xF8FF8020, ARC_OPCODE_ARC64, MOVE, NONE, { RB_CHK, RBdup, UIMM6_20 }, { C_CC }},
-
-/* vpack4hl b,b,s12 00101bbb101010010BBBssssssSSSSSS.  */
-{ "vpack4hl", 0x28A90000, 0xF8FF8000, ARC_OPCODE_ARC64, MOVE, NONE, { RB_CHK, RBdup, SIMM12_20 }, { 0 }},
-
-/* vpack4hl a,limm,c 00101110001010010111CCCCCCAAAAAA.  */
-{ "vpack4hl", 0x2E297000, 0xFFFFF000, ARC_OPCODE_ARC64, MOVE, NONE, { RA_CHK, LIMM, RC }, { 0 }},
-
-/* vpack4hl a,b,limm 00101bbb001010010BBB111110AAAAAA.  */
-{ "vpack4hl", 0x28290F80, 0xF8FF8FC0, ARC_OPCODE_ARC64, MOVE, NONE, { RA_CHK, RB, LIMM }, { 0 }},
-
-/* vpack4hl 0,limm,c 00101110011010010111CCCCCC111110.  */
-{ "vpack4hl", 0x2E69703E, 0xFFFFF03F, ARC_OPCODE_ARC64, MOVE, NONE, { ZA, LIMM, RC }, { 0 }},
-
-/* vpack4hl 0,b,limm 00101bbb001010010BBB111110111110.  */
-{ "vpack4hl", 0x28290FBE, 0xF8FF8FFF, ARC_OPCODE_ARC64, MOVE, NONE, { ZA, RB, LIMM }, { 0 }},
-
-/* vpack4hl<.cc> b,b,limm 00101bbb111010010BBB1111100QQQQQ.  */
-{ "vpack4hl", 0x28E90F80, 0xF8FF8FE0, ARC_OPCODE_ARC64, MOVE, NONE, { RB_CHK, RBdup, LIMM }, { C_CC }},
-
-/* vpack4hl<.cc> 0,limm,c 00101110111010010111CCCCCC0QQQQQ.  */
-{ "vpack4hl", 0x2EE97000, 0xFFFFF020, ARC_OPCODE_ARC64, MOVE, NONE, { ZA, LIMM, RC }, { C_CC }},
-
-/* vpack4hl a,limm,u6 00101110011010010111uuuuuuAAAAAA.  */
-{ "vpack4hl", 0x2E697000, 0xFFFFF000, ARC_OPCODE_ARC64, MOVE, NONE, { RA_CHK, LIMM, UIMM6_20 }, { 0 }},
-
-/* vpack4hl 0,limm,u6 00101110011010010111uuuuuu111110.  */
-{ "vpack4hl", 0x2E69703E, 0xFFFFF03F, ARC_OPCODE_ARC64, MOVE, NONE, { ZA, LIMM, UIMM6_20 }, { 0 }},
-
-/* vpack4hl<.cc> 0,limm,u6 00101110111010010111uuuuuu1QQQQQ.  */
-{ "vpack4hl", 0x2EE97020, 0xFFFFF020, ARC_OPCODE_ARC64, MOVE, NONE, { ZA, LIMM, UIMM6_20 }, { C_CC }},
-
-/* vpack4hl 0,limm,s12 00101110101010010111ssssssSSSSSS.  */
-{ "vpack4hl", 0x2EA97000, 0xFFFFF000, ARC_OPCODE_ARC64, MOVE, NONE, { ZA, LIMM, SIMM12_20 }, { 0 }},
-
-/* vpack4hl a,limm,limm 00101110001010010111111110AAAAAA.  */
-{ "vpack4hl", 0x2E297F80, 0xFFFFFFC0, ARC_OPCODE_ARC64, MOVE, NONE, { RA_CHK, LIMM, LIMMdup }, { 0 }},
-
-/* vpack4hl 0,limm,limm 00101110001010010111111110111110.  */
-{ "vpack4hl", 0x2E297FBE, 0xFFFFFFFF, ARC_OPCODE_ARC64, MOVE, NONE, { ZA, LIMM, LIMMdup }, { 0 }},
-
-/* vpack4hl<.cc> 0,limm,limm 001011101110100101111111100QQQQQ.  */
-{ "vpack4hl", 0x2EE97F80, 0xFFFFFFE0, ARC_OPCODE_ARC64, MOVE, NONE, { ZA, LIMM, LIMMdup }, { C_CC }},
-
-/* vpack4hm a,b,c 00101bbb001010011BBBCCCCCCAAAAAA.  */
-{ "vpack4hm", 0x28298000, 0xF8FF8000, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MOVE, NONE, { RA_CHK, RB, RC }, { 0 }},
-
-/* vpack4hm 0,b,c 00101bbb001010011BBBCCCCCC111110.  */
-{ "vpack4hm", 0x2829803E, 0xF8FF803F, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MOVE, NONE, { ZA, RB, RC }, { 0 }},
-
-/* vpack4hm<.cc> b,b,c 00101bbb111010011BBBCCCCCC0QQQQQ.  */
-{ "vpack4hm", 0x28E98000, 0xF8FF8020, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MOVE, NONE, { RB_CHK, RBdup, RC }, { C_CC }},
-
-/* vpack4hm a,b,u6 00101bbb011010011BBBuuuuuuAAAAAA.  */
-{ "vpack4hm", 0x28698000, 0xF8FF8000, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MOVE, NONE, { RA_CHK, RB, UIMM6_20 }, { 0 }},
-
-/* vpack4hm 0,b,u6 00101bbb011010011BBBuuuuuu111110.  */
-{ "vpack4hm", 0x2869803E, 0xF8FF803F, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MOVE, NONE, { ZA, RB, UIMM6_20 }, { 0 }},
-
-/* vpack4hm<.cc> b,b,u6 00101bbb111010011BBBuuuuuu1QQQQQ.  */
-{ "vpack4hm", 0x28E98020, 0xF8FF8020, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MOVE, NONE, { RB_CHK, RBdup, UIMM6_20 }, { C_CC }},
-
-/* vpack4hm b,b,s12 00101bbb101010011BBBssssssSSSSSS.  */
-{ "vpack4hm", 0x28A98000, 0xF8FF8000, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MOVE, NONE, { RB_CHK, RBdup, SIMM12_20 }, { 0 }},
-
-/* vpack4hm a,limm,c 00101110001010011111CCCCCCAAAAAA.  */
-{ "vpack4hm", 0x2E29F000, 0xFFFFF000, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MOVE, NONE, { RA_CHK, LIMM, RC }, { 0 }},
-
-/* vpack4hm a,b,limm 00101bbb001010011BBB111110AAAAAA.  */
-{ "vpack4hm", 0x28298F80, 0xF8FF8FC0, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MOVE, NONE, { RA_CHK, RB, LIMM }, { 0 }},
-
-/* vpack4hm 0,limm,c 00101110011010011111CCCCCC111110.  */
-{ "vpack4hm", 0x2E69F03E, 0xFFFFF03F, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MOVE, NONE, { ZA, LIMM, RC }, { 0 }},
-
-/* vpack4hm 0,b,limm 00101bbb001010011BBB111110111110.  */
-{ "vpack4hm", 0x28298FBE, 0xF8FF8FFF, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MOVE, NONE, { ZA, RB, LIMM }, { 0 }},
-
-/* vpack4hm<.cc> b,b,limm 00101bbb111010011BBB1111100QQQQQ.  */
-{ "vpack4hm", 0x28E98F80, 0xF8FF8FE0, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MOVE, NONE, { RB_CHK, RBdup, LIMM }, { C_CC }},
-
-/* vpack4hm<.cc> 0,limm,c 00101110111010011111CCCCCC0QQQQQ.  */
-{ "vpack4hm", 0x2EE9F000, 0xFFFFF020, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MOVE, NONE, { ZA, LIMM, RC }, { C_CC }},
-
-/* vpack4hm a,limm,u6 00101110011010011111uuuuuuAAAAAA.  */
-{ "vpack4hm", 0x2E69F000, 0xFFFFF000, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MOVE, NONE, { RA_CHK, LIMM, UIMM6_20 }, { 0 }},
-
-/* vpack4hm 0,limm,u6 00101110011010011111uuuuuu111110.  */
-{ "vpack4hm", 0x2E69F03E, 0xFFFFF03F, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MOVE, NONE, { ZA, LIMM, UIMM6_20 }, { 0 }},
-
-/* vpack4hm<.cc> 0,limm,u6 00101110111010011111uuuuuu1QQQQQ.  */
-{ "vpack4hm", 0x2EE9F020, 0xFFFFF020, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MOVE, NONE, { ZA, LIMM, UIMM6_20 }, { C_CC }},
-
-/* vpack4hm 0,limm,s12 00101110101010011111ssssssSSSSSS.  */
-{ "vpack4hm", 0x2EA9F000, 0xFFFFF000, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MOVE, NONE, { ZA, LIMM, SIMM12_20 }, { 0 }},
-
-/* vpack4hm a,limm,limm 00101110001010011111111110AAAAAA.  */
-{ "vpack4hm", 0x2E29FF80, 0xFFFFFFC0, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MOVE, NONE, { RA_CHK, LIMM, LIMMdup }, { 0 }},
-
-/* vpack4hm 0,limm,limm 00101110001010011111111110111110.  */
-{ "vpack4hm", 0x2E29FFBE, 0xFFFFFFFF, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MOVE, NONE, { ZA, LIMM, LIMMdup }, { 0 }},
-
-/* vpack4hm<.cc> 0,limm,limm 001011101110100111111111100QQQQQ.  */
-{ "vpack4hm", 0x2EE9FF80, 0xFFFFFFE0, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MOVE, NONE, { ZA, LIMM, LIMMdup }, { C_CC }},
-
 /* vsub2 a,b,c 00101bbb001111010BBBCCCCCCAAAAAA.  */
 { "vsub2", 0x283D0000, 0xF8FF8000,ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MPY, MPY9E, { RA_CHK, RB, RC }, { 0 }},
 
@@ -11988,81 +11377,3 @@
 
 /* xor_s b,b,c 01111bbbccc00111.  */
 { "xor_s", 0x00007807, 0x0000F81F, ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, LOGICAL, NONE, { RB_S, RB_Sdup, RC_S }, { 0 }},
-
-/* vrep2hl b,c 00101bbb001011110BBBCCCCCC100010.  */
-{ "vrep2hl", 0x282F0022, 0xF8FF803F, ARC_OPCODE_ARC32, MOVE, NONE, { RB_CHK, RC }, { 0 }},
-
-/* vrep2hl 0,c 00101110001011110111CCCCCC100010.  */
-{ "vrep2hl", 0x2E2F7022, 0xFFFFF03F, ARC_OPCODE_ARC32, MOVE, NONE, { ZA, RC }, { 0 }},
-
-/* vrep2hl b,u6 00101bbb011011110BBBuuuuuu100010.  */
-{ "vrep2hl", 0x286F0022, 0xF8FF803F, ARC_OPCODE_ARC32, MOVE, NONE, { RB_CHK, UIMM6_20 }, { 0 }},
-
-/* vrep2hl 0,u6 00101110011011110111uuuuuu100010.  */
-{ "vrep2hl", 0x2E6F7022, 0xFFFFF03F, ARC_OPCODE_ARC32, MOVE, NONE, { ZA, UIMM6_20 }, { 0 }},
-
-/* vrep2hl b,limm 00101bbb001011110BBB111110100010.  */
-{ "vrep2hl", 0x282F0FA2, 0xF8FF8FFF, ARC_OPCODE_ARC32, MOVE, NONE, { RB_CHK, LIMM }, { 0 }},
-
-/* vrep2hl 0,limm 00101110001011110111111110100010.  */
-{ "vrep2hl", 0x2E2F7FA2, 0xFFFFFFFF, ARC_OPCODE_ARC32, MOVE, NONE, { ZA, LIMM }, { 0 }},
-
-/* vpack2hl a,b,c 00101bbb001010010BBBCCCCCCAAAAAA.  */
-{ "vpack2hl", 0x28290000, 0xF8FF8000, ARC_OPCODE_ARC32, MOVE, NONE, { RA_CHK, RB, RC }, { 0 }},
-
-/* vpack2hl 0,b,c 00101bbb001010010BBBCCCCCC111110.  */
-{ "vpack2hl", 0x2829003E, 0xF8FF803F, ARC_OPCODE_ARC32, MOVE, NONE, { ZA, RB, RC }, { 0 }},
-
-/* vpack2hl<.cc> b,b,c 00101bbb111010010BBBCCCCCC0QQQQQ.  */
-{ "vpack2hl", 0x28E90000, 0xF8FF8020, ARC_OPCODE_ARC32, MOVE, NONE, { RB_CHK, RBdup, RC }, { C_CC }},
-
-/* vpack2hl a,b,u6 00101bbb011010010BBBuuuuuuAAAAAA.  */
-{ "vpack2hl", 0x28690000, 0xF8FF8000, ARC_OPCODE_ARC32, MOVE, NONE, { RA_CHK, RB, UIMM6_20 }, { 0 }},
-
-/* vpack2hl 0,b,u6 00101bbb011010010BBBuuuuuu111110.  */
-{ "vpack2hl", 0x2869003E, 0xF8FF803F, ARC_OPCODE_ARC32, MOVE, NONE, { ZA, RB, UIMM6_20 }, { 0 }},
-
-/* vpack2hl<.cc> b,b,u6 00101bbb111010010BBBuuuuuu1QQQQQ.  */
-{ "vpack2hl", 0x28E90020, 0xF8FF8020, ARC_OPCODE_ARC32, MOVE, NONE, { RB_CHK, RBdup, UIMM6_20 }, { C_CC }},
-
-/* vpack2hl b,b,s12 00101bbb101010010BBBssssssSSSSSS.  */
-{ "vpack2hl", 0x28A90000, 0xF8FF8000, ARC_OPCODE_ARC32, MOVE, NONE, { RB_CHK, RBdup, SIMM12_20 }, { 0 }},
-
-/* vpack2hl a,limm,c 00101110001010010111CCCCCCAAAAAA.  */
-{ "vpack2hl", 0x2E297000, 0xFFFFF000, ARC_OPCODE_ARC32, MOVE, NONE, { RA_CHK, LIMM, RC }, { 0 }},
-
-/* vpack2hl a,b,limm 00101bbb001010010BBB111110AAAAAA.  */
-{ "vpack2hl", 0x28290F80, 0xF8FF8FC0, ARC_OPCODE_ARC32, MOVE, NONE, { RA_CHK, RB, LIMM }, { 0 }},
-
-/* vpack2hl 0,limm,c 00101110011010010111CCCCCC111110.  */
-{ "vpack2hl", 0x2E69703E, 0xFFFFF03F, ARC_OPCODE_ARC32, MOVE, NONE, { ZA, LIMM, RC }, { 0 }},
-
-/* vpack2hl 0,b,limm 00101bbb001010010BBB111110111110.  */
-{ "vpack2hl", 0x28290FBE, 0xF8FF8FFF, ARC_OPCODE_ARC32, MOVE, NONE, { ZA, RB, LIMM }, { 0 }},
-
-/* vpack2hl<.cc> b,b,limm 00101bbb111010010BBB1111100QQQQQ.  */
-{ "vpack2hl", 0x28E90F80, 0xF8FF8FE0, ARC_OPCODE_ARC32, MOVE, NONE, { RB_CHK, RBdup, LIMM }, { C_CC }},
-
-/* vpack2hl<.cc> 0,limm,c 00101110111010010111CCCCCC0QQQQQ.  */
-{ "vpack2hl", 0x2EE97000, 0xFFFFF020, ARC_OPCODE_ARC32, MOVE, NONE, { ZA, LIMM, RC }, { C_CC }},
-
-/* vpack2hl a,limm,u6 00101110011010010111uuuuuuAAAAAA.  */
-{ "vpack2hl", 0x2E697000, 0xFFFFF000, ARC_OPCODE_ARC32, MOVE, NONE, { RA_CHK, LIMM, UIMM6_20 }, { 0 }},
-
-/* vpack2hl 0,limm,u6 00101110011010010111uuuuuu111110.  */
-{ "vpack2hl", 0x2E69703E, 0xFFFFF03F, ARC_OPCODE_ARC32, MOVE, NONE, { ZA, LIMM, UIMM6_20 }, { 0 }},
-
-/* vpack2hl<.cc> 0,limm,u6 00101110111010010111uuuuuu1QQQQQ.  */
-{ "vpack2hl", 0x2EE97020, 0xFFFFF020, ARC_OPCODE_ARC32, MOVE, NONE, { ZA, LIMM, UIMM6_20 }, { C_CC }},
-
-/* vpack2hl 0,limm,s12 00101110101010010111ssssssSSSSSS.  */
-{ "vpack2hl", 0x2EA97000, 0xFFFFF000, ARC_OPCODE_ARC32, MOVE, NONE, { ZA, LIMM, SIMM12_20 }, { 0 }},
-
-/* vpack2hl a,limm,limm 00101110001010010111111110AAAAAA.  */
-{ "vpack2hl", 0x2E297F80, 0xFFFFFFC0, ARC_OPCODE_ARC32, MOVE, NONE, { RA_CHK, LIMM, LIMMdup }, { 0 }},
-
-/* vpack2hl 0,limm,limm 00101110001010010111111110111110.  */
-{ "vpack2hl", 0x2E297FBE, 0xFFFFFFFF, ARC_OPCODE_ARC32, MOVE, NONE, { ZA, LIMM, LIMMdup }, { 0 }},
-
-/* vpack2hl<.cc> 0,limm,limm 001011101110100101111111100QQQQQ.  */
-{ "vpack2hl", 0x2EE97F80, 0xFFFFFFE0, ARC_OPCODE_ARC32, MOVE, NONE, { ZA, LIMM, LIMMdup }, { C_CC }},
