@@ -560,6 +560,11 @@
 
 const struct arc_opcode arc_opcodes[] =
 {
+
+  /* STL and STDL instructions.  */
+  STL
+  STDL
+
 #include "arc64-tbl.h"
 
   FP_TOP (fhmadd , FMADD , HALF)
