@@ -454,7 +454,75 @@
       ARG_32BIT_RALIMMU6,   FLAGS_F   },
 
 
-  /* The opcode table.
+#define STDL_ENCODING(K, ZZ) ((F32_ST_OFFSET << 27) | (1 << 5) | (ZZ << 1) \
+			      | (K))
+#define MSK_STDL (MASK_32BIT (~(FIELDB (63) | (0x1ff << 15) | FIELDC (63) \
+				| (0x3 << 3))))
+#define STDL_ASYM_ENCODING(K, ZZ, X) ((F32_ST_OFFSET << 27) | FIELDB (X) \
+				   | (1 << 5) | (ZZ << 1) | (K))
+#define STDL_DIMM_ENCODING(K, ZZ, X) ((F32_ST_OFFSET << 27) | FIELDC (X) \
+				   | (1 << 5) | (ZZ << 1) | (K))
+
+/* stdl<.aa> c,[b,s9]
+   stdl<.aa> w6,[b,s9]
+   stdl<.as> c,[ximm]
+   stdl<.as> w6,[ximm]
+   stdl<.aa> ximm,[b,s9]
+   stdl<.aa> limm,[b,s9]
+*/
+#define STDL								\
+  { "stdl", STDL_ENCODING (0, 0x03), MSK_STDL, ARC_OPCODE_ARC64, STORE, \
+    NONE, { RCD, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_AA27 }},		\
+  { "stdl", STDL_ENCODING (1, 0x02), MSK_STDL, ARC_OPCODE_ARC64, STORE, \
+      NONE, { W6, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_AA27 }},	\
+  { "stdl", STDL_ASYM_ENCODING (0, 0x03, 60), 0xFF007027, ARC_OPCODE_ARC64, \
+      STORE, NONE, { RCD, BRAKET, XIMM, BRAKETdup }, {C_AS27 }},	\
+  { "stdl", STDL_ASYM_ENCODING (1, 0x02, 60), 0xFF007027, ARC_OPCODE_ARC64, \
+      STORE, NONE, { W6, BRAKET, XIMM, BRAKETdup }, { C_AS27 }},	\
+  { "stdl", STDL_ASYM_ENCODING (0, 0x03, 62), 0xFF007027, ARC_OPCODE_ARC64, \
+      STORE, NONE, { RCD, BRAKET, LIMM, BRAKETdup }, {C_AS27 }},	\
+  { "stdl", STDL_ASYM_ENCODING (1, 0x02, 62), 0xFF007027, ARC_OPCODE_ARC64, \
+      STORE, NONE, { W6, BRAKET, LIMM, BRAKETdup }, { C_AS27 }},	\
+  { "stdl", STDL_DIMM_ENCODING (0, 0x03, 60), 0XF8000FC7, ARC_OPCODE_ARC64, \
+      STORE, NONE, { XIMM, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_AA27 }}, \
+  { "stdl", STDL_DIMM_ENCODING (0, 0x03, 62), 0xF8000FC7, ARC_OPCODE_ARC64, \
+      STORE, NONE, { LIMM, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_AA27 }},
+
+#define STL_ENCODING(DI) ((F32_ST_OFFSET << 27) | (DI << 5) | (0X03 << 1) \
+			  | (1))
+#define MSK_STL (MASK_32BIT (~(FIELDB (63) | (0x1ff << 15) | FIELDC (63) \
+			       | (0x03 << 3))))
+#define STL_ASYM_ENCODING(DI, X) ((F32_ST_OFFSET << 27) | (DI << 5) \
+				  | (0X03 << 1) | FIELDB (X) | (1))
+#define STL_DSYM_ENCODING(X) ((F32_ST_OFFSET << 27) | (0X03 << 1)	\
+			       | FIELDC (X) | (1))
+
+/* stl<.aa> c,[b,s9]
+   stl<.aa> w6,[b,s9]
+   stl<.as> c,[ximm]
+   stl<.as> w6,[ximm]
+   stl<.aa> ximm,[b,s9]
+   stl<.aa> limm,[b,s9]
+*/
+#define STL								\
+  { "stl", STL_ENCODING (0), MSK_STL, ARC_OPCODE_ARC64, STORE, NONE,	\
+    { RC, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_AA27 }},		\
+  { "stl", STL_ENCODING (1), MSK_STL, ARC_OPCODE_ARC64, STORE, NONE,	\
+    { W6, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_AA27 }},		\
+  { "stl", STL_ASYM_ENCODING (0, 60), 0xFFFFF03F, ARC_OPCODE_ARC64, STORE, \
+      NONE, { RC, BRAKET, XIMM, BRAKETdup }, { C_AS27 }},		\
+  { "stl", STL_ASYM_ENCODING (1, 60), 0xFFFFF03F, ARC_OPCODE_ARC64, STORE, \
+      NONE, { W6, BRAKET, XIMM, BRAKETdup }, { C_AS27 }},		\
+  { "stl", STL_ASYM_ENCODING (0, 62), 0xFFFFF03F, ARC_OPCODE_ARC64, STORE, \
+      NONE, { RC, BRAKET, LIMM, BRAKETdup }, { C_AS27 }},		\
+  { "stl", STL_ASYM_ENCODING (1, 62), 0xFFFFF03F, ARC_OPCODE_ARC64, STORE, \
+      NONE, { W6, BRAKET, LIMM, BRAKETdup }, { C_AS27 }},		\
+  { "stl", STL_DSYM_ENCODING (60), 0xF8000FC7, ARC_OPCODE_ARC64, STORE,	\
+      NONE, { XIMM, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_AA27 }},	\
+  { "stl", STL_DSYM_ENCODING (62), 0xF8000FC7, ARC_OPCODE_ARC64, STORE,	\
+      NONE, { LIMM, BRAKET, RB, SIMM9_8, BRAKETdup }, { C_AA27 }},
+
+/* The opcode table.
 
    The format of the opcode table is:
 
