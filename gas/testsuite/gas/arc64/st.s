@@ -57,3 +57,12 @@
   st.aw     10, [r4,156]        ; st w6, [b, s9]
   st         0, [0x1338]        ; st w6, [limm]     limm: small positive
   st.di      1, [0x7fffffff]    ; st w6, [limm]     limm: positive
+
+	;; sth w6 ...
+	sth.di	4,[r4]
+	sth.di.as	5,[r5,9]
+	st	0,[r6]
+	stb	1,[r1,0]
+	st.aw	0,[r6,2]
+	stb.ab	1,[r1,1]
+	sth	4,[@symb]
