@@ -378,27 +378,31 @@ relocate_fix_got_relocs_for_got_info (struct got_entry **list_p,
 		bfd_vma ATTRIBUTE_UNUSED sec_vma
 		  = tls_sec->output_section->vma;
 
-		write_in_got (output_bfd,
-			      sym_value - sec_vma
-			      + (elf_hash_table (info)->dynamic_sections_created
-				 ? 0
-				 : (align_power (TCB_SIZE,
-						 tls_sec->alignment_power))),
-			      htab->sgot->contents + entry->offset
-			      + (entry->existing_entries == TLS_GOT_MOD_AND_OFF
-				 ? GOT_ENTRY_SIZE : 0));
+		if (h == NULL || h->forced_local
+		    || !elf_hash_table (info)->dynamic_sections_created)
+		  {
+		    write_in_got (output_bfd,
+				  sym_value - sec_vma
+				  + (elf_hash_table (info)->dynamic_sections_created
+				     ? 0
+				     : (align_power (TCB_SIZE,
+						     tls_sec->alignment_power))),
+				  htab->sgot->contents + entry->offset
+				  + (entry->existing_entries == TLS_GOT_MOD_AND_OFF
+				     ? GOT_ENTRY_SIZE : 0));
 
-		ARC_DEBUG ("arc_info: FIXED -> %s value = %#lx "
-			   "@ %p, for symbol %s\n",
-			   (entry->type == GOT_TLS_GD ? "GOT_TLS_GD" :
-			    "GOT_TLS_IE"),
-			   (long) (sym_value - sec_vma),
-			   (void *) (htab->sgot->output_section->vma
-			      + htab->sgot->output_offset
-			      + entry->offset
-			      + (entry->existing_entries == TLS_GOT_MOD_AND_OFF
-				 ? GOT_ENTRY_SIZE : 0)),
-			   symbol_name);
+		    ARC_DEBUG ("arc_info: FIXED -> %s value = %#lx "
+			       "@ %p, for symbol %s\n",
+			       (entry->type == GOT_TLS_GD ? "GOT_TLS_GD" :
+				"GOT_TLS_IE"),
+			       (long) (sym_value - sec_vma),
+			       (void *) (htab->sgot->output_section->vma
+					 + htab->sgot->output_offset
+					 + entry->offset
+					 + (entry->existing_entries == TLS_GOT_MOD_AND_OFF
+					    ? GOT_ENTRY_SIZE : 0)),
+			       symbol_name);
+		  }
 	      }
 	      break;
 
