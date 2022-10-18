@@ -9875,7 +9875,7 @@
 { "subl_s", 0x00007803, 0x0000F81F, ARC_OPCODE_ARC64, ARITH, NONE, { RB_S, RB_Sdup, RC_S }, { 0 }},
 
 /* sub_s.NE b,b,b 01111bbb11000000.  */
-{ "sub_s", 0x000078C0, 0x0000F8FF,ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, SUB, NONE, { RB_S, RB_Sdup, RB_Sdup }, { C_NE }},
+{ "sub_s", 0x000078C0, 0x0000F8FF,ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, SUB, NONE, { RB_S, RB_Sdup, RB_Sdup }, { C_NE, C_CC_NE }},
 
 /* sub_s b,b,c 01111bbbccc00010.  */
 { "sub_s", 0x00007802, 0x0000F81F,ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, SUB, NONE, { RB_S, RB_Sdup, RC_S }, { 0 }},
