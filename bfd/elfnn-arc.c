@@ -1282,8 +1282,12 @@ arc_special_overflow_checks (const struct arc_relocation_data reloc_data,
 				  + (reloc_data.reloc_offset))))
 #define SECTSTART (bfd_signed_vma) (reloc_data.sym_section->output_section->vma \
 				    + reloc_data.sym_section->output_offset)
+#define ARC_IS_TBSS(f) (((f) & (SEC_THREAD_LOCAL | SEC_LOAD)) 		\
+				  == SEC_THREAD_LOCAL)
 #define FINAL_SECTSTART							\
-  (bfd_signed_vma) (reloc_data.sym_section->output_section->vma)
+	   (bfd_signed_vma) ((ARC_IS_TBSS(reloc_data.sym_section->flags) ?	\
+	   (elf_hash_table (info))->tls_sec->output_section->vma :	\
+	   reloc_data.sym_section->output_section->vma))
 #define JLI (bfd_signed_vma) (reloc_data.sym_section->output_section->vma)
 #define _SDA_BASE_ (bfd_signed_vma) (reloc_data.sdata_begin_symbol_vma)
 #define TLS_REL (bfd_signed_vma)				\
