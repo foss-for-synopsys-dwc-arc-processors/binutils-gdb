@@ -346,8 +346,8 @@ relocate_fix_got_relocs_for_got_info (struct got_entry **	   list_p,
 		BFD_ASSERT (tls_sec && tls_sec->output_section);
 		bfd_vma sec_vma = tls_sec->output_section->vma;
 
-		if (h == NULL || h->forced_local
-		   || !elf_hash_table (info)->dynamic_sections_created)
+		if (h != NULL && (h->forced_local
+		   || !elf_hash_table (info)->dynamic_sections_created))
 		  {
 		    write_in_got (output_bfd,
 				  sym_value - sec_vma
