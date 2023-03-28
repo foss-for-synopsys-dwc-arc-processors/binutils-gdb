@@ -313,9 +313,10 @@ relocate_fix_got_relocs_for_got_info (struct got_entry **list_p,
 	  reloc_data->sym_value = h->root.u.def.value;
 	  reloc_data->sym_section = h->root.u.def.section;
 
-	  sym_value = h->root.u.def.value
-	    + h->root.u.def.section->output_section->vma
-	    + h->root.u.def.section->output_offset;
+	  if (h->root.u.def.section->output_section != NULL)
+	    sym_value = h->root.u.def.value
+	      + h->root.u.def.section->output_section->vma
+	      + h->root.u.def.section->output_offset;
 
 	  tls_sec = elf_hash_table (info)->tls_sec;
 
@@ -408,10 +409,6 @@ relocate_fix_got_relocs_for_got_info (struct got_entry **list_p,
 
 	    case GOT_NORMAL:
 	      {
-		bfd_vma sec_vma
-		  = reloc_data->sym_section->output_section->vma
-		  + reloc_data->sym_section->output_offset;
-
 		if (h != NULL
 		    && h->root.type == bfd_link_hash_undefweak)
 		  ARC_DEBUG ("arc_info: PATCHED: NOT_PATCHED "
@@ -424,6 +421,10 @@ relocate_fix_got_relocs_for_got_info (struct got_entry **list_p,
 			     (long) entry->offset);
 		else
 		  {
+		    bfd_vma sec_vma
+		      = reloc_data->sym_section->output_section->vma
+		      + reloc_data->sym_section->output_offset;
+
 		    write_in_got (output_bfd,
 				  reloc_data->sym_value + sec_vma,
 				  htab->sgot->contents + entry->offset);
