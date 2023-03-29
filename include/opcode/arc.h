@@ -144,7 +144,18 @@ typedef enum
   F_CLASS_ZZ = (1 << 5),
 
   /* Implicit flag.  */
-  F_CLASS_IMPLICIT = (1 << 6)
+  F_CLASS_IMPLICIT = (1 << 6),
+
+  /* Non effect flags. Do not remove.
+   *   This flags are used in QEMU since those describe the semantics
+   *  of the instructions.
+   */
+  F_CLASS_AS = (1 << 15),
+  F_CLASS_F = (1 << 15),
+  F_CLASS_D = (1 << 15),
+  F_CLASS_DI = (1 << 15),
+  F_CLASS_X = (1 << 15),
+
 } flag_class_t;
 
 /* The opcode table is an array of struct arc_opcode.  */
