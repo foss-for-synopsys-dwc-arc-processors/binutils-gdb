@@ -2404,24 +2404,22 @@ GOT_ENTRY_OFFSET = %#lx, GOT_ENTRY_VMA = %#lx, for symbol %s\n",
   }
 }
 
+/* Initialize the PLT with ARC specific PLT header.  See arc-plt.def.
+   Use middle-endian to fill in the data as it is executable code.  */
+
 static void
 relocate_plt_for_entry (bfd *abfd,
 			struct bfd_link_info *info)
 {
   const struct plt_version_t *plt_data = arc_get_plt_version (info);
   struct elf_link_hash_table *htab = elf_hash_table (info);
+  bfd_vma i = 0;
+  uint16_t *ptr = (uint16_t *) plt_data->entry;
 
-  {
-    bfd_vma i = 0;
-    uint16_t *ptr = (uint16_t *) plt_data->entry;
-    for (i = 0; i < plt_data->entry_size/2; i++)
-      {
-	uint16_t data = ptr[i];
-	bfd_put_16 (abfd,
-		    (bfd_vma) data,
-		    htab->splt->contents + (i*2));
-      }
-  }
+  for (i = 0; i < plt_data->entry_size/2; i++)
+    {
+      bfd_put_16 (abfd, (bfd_vma) ptr[i], htab->splt->contents + (i*2));
+    }
   PLT_DO_RELOCS_FOR_ENTRY (abfd, htab, plt_data->entry_relocs);
 }
 
@@ -2683,13 +2681,15 @@ elf_arc_finish_dynamic_sections (bfd * output_bfd,
   asection *sdyn = bfd_get_linker_section (dynobj, ".dynamic");
   const struct elf_backend_data *bed = get_elf_backend_data (output_bfd);
 
+  /* TODO: instead of checking for sdyn, we can use elf_hash_table
+     (info)->dynamic_sections_created to see if we have dynamic
+     sections creared.  */
   if (sdyn)
     {
       ElfNN_External_Dyn *dyncon, *dynconend;
 
       dyncon = (ElfNN_External_Dyn *) sdyn->contents;
-      dynconend
-	= (ElfNN_External_Dyn *) (sdyn->contents + sdyn->size);
+      dynconend	= (ElfNN_External_Dyn *) (sdyn->contents + sdyn->size);
       for (; dyncon < dynconend; dyncon++)
 	{
 	  Elf_Internal_Dyn internal_dyn;
@@ -2765,6 +2765,7 @@ elf_arc_finish_dynamic_sections (bfd * output_bfd,
 	    bed->s->swap_dyn_out (output_bfd, &internal_dyn, dyncon);
 	}
 
+      /* Fill in the first entry in the procedure linkage table.  */
       if (htab->splt->size > 0)
 	{
 	  relocate_plt_for_entry (output_bfd, info);
@@ -2779,28 +2780,32 @@ elf_arc_finish_dynamic_sections (bfd * output_bfd,
   /* Fill in the first three entries in the global offset table.  */
   if (htab->sgot)
     {
-      struct elf_link_hash_entry *h;
-      h = elf_link_hash_lookup (elf_hash_table (info), "_GLOBAL_OFFSET_TABLE_",
-				 false, false, true);
+      struct elf_link_hash_entry *got;
+      /* Get the hash entry of the first GOT entry.  */
+      got = elf_link_hash_lookup (elf_hash_table (info),
+				  "_GLOBAL_OFFSET_TABLE_", false, false, true);
 
-      if (h != NULL && h->root.type != bfd_link_hash_undefined
-	  && h->root.u.def.section != NULL)
+      if (got != NULL
+	  && got->root.type != bfd_link_hash_undefined
+	  && got->root.u.def.section != NULL)
 	{
-	  asection *sec = h->root.u.def.section;
+	  asection *sec = got->root.u.def.section;
+	  bfd_vma dyn_vma = 0;
 
-	  if (sdyn == NULL)
+	  /* Check if we participate in a dynamic linking.  */
+	  if (sdyn)
 	    {
-	      write_in_got (output_bfd, (bfd_vma) 0,
-			    sec->contents);
+	      /* Get the unrelocated address of the _DYNAMIC, which is
+		 the start of the start of the dynamic sction.  */
+	      dyn_vma = sdyn->output_section->vma + sdyn->output_offset;
 	    }
-	  else
-	    {
-	      write_in_got (output_bfd,
-			    sdyn->output_section->vma + sdyn->output_offset,
-			    sec->contents);
-	    }
+
+	  /* _GLOBAL_OFFSET_TABLE_[0] = VMA (.dynamic)  */
+	  write_in_got (output_bfd, dyn_vma, sec->contents);
+	  /* _GLOBAL_OFFSET_TABLE_[1] = 0. Reserved for dynamic linker.  */
 	  write_in_got (output_bfd, (bfd_vma) 0,
 			sec->contents + (GOT_ENTRY_SIZE));
+	  /* _GLOBAL_OFFSET_TABLE_[2] = 0. Reserved for dynamic linker.  */
 	  write_in_got (output_bfd, (bfd_vma) 0,
 			sec->contents + (GOT_ENTRY_SIZE * 2));
 	}
