@@ -27,6 +27,8 @@
 #include "features/arc/v1-aux.c"
 #include "features/arc/v2-core.c"
 #include "features/arc/v2-aux.c"
+#include "features/arc/v3_64-core.c"
+#include "features/arc/v3_64-aux.c"
 
 #ifndef GDBSERVER
 #define STATIC_IN_GDB static
@@ -49,6 +51,10 @@ arc_create_target_description (const struct arc_arch_features &features)
       arch_name = "arc:ARC700";
   else if (features.isa == ARC_ISA_ARCV2 && features.reg_size == 4)
       arch_name = "arc:ARCv2";
+  else if (features.isa == ARC_ISA_ARCV3 && features.reg_size == 4)
+      arch_name = "arc64:32";
+  else if (features.isa == ARC_ISA_ARCV3 && features.reg_size == 8)
+      arch_name = "arc64:64";
   else
     {
       std::string msg = string_printf
@@ -72,6 +78,14 @@ arc_create_target_description (const struct arc_arch_features &features)
       regnum = create_feature_arc_v2_core (tdesc.get (), regnum);
       regnum = create_feature_arc_v2_aux (tdesc.get (), regnum);
       break;
+    case ARC_ISA_ARCV3:
+      if (features.reg_size == 8)
+	{
+	  regnum = create_feature_arc_v3_64_core (tdesc.get (), regnum);
+	  regnum = create_feature_arc_v3_64_aux (tdesc.get (), regnum);
+	  break;
+	}
+      /* Fall through.  */
     default:
       std::string msg = string_printf
 	("Cannot choose target description XML: %d", features.isa);

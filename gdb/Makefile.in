@@ -714,6 +714,7 @@ ALL_64_TARGET_OBS = \
 	alpha-netbsd-tdep.o \
 	alpha-obsd-tdep.o \
 	alpha-tdep.o \
+	arc64-tdep.o \
 	amd64-darwin-tdep.o \
 	amd64-dicos-tdep.o \
 	amd64-fbsd-tdep.o \
@@ -1277,6 +1278,7 @@ HFILES_NO_SRCDIR = \
 	amdgpu-tdep.h \
 	annotate.h \
 	arc-tdep.h \
+	arc64-tdep.h \
 	arch-utils.h \
 	arm-linux-tdep.h \
 	arm-netbsd-tdep.h \
@@ -1670,6 +1672,7 @@ ALLDEPFILES = \
 	amdgpu-tdep.c \
 	arc-linux-nat.c \
 	arc-tdep.c \
+	arc64-tdep.c \
 	arm-bsd-tdep.c \
 	arm-fbsd-nat.c \
 	arm-fbsd-tdep.c \
