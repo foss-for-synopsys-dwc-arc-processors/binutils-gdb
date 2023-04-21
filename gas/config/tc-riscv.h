@@ -144,6 +144,12 @@ bool riscv_parse_name (const char *, struct expressionS *, enum expr_mode);
 extern void riscv_md_finish (void);
 extern int riscv_convert_symbolic_attribute (const char *);
 
+#define md_cleanup riscv_md_cleanup
+#define TC_START_LABEL(STR, NUL_CHAR, NEXT_CHAR)	\
+  (NEXT_CHAR == ':' && riscv_md_cleanup ())
+
+extern bfd_boolean riscv_md_cleanup (void);
+
 /* Set mapping symbol states.  */
 #define md_cons_align(nbytes) riscv_mapping_state (MAP_DATA, 0, 0)
 void riscv_mapping_state (enum riscv_seg_mstate, int, bool);
