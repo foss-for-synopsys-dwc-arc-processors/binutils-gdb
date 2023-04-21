@@ -322,6 +322,10 @@ static inline unsigned int riscv_insn_length (insn_t insn)
 /* ZC Specific */
 #define OP_MASK_RLIST		0xf
 #define OP_SH_RLIST		4
+#define OP_MASK_SREG1          0x7
+#define OP_SH_SREG1            7
+#define OP_MASK_SREG2          0x7
+#define OP_SH_SREG2            2
 
 #define OP_MASK_CSR		0xfffU
 #define OP_SH_CSR		20
@@ -400,7 +404,10 @@ static inline unsigned int riscv_insn_length (insn_t insn)
 #define X_T2 7
 #define X_S0 8
 #define X_S1 9
+#define X_A0 10
+#define X_A1 11
 #define X_S2 18
+#define X_S7 23
 #define X_S10 26
 #define X_S11 27
 #define X_T3 28
@@ -447,6 +454,10 @@ static inline unsigned int riscv_insn_length (insn_t insn)
 
 /* The maximal number of subset can be required.  */
 #define MAX_SUBSET_NUM 4
+
+#define RISCV_SREG_0_7(REGNO) \
+	((REGNO == X_S0 || REGNO == X_S1) \
+	 || (REGNO >= X_S2 && REGNO <= X_S7))
 
 /* All RISC-V instructions belong to at least one of these classes.  */
 enum riscv_insn_class

@@ -329,6 +329,12 @@ match_th_load_pair(const struct riscv_opcode *op,
   return rd1 != rd2 && rd1 != rs && rd2 != rs && match_opcode (op, insn);
 }
 
+match_sreg1_not_eq_sreg2 (const struct riscv_opcode *op, insn_t insn)
+{
+  return match_opcode (op, insn)
+      && (EXTRACT_OPERAND (SREG1, insn) != EXTRACT_OPERAND (SREG2, insn));
+}
+
 const struct riscv_opcode riscv_opcodes[] =
 {
 /* name, xlen, isa, operands, match, mask, match_func, pinfo.  */
@@ -2170,7 +2176,8 @@ const struct riscv_opcode riscv_opcodes[] =
 {"cm.pop",     0,  INSN_CLASS_ZCMP, "{CZr},CZp",  MATCH_CM_POP, MASK_CM_POP, match_opcode, 0 },
 {"cm.popret",  0,  INSN_CLASS_ZCMP, "{CZr},CZp",  MATCH_CM_POPRET, MASK_CM_POPRET, match_opcode, 0 },
 {"cm.popretz", 0,  INSN_CLASS_ZCMP, "{CZr},CZp",  MATCH_CM_POPRETZ, MASK_CM_POPRETZ, match_opcode, 0 },
-
+{"cm.mva01s",  0,  INSN_CLASS_ZCMP, "CZ1,CZ2",    MATCH_CM_MVA01S, MASK_CM_MVA01S, match_opcode, 0 },
+{"cm.mvsa01",  0,  INSN_CLASS_ZCMP, "CZ1,CZ2",    MATCH_CM_MVSA01, MASK_CM_MVSA01, match_sreg1_not_eq_sreg2, 0 },
 /* Terminate the list.  */
 {0, 0, INSN_CLASS_NONE, 0, 0, 0, 0, 0}
 };
