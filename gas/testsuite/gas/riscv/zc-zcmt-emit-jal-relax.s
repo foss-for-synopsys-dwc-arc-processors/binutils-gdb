@@ -1,0 +1,46 @@
+.macro PADDIING_32_BYTES
+	.option push
+	.option arch, -zcmt
+	.option arch, -zca
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	.option pop
+.endm
+
+.macro PADDIING_256_BYTES
+	PADDIING_32_BYTES
+	PADDIING_32_BYTES
+	PADDIING_32_BYTES
+	PADDIING_32_BYTES
+	PADDIING_32_BYTES
+	PADDIING_32_BYTES
+	PADDIING_32_BYTES
+	PADDIING_32_BYTES
+.endm
+
+.macro PADDIING_2048_BYTES
+	PADDIING_256_BYTES
+	PADDIING_256_BYTES
+	PADDIING_256_BYTES
+	PADDIING_256_BYTES
+	PADDIING_256_BYTES
+	PADDIING_256_BYTES
+	PADDIING_256_BYTES
+	PADDIING_256_BYTES
+.endm
+
+.option relax
+target:
+	c.bnez s0, target
+	jal Far
+	c.bnez s0, Far
+	PADDIING_2048_BYTES
+	PADDIING_2048_BYTES
+Far:
+	ret
