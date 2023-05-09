@@ -379,10 +379,10 @@ relocate_fix_got_relocs_for_got_info (struct got_entry **list_p,
 
 	    case GOT_NORMAL:
 	      {
-		BFD_ASSERT (h);
-		if (h->root.type == bfd_link_hash_undefweak
-		    /* FIXME! catch the undefined situation in a test.  */
-		    || h->root.type == bfd_link_hash_undefined)
+		if (h != NULL &&
+		    (h->root.type == bfd_link_hash_undefweak
+		     /* FIXME! catch the undefined situation in a test.  */
+		     || h->root.type == bfd_link_hash_undefined))
 		  ARC_DEBUG ("arc_info: PATCHED: NOT_PATCHED "
 			     "@ %#08lx for sym %s in got offset %#lx "
 			     "(is undefweak)\n",
