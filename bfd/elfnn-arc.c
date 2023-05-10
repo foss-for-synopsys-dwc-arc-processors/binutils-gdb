@@ -1826,9 +1826,9 @@ elf_arc_relocate_section (bfd *output_bfd,
 	      + htab->sgot->output_offset;
 	}
 
-      if ((is_reloc_for_GOT (howto)
-	   || is_reloc_for_TLS (howto))
-	  && !resolved_to_zero)
+      if (is_reloc_for_GOT (howto)
+	  || (is_reloc_for_TLS (howto)
+	      && !resolved_to_zero))
 	{
 	  reloc_data.should_relocate = true;
 
