@@ -211,13 +211,6 @@ ARC_RELOC_HOWTO(ARC_32_ME, 27, \
                 bitfield, \
                 ( ME ( ( S + A ) ) ))
 
-ARC_RELOC_HOWTO(ARC_32_ME_S, 105, \
-                4, \
-                32, \
-                replace_limms, \
-                signed, \
-                ( ME ( ( S + A ) ) ))
-
 ARC_RELOC_HOWTO(ARC_N32_ME, 28, \
                 4, \
                 32, \
