@@ -208,7 +208,7 @@ ARC_RELOC_HOWTO(ARC_32_ME, 27, \
                 4, \
                 32, \
                 replace_limm, \
-                signed, \
+                bitfield, \
                 ( ME ( ( S + A ) ) ))
 
 ARC_RELOC_HOWTO(ARC_32_ME_S, 105, \
@@ -376,21 +376,21 @@ ARC_RELOC_HOWTO(ARC_GLOB_DAT, 54, \
                 4, \
                 32, \
                 replace_word32, \
-                signed, \
+                bitfield, \
                 S)
 
 ARC_RELOC_HOWTO(ARC_JMP_SLOT, 55, \
                 4, \
                 32, \
                 replace_word32, \
-                signed, \
+                bitfield, \
                 ( ME ( S ) ))
 
 ARC_RELOC_HOWTO(ARC_RELATIVE, 56, \
                 4, \
                 32, \
                 replace_word32, \
-                signed, \
+                bitfield, \
                 ( ME ( ( B + A ) ) ))
 
 ARC_RELOC_HOWTO(ARC_GOTOFF, 57, \
