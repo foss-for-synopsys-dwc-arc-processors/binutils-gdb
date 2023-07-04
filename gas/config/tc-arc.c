@@ -54,7 +54,7 @@
 #endif /* DEFAULT_ARCH.  */
 
 #ifndef TARGET_WITH_CPU
-#define TARGET_WITH_CPU "arc700"
+#define TARGET_WITH_CPU "hs38_linux"
 #endif /* TARGET_WITH_CPU.  */
 
 #define ARC_GET_FLAG(s)   	(*symbol_get_tc (s))
