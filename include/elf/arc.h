@@ -48,9 +48,10 @@ END_RELOC_NUMBERS (R_ARC_max)
 #define E_ARC_MACH_ARC600	0x00000002
 #define E_ARC_MACH_ARC601	0x00000004
 #define E_ARC_MACH_ARC700	0x00000003
-#define EF_ARC_CPU_ARCV2EM      0x00000005
-#define EF_ARC_CPU_ARCV2HS      0x00000006
-#define EF_ARC_CPU_ARC64	0x00000007
+#define EF_ARC_CPU_ARCV2EM    0x00000005
+#define EF_ARC_CPU_ARCV2HS    0x00000006
+#define EF_ARC_CPU_ARC32      0x00000007
+#define EF_ARC_CPU_ARC64      0x00000008
 
 /* ARC Linux specific ABIs.  */
 #define E_ARC_OSABI_ORIG	0x00000000   /* MUST be 0 for back-compat.  */
@@ -89,10 +90,12 @@ enum {
 };
 
 /* Values for the Tag_ARC_cpu_base attribute.  */
-#define TAG_CPU_NONE	  0
-#define TAG_CPU_ARC6xx	  1
-#define TAG_CPU_ARC7xx	  2
-#define TAG_CPU_ARCEM	  3
-#define TAG_CPU_ARCHS	  4
+#define TAG_CPU_NONE    0
+#define TAG_CPU_ARC6xx  1
+#define TAG_CPU_ARC7xx  2
+#define TAG_CPU_ARCEM   3
+#define TAG_CPU_ARCHS   4
+#define TAG_CPU_ARC32   5
+#define TAG_CPU_ARC64   6
 
 #endif /* _ELF_ARC_H */

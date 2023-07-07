@@ -680,9 +680,9 @@ arc_elf_merge_attributes (bfd *ibfd, struct bfd_link_info *info)
 		   && ((out_attr[i].i + in_attr[i].i) < 6))
 	    {
 	      const char *tagval[] = { "Absent", "ARC6xx", "ARC7xx",
-				       "ARCEM", "ARCHS" };
-	      BFD_ASSERT (in_attr[i].i < 5);
-	      BFD_ASSERT (out_attr[i].i < 5);
+				       "ARCEM", "ARCHS", "ARC32", "ARC64" };
+	      BFD_ASSERT (in_attr[i].i < 7);
+	      BFD_ASSERT (out_attr[i].i < 7);
 	      /* We cannot mix code for different CPUs.  */
 	      _bfd_error_handler
 		(_("error: %pB: unable to merge CPU base attributes "
@@ -704,7 +704,8 @@ arc_elf_merge_attributes (bfd *ibfd, struct bfd_link_info *info)
 	      unsigned j;
 	      unsigned cpu_out;
 	      unsigned opcode_map[] = {0, ARC_OPCODE_ARC600, ARC_OPCODE_ARC700,
-				       ARC_OPCODE_ARCv2EM, ARC_OPCODE_ARCv2HS};
+				       ARC_OPCODE_ARCv2EM, ARC_OPCODE_ARCv2HS,
+				       ARC_OPCODE_ARC32, ARC_OPCODE_ARC64};
 
 	      BFD_ASSERT (in_attr[i].i < (sizeof (opcode_map)
 					  / sizeof (unsigned)));

@@ -899,7 +899,7 @@ parse_option (const char *option)
 #define ARC_CPU_TYPE_A64x(NAME,EXTRA)			\
   { #NAME,  ARC_OPCODE_ARC64, "ARC64" },
 #define ARC_CPU_TYPE_A32x(NAME,EXTRA)			\
-  { #NAME,  ARC_OPCODE_ARC64, "ARC32" },
+  { #NAME,  ARC_OPCODE_ARC32, "ARC32" },
 #define ARC_CPU_TYPE_NONE			\
   { 0, 0, 0 }
 

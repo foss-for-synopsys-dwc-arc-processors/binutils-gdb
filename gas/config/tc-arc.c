@@ -480,7 +480,7 @@ static htab_t arc_addrtype_hash;
       EF_ARC_CPU_ARC64, EXTRA},
 # define ARC_CPU_TYPE_A32x(NAME,EXTRA)				\
   { #NAME, "arc64", ARC_OPCODE_ARC32, bfd_mach_arcv3_32,	\
-      0x00, EXTRA},
+      EF_ARC_CPU_ARC32, EXTRA},
 #endif
 #define ARC_CPU_TYPE_NONE			\
   { 0, 0, 0, 0, 0, 0 }
@@ -5293,6 +5293,12 @@ arc_set_public_attributes (void)
       break;
     case EF_ARC_CPU_ARCV2HS:
       base = TAG_CPU_ARCHS;
+      break;
+    case EF_ARC_CPU_ARC32:
+      base = TAG_CPU_ARC32;
+      break;
+    case EF_ARC_CPU_ARC64:
+      base = TAG_CPU_ARC64;
       break;
     default:
       base = 0;
