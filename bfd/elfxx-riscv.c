@@ -1171,6 +1171,16 @@ static struct riscv_implicit_subset riscv_implicit_subsets[] =
   {"zvksg", "zvkg",	check_implicit_always},
   {"zvksc", "zvks",	check_implicit_always},
   {"zvksc", "zvbc",	check_implicit_always},
+  {"zce", "zca",	check_implicit_always},
+  {"zce", "zcb",	check_implicit_always},
+  {"zce", "zcf",        check_implicit_always},
+  {"zce", "zcmp",	check_implicit_always},
+  {"zce", "zcmt",	check_implicit_always},
+  {"zcf", "zca",	check_implicit_always},
+  {"zcd", "zca",	check_implicit_always},
+  {"zcb", "zca",	check_implicit_always},
+  {"zcmp", "zca",	check_implicit_always},
+  {"zcmt", "zca",	check_implicit_always},
   {"smaia", "ssaia",		check_implicit_always},
   {"smstateen", "ssstateen",	check_implicit_always},
   {"smepmp", "zicsr",		check_implicit_always},
@@ -1304,6 +1314,13 @@ static struct riscv_supported_ext riscv_supported_std_z_ext[] =
   {"zvl32768b",		ISA_SPEC_CLASS_DRAFT,		1, 0,  0 },
   {"zvl65536b",		ISA_SPEC_CLASS_DRAFT,		1, 0,  0 },
   {"ztso",		ISA_SPEC_CLASS_DRAFT,		0, 1,  0 },
+  {"zca",		ISA_SPEC_CLASS_DRAFT,		1, 0,  0 },
+  {"zcb",		ISA_SPEC_CLASS_DRAFT,		1, 0,  0 },
+  {"zce",		ISA_SPEC_CLASS_DRAFT,		1, 0,  0 },
+  {"zcf",		ISA_SPEC_CLASS_DRAFT,		1, 0,  0 },
+  {"zcd",		ISA_SPEC_CLASS_DRAFT,		1, 0,  0 },
+  {"zcmp",		ISA_SPEC_CLASS_DRAFT,		1, 0,  0 },
+  {"zcmt",		ISA_SPEC_CLASS_DRAFT,		1, 0,  0 },
   {NULL, 0, 0, 0, 0}
 };
 
@@ -2384,13 +2401,16 @@ riscv_multi_subset_supports (riscv_parse_subset_t *rps,
     case INSN_CLASS_Q:
       return riscv_subset_supports (rps, "q");
     case INSN_CLASS_C:
-      return riscv_subset_supports (rps, "c");
+      return riscv_subset_supports (rps, "c")
+		|| riscv_subset_supports (rps, "zca");
     case INSN_CLASS_F_AND_C:
       return (riscv_subset_supports (rps, "f")
-	      && riscv_subset_supports (rps, "c"));
+	      && (riscv_subset_supports (rps, "c")
+		  || riscv_subset_supports (rps, "zcf")));
     case INSN_CLASS_D_AND_C:
       return (riscv_subset_supports (rps, "d")
-	      && riscv_subset_supports (rps, "c"));
+	      && (riscv_subset_supports (rps, "c")
+		  || riscv_subset_supports (rps, "zcd")));
     case INSN_CLASS_F_INX:
       return (riscv_subset_supports (rps, "f")
 	      || riscv_subset_supports (rps, "zfinx"));
