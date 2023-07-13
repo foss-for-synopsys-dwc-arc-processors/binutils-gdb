@@ -2946,6 +2946,12 @@ const struct riscv_opcode riscv_opcodes[] =
 {"sf.vc.fvw",   0, INSN_CLASS_XSFVCP, "XsO1,Vd,Vt,S",  MATCH_SF_VC_FVW, MASK_SF_VC_FVW, match_opcode, 0 },
 {"sf.vc.v.fvw", 0, INSN_CLASS_XSFVCP, "XsO1,Vd,Vt,S",  MATCH_SF_VC_V_FVW, MASK_SF_VC_V_FVW, match_opcode, 0 },
 
+/* Zcmp instructions.  */
+{"cm.push",    0,  INSN_CLASS_ZCMP, "{CZr},CZp",  MATCH_CM_PUSH, MASK_CM_PUSH, match_opcode, 0 },
+{"cm.pop",     0,  INSN_CLASS_ZCMP, "{CZr},CZp",  MATCH_CM_POP, MASK_CM_POP, match_opcode, 0 },
+{"cm.popret",  0,  INSN_CLASS_ZCMP, "{CZr},CZp",  MATCH_CM_POPRET, MASK_CM_POPRET, match_opcode, 0 },
+{"cm.popretz", 0,  INSN_CLASS_ZCMP, "{CZr},CZp",  MATCH_CM_POPRETZ, MASK_CM_POPRETZ, match_opcode, 0 },
+
 /* Terminate the list.  */
 {0, 0, INSN_CLASS_NONE, 0, 0, 0, 0, 0}
 };
