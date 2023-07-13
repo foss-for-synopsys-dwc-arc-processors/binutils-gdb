@@ -2177,6 +2177,12 @@ const struct riscv_opcode riscv_opcodes[] =
 {"vt.maskc",   64, INSN_CLASS_XVENTANACONDOPS, "d,s,t", MATCH_VT_MASKC, MASK_VT_MASKC, match_opcode, 0 },
 {"vt.maskcn",  64, INSN_CLASS_XVENTANACONDOPS, "d,s,t", MATCH_VT_MASKCN, MASK_VT_MASKCN, match_opcode, 0 },
 
+/* Zcmp instructions.  */
+{"cm.push",    0,  INSN_CLASS_ZCMP, "{CZr},CZp",  MATCH_CM_PUSH, MASK_CM_PUSH, match_opcode, 0 },
+{"cm.pop",     0,  INSN_CLASS_ZCMP, "{CZr},CZp",  MATCH_CM_POP, MASK_CM_POP, match_opcode, 0 },
+{"cm.popret",  0,  INSN_CLASS_ZCMP, "{CZr},CZp",  MATCH_CM_POPRET, MASK_CM_POPRET, match_opcode, 0 },
+{"cm.popretz", 0,  INSN_CLASS_ZCMP, "{CZr},CZp",  MATCH_CM_POPRETZ, MASK_CM_POPRETZ, match_opcode, 0 },
+
 /* Terminate the list.  */
 {0, 0, INSN_CLASS_NONE, 0, 0, 0, 0, 0}
 };
