@@ -2165,6 +2165,12 @@ const struct riscv_opcode riscv_opcodes[] =
 {"c.zext.b",   0, INSN_CLASS_ZCB, "Cs",  MATCH_C_ZEXT_B, MASK_C_ZEXT_B, match_opcode, 0 },
 {"c.sext.w",  64, INSN_CLASS_ZCB, "d",  MATCH_C_ADDIW, MASK_C_ADDIW|MASK_RVC_IMM, match_rd_nonzero, INSN_ALIAS },
 
+/* Zcmp instructions.  */
+{"cm.push",    0,  INSN_CLASS_ZCMP, "{CZr},CZp",  MATCH_CM_PUSH, MASK_CM_PUSH, match_opcode, 0 },
+{"cm.pop",     0,  INSN_CLASS_ZCMP, "{CZr},CZp",  MATCH_CM_POP, MASK_CM_POP, match_opcode, 0 },
+{"cm.popret",  0,  INSN_CLASS_ZCMP, "{CZr},CZp",  MATCH_CM_POPRET, MASK_CM_POPRET, match_opcode, 0 },
+{"cm.popretz", 0,  INSN_CLASS_ZCMP, "{CZr},CZp",  MATCH_CM_POPRETZ, MASK_CM_POPRETZ, match_opcode, 0 },
+
 /* Terminate the list.  */
 {0, 0, INSN_CLASS_NONE, 0, 0, 0, 0, 0}
 };

@@ -2303,6 +2303,15 @@
 #define MASK_C_NOT 0xfc7f
 #define MATCH_C_MUL 0x9c41
 #define MASK_C_MUL 0xfc63
+/* ZCMP instructions.  */
+#define MATCH_CM_PUSH 0xb802
+#define MASK_CM_PUSH 0xff03
+#define MATCH_CM_POP 0xba02
+#define MASK_CM_POP 0xff03
+#define MATCH_CM_POPRET 0xbe02
+#define MASK_CM_POPRET 0xff03
+#define MATCH_CM_POPRETZ 0xbc02
+#define MASK_CM_POPRETZ 0xff03
 /* Vendor-specific (T-Head) XTheadBa instructions.  */
 #define MATCH_TH_ADDSL 0x0000100b
 #define MASK_TH_ADDSL 0xf800707f
@@ -3405,6 +3414,11 @@ DECLARE_INSN(c_lhu, MATCH_C_LHU, MASK_C_LHU)
 DECLARE_INSN(c_lh, MATCH_C_LH, MASK_C_LH)
 DECLARE_INSN(c_sb, MATCH_C_SB, MASK_C_SB)
 DECLARE_INSN(c_sh, MATCH_C_SH, MASK_C_SH)
+/* Zcmp instructions.  */
+DECLARE_INSN(cm_push, MATCH_CM_PUSH, MASK_CM_PUSH)
+DECLARE_INSN(cm_pop, MATCH_CM_POP, MASK_CM_POP)
+DECLARE_INSN(cm_popret, MATCH_CM_POPRET, MASK_CM_POPRET)
+DECLARE_INSN(cm_popretz, MATCH_CM_POPRETZ, MASK_CM_POPRETZ)
 /* Vendor-specific (T-Head) XTheadBa instructions.  */
 DECLARE_INSN(th_addsl, MATCH_TH_ADDSL, MASK_TH_ADDSL)
 /* Vendor-specific (T-Head) XTheadBb instructions.  */
