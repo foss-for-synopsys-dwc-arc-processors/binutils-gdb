@@ -6570,7 +6570,7 @@
 { "pop_s", 0x0000C0D1, 0x0000F8FF, ARC_OPCODE_ARC32, POP, NONE, { BLINK_S }, { C_AA_AB }},
 
 /* popdl_s b 11000bbb1101BBB1.  */
-{ "popdl_s", 0x0000C0D1, 0x0000F8F1, ARC_OPCODE_ARC64, ARITH, NONE, { RBB_S }, { 0 }},
+{ "popdl_s", 0x0000C0D1, 0x0000F8F1, ARC_OPCODE_ARC64, ARITH, NONE, { RBB_S_CHK }, { 0 }},
 
 /* popl_s b 11000bbb1100BBB1.  */
 { "popl_s", 0x0000C0C1, 0x0000F8F1, ARC_OPCODE_ARC64, ARITH, NONE, { RBB_S }, { 0 }},
@@ -6636,7 +6636,7 @@
 { "push_s", 0x0000C0F1, 0x0000F8FF, ARC_OPCODE_ARC32, PUSH, NONE, { BLINK_S }, { C_AA_AW }},
 
 /* pushdl_s b 11000bbb1111BBB1.  */
-{ "pushdl_s", 0x0000C0F1, 0x0000F8F1, ARC_OPCODE_ARC64, ARITH, NONE, { RBB_S }, { 0 }},
+{ "pushdl_s", 0x0000C0F1, 0x0000F8F1, ARC_OPCODE_ARC64, ARITH, NONE, { RBB_S_CHK }, { 0 }},
 
 /* pushl_s b 11000bbb1110BBB1.  */
 { "pushl_s", 0x0000C0E1, 0x0000F8F1, ARC_OPCODE_ARC64, ARITH, NONE, { RBB_S }, { 0 }},
