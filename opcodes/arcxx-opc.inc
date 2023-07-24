@@ -54,7 +54,7 @@ insert_rb (unsigned long long  insn,
   return insn | ((value & 0x07) << 24) | (((value >> 3) & 0x07) << 12);
 }
 
-/* Insert RB register into a push(d)l/pop(d)l instruction.  */
+/* Insert RB register into a pushl/popl instruction.  */
 
 static unsigned long long
 insert_rbb (unsigned long long  insn,
@@ -62,6 +62,19 @@ insert_rbb (unsigned long long  insn,
 	    const char **errmsg ATTRIBUTE_UNUSED)
 {
   return insn | ((value & 0x07) << 8) | (((value >> 3) & 0x07) << 1);
+}
+
+/* Insert RB register pair into a pushdl/popdl instruction.  */
+
+static unsigned long long
+insert_rbb_chk (unsigned long long  insn,
+	    long long value,
+	    const char **errmsg)
+{
+  if (value & 0x01)
+    *errmsg = _("cannot use odd number source register");
+
+  return insert_rbb(insn, value, errmsg);
 }
 
 /* Insert RB register with checks.  */
