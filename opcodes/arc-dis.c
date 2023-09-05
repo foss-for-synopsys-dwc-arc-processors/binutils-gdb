@@ -105,6 +105,7 @@ static regmod_t regmods[] =
   { 26, ARC_OPCODE_ARCV1 | ARC_OPCODE_ARCV2, "gp" },
   { 29, ARC_OPCODE_ARCV1, "ilink1" },
   { 30, ARC_OPCODE_ARCV1, "ilink2" },
+  { 60, ARC_OPCODE_ARCV3, "LIMM" },
   { 0, ARC_OPCODE_NONE, 0 }
 };
 
