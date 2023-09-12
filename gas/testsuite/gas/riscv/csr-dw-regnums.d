@@ -328,6 +328,10 @@ Contents of the .* section:
   DW_CFA_offset_extended_sf: r4898 \(minstretcfg\) at cfa\+3208
   DW_CFA_offset_extended_sf: r5921 \(mcyclecfgh\) at cfa\+7300
   DW_CFA_offset_extended_sf: r5922 \(minstretcfgh\) at cfa\+7304
+  DW_CFA_offset_extended_sf: r5952 \(mnscratch\) at cfa\+7424
+  DW_CFA_offset_extended_sf: r5953 \(mnepc\) at cfa\+7428
+  DW_CFA_offset_extended_sf: r5954 \(mncause\) at cfa\+7432
+  DW_CFA_offset_extended_sf: r5956 \(mnstatus\) at cfa\+7440
   DW_CFA_offset_extended_sf: r4876 \(mstateen0\) at cfa\+3120
   DW_CFA_offset_extended_sf: r4877 \(mstateen1\) at cfa\+3124
   DW_CFA_offset_extended_sf: r4878 \(mstateen2\) at cfa\+3128

@@ -2176,6 +2176,9 @@ const struct riscv_opcode riscv_opcodes[] =
 {"sfence.vma", 0, INSN_CLASS_I, "s,t", MATCH_SFENCE_VMA, MASK_SFENCE_VMA, match_opcode, 0 },
 {"wfi",        0, INSN_CLASS_I, "",    MATCH_WFI, MASK_WFI, match_opcode, 0 },
 
+/* Smrnmi instructions.  */
+{"mnret",           0, INSN_CLASS_SMRNMI, "", MATCH_MNRET, MASK_MNRET, match_opcode, 0 },
+
 /* Svinval instructions.  */
 {"sinval.vma",      0, INSN_CLASS_SVINVAL, "s,t", MATCH_SINVAL_VMA, MASK_SINVAL_VMA, match_opcode, 0 },
 {"sfence.w.inval",  0, INSN_CLASS_SVINVAL, "",    MATCH_SFENCE_W_INVAL, MASK_SFENCE_W_INVAL, match_opcode, 0 },
