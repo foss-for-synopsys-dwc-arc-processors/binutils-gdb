@@ -326,6 +326,11 @@ _start:
 	.cfi_offset minstretcfg, 3208
 	.cfi_offset mcyclecfgh, 7300
 	.cfi_offset minstretcfgh, 7304
+	# Smrnmi extension
+	.cfi_offset mnscratch, 7424
+	.cfi_offset mnepc, 7428
+	.cfi_offset mncause, 7432
+	.cfi_offset mnstatus, 7440
 	# Smstateen extension
 	.cfi_offset mstateen0, 3120
 	.cfi_offset mstateen1, 3124

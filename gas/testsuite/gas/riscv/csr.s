@@ -365,6 +365,12 @@
 	csr mcyclecfgh
 	csr minstretcfgh
 
+	# Smrnmi extension
+	csr mnscratch
+	csr mnepc
+	csr mncause
+	csr mnstatus
+
 	# Smstateen/Ssstateen extensions
 	csr mstateen0
 	csr mstateen1
