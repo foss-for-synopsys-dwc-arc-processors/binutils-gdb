@@ -2792,6 +2792,9 @@ md_begin (void)
     {
       const char *name = opcode->name;
 
+      /* Initialize the current ISA as default */
+      arc_isa_mask (opcode->cpu);
+
       arc_insert_opcode (opcode);
 
       while (++opcode && opcode->name

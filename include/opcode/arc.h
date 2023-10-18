@@ -193,6 +193,9 @@ extern const struct arc_opcode arc_opcodes[];
 /* Return length of an instruction represented by OPCODE, in bytes.  */
 extern int arc_opcode_len (const struct arc_opcode *opcode);
 
+/* Update and return the default ISA */
+unsigned arc_isa_mask (unsigned isa_mask);
+
 /* CPU Availability.  */
 #define ARC_OPCODE_NONE     0x0000
 #define ARC_OPCODE_ARC600   0x0001  /* ARC 600 specific insns.  */

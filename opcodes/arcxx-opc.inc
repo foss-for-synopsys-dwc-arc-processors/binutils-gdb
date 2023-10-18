@@ -31,6 +31,20 @@
    target builds as this reduces the chances that regressions might
    creep in.  */
 
+
+/* Update and return the default ISA */
+
+unsigned arc_isa_mask (unsigned isa_mask)
+{
+  static unsigned default_mask = ARC_OPCODE_NONE;
+
+  if (isa_mask == ARC_OPCODE_NONE)
+    return default_mask;
+
+  default_mask = isa_mask;
+  return default_mask;
+}
+
 /* Insert RA register into a 32-bit opcode, with checks.  */
 
 static unsigned long long
@@ -163,7 +177,12 @@ insert_rad (unsigned long long insn,
 	    long long value,
 	    const char **errmsg)
 {
-  if (value & 0x01)
+  /* Return the default ISA */
+  unsigned isa_mask = arc_isa_mask(ARC_OPCODE_NONE);
+
+  /* Check if default ISA is not ARC64 and
+     if the destination register is an odd number */
+  if (((isa_mask & ARC_OPCODE_ARC64) != ARC_OPCODE_ARC64) && (value & 0x01))
     *errmsg = _("cannot use odd number destination register");
   if (value == 60)
     *errmsg = _("LP_COUNT register cannot be used as destination register");
@@ -176,7 +195,12 @@ insert_rcd (unsigned long long insn,
 	    long long value,
 	    const char **errmsg)
 {
-  if (value & 0x01)
+  /* Return the default ISA */
+  unsigned isa_mask = arc_isa_mask(ARC_OPCODE_NONE);
+
+  /* Check if default ISA is not ARC64 and
+     if the destination register is an odd number */
+  if (((isa_mask & ARC_OPCODE_ARC64) != ARC_OPCODE_ARC64) && (value & 0x01))
     *errmsg = _("cannot use odd number source register");
 
   return insn | ((value & 0x3F) << 6);
@@ -187,7 +211,12 @@ insert_rbd (unsigned long long insn,
 	    long long value,
 	    const char **errmsg)
 {
-  if (value & 0x01)
+  /* Return the default ISA */
+  unsigned isa_mask = arc_isa_mask(ARC_OPCODE_NONE);
+
+  /* Check if default ISA is not ARC64 and
+     if the destination register is an odd number */
+  if (((isa_mask & ARC_OPCODE_ARC64) != ARC_OPCODE_ARC64) && (value & 0x01))
     *errmsg = _("cannot use odd number source register");
   if (value == 60)
     *errmsg = _("LP_COUNT register cannot be used as destination register");
