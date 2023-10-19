@@ -155,7 +155,10 @@
 
 const struct arc_opcode arc_opcodes[] =
 {
-#include "arc-tbl.h"
+#include "arccommon-tbl.h"
+#include "arcleftovers-tbl.h"
+#include "arc64leftovers-tbl.h"
+
 #include "arc-nps400-tbl.h"
 
   /* Extension instruction declarations.  */

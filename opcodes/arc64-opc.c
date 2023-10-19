@@ -565,7 +565,9 @@ const struct arc_opcode arc_opcodes[] =
   STL
   STDL
 
-#include "arc64-tbl.h"
+#include "arccommon-tbl.h"
+#include "arc64leftovers-tbl.h"
+#include "arc64specific-tbl.h"
 
   FP_TOP (fhmadd , FMADD , HALF)
   FP_TOP (fhmsub , FMSUB , HALF)
