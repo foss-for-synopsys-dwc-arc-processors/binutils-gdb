@@ -979,6 +979,7 @@ arc_opcode_to_insn_type (const struct arc_opcode *opcode)
     case BI:
     case BIH:
     case BRCC:
+    case DBNZ:
     case EI:
     case JLI:
     case JUMP:
