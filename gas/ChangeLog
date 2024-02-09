@@ -1,3 +1,7 @@
+2024-02-14  Yuriy Kolerov  <ykolerov@synopsys.com>
+
+	* config/tc-arc.c (is_br_jmp_insn_p): Add check against "DBNZ".
+
 2024-01-15  Nick Clifton  <nickc@redhat.com>
 
 	* configure: Regenerate.

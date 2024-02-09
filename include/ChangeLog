@@ -1,3 +1,7 @@
+2024-02-14  Yuriy Kolerov  <ykolerov@synopsys.com>
+
+	* opcode/arc.h (enum insn_class_t): Add DBNZ class.
+
 2024-01-15  Nick Clifton  <nickc@redhat.com>
 
 	* 2.42 branch point.
