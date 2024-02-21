@@ -28,10 +28,10 @@ if { [gdb_compile "${srcdir}/${subdir}/${srcfile}" "${objfile}" object {}] \
 clean_restart ${objfile}
 
 proc arc_disassemble_test { func insn mesg } {
-    set prologue "Dump of assembler code for function $func:\r\n"
-    set content "\[^:\]+:\t$insn\r\n"
-    set epilogue "End of assembler dump\."
-    gdb_test "disassemble $func" "$prologue$content$epilogue" $mesg
+    gdb_test "disassemble $func" \
+	"Dump of assembler code for function $func:\r\n\
+	\[^:\]+:\t$insn\r\nEnd of assembler dump\." \
+	$mesg
 }
 
 # Verify defaults.
