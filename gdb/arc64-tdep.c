@@ -1188,15 +1188,15 @@ arc_is_in_prologue (struct gdbarch *gdbarch, const struct arc_instruction &insn,
 	 registers according to given arguments thus greatly reducing code
 	 size.  Which registers will be actually saved depends on arguments.
 
-	 ENTER_S {R13-...,FP,BLINK} stores registers in following order:
+	 ENTER_S {R14-...,FP,BLINK} stores registers in following order:
 
 	 new SP ->
+		   FP
 		   BLINK
-		   R13
 		   R14
 		   R15
+		   R16
 		   ...
-		   FP
 	 old SP ->
 
 	 There are up to three arguments for this opcode, as presented by ARC
@@ -1238,14 +1238,8 @@ arc_is_in_prologue (struct gdbarch *gdbarch, const struct arc_instruction &insn,
       /* Current store address.  */
       pv_t addr = regs[ARC_SP_REGNUM];
 
-      if (is_fp_saved)
-	{
-	  addr = pv_add_constant (addr, -reg_size);
-	  stack->store (addr, reg_size, regs[ARC_FP_REGNUM]);
-	}
-
-      /* Registers are stored in backward order: from GP (R26) to R13.  */
-      for (int i = ARC_R13_REGNUM + regs_saved - 1; i >= ARC_R13_REGNUM; i--)
+      /* Registers are stored in backward order: from GP (R27) to R14.  */
+      for (int i = ARC_R14_REGNUM + regs_saved - 1; i >= ARC_R14_REGNUM; i--)
 	{
 	  addr = pv_add_constant (addr, -reg_size);
 	  stack->store (addr, reg_size, regs[i]);
@@ -1256,6 +1250,12 @@ arc_is_in_prologue (struct gdbarch *gdbarch, const struct arc_instruction &insn,
 	  addr = pv_add_constant (addr, -reg_size);
 	  stack->store (addr, reg_size,
 			regs[ARC_BLINK_REGNUM]);
+	}
+
+      if (is_fp_saved)
+	{
+	  addr = pv_add_constant (addr, -reg_size);
+	  stack->store (addr, reg_size, regs[ARC_FP_REGNUM]);
 	}
 
       gdb_assert (pv_is_identical (addr, new_sp));

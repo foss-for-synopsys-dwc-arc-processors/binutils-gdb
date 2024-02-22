@@ -41,10 +41,10 @@ enum arc_regnum
   ARC_R7_REGNUM = 7,
   ARC_R9_REGNUM = 9,
   ARC_R13_REGNUM = 13,
+  ARC_R14_REGNUM = 14,
   ARC_R16_REGNUM = 16,
-  ARC_R26_REGNUM = 26,
   /* Frame pointer.  */
-  ARC_FP_REGNUM,
+  ARC_FP_REGNUM = 27,
   /* Stack pointer.  */
   ARC_SP_REGNUM,
   /* Return address from interrupt.  */
@@ -92,8 +92,8 @@ enum arc_regnum
   /* Additional ABI constants.  */
   ARC_FIRST_ARG_REGNUM = ARC_R0_REGNUM,
   ARC_LAST_ARG_REGNUM = ARC_R7_REGNUM,
-  ARC_FIRST_CALLEE_SAVED_REGNUM = ARC_R13_REGNUM,
-  ARC_LAST_CALLEE_SAVED_REGNUM = ARC_R26_REGNUM
+  ARC_FIRST_CALLEE_SAVED_REGNUM = ARC_R14_REGNUM,
+  ARC_LAST_CALLEE_SAVED_REGNUM = ARC_FP_REGNUM
 };
 
 /* arc64 DWARF register numbers.  */
