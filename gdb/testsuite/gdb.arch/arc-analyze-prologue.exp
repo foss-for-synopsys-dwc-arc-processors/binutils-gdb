@@ -33,6 +33,27 @@ if ![runto_main] {
     return 0
 }
 
+proc get_arc_defines { } {
+    global target_info board_info decimal
+
+    set target_board [target_info name]
+    set compiler [board_info $target_board compiler]
+    set multilib ""
+
+    if { [board_info $target_board exists multilib_flags] } {
+	set multilib "[board_info $target_board multilib_flags]"
+    }
+
+    set options "$multilib -dM -E -"
+    return [eval exec "$compiler $options < /dev/null"]
+}
+
+set arc_defines [get_arc_defines]
+regexp "#define __SIZEOF_POINTER__ ($decimal)" $arc_defines -> arc_reg_size
+set is_arcv3 [regexp "__ARCV3__" $arc_defines]
+set is_arcv3_arc32 [regexp "__ARC64_ARCH32__" $arc_defines]
+set is_arcv3_arc64 [regexp "__ARC64_ARCH64__" $arc_defines]
+
 # Convert list of saved registers and their offsets to a GDB string.
 proc saved_regs_to_str { savedregs funcname } {
     set str ""
@@ -109,7 +130,15 @@ prologue_test "noncallee_saved_regs_r12_st" { {r12 0} {r13 4} }
 prologue_test "noncallee_saved_regs_r12_push" { {r12 0} {r13 4} }
 prologue_test "noncallee_saved_regs_r2_push" { {r2 0} {r13 4} }
 prologue_test "noncallee_saved_regs_gp_push" { {r25 4} {gp 0} }
-prologue_test "noncallee_saved_regs_lp_count" { {r25 4} {lp_count 0} }
+# HS6x does not have loop instructions and registers but HS5x does. However,
+# it's not supported by GNU tools yet.
+if { !$is_arcv3 } {
+    prologue_test "noncallee_saved_regs_lp_count" { {r25 4} {lp_count 0} }
+} else {
+    if { $is_arcv3_arc32 } {
+	xfail "noncallee_saved_regs_lp_count: loops are not implemented for HS5x yet"
+    }
+}
 prologue_test "noncallee_saved_regs_blink_out_of_prologue" { {r25 8} {gp 4} \
     {blink 0}}
 # Argument registers are not reported as "saved" regs.
@@ -120,14 +149,28 @@ prologue_test "enter_s_nop"
 prologue_test "enter_s_blink" { {blink 0} }
 prologue_test "enter_s_fp" { {fp 0} } 0
 # Layout of registers as stored by enter_s doesn't conform to ARC ABI.
-prologue_test "enter_s_r13" { {r13 4} {fp 8} {blink 0} } 0
-prologue_test "enter_s_r15" { {r13 0} {r14 4} {r15 8} } 0
+if { $is_arcv3 } {
+    prologue_test "enter_s_r13" { {r14 8} {fp 0} {blink 4} } 0
+} else {
+    prologue_test "enter_s_r13" { {r13 4} {fp 8} {blink 0} } 0
+}
+if { $is_arcv3 } {
+    prologue_test "enter_s_r15" { {r14 0} {r15 4} {r16 8} } 0
+} else {
+    prologue_test "enter_s_r15" { {r13 0} {r14 4} {r15 8} } 0
+}
 # This enter_s saves GP, however because it is not a "calle-saved register",
 # GDB will not report it as "saved register" (but maybe it should). GP is at
 # offset 56.
-prologue_test "enter_s_all" { {r13 4} {r14 8} {r15 12} {r16 16} {r17 20} \
-    {r18 24} {r19 28} {r20 32} {r21 36} {r22 40} {r23 44} {r24 48} {r25 52} \
-    {gp 56} {fp 60} {blink 0} } 0
+if { $is_arcv3 } {
+    prologue_test "enter_s_all" { {r14 8} {r15 12} {r16 16} {r17 20} {r18 24} \
+	{r19 28} {r20 32} {r21 36} {r22 40} {r23 44} {r24 48} {r25 52} \
+	{r26 56} {fp 0} {blink 4} } 0
+} else {
+    prologue_test "enter_s_all" { {r13 4} {r14 8} {r15 12} {r16 16} {r17 20} \
+	{r18 24} {r19 28} {r20 32} {r21 36} {r22 40} {r23 44} {r24 48} \
+	{r25 52} {gp 56} {fp 60} {blink 0} } 0
+}
 
 # Test more levels of backtrace.
 gdb_breakpoint nested_prologue_inner temporary
@@ -154,7 +197,15 @@ prologue_test "cond_branch_in_prologue" { {r13 4} }
 prologue_test "jump_in_prologue" { {r13 0} }
 prologue_test "cond_jump_in_prologue" { {r13 4} }
 prologue_test "predicated_insn" { {r13 8} {r15 0} }
-prologue_test "loop_in_prologue" { {r25 4} {lp_count 0} }
+# HS6x does not have loop instructions and registers but HS5x does. However,
+# it's not supported by GNU tools yet.
+if { !$is_arcv3 } {
+    prologue_test "loop_in_prologue" { {r25 4} {lp_count 0} }
+} else {
+    if { $is_arcv3_arc32 } {
+	xfail "loop_in_prologue: loops are not implemented for HS5x yet"
+    }
+}
 prologue_test "store_constant" { {r13 8} {r14 4} }
 prologue_test "st_c_limm" { {r15 0} }
 prologue_test "st_ab_writeback" { {r13 8} {r14 4} {r15 0} }
@@ -174,7 +225,10 @@ prologue_test "r_relative_store_unknown" { {r13 8} }
 prologue_test "st_s_r0gp" { {r13 8} }
 prologue_test "push_s_prologue" { {r0 28} {r1 16} {r2 4} {r3 24} {r12 32} \
     {r13 20} {r14 12} {r15 8} {blink 0}}
-prologue_test "sub_s_cbu3" { {r13 4} {r14 0} }
+# ARCv3 targets does not have this instruction.
+if { !$is_arcv3 } {
+    prologue_test "sub_s_cbu3" { {r13 4} {r14 0} }
+}
 prologue_test "sub_s_bbc" { {r1 4} {r13 12} {r14 0} }
 prologue_test "sub_s_bbu5" { {r13 8} {r14 0} }
 prologue_test "sub_0bc" { {r13 4} {r14 0} }
