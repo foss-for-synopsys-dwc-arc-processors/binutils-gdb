@@ -339,12 +339,12 @@ arc_insn_get_memory_base_reg (const struct arc_instruction &insn)
 static CORE_ADDR
 arc_insn_get_memory_offset (const struct arc_instruction &insn)
 {
-  /* POP_S and PUSH_S have offset as an implicit argument in a
+  /* POP and PUSH have offset as an implicit argument in a
      disassembler.  */
   if (insn.insn_class == POP)
-    return 4;
+    return 8;
   else if (insn.insn_class == PUSH)
-    return -4;
+    return -8;
 
   gdb_assert (insn.insn_class == LOAD || insn.insn_class == STORE);
 
@@ -1095,8 +1095,8 @@ arc_is_in_prologue (struct gdbarch *gdbarch, const struct arc_instruction &insn,
 	 AB	reg			    reg + offset
 	 AS	reg + (offset << scaling)   no
 
-	 "PUSH reg" is an alias to "ST.AW reg, [SP, -4]" encoding.  However
-	 16-bit PUSH_S is a distinct instruction encoding, where offset and
+	 "PUSH reg" is an alias to "ST.AW reg, [SP, -8]" encoding.  However
+	 16-bit PUSH is a distinct instruction encoding, where offset and
 	 base register are implied through opcode.  */
 
       /* Register with base memory address.  */
