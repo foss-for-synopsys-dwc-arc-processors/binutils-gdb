@@ -155,7 +155,10 @@ noncallee_saved_regs_gp_push:
 	add	sp,sp,8
 
 ; LP_COUNT is treated like a normal register.
+; HS6x does not have loop instructions and registers but HS5x does. However,
+; it's not supported by GNU tools yet.
 
+#ifndef __ARCV3__
 .align 4
 noncallee_saved_regs_lp_count:
 	push	r25
@@ -163,6 +166,7 @@ noncallee_saved_regs_lp_count:
 	add	r0, r1, r2
 	j.d	[blink]
 	add	sp,sp,8
+#endif
 
 ; BLINK is saved, but after an instruction that is not part of prologue.
 ; Currently arc_analyze_prologue stops analisys at the first intstruction
@@ -277,7 +281,11 @@ enter_s_r15:
 
 .align 4
 enter_s_all:
+#ifdef __ARCV3__
+	enter_s	(32 + 16 + 13)
+#else
 	enter_s	(32 + 16 + 14)
+#endif
 	add	r0,r1,r2
 	j.d	[blink]
 	add	sp,sp,64
@@ -415,7 +423,10 @@ predicated_insn:
 	j	[blink]
 
 ; Loops should halt prologue analysis.
+; HS6x does not have loop instructions and registers but HS5x does. However,
+; it's not supported by GNU tools yet.
 
+#ifndef __ARCV3__
 .align 4
 loop_in_prologue:
 	push r25
@@ -430,6 +441,7 @@ loop_in_prologue:
 	add sp,sp,8
 	pop r25
 	j   [blink]
+#endif
 
 ; Store of a constant value (not a register).
 
@@ -660,7 +672,9 @@ push_s_prologue:
 	j	[blink]
 
 ; Check for SUB_S c,b,u3 presence - it doesn't affect prologue.
+; ARCv3 targets does not have this instruction.
 
+#ifndef __ARCV3__
 .align 4
 sub_s_cbu3:
 	push_s	r13
@@ -668,6 +682,7 @@ sub_s_cbu3:
 	push_s	r14
 	add	sp,sp,8
 	j	[blink]
+#endif
 
 ; Check for SUB_S b,b,c presence - it doesn't affect prologue.
 
@@ -844,7 +859,9 @@ main:
 	bl	@noncallee_saved_regs_r12_push
 	bl	@noncallee_saved_regs_r2_push
 	bl	@noncallee_saved_regs_gp_push
+#ifndef __ARCV3__
 	bl	@noncallee_saved_regs_lp_count
+#endif
 	bl	@noncallee_saved_regs_blink_out_of_prologue
 	bl	@arg_regs_fp
 	bl	@arg_regs_fp_mov_s
@@ -862,7 +879,9 @@ main:
 	bl	@jump_in_prologue
 	bl	@cond_jump_in_prologue
 	bl	@predicated_insn
+#ifndef __ARCV3__
 	bl	@loop_in_prologue
+#endif
 	bl	@store_constant
 	bl	@st_c_limm
 	bl	@st_ab_writeback
@@ -881,7 +900,9 @@ main:
 	bl	@r_relative_store_unknown
 	bl	@st_s_r0gp
 	bl	@push_s_prologue
+#ifndef __ARCV3__
 	bl	@sub_s_cbu3
+#endif
 	bl	@sub_s_bbc
 	bl	@sub_s_bbu5
 	bl	@sub_0bc
