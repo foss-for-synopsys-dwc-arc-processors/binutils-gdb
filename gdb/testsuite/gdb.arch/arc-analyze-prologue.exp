@@ -33,6 +33,25 @@ if ![runto_main] {
     return 0
 }
 
+proc get_reg_size { } {
+    global target_info board_info decimal
+
+    set target_board [target_info name]
+    set compiler [board_info $target_board compiler]
+
+    if { [board_info $target_board exists multilib_flags] } {
+	set options "[board_info $target_board multilib_flags] -dM -E -"
+    } else {
+	set options "-dM -E -"
+    }
+
+    set macros [eval exec "$compiler $options < /dev/null"]
+    regexp "#define __SIZEOF_POINTER__ ($decimal)" $macros -> size
+    return $size
+}
+
+set reg_size [get_reg_size]
+
 # Convert list of saved registers and their offsets to a GDB string.
 proc saved_regs_to_str { savedregs funcname } {
     set str ""
@@ -97,37 +116,92 @@ proc prologue_test {funcname {savedregs ""} {fp_offset ""} } {
 }
 
 
-prologue_test "standard_prologue" { {r13 0} {r14 4} {r18 8} {blink 12} }
-prologue_test "mini_prologue" { {r13 0} {r14 8} {r15 4} {blink 12} }
-prologue_test "no_subsp_prologue" { {r13 8} {r20 4} {r25 0} {blink 12} }
+prologue_test \
+    "long_push" \
+    [list "blink 0"]
+
+prologue_test \
+    "standard_prologue" \
+    [list \
+	"r13 0" \
+	"r14 $reg_size" \
+	"r18 [expr 2*$reg_size]" \
+	"blink [expr 3*$reg_size]"]
+
+prologue_test \
+    "mini_prologue" \
+    [list \
+	"r13 0"\
+	"r14 [expr 2*$reg_size]" \
+	"r15 $reg_size" \
+	"blink [expr 3*$reg_size]"]
+
+prologue_test \
+    "no_subsp_prologue" \
+    [list \
+	"r13 [expr 2*$reg_size]" \
+	"r20 $reg_size" \
+	"r25 0" \
+	"blink [expr 3*$reg_size]"]
+
 prologue_test "leaf_prologue" { {r13 0} {r15 4} }
+
 prologue_test "pushfp_prologue" { {r13 8} {r14 4} {fp 0} } 0
+
 prologue_test "fp_prologue_with_store" { {r13 12} {r14 8} {r15 0} {fp 4} } 4
+
 prologue_test "noncallee_saved_regs_r12_st" { {r12 0} {r13 4} }
+
 # Register offset is specified relatively to SP at the prologue end, so
 # "push r12" hasn't been executed at this moment.
 prologue_test "noncallee_saved_regs_r12_push" { {r12 0} {r13 4} }
+
 prologue_test "noncallee_saved_regs_r2_push" { {r2 0} {r13 4} }
+
 prologue_test "noncallee_saved_regs_gp_push" { {r25 4} {gp 0} }
-prologue_test "noncallee_saved_regs_lp_count" { {r25 4} {lp_count 0} }
+
+if {[istarget "arc-*-*"] || [istarget arceb-*-*]} {
+    prologue_test "noncallee_saved_regs_lp_count" { {r25 4} {lp_count 0} }
+}
 prologue_test "noncallee_saved_regs_blink_out_of_prologue" { {r25 8} {gp 4} \
     {blink 0}}
+
 # Argument registers are not reported as "saved" regs.
 prologue_test "arg_regs_fp" { {r0 12} {r1 8} {r7 4} {r8 0} {fp 16} } 16
+
 prologue_test "arg_regs_fp_mov_s" { {r0 4} {r8 0} {fp 8} } 8
+
 prologue_test "arg_regs_sp" { {r0 0} {r1 4} {r7 8} {r8 12} {r13 16} {r14 20} }
+
 prologue_test "enter_s_nop"
+
 prologue_test "enter_s_blink" { {blink 0} }
+
 prologue_test "enter_s_fp" { {fp 0} } 0
+
 # Layout of registers as stored by enter_s doesn't conform to ARC ABI.
-prologue_test "enter_s_r13" { {r13 4} {fp 8} {blink 0} } 0
-prologue_test "enter_s_r15" { {r13 0} {r14 4} {r15 8} } 0
+if {[istarget "arc-*-*"] || [istarget arceb-*-*]} {
+    prologue_test "enter_s_r13" { {r13 4} {fp 8} {blink 0} } 0
+} else {
+    prologue_test "enter_s_r13" { {r14 8} {fp 0} {blink 4} } 0
+}
+if {[istarget "arc-*-*"] || [istarget arceb-*-*]} {
+    prologue_test "enter_s_r15" { {r13 0} {r14 4} {r15 8} } 0
+} else {
+    prologue_test "enter_s_r15" { {r14 0} {r15 4} {r16 8} } 0
+}
 # This enter_s saves GP, however because it is not a "calle-saved register",
 # GDB will not report it as "saved register" (but maybe it should). GP is at
 # offset 56.
-prologue_test "enter_s_all" { {r13 4} {r14 8} {r15 12} {r16 16} {r17 20} \
-    {r18 24} {r19 28} {r20 32} {r21 36} {r22 40} {r23 44} {r24 48} {r25 52} \
-    {gp 56} {fp 60} {blink 0} } 0
+if {[istarget "arc-*-*"] || [istarget arceb-*-*]} {
+    prologue_test "enter_s_all" { {r13 4} {r14 8} {r15 12} {r16 16} {r17 20} \
+	{r18 24} {r19 28} {r20 32} {r21 36} {r22 40} {r23 44} {r24 48} \
+	{r25 52} {gp 56} {fp 60} {blink 0} } 0
+} else {
+    prologue_test "enter_s_all" { {r14 8} {r15 12} {r16 16} {r17 20} {r18 24} \
+	{r19 28} {r20 32} {r21 36} {r22 40} {r23 44} {r24 48} {r25 52} \
+	{r26 56} {fp 0} {blink 4} } 0
+}
 
 # Test more levels of backtrace.
 gdb_breakpoint nested_prologue_inner temporary
@@ -154,7 +228,9 @@ prologue_test "cond_branch_in_prologue" { {r13 4} }
 prologue_test "jump_in_prologue" { {r13 0} }
 prologue_test "cond_jump_in_prologue" { {r13 4} }
 prologue_test "predicated_insn" { {r13 8} {r15 0} }
-prologue_test "loop_in_prologue" { {r25 4} {lp_count 0} }
+if {[istarget "arc-*-*"] || [istarget arceb-*-*]} {
+    prologue_test "loop_in_prologue" { {r25 4} {lp_count 0} }
+}
 prologue_test "store_constant" { {r13 8} {r14 4} }
 prologue_test "st_c_limm" { {r15 0} }
 prologue_test "st_ab_writeback" { {r13 8} {r14 4} {r15 0} }
@@ -172,14 +248,14 @@ prologue_test "r_relative_sub_store" { {r13 8} {r14 4} {r15 0} }
 prologue_test "r_relative_store_st_s" { {r13 8} {r14 0} {r15 4} }
 prologue_test "r_relative_store_unknown" { {r13 8} }
 prologue_test "st_s_r0gp" { {r13 8} }
-prologue_test "push_s_prologue" { {r0 28} {r1 16} {r2 4} {r3 24} {r12 32} \
+prologue_test "push_prologue" { {r0 28} {r1 16} {r2 4} {r3 24} {r12 32} \
     {r13 20} {r14 12} {r15 8} {blink 0}}
-prologue_test "sub_s_cbu3" { {r13 4} {r14 0} }
-prologue_test "sub_s_bbc" { {r1 4} {r13 12} {r14 0} }
-prologue_test "sub_s_bbu5" { {r13 8} {r14 0} }
+prologue_test "sub_cbu3" { {r13 4} {r14 0} }
+prologue_test "sub_bbc" { {r1 4} {r13 12} {r14 0} }
+prologue_test "sub_bbu5" { {r13 8} {r14 0} }
 prologue_test "sub_0bc" { {r13 4} {r14 0} }
 prologue_test "sub_alimmb" { {r13 4} {r14 0} }
-prologue_test "sub_s_ne_bbb" { {r13 0} }
+prologue_test "sub_ne_bbb" { {r13 0} }
 prologue_test "mov_limm" { {r13 4} {r14 0} }
 prologue_test "mov0c_limm" { {r13 4} {r14 0} }
 prologue_test "mov_s_hs3" { {r13 4} {r14 0} }

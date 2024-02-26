@@ -23,20 +23,37 @@ some_variable:
 .global	main
 .type	main, @function
 
+#define REGS_TO_SIZE(n) ((n) * __SIZEOF_SIZE_T__)
+#define REG_SIZE (REGS_TO_SIZE(1))
+
+#ifdef __ARC64_ARCH64__
+#define PUSH pushl_s
+#define POP popl_s
+#else
+#define PUSH push
+#define POP pop
+#endif
+
 ; Standard prologue.
 
 .align 4
+long_push:
+	PUSH blink
+	POP blink
+	j [blink]
+
+.align 4
 standard_prologue:
-	push	blink
-	sub	sp,sp,12
-	st	r13, [sp, 0]
-	st	r14, [sp, 4]
-	st	r18, [sp, 8]
+	PUSH	blink
+	sub	sp,sp,REGS_TO_SIZE(3)
+	stl	r13, [sp, 0]
+	stl	r14, [sp, REG_SIZE]
+	stl	r18, [sp, 2*REG_SIZE]
 	add	r0, r1, r2
-	ld	r18, [sp, 8]
-	ld	r14, [sp, 4]
-	ld	r13, [sp, 0]
-	add	sp,sp,12
+	ldl	r18, [sp, 2*REG_SIZE]
+	ldl	r14, [sp, REG_SIZE]
+	ldl	r13, [sp, 0]
+	add	sp,sp,REGS_TO_SIZE(3)
 	pop	blink
 	j	[blink]
 
@@ -44,14 +61,14 @@ standard_prologue:
 
 .align 4
 mini_prologue:
-	push_s	blink
-	sub_s	sp,sp,12
+	push	blink
+	sub	sp,sp,REGS_TO_SIZE(3)
 	; ST_S can store only some of the core registers.
 	st_s	r13, [sp, 0]
-	st_s	r15, [sp, 4]
-	st_s	r14, [sp, 8]
+	st_s	r15, [sp, REG_SIZE]
+	st_s	r14, [sp, 2*REG_SIZE]
 	add	r0, r1, r2
-	add	sp,sp,16
+	add	sp,sp,REGS_TO_SIZE(4)
 	j	[blink]
 
 ; Standard prologue without `sub sp,sp,INTEGER`.
@@ -106,7 +123,7 @@ fp_prologue_with_store:
 	push	r14
 	push	fp
 	mov	fp, sp
-	sub_s	sp,sp,4
+	sub	sp,sp,4
 	st	r15,[fp,-4]
 	add	r0, r1, r2
 	pop	r15
@@ -156,6 +173,7 @@ noncallee_saved_regs_gp_push:
 
 ; LP_COUNT is treated like a normal register.
 
+#ifndef __ARCV3__
 .align 4
 noncallee_saved_regs_lp_count:
 	push	r25
@@ -163,6 +181,7 @@ noncallee_saved_regs_lp_count:
 	add	r0, r1, r2
 	j.d	[blink]
 	add	sp,sp,8
+#endif
 
 ; BLINK is saved, but after an instruction that is not part of prologue.
 ; Currently arc_analyze_prologue stops analisys at the first intstruction
@@ -277,7 +296,11 @@ enter_s_r15:
 
 .align 4
 enter_s_all:
+#ifdef __ARCV3__
+	enter_s	(32 + 16 + 13)
+#else
 	enter_s	(32 + 16 + 14)
+#endif
 	add	r0,r1,r2
 	j.d	[blink]
 	add	sp,sp,64
@@ -365,7 +388,7 @@ branch_in_prologue:
 
 .align 4
 cond_branch_in_prologue:
-	sub_s	sp,sp,8
+	sub	sp,sp,8
 	st_s	r13,[sp,4]
 	; Doesn't matter if branch is taken or not.
 	breq	r0,r1,@.L2
@@ -390,7 +413,7 @@ jump_in_prologue:
 
 .align 4
 cond_jump_in_prologue:
-	sub_s	sp,sp,8
+	sub	sp,sp,8
 	st_s	r13,[sp,4]
 	; It doesn't matter if jump is taken or not - prologue analysis has to
 	; stop before `jeq` in any case.
@@ -404,7 +427,7 @@ cond_jump_in_prologue:
 
 .align 4
 predicated_insn:
-	sub_s	sp,sp,12
+	sub	sp,sp,12
 	st_s	r13,[sp,8]
 	st_s	r15,[sp,0]
 	; Use SUB SP,SP,0 because it is otherwise a valid instruction for
@@ -416,6 +439,7 @@ predicated_insn:
 
 ; Loops should halt prologue analysis.
 
+#ifndef __ARCV3__
 .align 4
 loop_in_prologue:
 	push r25
@@ -430,12 +454,13 @@ loop_in_prologue:
 	add sp,sp,8
 	pop r25
 	j   [blink]
+#endif
 
 ; Store of a constant value (not a register).
 
 .align 4
 store_constant:
-	sub_s	sp,sp,12
+	sub	sp,sp,12
 	st_s	r13,[sp,8]
 	st	0xdeadbeef,[sp,0]
 	st_s	r14,[sp,4]
@@ -580,7 +605,7 @@ st_double:
 
 .align 4
 r_relative_store:
-	sub_s	sp,sp,12
+	sub	sp,sp,12
 	st_s	r13,[sp,8]
 	mov	r13,sp
 	; Check for both mov and mov_s in one testcase.
@@ -596,11 +621,11 @@ r_relative_store:
 .align 4
 r_relative_sub_store:
 	; Following is a complicated way to construct frame like this:
-	; sub_s	sp,sp,12
+	; sub	sp,sp,12
 	; st_s	r13,[sp,8]
 	; st_s	r14,[sp,4]
 	; st_s	r15,[sp,0]
-	sub_s	sp,sp,12
+	sub	sp,sp,12
 	st_s	r13,[sp,8]
 	sub	r13,sp,4
 	st	r14,[r13,8]
@@ -612,7 +637,7 @@ r_relative_sub_store:
 
 .align 4
 r_relative_store_st_s:
-	sub_s	sp,sp,12
+	sub	sp,sp,12
 	st_s	r13,[sp,8]
 	mov	r13,sp
 	st_s	r15,[r13,4]
@@ -624,7 +649,7 @@ r_relative_store_st_s:
 
 .align 4
 r_relative_store_unknown:
-	sub_s	sp,sp,12
+	sub	sp,sp,12
 	st_s	r13,[sp,8]
 	st	r15,[gp,0] ; GP value is not relative to SP.
 	st_s	r14,[sp,4]
@@ -635,60 +660,60 @@ r_relative_store_unknown:
 
 .align 4
 st_s_r0gp:
-	sub_s	sp,sp,12
+	sub	sp,sp,12
 	st_s	r13,[sp,8]
 	st_s	r0,[gp,0] ; GP value is not relative to SP.
 	st_s	r14,[sp,4]
 	add	sp,sp,12
 	j	[blink]
 
-; Check prologue that uses `push_s RR` instructions. `push_s b` and `push_s
+; Check prologue that uses `push RR` instructions. `push b` and `push
 ; blink` use slightly different subopcodes.
 
 .align 4
-push_s_prologue:
-	push_s	r12
-	push_s	r0
-	push_s	r3
-	push_s	r13
-	push_s	r1
-	push_s	r14
-	push_s	r15
-	push_s	r2
-	push_s	blink ; Also tested in mini_prologue ().
+push_prologue:
+	push	r12
+	push	r0
+	push	r3
+	push	r13
+	push	r1
+	push	r14
+	push	r15
+	push	r2
+	push	blink ; Also tested in mini_prologue ().
 	add	sp,sp,(4 * 9)
 	j	[blink]
 
-; Check for SUB_S c,b,u3 presence - it doesn't affect prologue.
+; Check for SUB c,b,u3 presence - it doesn't affect prologue.
 
 .align 4
-sub_s_cbu3:
-	push_s	r13
-	sub_s	r0,r1,3
-	push_s	r14
+sub_cbu3:
+	push	r13
+	sub	r0,r1,3
+	push	r14
 	add	sp,sp,8
 	j	[blink]
 
-; Check for SUB_S b,b,c presence - it doesn't affect prologue.
+; Check for SUB b,b,c presence - it doesn't affect prologue.
 
 .align 4
-sub_s_bbc:
-	push_s	r13
-	sub_s	r0,r0,r1
-	push_s	r0
-	push_s	r1
-	push_s	r14
+sub_bbc:
+	push	r13
+	sub	r0,r0,r1
+	push	r0
+	push	r1
+	push	r14
 	add	sp,sp,16
 	j	[blink]
 
-; Check for SUB_S b,b,u5.
+; Check for SUB b,b,u5.
 
 .align 4
-sub_s_bbu5:
-	push_s	r13
-	sub_s	r2,r2,14
-	push_s	r2
-	push_s	r14
+sub_bbu5:
+	push	r13
+	sub	r2,r2,14
+	push	r2
+	push	r14
 	add	sp,sp,12
 	j	[blink]
 
@@ -697,10 +722,10 @@ sub_s_bbu5:
 
 .align 4
 sub_0bc:
-	push_s	r13
+	push	r13
 	sub	0,r1,r2
 	sub.f	0,r3,r4
-	push_s	r14
+	push	r14
 	add	sp,sp,8
 	j	[blink]
 
@@ -708,19 +733,19 @@ sub_0bc:
 
 .align 4
 sub_alimmb:
-	push_s	r13
+	push	r13
 	sub	r13,0xdeadbeef,r14
-	push_s	r14
+	push	r14
 	add	sp,sp,8
 	j	[blink]
 
-; Check for sub_s.ne b,b,b.  Has a condition code, hence should halt prologue.
+; Check for sub.ne b,b,b.  Has a condition code, hence should halt prologue.
 
 .align 4
-sub_s_ne_bbb:
-	push_s	r13
-	sub_s.ne  r13,r13,r13
-	push_s	r14
+sub_ne_bbb:
+	push	r13
+	sub.ne  r13,r13,r13
+	push	r14
 	add	sp,sp,8
 	j	[blink]
 
@@ -728,31 +753,31 @@ sub_s_ne_bbb:
 
 .align 4
 mov_limm:
-	push_s	r13
+	push	r13
 	mov	r13,0xdeadbeef
-	push_s	r14
+	push	r14
 	add	sp,sp,4
-	pop_s	r13
+	pop	r13
 	j	[blink]
 
 ; Check MOV 0,c.
 
 .align 4
 mov0c_limm:
-	push_s	r13
+	push	r13
 	mov	0,r13
-	push_s	r14
+	push	r14
 	add	sp,sp,4
-	pop_s	r13
+	pop	r13
 	j	[blink]
 
 ; Check that MOV_S h,s3 doesn't prevent prologue analysis.
 
 .align 4
 mov_s_hs3:
-	push_s	r13
+	push	r13
 	mov_s	r5,1
-	push_s	r14
+	push	r14
 	add	sp,sp,8
 	j	[blink]
 
@@ -760,9 +785,9 @@ mov_s_hs3:
 
 .align 4
 mov_s_bu8:
-	push_s	r13
+	push	r13
 	mov_s	r12,250
-	push_s	r14
+	push	r14
 	add	sp,sp,8
 	j	[blink]
 
@@ -770,9 +795,9 @@ mov_s_bu8:
 
 .align 4
 mov_s_ne_bh:
-	push_s	r13
+	push	r13
 	mov_s.ne r13,r5
-	push_s	r14
+	push	r14
 	add	sp,sp,8
 	j	[blink]
 
@@ -781,7 +806,7 @@ mov_s_ne_bh:
 
 .align 4
 unstored_reg:
-	sub_s	sp,sp,12
+	sub	sp,sp,12
 	st_s	r13,[sp,0]
 	st_s	r14,[sp,4]
 	mov	r12,0x42
@@ -793,7 +818,7 @@ unstored_reg:
 
 .align 4
 double_store:
-	sub_s	sp,sp,4
+	sub	sp,sp,4
 	st_s	r13,[sp,0]
 	st_s	r14,[sp,0]
 	add	sp,sp,4
@@ -834,6 +859,7 @@ main:
 	push	gp
 	sub	sp,sp,16
 	add	gp,sp,8
+	bl	@long_push
 	bl	@standard_prologue
 	bl	@mini_prologue
 	bl	@no_subsp_prologue
@@ -844,7 +870,9 @@ main:
 	bl	@noncallee_saved_regs_r12_push
 	bl	@noncallee_saved_regs_r2_push
 	bl	@noncallee_saved_regs_gp_push
+#ifndef __ARCV3__
 	bl	@noncallee_saved_regs_lp_count
+#endif
 	bl	@noncallee_saved_regs_blink_out_of_prologue
 	bl	@arg_regs_fp
 	bl	@arg_regs_fp_mov_s
@@ -862,7 +890,9 @@ main:
 	bl	@jump_in_prologue
 	bl	@cond_jump_in_prologue
 	bl	@predicated_insn
+#ifndef __ARCV3__
 	bl	@loop_in_prologue
+#endif
 	bl	@store_constant
 	bl	@st_c_limm
 	bl	@st_ab_writeback
@@ -880,13 +910,13 @@ main:
 	bl	@r_relative_store_st_s
 	bl	@r_relative_store_unknown
 	bl	@st_s_r0gp
-	bl	@push_s_prologue
-	bl	@sub_s_cbu3
-	bl	@sub_s_bbc
-	bl	@sub_s_bbu5
+	bl	@push_prologue
+	bl	@sub_cbu3
+	bl	@sub_bbc
+	bl	@sub_bbu5
 	bl	@sub_0bc
 	bl	@sub_alimmb
-	bl	@sub_s_ne_bbb
+	bl	@sub_ne_bbb
 	bl	@mov_limm
 	bl	@mov0c_limm
 	bl	@mov_s_hs3
