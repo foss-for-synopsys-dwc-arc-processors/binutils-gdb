@@ -1076,6 +1076,7 @@ riscv_elf_ignore_reloc (bfd *abfd ATTRIBUTE_UNUSED,
 
 static bool
 check_implicit_always (const char *implicit ATTRIBUTE_UNUSED,
+		       riscv_parse_subset_t *rps ATTRIBUTE_UNUSED,
 		       riscv_subset_t *subset ATTRIBUTE_UNUSED)
 {
   return true;
@@ -1085,11 +1086,25 @@ check_implicit_always (const char *implicit ATTRIBUTE_UNUSED,
 
 static bool
 check_implicit_for_i (const char *implicit ATTRIBUTE_UNUSED,
+		      riscv_parse_subset_t *rps ATTRIBUTE_UNUSED,
 		      riscv_subset_t *subset)
 {
   return (subset->major_version < 2
 	  || (subset->major_version == 2
 	      && subset->minor_version < 1));
+}
+
+/* Zce includes Zcf only in the presence of F, and only if the target is
+   32-bit (see Zc* v1.0.4 section 1.4).  */
+
+static bool
+check_implicit_for_zce_zcf (const char *implicit ATTRIBUTE_UNUSED,
+			    riscv_parse_subset_t *rps,
+			    riscv_subset_t *subset ATTRIBUTE_UNUSED)
+{
+  riscv_subset_t *current;
+  return riscv_lookup_subset (rps->subset_list, "f", &current)
+	  && *rps->xlen == 32;
 }
 
 /* Record all implicit information for the subsets.  */
@@ -1098,7 +1113,7 @@ struct riscv_implicit_subset
   const char *subset_name;
   const char *implicit_name;
   /* A function to determine if we need to add the implicit subset.  */
-  bool (*check_func) (const char *, riscv_subset_t *);
+  bool (*check_func) (const char *, riscv_parse_subset_t *, riscv_subset_t *);
 };
 static struct riscv_implicit_subset riscv_implicit_subsets[] =
 {
@@ -1192,7 +1207,7 @@ static struct riscv_implicit_subset riscv_implicit_subsets[] =
   {"zvksc", "zvbc",	check_implicit_always},
   {"zce", "zca",	check_implicit_always},
   {"zce", "zcb",	check_implicit_always},
-  {"zce", "zcf",        check_implicit_always},
+  {"zce", "zcf",        check_implicit_for_zce_zcf},
   {"zce", "zcmp",	check_implicit_always},
   {"zce", "zcmt",	check_implicit_always},
   {"zcf", "zca",	check_implicit_always},
@@ -1952,7 +1967,7 @@ riscv_parse_add_implicit_subsets (riscv_parse_subset_t *rps)
 	  if (riscv_lookup_subset (rps->subset_list, t->subset_name, &subset)
 	      && !riscv_lookup_subset (rps->subset_list, t->implicit_name,
 				       &implicit_subset)
-	      && t->check_func (t->implicit_name, subset))
+	      && t->check_func (t->implicit_name, rps, subset))
 	    {
 	      riscv_parse_add_subset (rps, t->implicit_name,
 				      RISCV_UNKNOWN_VERSION,
