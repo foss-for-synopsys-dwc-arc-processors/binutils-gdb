@@ -185,7 +185,7 @@ arc_fill_gregset (struct regcache *regcache, void *buf)
   collect_register_by_name (regcache, "r10", &(regbuf->scratch.r10));
   collect_register_by_name (regcache, "r11", &(regbuf->scratch.r11));
   collect_register_by_name (regcache, "r12", &(regbuf->scratch.r12));
-  collect_register_by_name (regcache, "r13", &(regbuf->callee.r13));
+  collect_register_by_name (regcache, "r13", &(regbuf->scratch.r13));
   collect_register_by_name (regcache, "r14", &(regbuf->callee.r14));
   collect_register_by_name (regcache, "r15", &(regbuf->callee.r15));
   collect_register_by_name (regcache, "r16", &(regbuf->callee.r16));
@@ -242,7 +242,7 @@ arc_store_gregset (struct regcache *regcache, const void *buf)
   supply_register_by_name (regcache, "r10", &(regbuf->scratch.r10));
   supply_register_by_name (regcache, "r11", &(regbuf->scratch.r11));
   supply_register_by_name (regcache, "r12", &(regbuf->scratch.r12));
-  supply_register_by_name (regcache, "r13", &(regbuf->callee.r13));
+  supply_register_by_name (regcache, "r13", &(regbuf->scratch.r13));
   supply_register_by_name (regcache, "r14", &(regbuf->callee.r14));
   supply_register_by_name (regcache, "r15", &(regbuf->callee.r15));
   supply_register_by_name (regcache, "r16", &(regbuf->callee.r16));
