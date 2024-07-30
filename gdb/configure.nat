@@ -265,7 +265,14 @@ case ${gdb_host} in
 		;;
 	    arc)
 		# Host: ARC based machine running GNU/Linux
-		NATDEPFILES="${NATDEPFILES} arc-linux-nat.o"
+		case ${host_cpu} in
+		    arc|arceb)
+			NATDEPFILES="${NATDEPFILES} arc-linux-nat.o"
+			;;
+		    arc32|arc64)
+			NATDEPFILES="${NATDEPFILES} arc64-linux-nat.o"
+			;;
+		esac
 		;;
 	    arm)
 		# Host: ARM based machine running GNU/Linux
