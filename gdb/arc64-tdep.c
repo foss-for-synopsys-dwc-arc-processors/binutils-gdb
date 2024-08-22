@@ -24,11 +24,12 @@
 #include "elf-bfd.h"
 #include "disasm.h"
 #include "dwarf2/frame.h"
+#include "extract-store-integer.h"
 #include "frame-base.h"
 #include "frame-unwind.h"
 #include "gdbcore.h"
 #include "inferior.h"
-#include "gdbcmd.h"
+#include "cli/cli-cmds.h"
 #include "objfiles.h"
 #include "osabi.h"
 #include "prologue-value.h"
@@ -255,7 +256,7 @@ static const struct arc_register_feature arc64_fpu_reg_feature =
   }
 };
 
-static char *arc_disassembler_options;
+static std::string arc_disassembler_options;
 
 /* Functions are sorted in the order as they are used in the
    _initialize_arc64_tdep (), which uses the same order as gdbarch.h.  Static
@@ -969,7 +970,7 @@ arc_store_return_value (struct gdbarch *gdbarch, struct type *type,
 /* Implement the "get_longjmp_target" gdbarch method.  */
 
 static int
-arc_get_longjmp_target (frame_info_ptr frame, CORE_ADDR *pc)
+arc_get_longjmp_target (const frame_info_ptr &frame, CORE_ADDR *pc)
 {
   arc_debug_printf ("called");
 
@@ -1035,7 +1036,7 @@ arc_return_value (struct gdbarch *gdbarch, struct value *function,
    frame pointer.  */
 
 static CORE_ADDR
-arc_frame_base_address (frame_info_ptr this_frame, void **prologue_cache)
+arc_frame_base_address (const frame_info_ptr &this_frame, void **prologue_cache)
 {
   return (CORE_ADDR) get_frame_register_unsigned (this_frame, ARC_FP_REGNUM);
 }
@@ -1616,7 +1617,7 @@ arc_print_frame_cache (struct gdbarch *gdbarch, const char *message,
 /* Frame unwinder for normal frames.  */
 
 static struct arc_frame_cache *
-arc_make_frame_cache (frame_info_ptr this_frame)
+arc_make_frame_cache (const frame_info_ptr &this_frame)
 {
   arc_debug_printf ("called");
 
@@ -1683,7 +1684,7 @@ arc_make_frame_cache (frame_info_ptr this_frame)
 /* Implement the "this_id" frame_unwind method.  */
 
 static void
-arc_frame_this_id (frame_info_ptr this_frame, void **this_cache,
+arc_frame_this_id (const frame_info_ptr &this_frame, void **this_cache,
 		   struct frame_id *this_id)
 {
   arc_debug_printf ("called");
@@ -1728,7 +1729,7 @@ arc_frame_this_id (frame_info_ptr this_frame, void **this_cache,
 /* Implement the "prev_register" frame_unwind method.  */
 
 static struct value *
-arc_frame_prev_register (frame_info_ptr this_frame,
+arc_frame_prev_register (const frame_info_ptr &this_frame,
 			 void **this_cache, int regnum)
 {
   if (*this_cache == NULL)
@@ -1775,7 +1776,7 @@ arc64_isa_reg_size (struct gdbarch *gdbarch)
 static void
 arc_dwarf2_frame_init_reg (struct gdbarch *gdbarch, int regnum,
 			   struct dwarf2_frame_state_reg *reg,
-			   frame_info_ptr info)
+			   const frame_info_ptr &info)
 {
   if (regnum == gdbarch_pc_regnum (gdbarch))
     /* The return address column.  */
