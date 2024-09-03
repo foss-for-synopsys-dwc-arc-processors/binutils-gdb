@@ -30,5 +30,6 @@ create_feature_arc_v1_aux (struct target_desc *result, long regnum)
   tdesc_create_reg (feature, "lp_start", regnum++, 1, NULL, 32, "code_ptr");
   tdesc_create_reg (feature, "lp_end", regnum++, 1, NULL, 32, "code_ptr");
   tdesc_create_reg (feature, "bta", regnum++, 1, NULL, 32, "code_ptr");
+  tdesc_create_reg (feature, "eret", regnum++, 1, NULL, 32, "code_ptr");
   return regnum;
 }
