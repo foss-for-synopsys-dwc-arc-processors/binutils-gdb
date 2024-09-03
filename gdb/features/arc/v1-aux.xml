@@ -28,4 +28,5 @@
   <reg name="lp_start" bitsize="32" type="code_ptr"/>
   <reg name="lp_end"   bitsize="32" type="code_ptr"/>
   <reg name="bta"      bitsize="32" type="code_ptr"/>
+  <reg name="eret"     bitsize="32" type="code_ptr"/>
 </feature>

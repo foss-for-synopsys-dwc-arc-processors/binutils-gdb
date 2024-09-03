@@ -295,7 +295,8 @@ static const struct arc_register_feature arc_common_aux_reg_feature =
     { ARC_FIRST_AUX_REGNUM + 1, { "status32" }, true },
     { ARC_FIRST_AUX_REGNUM + 2, { "lp_start" }, false },
     { ARC_FIRST_AUX_REGNUM + 3, { "lp_end" }, false },
-    { ARC_FIRST_AUX_REGNUM + 4, { "bta" }, false }
+    { ARC_FIRST_AUX_REGNUM + 4, { "bta" }, false },
+    { ARC_FIRST_AUX_REGNUM + 5, { "eret" }, false }
   }
 };
 
