@@ -2146,7 +2146,7 @@ arc64_gdbarch_init (struct gdbarch_info info, struct gdbarch_list *arches)
   set_gdbarch_breakpoint_kind_from_pc (gdbarch, arc_breakpoint_kind_from_pc);
   set_gdbarch_sw_breakpoint_from_kind (gdbarch, arc_sw_breakpoint_from_kind);
 
-  set_gdbarch_decr_pc_after_break (gdbarch, 2);
+  set_gdbarch_decr_pc_after_break (gdbarch, 0);
 
   set_gdbarch_frame_align (gdbarch, arc_frame_align);
 
