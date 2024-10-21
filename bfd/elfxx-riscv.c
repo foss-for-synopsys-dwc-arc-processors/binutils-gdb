@@ -1424,6 +1424,7 @@ static struct riscv_supported_ext riscv_supported_std_ext[] =
   {"c",		ISA_SPEC_CLASS_2P2,		2, 0, 0 },
   {"b",		ISA_SPEC_CLASS_DRAFT,		1, 0, 0 },
   {"v",		ISA_SPEC_CLASS_DRAFT,		1, 0, 0 },
+  {"p",		ISA_SPEC_CLASS_DRAFT,		0, 1, 0 },
   {"h",		ISA_SPEC_CLASS_DRAFT,		1, 0, 0 },
   {NULL, 0, 0, 0, 0}
 };
@@ -2959,6 +2960,8 @@ riscv_multi_subset_supports (riscv_parse_subset_t *rps,
       return riscv_subset_supports (rps, "smrnmi");
     case INSN_CLASS_SVINVAL:
       return riscv_subset_supports (rps, "svinval");
+    case INSN_CLASS_P:
+      return riscv_subset_supports (rps, "p");
     case INSN_CLASS_H:
       return riscv_subset_supports (rps, "h");
     case INSN_CLASS_XCVALU:
@@ -3280,6 +3283,8 @@ riscv_multi_subset_supports_ext (riscv_parse_subset_t *rps,
       return "smrnmi";
     case INSN_CLASS_SVINVAL:
       return "svinval";
+    case INSN_CLASS_P:
+      return "p";
     case INSN_CLASS_H:
       return _("h");
     case INSN_CLASS_XCVALU:
