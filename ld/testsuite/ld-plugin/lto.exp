@@ -45,6 +45,7 @@ proc restore_notify { } {
 
 set lto_fat ""
 set lto_no_fat ""
+set no_lto ""
 if { [check_lto_fat_available] } {
   set lto_fat "-ffat-lto-objects"
   set lto_no_fat "-fno-fat-lto-objects"
