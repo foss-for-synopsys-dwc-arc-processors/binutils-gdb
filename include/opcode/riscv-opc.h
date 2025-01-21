@@ -2521,22 +2521,40 @@
 #define MATCH_VFWMACCBF16_VV 0xec001057
 #define MASK_VFWMACCBF16_VV 0xfc00707f
 /* Packed-SIMD instructions.  */
+#define MATCH_ABS 0x60701013
+#define MASK_ABS 0xfff0707f
+#define MATCH_REV8_32 0x69805013
+#define MASK_REV8_32 0xfff0707f
+#define MATCH_REV_32 0x69805013
+#define MASK_REV_32 0xfff0707f
+#define MATCH_REV16_64 0x6b005013
+#define MASK_REV16_64 0xfff0707f
+#define MATCH_REV8_64 0x6b805013
+#define MASK_REV8_64 0xfff0707f
+#define MATCH_REV_64 0x6bf05013
+#define MASK_REV_64 0xfff0707f
+#define MATCH_ABSW 0x60701013
+#define MASK_ABSW 0xfff0707f
+
 #define MATCH_PLI_H 0xb000201b
 #define MASK_PLI_H 0xfe00707f
-#define MATCH_PLI_B 0xb400201b
-#define MASK_PLI_B 0xff00f07f
 #define MATCH_PLI_W 0xb200201b
 #define MASK_PLI_W 0xfe00707f
-#define MATCH_PSLLI_H 0x8100201b
-#define MASK_PSLLI_H 0xfff0707f
+#define MATCH_PLI_B 0xb400201b
+#define MASK_PLI_B 0xff00f07f
 #define MATCH_PSLLI_B 0x8080201b
 #define MASK_PSLLI_B 0xfff0707f
+#define MATCH_PSLLI_H 0x8100201b
+#define MASK_PSLLI_H 0xfff0707f
 #define MATCH_PSLLI_W 0x8200201b
 #define MASK_PSLLI_W 0xfff0707f
+#define MATCH_SSLAI 0xd200201b
+#define MASK_SSLAI 0xfff0707f
 #define MATCH_PSSLAI_H 0xd100201b
 #define MASK_PSSLAI_H 0xfff0707f
 #define MATCH_PSSLAI_W 0xd200201b
 #define MASK_PSSLAI_W 0xfff0707f
+
 #define MATCH_PLUI_H 0xf000201b
 #define MASK_PLUI_H 0xfe00707f
 #define MATCH_PLUI_W 0xf200201b
@@ -2547,26 +2565,31 @@
 #define MASK_PSABS_H 0xfff0707f
 #define MATCH_PSABS_B 0xe470201b
 #define MASK_PSABS_B 0xfff0707f
-#define MATCH_PSEXTH_W 0xe250201b
-#define MASK_PSEXTH_W 0xfff0707f
 #define MATCH_PSEXTB_W 0xe240201b
 #define MASK_PSEXTB_W 0xfff0707f
+#define MATCH_PSEXTH_W 0xe250201b
+#define MASK_PSEXTH_W 0xfff0707f
+
 #define MATCH_PSLL_H_H0 0x8800201b
 #define MASK_PSLL_H_H0 0xfe00707f
 #define MATCH_PSLL_B_B0 0x8c00201b
 #define MASK_PSLL_B_B0 0xfe00707f
-#define MATCH_PSLL_W_W0 0x8a00201b
-#define MASK_PSLL_W_W0 0xfe00707f
 #define MATCH_PADD_H_H0 0x9800201b
 #define MASK_PADD_H_H0 0xfe00707f
 #define MATCH_PADD_B_B0 0x9c00201b
 #define MASK_PADD_B_B0 0xfe00707f
-#define MATCH_PADD_W_W0 0x9a00201b
-#define MASK_PADD_W_W0 0xfe00707f
 #define MATCH_PSSHA_H_H0 0xe800201b
 #define MASK_PSSHA_H_H0 0xfe00707f
+#define MATCH_SSHA 0xea00201b
+#define MASK_SSHA 0xfe00707f
 #define MATCH_PSSHAR_H_H0 0xf800201b
 #define MASK_PSSHAR_H_H0 0xfe00707f
+#define MATCH_SSHAR 0xfa00201b
+#define MASK_SSHAR 0xfe00707f
+#define MATCH_PSLL_W_W0 0x8a00201b
+#define MASK_PSLL_W_W0 0xfe00707f
+#define MATCH_PADD_W_W0 0x9a00201b
+#define MASK_PADD_W_W0 0xfe00707f
 #define MATCH_PSSHA_W_W0 0xea00201b
 #define MASK_PSSHA_W_W0 0xfe00707f
 #define MATCH_PSSHAR_W_W0 0xfa00201b
@@ -2575,291 +2598,667 @@
 #define MASK_SHA 0xfe00707f
 #define MATCH_SHAR 0xfe00201b
 #define MASK_SHAR 0xfe00707f
+
+#define MATCH_PSRLI_B 0x8080401b
+#define MASK_PSRLI_B 0xfff0707f
+#define MATCH_PSRLI_H 0x8100401b
+#define MASK_PSRLI_H 0xfff0707f
+#define MATCH_PUSATI_H 0xa100401b
+#define MASK_PUSATI_H 0xfff0707f
+#define MATCH_USATI 0xa200401b
+#define MASK_USATI 0xfff0707f
+#define MATCH_PSRAI_B 0xc080401b
+#define MASK_PSRAI_B 0xfff0707f
+#define MATCH_PSRAI_H 0xc100401b
+#define MASK_PSRAI_H 0xfff0707f
+#define MATCH_PSRARI_H 0xd100401b
+#define MASK_PSRARI_H 0xfff0707f
+#define MATCH_SRARI 0xd200401b
+#define MASK_SRARI 0xfff0707f
+#define MATCH_PSATI_H 0xe100401b
+#define MASK_PSATI_H 0xfff0707f
+#define MATCH_SATI 0xe200401b
+#define MASK_SATI 0xfff0707f
+#define MATCH_PSRLI_W 0x8200401b
+#define MASK_PSRLI_W 0xfff0707f
+#define MATCH_PUSATI_W 0xa200401b
+#define MASK_PUSATI_W 0xfff0707f
+#define MATCH_USATI_64 0xa400401b
+#define MASK_USATI_64 0xfff0707f
+#define MATCH_PSRAI_W 0xc200401b
+#define MASK_PSRAI_W 0xfff0707f
+#define MATCH_PSRARI_W 0xd200401b
+#define MASK_PSRARI_W 0xfff0707f
+#define MATCH_PSATI_W 0xe200401b
+#define MASK_PSATI_W 0xfff0707f
+#define MATCH_SRARI_64 0xd400401b
+#define MASK_SRARI_64 0xfff0707f
+#define MATCH_SATI_64 0xe400401b
+#define MASK_SATI_64 0xfff0707f
+
+#define MATCH_PSRL_H_H0 0x8800401b
+#define MASK_PSRL_H_H0 0xfe00707f
+#define MATCH_PSRL_B_B0 0x8c00401b
+#define MASK_PSRL_B_B0 0xfe00707f
+#define MATCH_PREDSUM_H 0x9800401b
+#define MASK_PREDSUM_H 0xfe00707f
+#define MATCH_PREDSUM_B 0x9c00401b
+#define MASK_PREDSUM_B 0xfe00707f
+#define MATCH_PREDSUMU_H 0xb800401b
+#define MASK_PREDSUMU_H 0xfe00707f
+#define MATCH_PREDSUMU_B 0xbc00401b
+#define MASK_PREDSUMU_B 0xfe00707f
+#define MATCH_PSRA_H_H0 0xc800401b
+#define MASK_PSRA_H_H0 0xfe00707f
+#define MATCH_PSRA_B_B0 0xcc00401b
+#define MASK_PSRA_B_B0 0xfe00707f
+#define MATCH_PSRL_W_W0 0x8a00401b
+#define MASK_PSRL_W_W0 0xfe00707f
+#define MATCH_PREDSUM_W 0x9a00401b
+#define MASK_PREDSUM_W 0xfe00707f
+#define MATCH_PREDSUMU_W 0xba00401b
+#define MASK_PREDSUMU_W 0xfe00707f
+#define MATCH_PSRA_W_W0 0xca00401b
+#define MASK_PSRA_W_W0 0xfe00707f
+
+#define MATCH_PADD_H 0x8000003b
+#define MASK_PADD_H 0xfe00707f
 #define MATCH_PADD_B 0x8400003b
 #define MASK_PADD_B 0xfe00707f
+#define MATCH_PSADD_H 0x9000003b
+#define MASK_PSADD_H 0xfe00707f
+#define MATCH_SADD 0x9200003b
+#define MASK_SADD 0xfe00707f
 #define MATCH_PSADD_B 0x9400003b
 #define MASK_PSADD_B 0xfe00707f
+#define MATCH_PAADD_H 0x9800003b
+#define MASK_PAADD_H 0xfe00707f
+#define MATCH_AADD 0x9a00003b
+#define MASK_AADD 0xfe00707f
+#define MATCH_PAADD_B 0x9c00003b
+#define MASK_PAADD_B 0xfe00707f
+#define MATCH_PSADDU_H 0xb000003b
+#define MASK_PSADDU_H 0xfe00707f
+#define MATCH_SADDU 0xb200003b
+#define MASK_SADDU 0xfe00707f
 #define MATCH_PSADDU_B 0xb400003b
 #define MASK_PSADDU_B 0xfe00707f
-// Todo
-// #define MATCH_PAADD_B 0x
-// #define MASK_PAADD_B 0xfe00707f
-// #define MATCH_PAADDU_B 0x
-// #define MASK_PAADDU_B 0xfe00707f
-// #define MATCH_PADD_H 0x8000003b
-// #define MASK_PADD_H 0xfe00707f
-// #define MATCH_PSADD_H 0x9000003b
-// #define MASK_PSADD_H 0xfe00707f
-// #define MATCH_PSADDU_H 0x
-// #define MASK_PSADDU_H 0xfe00707f
-// #define MATCH_PAADD_H 0x
-// #define MASK_PAADD_H 0xfe00707f
-// #define MATCH_PAADDU_H 0x
-// #define MASK_PAADDU_H 0xfe00707f
-// #define MATCH_PSUB_B 0x
-// #define MASK_PSUB_B 0xfe00707f
-// #define MATCH_PSSUB_B 0x
-// #define MASK_PSSUB_B 0xfe00707f
-// #define MATCH_PSSUBU_B 0x
-// #define MASK_PSSUBU_B 0xfe00707f
-// #define MATCH_PASUB_B 0x
-// #define MASK_PASUB_B 0xfe00707f
-// #define MATCH_PASUBU_B 0x
-// #define MASK_PASUBU_B 0xfe00707f
-// #define MATCH_PSUB_H 0x
-// #define MASK_PSUB_H 0xfe00707f
-// #define MATCH_PSSUB_H 0x
-// #define MASK_PSSUB_H 0xfe00707f
-// #define MATCH_PSSUBU_H 0x
-// #define MASK_PSSUBU_H 0xfe00707f
-// #define MATCH_PASUB_H 0x
-// #define MASK_PASUB_H 0xfe00707f
-// #define MATCH_PASUBU_H 0x
-// #define MASK_PASUBU_H 0xfe00707f
-// #define MATCH_PSH1ADD_H 0x
-// #define MASK_PSH1ADD_H 0x
-// #define MATCH_PSSH1SADD_H 0x
-// #define MASK_PSSH1SADD_H 0x
-// #define MATCH_PAS_HX 0x
-// #define MASK_PAS_HX 0x
-// #define MATCH_PSA_HX 0x
-// #define MASK_PSA_HX 0x
-// #define MATCH_PSAS_HX 0x
-// #define MASK_PSAS_HX 0x
-// #define MATCH_PSSA_HX 0x
-// #define MASK_PSSA_HX 0x
-// #define MATCH_PAAS_HX 0x
-// #define MASK_PAAS_HX 0x
-// #define MATCH_PASA_HX 0x
-// #define MASK_PASA_HX 0x
-// #define MATCH_PDIF_B 0x
-// #define MASK_PDIF_B 0x
-// #define MATCH_PDIFU_B 0x
-// #define MASK_PDIFU_B 0x
-// #define MATCH_PDIF_H 0x
-// #define MASK_PDIF_H 0x
-// #define MATCH_PDIFU_H 0x
-// #define MASK_PDIFU_H 0x
-// #define MATCH_PREDSUM_B 0x
-// #define MASK_PREDSUM_B 0x
-// #define MATCH_PREDSUMU_B 0x
-// #define MASK_PREDSUMU_B 0x
-// #define MATCH_PREDSUM_H 0x
-// #define MASK_PREDSUM_H 0x
-// #define MATCH_PREDSUMU_H 0x
-// #define MASK_PREDSUMU_H 0x
-// #define MATCH_PDIFSUMU_B 0x
-// #define MASK_PDIFSUMU_B 0x
-// #define MATCH_PDIFSUMAU_B 0x
-// #define MASK_PDIFSUMAU_B 0x
-// #define MATCH_SADD 0x
-// #define MASK_SADD 0x
-// #define MATCH_SADDU 0x
-// #define MASK_SADDU 0x
-// #define MATCH_SSUB 0x
-// #define MASK_SSUB 0x
-// #define MATCH_SSUBU 0x
-// #define MASK_SSUBU 0x
-// #define MATCH_AADD 0x
-// #define MASK_AADD 0x
-// #define MATCH_AADDU 0x
-// #define MASK_AADDU 0x
-// #define MATCH_ASUB 0x
-// #define MASK_ASUB 0x
-// #define MATCH_ASUBU 0x
-// #define MASK_ASUBU 0x
-// #define MATCH_PADD_W 0x
-// #define MASK_PADD_W 0x
-// #define MATCH_PSUB_W 0x
-// #define MASK_PSUB_W 0x
-// #define MATCH_PSADD_W 0x
-// #define MASK_PSADD_W 0x
-// #define MATCH_PSADDU_W 0x
-// #define MASK_PSADDU_W 0x
-// #define MATCH_PSSUB_W 0x
-// #define MASK_PSSUB_W 0x
-// #define MATCH_PSSUBU_W 0x
-// #define MASK_PSSUBU_W 0x
-// #define MATCH_PAADD_W 0x
-// #define MASK_PAADD_W 0x
-// #define MATCH_PAADDU_W 0x
-// #define MASK_PAADDU_W 0x
-// #define MATCH_PASUB_W 0x
-// #define MASK_PASUB_W 0x
-// #define MATCH_PASUBU_W 0x
-// #define MASK_PASUBU_W 0x
-// #define MATCH_SSH1SADD 0x
-// #define MASK_SSH1SADD 0x
-// #define MATCH_PSH1ADD_W 0x
-// #define MASK_PSH1ADD_W 0x
-// #define MATCH_PSSH1SADD_W 0x
-// #define MASK_PSSH1SADD_W 0x
-// #define MATCH_PAS_WX 0x
-// #define MASK_PAS_WX 0x
-// #define MATCH_PSA_WX 0x
-// #define MASK_PSA_WX 0x
-// #define MATCH_PSAS_WX 0x
-// #define MASK_PSAS_WX 0x
-// #define MATCH_PSSA_WX 0x
-// #define MASK_PSSA_WX 0x
-// #define MATCH_PAAS_WX 0x
-// #define MASK_PAAS_WX 0x
-// #define MATCH_PASA_WX 0x
-// #define MASK_PASA_WX 0x
-// #define MATCH_PREDSUM_W 0x
-// #define MASK_PREDSUM_W 0x
-// #define MATCH_PREDSUMU_W 0x
-// #define MASK_PREDSUMU_W 0x
-// #define MATCH_PSATI_H 0x
-// #define MASK_PSATI_H 0x
-// #define MATCH_PSRAI_B 0x
-// #define MASK_PSRAI_B 0x
-// #define MATCH_PSRA_B_B0 0x
-// #define MASK_PSRA_B_B0 0x
-// #define MATCH_PSRLI_B 0x
-// #define MASK_PSRLI_B 0x
-// #define MATCH_PSRL_B_B0 0x
-// #define MASK_PSRL_B_B0 0x
-// #define MATCH_PUSATI_H 0x
-// #define MASK_PUSATI_H 0x
-// #define MATCH_PMAX_B 0x
-// #define MASK_PMAX_B 0x
-// #define MATCH_PMAX_H 0x
-// #define MASK_PMAX_H 0x
-// #define MATCH_PMAXU_B 0x
-// #define MASK_PMAXU_B 0x
-// #define MATCH_PMAXU_H 0x
-// #define MASK_PMAXU_H 0x
-// #define MATCH_PMIN_B 0x
-// #define MASK_PMIN_B 0x
-// #define MATCH_PMIN_H 0x
-// #define MASK_PMIN_H 0x
-// #define MATCH_PMINU_B 0x
-// #define MASK_PMINU_B 0x
-// #define MATCH_PMINU_H 0x
-// #define MASK_PMINU_H 0x
-// #define MATCH_PMSEQ_B 0x
-// #define MASK_PMSEQ_B 0x
-// #define MATCH_PMSEQ_H 0x
-// #define MASK_PMSEQ_H 0x
-// #define MATCH_PMSLT_B 0x
-// #define MASK_PMSLT_B 0x
-// #define MATCH_PMSLT_H 0x
-// #define MASK_PMSLT_H 0x
-// #define MATCH_PMSLTU_B 0x
-// #define MASK_PMSLTU_B 0x
-// #define MATCH_PMSLTU_H 0x
-// #define MASK_PMSLTU_H 0x
-// #define MATCH_PSRA_H_H0 0x
-// #define MASK_PSRA_H_H0 0x
-// #define MATCH_PSRAI_H 0x
-// #define MASK_PSRAI_H 0x
-// #define MATCH_PSRARI_H 0x
-// #define MASK_PSRARI_H 0x
-// #define MATCH_PSRL_H_H0 0x
-// #define MASK_PSRL_H_H0 0x
-// #define MATCH_PSRLI_H 0x
-// #define MASK_PSRLI_H 0x
-// #define MATCH_MSEQ 0x
-// #define MASK_MSEQ 0x
-// #define MATCH_MSLT 0x
-// #define MASK_MSLT 0x
-// #define MATCH_MSLTU 0x
-// #define MASK_MSLTU 0x
-// #define MATCH_PMAX_W 0x
-// #define MASK_PMAX_W 0x
-// #define MATCH_PMAXU_W 0x
-// #define MASK_PMAXU_W 0x
-// #define MATCH_PMIN_W 0x
-// #define MASK_PMIN_W 0x
-// #define MATCH_PMINU_W 0x
-// #define MASK_PMINU_W 0x
-// #define MATCH_PMSEQ_W 0x
-// #define MASK_PMSEQ_W 0x
-// #define MATCH_PMSLT_W 0x
-// #define MASK_PMSLT_W 0x
-// #define MATCH_PMSLTU_W 0x
-// #define MASK_PMSLTU_W 0x
-// #define MATCH_PSATI_W 0x
-// #define MASK_PSATI_W 0x
-// #define MATCH_PSRAI_W 0x
-// #define MASK_PSRAI_W 0x
-// #define MATCH_PSRA_W_W0 0x
-// #define MASK_PSRA_W_W0 0x
-// #define MATCH_PSRARI_W 0x
-// #define MASK_PSRARI_W 0x
-// #define MATCH_PSRLI_W 0x
-// #define MASK_PSRLI_W 0x
-// #define MATCH_PSRL_W_W0 0x
-// #define MASK_PSRL_W_W0 0x
-// #define MATCH_PSSLSAI_W 0x
-// #define MASK_PSSLSAI_W 0x
-// #define MATCH_SATI 0x
-// #define MASK_SATI 0x
-// #define MATCH_SSLAI 0x
-// #define MASK_SSLAI 0x
-// #define MATCH_SRARI 0x
-// #define MASK_SRARI 0x
-// #define MATCH_USATI 0x
-// #define MASK_USATI 0x
-// #define MATCH_ABS 0x
-// #define MASK_ABS 0x
-// #define MATCH_ABSW 0x
-// #define MASK_ABSW 0x
-// #define MATCH_CLS 0x
-// #define MASK_CLS 0x
-// #define MATCH_MERGE 0x
-// #define MASK_MERGE 0x
-// #define MATCH_MVM 0x
-// #define MASK_MVM 0x
-// #define MATCH_MVMN 0x
-// #define MASK_MVMN 0x
-// #define MATCH_PACKBT 0x
-// #define MASK_PACKBT 0x
-// #define MATCH_PACKTB 0x
-// #define MASK_PACKTB 0x
-// #define MATCH_PACKT 0x
-// #define MASK_PACKT 0x
-// #define MATCH_PPACK_H 0x
-// #define MASK_PPACK_H 0x
-// #define MATCH_PPACK_W 0x
-// #define MASK_PPACK_W 0x
-// #define MATCH_PPACKBT_H 0x
-// #define MASK_PPACKBT_H 0x
-// #define MATCH_PPACKBT_W 0x
-// #define MASK_PPACKBT_W 0x
-// #define MATCH_PPACKTB_H 0x
-// #define MASK_PPACKTB_H 0x
-// #define MATCH_PPACKTB_W 0x
-// #define MASK_PPACKTB_W 0x
-// #define MATCH_PPACKT_H 0x
-// #define MASK_PPACKT_H 0x
-// #define MATCH_PPACKT_W 0x
-// #define MASK_PPACKT_W 0x
-// #define MATCH_SLX 0x
-// #define MASK_SLX 0x
-// #define MATCH_SLXI 0x
-// #define MASK_SLXI 0x
-// #define MATCH_SRX 0x
-// #define MASK_SRX 0x
-// #define MATCH_SRXI 0x
-// #define MASK_SRXI 0x
-// #define MATCH_UNZIP8HP 0x
-// #define MASK_UNZIP8HP 0x
-// #define MATCH_UNZIP8P 0x
-// #define MASK_UNZIP8P 0x
-// #define MATCH_UNZIP16HP 0x
-// #define MASK_UNZIP16HP 0x
-// #define MATCH_UNZIP16P 0x
-// #define MASK_UNZIP16P 0x
-// #define MATCH_ZIP8HP 0x
-// #define MASK_ZIP8HP 0x
-// #define MATCH_ZIP8P 0x
-// #define MASK_ZIP8P 0x
-// #define MATCH_ZIP16HP 0x
-// #define MASK_ZIP16HP 0x
-// #define MATCH_ZIP16P 0x
-// #define MASK_ZIP16P 0x
+#define MATCH_PAADDU_H 0xb800003b
+#define MASK_PAADDU_H 0xfe00707f
+#define MATCH_AADDU 0xba00003b
+#define MASK_AADDU 0xfe00707f
+#define MATCH_PAADDU_B 0xbc00003b
+#define MASK_PAADDU_B 0xfe00707f
+#define MATCH_PSUB_H 0xc000003b
+#define MASK_PSUB_H 0xfe00707f
+#define MATCH_PSUB_B 0xc400003b
+#define MASK_PSUB_B 0xfe00707f
+#define MATCH_PDIF_H 0xc800003b
+#define MASK_PDIF_H 0xfe00707f
+#define MATCH_PDIF_B 0xcc00003b
+#define MASK_PDIF_B 0xfe00707f
+#define MATCH_PSSUB_H 0xd000003b
+#define MASK_PSSUB_H 0xfe00707f
+#define MATCH_SSUB 0xd200003b
+#define MASK_SSUB 0xfe00707f
+#define MATCH_PSSUB_B 0xd400003b
+#define MASK_PSSUB_B 0xfe00707f
+#define MATCH_PASUB_H 0xd800003b
+#define MASK_PASUB_H 0xfe00707f
+#define MATCH_ASUB 0xda00003b
+#define MASK_ASUB 0xfe00707f
+#define MATCH_PASUB_B 0xdc00003b
+#define MASK_PASUB_B 0xfe00707f
+#define MATCH_PDIFU_H 0xe800003b
+#define MASK_PDIFU_H 0xfe00707f
+#define MATCH_PDIFU_B 0xec00003b
+#define MASK_PDIFU_B 0xfe00707f
+#define MATCH_PSSUBU_H 0xf000003b
+#define MASK_PSSUBU_H 0xfe00707f
+#define MATCH_SSUBU 0xf200003b
+#define MASK_SSUBU 0xfe00707f
+#define MATCH_PSSUBU_B 0xf400003b
+#define MASK_PSSUBU_B 0xfe00707f
+#define MATCH_PASUBU_H 0xf800003b
+#define MASK_PASUBU_H 0xfe00707f
+#define MATCH_ASUBU 0xfa00003b
+#define MASK_ASUBU 0xfe00707f
+#define MATCH_PASUBU_B 0xfc00003b
+#define MASK_PASUBU_B 0xfe00707f
+#define MATCH_PADD_W 0x8200003b
+#define MASK_PADD_W 0xfe00707f
+#define MATCH_PSADD_W 0x9200003b
+#define MASK_PSADD_W 0xfe00707f
+#define MATCH_PAADD_W 0x9a00003b
+#define MASK_PAADD_W 0xfe00707f
+#define MATCH_PSADDU_W 0xb200003b
+#define MASK_PSADDU_W 0xfe00707f
+#define MATCH_PAADDU_W 0xba00003b
+#define MASK_PAADDU_W 0xfe00707f
+#define MATCH_PSUB_W 0xc200003b
+#define MASK_PSUB_W 0xfe00707f
+#define MATCH_PSSUB_W 0xd200003b
+#define MASK_PSSUB_W 0xfe00707f
+#define MATCH_PASUB_W 0xda00003b
+#define MASK_PASUB_W 0xfe00707f
+#define MATCH_PSSUBU_W 0xf200003b
+#define MASK_PSSUBU_W 0xfe00707f
+#define MATCH_PASUBU_W 0xfa00003b
+#define MASK_PASUBU_W 0xfe00707f
+
+#define MATCH_SLX 0x8e00103b
+#define MASK_SLX 0xfe00707f
+#define MATCH_PMUL_H_BEO 0x9000103b
+#define MASK_PMUL_H_BEO 0xfe00707f
+#define MATCH_MUL_H01 0x9200103b
+#define MASK_MUL_H01 0xfe00707f
+#define MATCH_MACC_H01 0x9a00103b
+#define MASK_MACC_H01 0xfe00707f
+#define MATCH_MVM 0xa800103b
+#define MASK_MVM 0xfe00707f
+#define MATCH_MVMN 0xaa00103b
+#define MASK_MVMN 0xfe00707f
+#define MATCH_MERGE 0xac00103b
+#define MASK_MERGE 0xfe00707f
+#define MATCH_SRX 0xae00103b
+#define MASK_SRX 0xfe00707f
+#define MATCH_PMULU_H_BEO 0xb000103b
+#define MASK_PMULU_H_BEO 0xfe00707f
+#define MATCH_MULU_H01 0xb200103b
+#define MASK_MULU_H01 0xfe00707f
+#define MATCH_PDIFSUMU_B 0xb400103b
+#define MASK_PDIFSUMU_B 0xfe00707f
+#define MATCH_MACCU_H01 0xba00103b
+#define MASK_MACCU_H01 0xfe00707f
+#define MATCH_PDIFSUMAU_B 0xbc00103b
+#define MASK_PDIFSUMAU_B 0xfe00707f
+#define MATCH_PMUL_W_HEO 0x9200103b
+#define MASK_PMUL_W_HEO 0xfe00707f
+#define MATCH_MUL_W01 0x9600103b
+#define MASK_MUL_W01 0xfe00707f
+#define MATCH_PMACC_W_HEO 0x9a00103b
+#define MASK_PMACC_W_HEO 0xfe00707f
+#define MATCH_MACC_W01 0x9e00103b
+#define MASK_MACC_W01 0xfe00707f
+#define MATCH_PMULU_W_HEO 0xb200103b
+#define MASK_PMULU_W_HEO 0xfe00707f
+#define MATCH_MULU_W01 0xb600103b
+#define MASK_MULU_W01 0xfe00707f
+#define MATCH_PMACCU_W_HEO 0xba00103b
+#define MASK_PMACCU_W_HEO 0xfe00707f
+#define MATCH_MACCU_W01 0xbe00103b
+#define MASK_MACCU_W01 0xfe00707f
+
+#define MATCH_PSH1ADD_H 0xa000203b
+#define MASK_PSH1ADD_H 0xfe00707f
+#define MATCH_PSSH1SADD_H 0xb000203b
+#define MASK_PSSH1SADD_H 0xfe00707f
+#define MATCH_SSH1SADD 0xb200203b
+#define MASK_SSH1SADD 0xfe00707f
+#define MATCH_PSH1ADD_W 0xa200203b
+#define MASK_PSH1ADD_W 0xfe00707f
+#define MATCH_PSSH1SADD_W 0xb200203b
+#define MASK_PSSH1SADD_W 0xfe00707f
+#define MATCH_UNZIP8P 0xe000203b
+#define MASK_UNZIP8P 0xfe00707f
+#define MATCH_UNZIP16P 0xe200203b
+#define MASK_UNZIP16P 0xfe00707f
+#define MATCH_UNZIP8HP 0xe400203b
+#define MASK_UNZIP8HP 0xfe00707f
+#define MATCH_UNZIP16HP 0xe600203b
+#define MASK_UNZIP16HP 0xfe00707f
+#define MATCH_ZIP8P 0xf000203b
+#define MASK_ZIP8P 0xfe00707f
+#define MATCH_ZIP16P 0xf200203b
+#define MASK_ZIP16P 0xfe00707f
+#define MATCH_ZIP8HP 0xf400203b
+#define MASK_ZIP8HP 0xfe00707f
+#define MATCH_ZIP16HP 0xf600203b
+#define MASK_ZIP16HP 0xfe00707f
+
+#define MATCH_PMUL_H_BEE 0x8000303b
+#define MASK_PMUL_H_BEE 0xfe00707f
+#define MATCH_MUL_H00 0x8200303b
+#define MASK_MUL_H00 0xfe00707f
+#define MATCH_MACC_H00 0x8a00303b
+#define MASK_MACC_H00 0xfe00707f
+#define MATCH_PMUL_H_BOO 0x9000303b
+#define MASK_PMUL_H_BOO 0xfe00707f
+#define MATCH_MUL_H11 0x9200303b
+#define MASK_MUL_H11 0xfe00707f
+#define MATCH_MACC_H11 0x9a00303b
+#define MASK_MACC_H11 0xfe00707f
+#define MATCH_PMULU_H_BEE 0xa000303b
+#define MASK_PMULU_H_BEE 0xfe00707f
+#define MATCH_MULU_H00 0xa200303b
+#define MASK_MULU_H00 0xfe00707f
+#define MATCH_MACCU_H00 0xaa00303b
+#define MASK_MACCU_H00 0xfe00707f
+#define MATCH_PMULU_H_BOO 0xb000303b
+#define MASK_PMULU_H_BOO 0xfe00707f
+#define MATCH_MULU_H11 0xb200303b
+#define MASK_MULU_H11 0xfe00707f
+#define MATCH_MACCU_H11 0xba00303b
+#define MASK_MACCU_H11 0xfe00707f
+#define MATCH_PMULSU_H_BEE 0xe000303b
+#define MASK_PMULSU_H_BEE 0xfe00707f
+#define MATCH_MULSU_H00 0xe200303b
+#define MASK_MULSU_H00 0xfe00707f
+#define MATCH_MACCSU_H00 0xea00303b
+#define MASK_MACCSU_H00 0xfe00707f
+#define MATCH_PMULSU_H_BOO 0xf000303b
+#define MASK_PMULSU_H_BOO 0xfe00707f
+#define MATCH_MULSU_H11 0xf200303b
+#define MASK_MULSU_H11 0xfe00707f
+#define MATCH_MACCSU_H11 0xfa00303b
+#define MASK_MACCSU_H11 0xfe00707f
+#define MATCH_PMUL_W_HEE 0x8200303b
+#define MASK_PMUL_W_HEE 0xfe00707f
+#define MATCH_MUL_W00 0x8600303b
+#define MASK_MUL_W00 0xfe00707f
+#define MATCH_PMACC_W_HEE 0x8a00303b
+#define MASK_PMACC_W_HEE 0xfe00707f
+#define MATCH_MACC_W00 0x8e00303b
+#define MASK_MACC_W00 0xfe00707f
+#define MATCH_PMUL_W_HOO 0x9200303b
+#define MASK_PMUL_W_HOO 0xfe00707f
+#define MATCH_MUL_W11 0x9600303b
+#define MASK_MUL_W11 0xfe00707f
+#define MATCH_PMACC_W_HOO 0x9a00303b
+#define MASK_PMACC_W_HOO 0xfe00707f
+#define MATCH_MACC_H11 0x9e00303b
+#define MASK_MACC_H11 0xfe00707f
+#define MATCH_PMULU_W_HEE 0xa200303b
+#define MASK_PMULU_W_HEE 0xfe00707f
+#define MATCH_MULU_W00 0xa600303b
+#define MASK_MULU_W00 0xfe00707f
+#define MATCH_PMACCU_W_HEE 0xaa00303b
+#define MASK_PMACCU_W_HEE 0xfe00707f
+#define MATCH_MACCU_W00 0xae00303b
+#define MASK_MACCU_W00 0xfe00707f
+#define MATCH_PMULU_W_HOO 0xb200303b
+#define MASK_PMULU_W_HOO 0xfe00707f
+#define MATCH_MULU_W11 0xb600303b
+#define MASK_MULU_W11 0xfe00707f
+#define MATCH_PMACCU_W_HOO 0xba00303b
+#define MASK_PMACCU_W_HOO 0xfe00707f
+#define MATCH_MACCU_W11 0xbe00303b
+#define MASK_MACCU_W11 0xfe00707f
+#define MATCH_PMULSU_W_HEE 0xe200303b
+#define MASK_PMULSU_W_HEE 0xfe00707f
+#define MATCH_MULSU_W00 0xe600303b
+#define MASK_MULSU_W00 0xfe00707f
+#define MATCH_PMACCSU_W_HEE 0xea00303b
+#define MASK_PMACCSU_W_HEE 0xfe00707f
+#define MATCH_MACCSU_W00 0xee00303b
+#define MASK_MACCSU_W00 0xfe00707f
+#define MATCH_PMULSU_W_HOO 0xf200303b
+#define MASK_PMULSU_W_HOO 0xfe00707f
+#define MATCH_MULSU_W11 0xf600303b
+#define MASK_MULSU_W11 0xfe00707f
+#define MATCH_PMACCSU_W_HOO 0xfa00303b
+#define MASK_PMACCSU_W_HOO 0xfe00707f
+#define MATCH_MACCSU_W11 0xfe00303b
+#define MASK_MACCSU_W11 0xfe00707f
+
+#define MATCH_PPACK_H 0x8000403b
+#define MASK_PPACK_H 0xfe00707f
+#define MATCH_PPACKBT_H 0x9000403b
+#define MASK_PPACKBT_H 0xfe00707f
+#define MATCH_PACKBT 0x9200403b
+#define MASK_PACKBT 0xfe00707f
+#define MATCH_PPACKTB_H 0xa000403b
+#define MASK_PPACKTB_H 0xfe00707f
+#define MATCH_PACKTB 0xa200403b
+#define MASK_PACKTB 0xfe00707f
+#define MATCH_PPACKT_H 0xb000403b
+#define MASK_PPACKT_H 0xfe00707f
+#define MATCH_PACKT 0xb200403b
+#define MASK_PACKT 0xfe00707f
+#define MATCH_PPACK_W 0x8200403b
+#define MASK_PPACK_W 0xfe00707f
+#define MATCH_PPACKBT_W 0x9200403b
+#define MASK_PPACKBT_W 0xfe00707f
+#define MATCH_PACKBT_64 0x9600403b
+#define MASK_PACKBT_64 0xfe00707f
+#define MATCH_PPACKTB_W 0xa200403b
+#define MASK_PPACKTB_W 0xfe00707f
+#define MATCH_PACKTB_64 0xa600403b
+#define MASK_PACKTB_64 0xfe00707f
+#define MATCH_PPACKT_W 0xb200403b
+#define MASK_PPACKT_W 0xfe00707f
+#define MATCH_PACKT_64 0xb600403b
+#define MASK_PACKT_64 0xfe00707f
+
+#define MATCH_PM2ADD_H 0x8000503b
+#define MASK_PM2ADD_H 0xfe00707f
+#define MATCH_PM4ADD_B 0x8400503b
+#define MASK_PM4ADD_B 0xfe00707f
+#define MATCH_PM2ADDA_H 0x8800503b
+#define MASK_PM2ADDA_H 0xfe00707f
+#define MATCH_PM4ADDA_B 0x8c00503b
+#define MASK_PM4ADDA_B 0xfe00707f
+#define MATCH_PM2ADD_HX 0x9000503b
+#define MASK_PM2ADD_HX 0xfe00707f
+#define MATCH_PM2ADDA_HX 0x9800503b
+#define MASK_PM2ADDA_HX 0xfe00707f
+#define MATCH_PM2ADDU_H 0xa000503b
+#define MASK_PM2ADDU_H 0xfe00707f
+#define MATCH_PM4ADDU_B 0xa400503b
+#define MASK_PM4ADDU_B 0xfe00707f
+#define MATCH_PM2ADDAU_H 0xa800503b
+#define MASK_PM2ADDAU_H 0xfe00707f
+#define MATCH_PM4ADDAU_B 0xac00503b
+#define MASK_PM4ADDAU_B 0xfe00707f
+#define MATCH_PMQ2ADD_H 0xb000503b
+#define MASK_PMQ2ADD_H 0xfe00707f
+#define MATCH_PMQR2ADD_H 0xb400503b
+#define MASK_PMQR2ADD_H 0xfe00707f
+#define MATCH_PMQ2ADDA_H 0xb800503b
+#define MASK_PMQ2ADDA_H 0xfe00707f
+#define MATCH_PMQR2ADDA_H 0xbc00503b
+#define MASK_PMQR2ADDA_H 0xfe00707f
+#define MATCH_PM2SUB_H 0xc000503b
+#define MASK_PM2SUB_H 0xfe00707f
+#define MATCH_PM4SUB_B 0xc400503b
+#define MASK_PM4SUB_B 0xfe00707f
+#define MATCH_PM2SUBA_H 0xc800503b
+#define MASK_PM2SUBA_H 0xfe00707f
+#define MATCH_PM2SUB_HX 0xd000503b
+#define MASK_PM2SUB_HX 0xfe00707f
+#define MATCH_PM2SADD_HX 0xd400503b
+#define MASK_PM2SADD_HX 0xfe00707f
+#define MATCH_PM2SUBA_HX 0xd800503b
+#define MASK_PM2SUBA_HX 0xfe00707f
+#define MATCH_PM2ADDSU_H 0xe000503b
+#define MASK_PM2ADDSU_H 0xfe00707f
+#define MATCH_PM4ADDSU_B 0xe400503b
+#define MASK_PM4ADDSU_B 0xfe00707f
+#define MATCH_PM2ADDASU_H 0xe800503b
+#define MASK_PM2ADDASU_H 0xfe00707f
+#define MATCH_PM4ADDASU_B 0xec00503b
+#define MASK_PM4ADDASU_B 0xfe00707f
+#define MATCH_MQACC_H01 0xf800503b
+#define MASK_MQACC_H01 0xfe00707f
+#define MATCH_MRQACC_H01 0xfc00503b
+#define MASK_MRQACC_H01 0xfe00707f
+#define MATCH_PM2ADD_W 0x8200503b
+#define MASK_PM2ADD_W 0xfe00707f
+#define MATCH_PM4ADD_H 0x8600503b
+#define MASK_PM4ADD_H 0xfe00707f
+#define MATCH_PM2ADDA_W 0x8a00503b
+#define MASK_PM2ADDA_W 0xfe00707f
+#define MATCH_PM4ADDA_H 0x8e00503b
+#define MASK_PM4ADDA_H 0xfe00707f
+#define MATCH_PM2ADD_WX 0x9200503b
+#define MASK_PM2ADD_WX 0xfe00707f
+#define MATCH_PM2ADDA_WX 0x9a00503b
+#define MASK_PM2ADDA_WX 0xfe00707f
+#define MATCH_PM2ADDU_W 0xa200503b
+#define MASK_PM2ADDU_W 0xfe00707f
+#define MATCH_PM4ADDU_H 0xa600503b
+#define MASK_PM4ADDU_H 0xfe00707f
+#define MATCH_PM2ADDAU_W 0xaa00503b
+#define MASK_PM2ADDAU_W 0xfe00707f
+#define MATCH_PM4ADDAU_H 0xae00503b
+#define MASK_PM4ADDAU_H 0xfe00707f
+#define MATCH_PMQ2ADD_W 0xb200503b
+#define MASK_PMQ2ADD_W 0xfe00707f
+#define MATCH_PMQR2ADD_WX 0xb600503b
+#define MASK_PMQR2ADD_WX 0xfe00707f
+#define MATCH_PMQ2ADDA_W 0xba00503b
+#define MASK_PMQ2ADDA_W 0xfe00707f
+#define MATCH_PMQR2ADDA_WX 0xbe00503b
+#define MASK_PMQR2ADDA_WX 0xfe00707f
+#define MATCH_PM2SUB_W 0xc200503b
+#define MASK_PM2SUB_W 0xfe00707f
+#define MATCH_PM2SUBA_W 0xca00503b
+#define MASK_PM2SUBA_W 0xfe00707f
+#define MATCH_PM2SUB_WX 0xd200503b
+#define MASK_PM2SUB_WX 0xfe00707f
+#define MATCH_PM2SUBA_WX 0xda00503b
+#define MASK_PM2SUBA_WX 0xfe00707f
+#define MATCH_PM2ADDSU_W 0xe200503b
+#define MASK_PM2ADDSU_W 0xfe00707f
+#define MATCH_PM4ADDSU_H 0xe600503b
+#define MASK_PM4ADDSU_H 0xfe00707f
+#define MATCH_PM2ADDASU_W 0xea00503b
+#define MASK_PM2ADDASU_W 0xfe00707f
+#define MATCH_PM4ADDASU_H 0xee00503b
+#define MASK_PM4ADDASU_H 0xfe00707f
+#define MATCH_PMQACC_W_HEO 0xf800503b
+#define MASK_PMQACC_W_HEO 0xfe00707f
+#define MATCH_MQACC_W01 0xfa00503b
+#define MASK_MQACC_W01 0xfe00707f
+#define MATCH_PMRQACC_W_HEO 0xfc00503b
+#define MASK_PMRQACC_W_HEO 0xfe00707f
+#define MATCH_MRQACC_W01 0xfe00503b
+#define MASK_MRQACC_W01 0xfe00707f
+
+#define MATCH_PAS_HX 0x8000603b
+#define MASK_PAS_HX 0xfe00707f
+#define MATCH_PSA_HX 0x8400603b
+#define MASK_PSA_HX 0xfe00707f
+#define MATCH_PSAS_HX 0x9000603b
+#define MASK_PSAS_HX 0xfe00707f
+#define MATCH_PSSA_HX 0x9400603b
+#define MASK_PSSA_HX 0xfe00707f
+#define MATCH_PAAS_HX 0x9800603b
+#define MASK_PAAS_HX 0xfe00707f
+#define MATCH_PASA_HX 0x9c00603b
+#define MASK_PASA_HX 0xfe00707f
+#define MATCH_PMSEQ_H 0xc000603b
+#define MASK_PMSEQ_H 0xfe00707f
+#define MATCH_MSEQ 0xc200603b
+#define MASK_MSEQ 0xfe00707f
+#define MATCH_PMSEQ_B 0xc400603b
+#define MASK_PMSEQ_B 0xfe00707f
+#define MATCH_PMSLT_H 0xd000603b
+#define MASK_PMSLT_H 0xfe00707f
+#define MATCH_MSLT 0xd200603b
+#define MASK_MSLT 0xfe00707f
+#define MATCH_PMSLT_B 0xd400603b
+#define MASK_PMSLT_B 0xfe00707f
+#define MATCH_PMSLTU_H 0xd800603b
+#define MASK_PMSLTU_H 0xfe00707f
+#define MATCH_MSLTU 0xda00603b
+#define MASK_MSLTU 0xfe00707f
+#define MATCH_PMSLTU_B 0xdc00603b
+#define MASK_PMSLTU_B 0xfe00707f
+#define MATCH_PMIN_H 0xe000603b
+#define MASK_PMIN_H 0xfe00707f
+#define MATCH_PMIN_B 0xe400603b
+#define MASK_PMIN_B 0xfe00707f
+#define MATCH_PMINU_H 0xe800603b
+#define MASK_PMINU_H 0xfe00707f
+#define MATCH_PMINU_B 0xec00603b
+#define MASK_PMINU_B 0xfe00707f
+#define MATCH_PMAX_H 0xf000603b
+#define MASK_PMAX_H 0xfe00707f
+#define MATCH_PMAX_B 0xf400603b
+#define MASK_PMAX_B 0xfe00707f
+#define MATCH_PMAXU_H 0xf800603b
+#define MASK_PMAXU_H 0xfe00707f
+#define MATCH_PMAXU_B 0xfc00603b
+#define MASK_PMAXU_B 0xfe00707f
+#define MATCH_PAS_WX 0x8200603b
+#define MASK_PAS_WX 0xfe00707f
+#define MATCH_PSA_WX 0x8600603b
+#define MASK_PSA_WX 0xfe00707f
+#define MATCH_PSAS_WX 0x9200603b
+#define MASK_PSAS_WX 0xfe00707f
+#define MATCH_PSSA_WX 0x9600603b
+#define MASK_PSSA_WX 0xfe00707f
+#define MATCH_PAAS_WX 0x9a00603b
+#define MASK_PAAS_WX 0xfe00707f
+#define MATCH_PASA_WX 0x9e00603b
+#define MASK_PASA_WX 0xfe00707f
+#define MATCH_PMSEQ_W 0xc200603b
+#define MASK_PMSEQ_W 0xfe00707f
+#define MATCH_PMSLT_W 0xd200603b
+#define MASK_PMSLT_W 0xfe00707f
+#define MATCH_PMSLTU_W 0xda00603b
+#define MASK_PMSLTU_W 0xfe00707f
+#define MATCH_PMIN_W 0xe200603b
+#define MASK_PMIN_W 0xfe00707f
+#define MATCH_PMINU_W 0xea00603b
+#define MASK_PMINU_W 0xfe00707f
+#define MATCH_PMAX_W 0xf200603b
+#define MASK_PMAX_W 0xfe00707f
+#define MATCH_PMAXU_W 0xfa00603b
+#define MASK_PMAXU_W 0xfe00707f
+
+#define MATCH_PMULH_H 0x8000703b
+#define MASK_PMULH_H 0xfe00707f
+#define MATCH_PMULHR_H 0x8400703b
+#define MASK_PMULHR_H 0xfe00707f
+#define MATCH_MULHR 0x8600703b
+#define MASK_MULHR 0xfe00707f
+#define MATCH_PMHACC_H 0x8800703b
+#define MASK_PMHACC_H 0xfe00707f
+#define MATCH_MHACC 0x8a00703b
+#define MASK_MHACC 0xfe00707f
+#define MATCH_PMHRACC_H 0x8c00703b
+#define MASK_PMHRACC_H 0xfe00707f
+#define MATCH_MHRACC 0x8e00703b
+#define MASK_MHRACC 0xfe00707f
+#define MATCH_PMULHU_H 0x9000703b
+#define MASK_PMULHU_H 0xfe00707f
+#define MATCH_PMULHRU_H 0x9400703b
+#define MASK_PMULHRU_H 0xfe00707f
+#define MATCH_MULHRU 0x9600703b
+#define MASK_MULHRU 0xfe00707f
+#define MATCH_PMHACCU_H 0x9800703b
+#define MASK_PMHACCU_H 0xfe00707f
+#define MATCH_MHACCU 0x9a00703b
+#define MASK_MHACCU 0xfe00707f
+#define MATCH_PMHRACCU_H 0x9c00703b
+#define MASK_PMHRACCU_H 0xfe00707f
+#define MATCH_MHRACCU 0x9e00703b
+#define MASK_MHRACCU 0xfe00707f
+#define MATCH_PMULH_H_BE 0xa000703b
+#define MASK_PMULH_H_BE 0xfe00707f
+#define MATCH_MULH_H0 0xa200703b
+#define MASK_MULH_H0 0xfe00707f
+#define MATCH_PMULHSU_H_BE 0xa400703b
+#define MASK_PMULHSU_H_BE 0xfe00707f
+#define MATCH_MULHSU_H0 0xa600703b
+#define MASK_MULHSU_H0 0xfe00707f
+#define MATCH_PMHACC_H_BE 0xa800703b
+#define MASK_PMHACC_H_BE 0xfe00707f
+#define MATCH_MHACC_H0 0xaa00703b
+#define MASK_MHACC_H0 0xfe00707f
+#define MATCH_PMHACCSU_H_BE 0xac00703b
+#define MASK_PMHACCSU_H_BE 0xfe00707f
+#define MATCH_MHACCSU_H0 0xae00703b
+#define MASK_MHACCSU_H0 0xfe00707f
+#define MATCH_PMULH_H_BO 0xb000703b
+#define MASK_PMULH_H_BO 0xfe00707f
+#define MATCH_MULH_H1 0xb200703b
+#define MASK_MULH_H1 0xfe00707f
+#define MATCH_PMULHSU_H_BO 0xb400703b
+#define MASK_PMULHSU_H_BO 0xfe00707f
+#define MATCH_MULHSU_H1 0xb600703b
+#define MASK_MULHSU_H1 0xfe00707f
+#define MATCH_PMHACC_H_BO 0xb800703b
+#define MASK_PMHACC_H_BO 0xfe00707f
+#define MATCH_MHACC_H1 0xba00703b
+#define MASK_MHACC_H1 0xfe00707f
+#define MATCH_PMHACCSU_H_BO 0xbc00703b
+#define MASK_PMHACCSU_H_BO 0xfe00707f
+#define MATCH_MHACCSU_H1 0xbe00703b
+#define MASK_MHACCSU_H1 0xfe00707f
+#define MATCH_PMULHSU_H 0xc000703b
+#define MASK_PMULHSU_H 0xfe00707f
+#define MATCH_PMULHRSU_H 0xc400703b
+#define MASK_PMULHRSU_H 0xfe00707f
+#define MATCH_MULHRSU 0xc600703b
+#define MASK_MULHRSU 0xfe00707f
+#define MATCH_PMHACCSU_H 0xc800703b
+#define MASK_PMHACCSU_H 0xfe00707f
+#define MATCH_MHACCSU 0xca00703b
+#define MASK_MHACCSU 0xfe00707f
+#define MATCH_PMHRACCSU_H 0xcc00703b
+#define MASK_PMHRACCSU_H 0xfe00707f
+#define MATCH_MHRACCSU 0xce00703b
+#define MASK_MHRACCSU 0xfe00707f
+#define MATCH_PMULQ_H 0xd800703b
+#define MASK_PMULQ_H 0xfe00707f
+#define MATCH_MULQ 0xda00703b
+#define MASK_MULQ 0xfe00707f
+#define MATCH_PMULQR_H 0xdc00703b
+#define MASK_PMULQR_H 0xfe00707f
+#define MATCH_MULQR 0xde00703b
+#define MASK_MULQR 0xfe00707f
+#define MATCH_MQACC_H00 0xe800703b
+#define MASK_MQACC_H00 0xfe00707f
+#define MATCH_MQRACC_H00 0xec00703b
+#define MASK_MQRACC_H00 0xfe00707f
+#define MATCH_MQACC_H11 0xf800703b
+#define MASK_MQACC_H11 0xfe00707f
+#define MATCH_MQRACC_H11 0xfc00703b
+#define MASK_MQRACC_H11 0xfe00707f
+#define MATCH_PMULH_W 0x8200703b
+#define MASK_PMULH_W 0xfe00707f
+#define MATCH_PMULHR_W 0x8400703b
+#define MASK_PMULHR_W 0xfe00707f
+#define MATCH_PMHACC_W 0x8a00703b
+#define MASK_PMHACC_W 0xfe00707f
+#define MATCH_PMHRACC_W 0x8e00703b
+#define MASK_PMHRACC_W 0xfe00707f
+#define MATCH_PMULHU_W 0x9200703b
+#define MASK_PMULHU_W 0xfe00707f
+#define MATCH_PMULHRU_W 0x9400703b
+#define MASK_PMULHRU_W 0xfe00707f
+#define MATCH_PMHACCU_W 0x9a00703b
+#define MASK_PMHACCU_W 0xfe00707f
+#define MATCH_PMHRACCU_W 0x9e00703b
+#define MASK_PMHRACCU_W 0xfe00707f
+#define MATCH_PMULH_W_HE 0xa200703b
+#define MASK_PMULH_W_HE 0xfe00707f
+#define MATCH_PMULHSU_W_HE 0xa400703b
+#define MASK_PMULHSU_W_HE 0xfe00707f
+#define MATCH_PMHACC_W_HE 0xaa00703b
+#define MASK_PMHACC_W_HE 0xfe00707f
+#define MATCH_PMHACCSU_W_HE 0xae00703b
+#define MASK_PMHACCSU_W_HE 0xfe00707f
+#define MATCH_PMULH_W_HO 0xb200703b
+#define MASK_PMULH_W_HO 0xfe00707f
+#define MATCH_PMULHSU_W_HO 0xb400703b
+#define MASK_PMULHSU_W_HO 0xfe00707f
+#define MATCH_PMHACC_W_HO 0xba00703b
+#define MASK_PMHACC_W_HO 0xfe00707f
+#define MATCH_PMHACCSU_W_HO 0xbe00703b
+#define MASK_PMHACCSU_W_HO 0xfe00707f
+#define MATCH_PMULHSU_W 0xc200703b
+#define MASK_PMULHSU_W 0xfe00707f
+#define MATCH_PMULHRSU_W 0xc400703b
+#define MASK_PMULHRSU_W 0xfe00707f
+#define MATCH_PMHACCSU_W 0xca00703b
+#define MASK_PMHACCSU_W 0xfe00707f
+#define MATCH_PMHRACCSU_W 0xce00703b
+#define MASK_PMHRACCSU_W 0xfe00707f
+#define MATCH_PMULQ_W 0xd200703b
+#define MASK_PMULQ_W 0xfe00707f
+#define MATCH_PMULQR_W 0xd400703b
+#define MASK_PMULQR_W 0xfe00707f
+#define MATCH_PMQACC_W_HEE 0xe800703b
+#define MASK_PMQACC_W_HEE 0xfe00707f
+#define MATCH_MQACC_W00 0xea00703b
+#define MASK_MQACC_W00 0xfe00707f
+#define MATCH_PMQRACC_W_HEE 0xec00703b
+#define MASK_PMQRACC_W_HEE 0xfe00707f
+#define MATCH_MQRACC_W00 0xee00703b
+#define MASK_MQRACC_W00 0xfe00707f
+#define MATCH_PMQACC_W_HEE 0xf800703b
+#define MASK_PMQACC_W_HEE 0xfe00707f
+#define MATCH_MQACC_W00 0xfa00703b
+#define MASK_MQACC_W00 0xfe00707f
+#define MATCH_PMQRACC_W_HEE 0xfc00703b
+#define MASK_PMQRACC_W_HEE 0xfe00707f
+#define MATCH_MQRACC_W00 0xfe00703b
+#define MASK_MQRACC_W00 0xfe00707f
+
 /* Vendor-specific (CORE-V) Xcvmac instructions.  */
 #define MATCH_CV_MAC       0x9000302b
 #define MASK_CV_MAC        0xfe00707f
