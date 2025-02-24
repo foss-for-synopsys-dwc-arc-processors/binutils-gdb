@@ -2326,9 +2326,9 @@ const struct riscv_opcode riscv_opcodes[] =
 {"pslli.h",       0, INSN_CLASS_P, "d,s,>",     MATCH_PSLLI_H, MASK_PSLLI_H, match_opcode, 0 },
 {"pslli.b",       0, INSN_CLASS_P, "d,s,>",     MATCH_PSLLI_B, MASK_PSLLI_B, match_opcode, 0 },
 {"pslli.w",      64, INSN_CLASS_P, "d,s,>",     MATCH_PSLLI_W, MASK_PSLLI_W, match_opcode, 0 },
-{"psll.h.h0",     0, INSN_CLASS_P, "d,s,>",     MATCH_PSLL_H_H0, MASK_PSLL_H_H0, match_opcode, 0 },
-{"psll.b.b0",     0, INSN_CLASS_P, "d,s,>",     MATCH_PSLL_B_B0, MASK_PSLL_B_B0, match_opcode, 0 },
-{"psll.w.w0",    64, INSN_CLASS_P, "d,s,>",     MATCH_PSLL_W_W0, MASK_PSLL_W_W0, match_opcode, 0 },
+{"psll.h.h0",     0, INSN_CLASS_P, "d,s,>",     MATCH_PSLL_HS, MASK_PSLL_HS, match_opcode, 0 },
+{"psll.b.b0",     0, INSN_CLASS_P, "d,s,>",     MATCH_PSLL_BS, MASK_PSLL_BS, match_opcode, 0 },
+{"psll.w.w0",    64, INSN_CLASS_P, "d,s,>",     MATCH_PSLL_WS, MASK_PSLL_WS, match_opcode, 0 },
 
 
 /* Supervisor instructions.  */
