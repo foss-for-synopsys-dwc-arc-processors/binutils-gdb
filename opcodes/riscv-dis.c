@@ -917,6 +917,30 @@ print_insn_args (const char *oparg, insn_t l, bfd_vma pc, disassemble_info *info
 		  goto undefined_modifier;
 		}
 	      break;
+	    case 'a': /* Vendor-specific (ARC-V) operands.  */
+	      switch (*++oparg)
+		{
+		/* ARC-V uDSP "vtype" operand.  */
+		case 'v':
+		  switch (EXTRACT_OPERAND (FUNCT3, l))
+		    {
+		    case 0x1:
+		      print (info->stream, dis_style_text, "e16,mf2");
+		      break;
+		    case 0x2:
+		      print (info->stream, dis_style_text, "e16,m1");
+		      break;
+		    case 0x4:
+		      print (info->stream, dis_style_text, "e32,m1");
+		      break;
+		    default:
+		      print (info->stream, dis_style_text,
+	_("# Unsupported value of FUNCT3 in an ARC-V uDSP instruction"));
+		      return;
+		    }
+		  break;
+		}
+	      break;
 	    default:
 	      goto undefined_modifier;
 	    }
