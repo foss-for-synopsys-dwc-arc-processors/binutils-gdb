@@ -3579,6 +3579,24 @@ const struct riscv_opcode riscv_opcodes[] =
 {"mips.sdp", 0, INSN_CLASS_XMIPSLSP, "t,r,Xm^(s)", MATCH_MIPS_SDP, MASK_MIPS_SDP, match_opcode, 0 },
 {"mips.swp", 0, INSN_CLASS_XMIPSLSP, "t,r,Xm&(s)", MATCH_MIPS_SWP, MASK_MIPS_SWP, match_opcode, 0 },
 
+/* Vendor-specific (ARC-V) Xarcvudsp instructions.  */
+{"arcv.xvadd.vv",      0, INSN_CLASS_XARCVUDSP, "d,s,t,Xav", MATCH_ARCV_UDSP_XVADD_VV, MASK_ARCV_UDSP_XVADD_VV, match_opcode, 0},
+{"arcv.xvsub.vv",      0, INSN_CLASS_XARCVUDSP, "d,s,t,Xav", MATCH_ARCV_UDSP_XVSUB_VV, MASK_ARCV_UDSP_XVSUB_VV, match_opcode, 0},
+{"arcv.xvsadd.vv",     0, INSN_CLASS_XARCVUDSP, "d,s,t,Xav", MATCH_ARCV_UDSP_XVSADD_VV, MASK_ARCV_UDSP_XVSADD_VV, match_opcode, 0},
+{"arcv.xvssub.vv",     0, INSN_CLASS_XARCVUDSP, "d,s,t,Xav", MATCH_ARCV_UDSP_XVSSUB_VV, MASK_ARCV_UDSP_XVSSUB_VV, match_opcode, 0},
+{"arcv.xvsll.vx",      0, INSN_CLASS_XARCVUDSP, "d,s,t,Xav", MATCH_ARCV_UDSP_XVSLL_VX, MASK_ARCV_UDSP_XVSLL_VX, match_opcode, 0},
+{"arcv.xvsra.vx",      0, INSN_CLASS_XARCVUDSP, "d,s,t,Xav", MATCH_ARCV_UDSP_XVSRA_VX, MASK_ARCV_UDSP_XVSRA_VX, match_opcode, 0},
+{"arcv.xvnclip.wx",    0, INSN_CLASS_XARCVUDSP, "d,s,t,Xav", MATCH_ARCV_UDSP_XVNCLIP_WX, MASK_ARCV_UDSP_XVNCLIP_WX, match_opcode, 0},
+{"arcv.xvwmul.vv",     0, INSN_CLASS_XARCVUDSP, "d,s,t,Xav", MATCH_ARCV_UDSP_XVWMUL_VV, MASK_ARCV_UDSP_XVWMUL_VV, match_opcode, 0},
+{"arcv.xvwsrdot.vv",   0, INSN_CLASS_XARCVUDSP, "d,s,t,Xav", MATCH_ARCV_UDSP_XVWSRDOT_VV, MASK_ARCV_UDSP_XVWSRDOT_VV, match_opcode, 0},
+{"arcv.xvscmul.vv",    0, INSN_CLASS_XARCVUDSP, "d,s,t,Xav", MATCH_ARCV_UDSP_XVSCMUL_VV, MASK_ARCV_UDSP_XVSCMUL_VV, match_opcode, 0},
+{"arcv.xvscjmul.vv",   0, INSN_CLASS_XARCVUDSP, "d,s,t,Xav", MATCH_ARCV_UDSP_XVSCJMUL_VV, MASK_ARCV_UDSP_XVSCJMUL_VV, match_opcode, 0},
+{"arcv.xvwscmul.vv",   0, INSN_CLASS_XARCVUDSP, "d,s,t,Xav", MATCH_ARCV_UDSP_XVWSCMUL_VV, MASK_ARCV_UDSP_XVWSCMUL_VV, match_opcode, 0},
+{"arcv.xvwscjmul.vv",  0, INSN_CLASS_XARCVUDSP, "d,s,t,Xav", MATCH_ARCV_UDSP_XVWSCJMUL_VV, MASK_ARCV_UDSP_XVWSCJMUL_VV, match_opcode, 0},
+{"arcv.xvwscrdot.vv",  0, INSN_CLASS_XARCVUDSP, "d,s,t,Xav", MATCH_ARCV_UDSP_XVWSCRDOT_VV, MASK_ARCV_UDSP_XVWSCRDOT_VV, match_opcode, 0},
+{"arcv.xvwscjrdot.vv", 0, INSN_CLASS_XARCVUDSP, "d,s,t,Xav", MATCH_ARCV_UDSP_XVWSCJRDOT_VV, MASK_ARCV_UDSP_XVWSCJRDOT_VV, match_opcode, 0},
+{"arcv.bitrev",        0, INSN_CLASS_XARCVUDSP, "d,s,t", MATCH_ARCV_UDSP_BITREV, MASK_ARCV_UDSP_BITREV, match_opcode, 0},
+
 /* Terminate the list.  */
 {0, 0, INSN_CLASS_NONE, 0, 0, 0, 0, 0}
 };

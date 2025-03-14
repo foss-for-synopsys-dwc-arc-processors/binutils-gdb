@@ -606,6 +606,7 @@ enum riscv_insn_class
   INSN_CLASS_XMIPSCMOV,
   INSN_CLASS_XMIPSEXECTL,
   INSN_CLASS_XMIPSLSP,
+  INSN_CLASS_XARCVUDSP,
 };
 
 /* This structure holds information for a particular instruction.  */

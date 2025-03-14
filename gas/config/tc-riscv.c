@@ -1771,6 +1771,14 @@ validate_riscv_insn (const struct riscv_opcode *opc, int length)
 		    goto unknown_validate_operand;
 		}
 		break;
+	    case 'a': /* Vendor-specific (ARC-V) operands.  */
+	      switch (*++oparg)
+		{
+		  case 'v': USE_BITS (OP_MASK_FUNCT3, OP_SH_FUNCT3); break;
+		  default:
+		    goto unknown_validate_operand;
+		}
+		break;
 	    default:
 	      goto unknown_validate_operand;
 	    }
@@ -2738,6 +2746,97 @@ my_getThVsetvliExpression (expressionS *ep, char *str)
       str = expr_parse_end;
     }
 }
+
+static struct arcv_udsp_insn_vtype_combination {
+  const char *insn;
+  int sew;
+  int lmul;
+} arcv_udsp_insn_vtype_combinations[] = {
+  { "arcv.xvadd.vv", 0x1, 0 },
+  { "arcv.xvsub.vv", 0x1, 0 },
+  { "arcv.xvsadd.vv", 0x1, 0 },
+  { "arcv.xvsadd.vv", 0x2, 0 },
+  { "arcv.xvssub.vv", 0x1, 0 },
+  { "arcv.xvssub.vv", 0x2, 0 },
+  { "arcv.xvsll.vx", 0x1, 0 },
+  { "arcv.xvsra.vx", 0x1, 0 },
+  { "arcv.xvnclip.wx", 0x1, 0 },
+  { "arcv.xvnclip.wx", 0x1, 0x7 },
+  { "arcv.xvwmul.vv", 0x1, 0 },
+  { "arcv.xvwmul.vv", 0x1, 0x7 },
+  { "arcv.xvwsrdot.vv", 0x1, 0 },
+  { "arcv.xvscmul.vv", 0x1, 0 },
+  { "arcv.xvscjmul.vv", 0x1, 0 },
+  { "arcv.xvwscmul.vv", 0x1, 0 },
+  { "arcv.xvwscjmul.vv", 0x1, 0 },
+  { "arcv.xvwscrdot.vv", 0x1, 0 },
+  { "arcv.xvwscjrdot.vv", 0x1, 0 },
+  { 0 },
+};
+
+static bool
+arcv_udsp_opcode_supports_sew_lmul (char *insn, int sew, int lmul)
+{
+  for (struct arcv_udsp_insn_vtype_combination *ivc =
+				arcv_udsp_insn_vtype_combinations;
+       ivc->insn;
+       ivc++)
+    if (!strcmp (ivc->insn, insn) && ivc->sew == sew && ivc->lmul == lmul)
+      return true;
+
+  as_bad (_("bad ARC-V UDSP instruction: "
+    "combination of SEW and LMUL not supported for opcode"));
+
+  return false;
+}
+
+/* Parse string STR as a set of "vtype" operands of an ARC-V UDSP instruction
+   (the format is "eXX, mf?X"). Check legality of operands depending on the
+   instruction. Store the expression in *EP.
+   On exit, EXPR_PARSE_END points to the first character after the
+   expression.  */
+
+static void
+my_getArcvVtypeExpression (expressionS *ep, char *str, char *insn)
+{
+  unsigned int sew = 0, lmul = 0;
+  bfd_boolean vsew_found = FALSE, vlmul_found = FALSE;
+
+  if (arg_lookup (&str, riscv_vsew, ARRAY_SIZE (riscv_vsew),
+		  &sew))
+    {
+      if (*str == ',')
+	++str;
+      vsew_found = TRUE;
+    }
+  else as_bad (_("bad ARC-V UDSP instruction: SEW not specified"));
+
+  if (arg_lookup (&str, riscv_vlmul, ARRAY_SIZE (riscv_vlmul), &lmul))
+    {
+      if (*str == ',')
+	++str;
+      vlmul_found = TRUE;
+    }
+  else as_bad (_("bad ARC-V UDSP instruction: LMUL not specified"));
+
+  if (!vsew_found || !vlmul_found
+      || !arcv_udsp_opcode_supports_sew_lmul (insn, sew, lmul))
+    {
+      my_getExpression (ep, str);
+      str = expr_parse_end;
+    }
+  else
+    {
+      gas_assert ((sew == 0x2 && lmul == 0)
+		  || (sew == 0x1 && (lmul == 0 || lmul == 0x7)));
+
+      ep->X_op = O_constant;
+      ep->X_add_number = (sew == 0x2 ? 0x4 :
+			  (lmul == 0 ? 0x2 : 0x1));
+      expr_parse_end = str;
+    }
+}
+
 
 /* Detect and handle implicitly zero load-store offsets.  For example,
    "lw t0, (t1)" is shorthand for "lw t0, 0(t1)".  Return true if such
@@ -4284,6 +4383,21 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 
 		    default:
 		      goto unknown_riscv_ip_operand;
+		    }
+		  break;
+
+		case 'a': /* Vendor-specific (ARC-V) operands.  */
+		  switch (*++oparg)
+		    {
+		      case 'v':
+			my_getArcvVtypeExpression (imm_expr, asarg, insn->name);
+			asarg = expr_parse_end;
+			ip->insn_opcode
+			    |= (imm_expr->X_add_number & OP_MASK_FUNCT3)
+				<< OP_SH_FUNCT3;
+			  continue;
+		      default:
+			goto unknown_riscv_ip_operand;
 		    }
 		  break;
 
