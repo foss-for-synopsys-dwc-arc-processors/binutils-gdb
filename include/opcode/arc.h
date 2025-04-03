@@ -189,7 +189,15 @@ struct arc_opcode
 /* The table itself is sorted by major opcode number, and is otherwise
    in the order in which the disassembler should consider
    instructions.  */
+
+
+#ifndef MY
+#define MY
+
 extern const struct arc_opcode arc_opcodes[];
+
+#endif
+
 
 /* Return length of an instruction represented by OPCODE, in bytes.  */
 extern int arc_opcode_len (const struct arc_opcode *opcode);
