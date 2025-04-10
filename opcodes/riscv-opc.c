@@ -2323,13 +2323,15 @@ const struct riscv_opcode riscv_opcodes[] =
 {"cm.jalt",    0,  INSN_CLASS_ZCMT, "Wci", MATCH_CM_JALT, MASK_CM_JALT, match_cm_jalt, 0 },
 
 /* Packed-SIMD instructions.  */
-{"pslli.h",       0, INSN_CLASS_P, "d,s,>",     MATCH_PSLLI_H, MASK_PSLLI_H, match_opcode, 0 },
-{"pslli.b",       0, INSN_CLASS_P, "d,s,>",     MATCH_PSLLI_B, MASK_PSLLI_B, match_opcode, 0 },
-{"pslli.w",      64, INSN_CLASS_P, "d,s,>",     MATCH_PSLLI_W, MASK_PSLLI_W, match_opcode, 0 },
-{"psll.h.h0",     0, INSN_CLASS_P, "d,s,>",     MATCH_PSLL_HS, MASK_PSLL_HS, match_opcode, 0 },
-{"psll.b.b0",     0, INSN_CLASS_P, "d,s,>",     MATCH_PSLL_BS, MASK_PSLL_BS, match_opcode, 0 },
-{"psll.w.w0",    64, INSN_CLASS_P, "d,s,>",     MATCH_PSLL_WS, MASK_PSLL_WS, match_opcode, 0 },
-
+{"pslli.b",       0, INSN_CLASS_P, "d,s,WpB",     MATCH_PSLLI_B, MASK_PSLLI_B, match_opcode, 0 },
+{"pslli.h",       0, INSN_CLASS_P, "d,s,WpH",     MATCH_PSLLI_H, MASK_PSLLI_H, match_opcode, 0 },
+{"pslli.w",      64, INSN_CLASS_P, "d,s,<",       MATCH_PSLLI_W, MASK_PSLLI_W, match_opcode, 0 },
+{"psslai.h",      0, INSN_CLASS_P, "d,s,WpH",     MATCH_PSSLAI_H, MASK_PSSLAI_H, match_opcode, 0 },
+{"sslai",        32, INSN_CLASS_P, "d,s,<",       MATCH_SSLAI, MASK_SSLAI, match_opcode, 0 },
+{"psslai.w",     64, INSN_CLASS_P, "d,s,<",       MATCH_PSSLAI_W, MASK_PSSLAI_W, match_opcode, 0 },
+{"pli.b",         0, INSN_CLASS_P, "d,Wpb",       MATCH_PLI_B, MASK_PLI_B, match_opcode, 0 },
+{"pli.h",         0, INSN_CLASS_P, "d,WpI",       MATCH_PLI_H, MASK_PLI_H, match_opcode, 0 },
+{"pli.w",        64, INSN_CLASS_P, "d,WpI",       MATCH_PLI_W, MASK_PLI_W, match_opcode, 0 },
 
 /* Supervisor instructions.  */
 {"csrr",       0, INSN_CLASS_ZICSR, "d,E",   MATCH_CSRRS, MASK_CSRRS|MASK_RS1, match_opcode, INSN_ALIAS },

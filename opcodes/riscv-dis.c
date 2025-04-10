@@ -752,6 +752,29 @@ print_insn_args (const char *oparg, insn_t l, bfd_vma pc, disassemble_info *info
 		  goto undefined_modifier;
 		}
 	      break;
+	    case 'p': /* SIMD extension instruction fields. */
+	      switch (*++oparg)
+		{
+		case 'B':
+		  print (info->stream, dis_style_immediate, "0x%x",
+			(unsigned)EXTRACT_OPERAND (SHAMTB, l));
+		  break;
+		case 'H':
+		  print (info->stream, dis_style_immediate, "0x%x",
+			(unsigned)EXTRACT_OPERAND (SHAMTH, l));
+		  break;
+		case 'b':
+		  print (info->stream, dis_style_immediate, "%i",
+			(int)EXTRACT_PLI_B_IMM (l));
+		  break;
+		case 'I':
+		  print (info->stream, dis_style_immediate, "%d",
+			(int)EXTRACT_PLI_IMM (l));
+		  break;
+		default:
+		  goto undefined_modifier;
+		}
+	      break;
 	    default:
 	      goto undefined_modifier;
 	    }
