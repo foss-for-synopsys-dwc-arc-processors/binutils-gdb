@@ -4018,7 +4018,7 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 		      imm_expr->X_op = O_absent;
 		      asarg = expr_parse_end;
 		      continue;
-			case 'b': /* Immediate field for 'pli.b'.  */
+		    case 'b': /* Immediate field for 'pli.b'.  */
 		      my_getExpression (imm_expr, asarg);
 		      check_absolute_expr (ip, imm_expr, false);
 		      if (imm_expr->X_add_number > 127
@@ -4030,7 +4030,7 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 		      imm_expr->X_op = O_absent;
 		      asarg = expr_parse_end;
 		      continue;
-			case 'I': /* Immediate field for 'pli.h/w'.  */
+		    case 'I': /* Immediate field for 'pli.h/w'.  */
 		      my_getExpression (imm_expr, asarg);
 		      check_absolute_expr (ip, imm_expr, false);
 		      if (imm_expr->X_add_number > 511
