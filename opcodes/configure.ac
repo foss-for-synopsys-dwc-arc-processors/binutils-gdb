@@ -267,7 +267,7 @@ if test x${all_targets} = xfalse ; then
 	bfd_alpha_arch)		ta="$ta alpha-dis.lo alpha-opc.lo" ;;
 	bfd_amdgcn_arch)	;;
 	bfd_arc_arch)		ta="$ta arc-dis.lo arc-opc.lo arc-g.lo arc-g-opc.lo arc-ext.lo" ;;
-	bfd_arc64_arch)		ta="$ta arc-dis.lo arc64-opc.lo arc-g.lo arc-g-opc.lo arc-ext.lo" ;;
+	bfd_arc64_arch)		ta="$ta arc64-dis.lo arc64-opc.lo arc-g.lo arc-g-opc.lo arc-ext.lo" ;;
 	bfd_arm_arch)		ta="$ta arm-dis.lo" ;;
 	bfd_avr_arch)		ta="$ta avr-dis.lo" ;;
 	bfd_bfin_arch)		ta="$ta bfin-dis.lo" ;;

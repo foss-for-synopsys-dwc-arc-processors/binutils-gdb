@@ -2771,11 +2771,7 @@ md_begin (void)
 {
   const struct arc_opcode *opcode;
 
-  #if defined(TARGET_ARCv3_64)
-    opcode = arc64_opcodes;
-  #else
-    opcode = arc_opcodes;
-  #endif
+  opcode = arc64_opcodes;
 
   if (mach_selection_mode == MACH_SELECTION_NONE)
     init_default_arch ();

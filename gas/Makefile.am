@@ -145,6 +145,7 @@ TARGET_CPU_CFILES = \
 	config/tc-aarch64.c \
 	config/tc-alpha.c \
 	config/tc-arc.c \
+	config/tc-arc64.c \
 	config/tc-arm.c \
 	config/tc-avr.c \
 	config/tc-bfin.c \
@@ -224,7 +225,7 @@ TARGET_CPU_HFILES = \
 	config/tc-arm.h \
 	config/tc-avr.h \
 	config/tc-bfin.h \
-	config/tc-bpf.h \
+	config/tc-bf.h \
 	config/tc-cr16.h \
 	config/tc-cris.h \
 	config/tc-crx.h \
