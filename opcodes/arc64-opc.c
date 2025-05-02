@@ -542,7 +542,6 @@
 
 const struct arc_opcode arc64_opcodes[] =
 {
-
   /* STL and STDL instructions.  */
   STL
   STDL
@@ -776,17 +775,41 @@ const struct arc_opcode arc64_opcodes[] =
   FP_REP (vfsrep, SINGLE)
   FP_REP (vfdrep, DOUBLE)
 
-
-
-
-
-
-
-
-
-
-
-
+ #undef FLAGS_F
+ #define FLAGS_F { 0 }
+ 
+ #undef FLAGS_CCF
+ #define FLAGS_CCF { C_CC }
+ 
+ #undef FIELDF
+ #define FIELDF 0x0
+ 
+   EXTINSN3OP ("vmin2", ARC_OPCODE_ARC32, MOVE, NONE, F32_GEN4, 0x11)
+   EXTINSN3OP ("vmax2", ARC_OPCODE_ARC32, MOVE, NONE, F32_GEN4, 0x0b)
+ 
+ #undef HARD_FIELDF
+ #define HARD_FIELDF (0x01 << 15)
+ 
+   EXTINSN3OP ("vmin2", ARC_OPCODE_ARC64, MOVE, NONE, F32_EXT5, 0x38)
+   EXTINSN3OP ("vmax2", ARC_OPCODE_ARC64, MOVE, NONE, F32_EXT5, 0x39)
+ 
+   EXTINSN3OP ("vpack4hl", ARC_OPCODE_ARC64, MOVE, NONE, F32_GEN_OP64, 0x30)
+   EXTINSN3OP ("vpack4hm", ARC_OPCODE_ARC64, MOVE, NONE, F32_GEN_OP64, 0x31)
+   EXTINSN3OP ("vpack2wl", ARC_OPCODE_ARC64, MOVE, NONE, F32_GEN_OP64, 0x32)
+   EXTINSN3OP ("vpack2wm", ARC_OPCODE_ARC64, MOVE, NONE, F32_GEN_OP64, 0x33)
+   EXTINSN3OP ("vpack2hm", ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MOVE, NONE,
+ 	      F32_EXT5, 0x29)
+ 
+ #undef HARD_FIELDF
+ #define HARD_FIELDF (0x0)
+ 
+   OP64INSN3OP ("mpyl", ARC_OPCODE_ARC64, ARITH, NONE, F32_GEN_OP64, 0x30)
+   OP64INSN3OP ("mpyml", ARC_OPCODE_ARC64, ARITH, NONE, F32_GEN_OP64, 0x31)
+   OP64INSN3OP ("mpymul", ARC_OPCODE_ARC64, ARITH, NONE, F32_GEN_OP64, 0x32)
+   OP64INSN3OP ("mpymsul", ARC_OPCODE_ARC64, ARITH, NONE, F32_GEN_OP64, 0x33)
+ 
+   EXTINSN3OP ("vpack2hl", ARC_OPCODE_ARC32 | ARC_OPCODE_ARC64, MOVE, NONE,
+ 	      F32_EXT5, 0x29)
 
   { NULL, 0, 0, 0, 0, 0, { 0 }, { 0 } }
 };
