@@ -1226,6 +1226,8 @@ static const struct riscv_implicit_subset riscv_implicit_subsets[] =
   {"xtheadvector", "+zicsr", check_implicit_always},
   {"xtheadzvamo", "+zaamo", check_implicit_always},
 
+  {"xarcvudsp", "+xarcvbitrev", check_implicit_always},
+
   {"v", "+zve64d,+zvl128b", check_implicit_always},
   {"zvfh", "+zvfhmin,+zfhmin", check_implicit_always},
   {"zvfhmin", "+zve32f", check_implicit_always},
