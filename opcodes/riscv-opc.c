@@ -3603,7 +3603,6 @@ const struct riscv_opcode riscv_opcodes[] =
 {"arcv.xvwscjmul.vv",  0, INSN_CLASS_XARCVUDSP, "d,s,t,Xav", MATCH_ARCV_UDSP_XVWSCJMUL_VV, MASK_ARCV_UDSP_XVWSCJMUL_VV, match_opcode, 0},
 {"arcv.xvwscrdot.vv",  0, INSN_CLASS_XARCVUDSP, "d,s,t,Xav", MATCH_ARCV_UDSP_XVWSCRDOT_VV, MASK_ARCV_UDSP_XVWSCRDOT_VV, match_opcode, 0},
 {"arcv.xvwscjrdot.vv", 0, INSN_CLASS_XARCVUDSP, "d,s,t,Xav", MATCH_ARCV_UDSP_XVWSCJRDOT_VV, MASK_ARCV_UDSP_XVWSCJRDOT_VV, match_opcode, 0},
-{"arcv.bitrev",        0, INSN_CLASS_XARCVUDSP, "d,s,t", MATCH_ARCV_UDSP_BITREV, MASK_ARCV_UDSP_BITREV, match_opcode, 0},
 
 /* Terminate the list.  */
 {0, 0, INSN_CLASS_NONE, 0, 0, 0, 0, 0}
