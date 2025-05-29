@@ -1292,6 +1292,7 @@ static struct riscv_implicit_subset riscv_implicit_subsets[] =
   {"svbare", "+zicsr", check_implicit_always},
 
   {"xsfvcp", "zve32x",  check_implicit_always},
+  {"xarcvudsp", "+xarcvbitrev", check_implicit_always},
   {NULL, NULL, NULL}
 };
 

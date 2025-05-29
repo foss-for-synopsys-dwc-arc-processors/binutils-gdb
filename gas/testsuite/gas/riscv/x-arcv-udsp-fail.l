@@ -56,9 +56,9 @@
 .*: Error: unrecognized opcode `arcv.xvwscjrdot.vv t0,t3,t6,e16,m1', extension `xarcvudsp' required
 .*: Error: unrecognized opcode `arcv.xvwscjrdot.vv t3,t6,t0,e16,m1', extension `xarcvudsp' required
 .*: Error: unrecognized opcode `arcv.xvwscjrdot.vv t6,t0,t3,e16,m1', extension `xarcvudsp' required
-.*: Error: unrecognized opcode `arcv.bitrev t0,t3,t6', extension `xarcvudsp' required
-.*: Error: unrecognized opcode `arcv.bitrev t3,t6,t0', extension `xarcvudsp' required
-.*: Error: unrecognized opcode `arcv.bitrev t6,t0,t3', extension `xarcvudsp' required
+.*: Error: unrecognized opcode `arcv.bitrev t0,t3,t6', extension `xarcvbitrev' required
+.*: Error: unrecognized opcode `arcv.bitrev t3,t6,t0', extension `xarcvbitrev' required
+.*: Error: unrecognized opcode `arcv.bitrev t6,t0,t3', extension `xarcvbitrev' required
 .*: Error: `xarcvudsp' is conflict with the `v' extension
 .*: Error: illegal operands `arcv.xvadd.vv t0,t3,5,e16,m1'
 .*: Error: illegal operands `arcv.xvadd.vv t3,5,t0,e16,m1'
