@@ -1644,6 +1644,14 @@ static const struct riscv_supported_ext riscv_supported_vendor_x_ext[] =
   {"xmipsexectl",	ISA_SPEC_CLASS_DRAFT,	1, 0, 0 },
   {"xmipslsp",		ISA_SPEC_CLASS_DRAFT,	1, 0, 0 },
   {"xarcvudsp",		ISA_SPEC_CLASS_DRAFT,	1, 0, 0 },
+  {"xarcvbitrev",	ISA_SPEC_CLASS_DRAFT,	1, 0, 0 },
+  {"xarcvbitstream",	ISA_SPEC_CLASS_DRAFT,	1, 0, 0 },
+  {"xarcvvdsp",	ISA_SPEC_CLASS_DRAFT,	1, 0, 0 },
+  {"xarcvvcplx",	ISA_SPEC_CLASS_DRAFT,	1, 0, 0 },
+  {"xarcvvsad",	ISA_SPEC_CLASS_DRAFT,	1, 0, 0 },
+  {"xarcvmxmb",	ISA_SPEC_CLASS_DRAFT,	1, 0, 0 },
+  {"xarcvmxmc",	ISA_SPEC_CLASS_DRAFT,	1, 0, 0 },
+  {"xarcvmxmd",	ISA_SPEC_CLASS_DRAFT,	1, 0, 0 },
   {NULL, 0, 0, 0, 0}
 };
 
@@ -3072,6 +3080,22 @@ riscv_multi_subset_supports (riscv_parse_subset_t *rps,
       return riscv_subset_supports (rps, "xmipslsp");
     case INSN_CLASS_XARCVUDSP:
       return riscv_subset_supports (rps, "xarcvudsp");
+    case INSN_CLASS_XARCVBITREV:
+      return riscv_subset_supports (rps, "xarcvbitrev");
+    case INSN_CLASS_XARCVBITSTREAM:
+      return riscv_subset_supports (rps, "xarcvbitstream");
+    case INSN_CLASS_XARCVVDSP:
+      return riscv_subset_supports (rps, "xarcvvdsp");
+    case INSN_CLASS_XARCVVCPLX:
+      return riscv_subset_supports (rps, "xarcvvcplx");
+    case INSN_CLASS_XARCVVSAD:
+      return riscv_subset_supports (rps, "xarcvvsad");
+    case INSN_CLASS_XARCVMXMB:
+      return riscv_subset_supports (rps, "xarcvmxmb");
+    case INSN_CLASS_XARCVMXMC:
+      return riscv_subset_supports (rps, "xarcvmxmc");
+    case INSN_CLASS_XARCVMXMD:
+      return riscv_subset_supports (rps, "xarcvmxmd");
     default:
       rps->error_handler
         (_("internal: unreachable INSN_CLASS_*"));
@@ -3358,6 +3382,22 @@ riscv_multi_subset_supports_ext (riscv_parse_subset_t *rps,
       return "xsfcease";
     case INSN_CLASS_XARCVUDSP:
       return "xarcvudsp";
+    case INSN_CLASS_XARCVBITREV:
+      return "xarcvbitrev";
+    case INSN_CLASS_XARCVBITSTREAM:
+      return "xarcvbitstream";
+    case INSN_CLASS_XARCVVDSP:
+      return "xarcvvdsp";
+    case INSN_CLASS_XARCVVCPLX:
+      return "xarcvvcplx";
+    case INSN_CLASS_XARCVVSAD:
+      return "xarcvvsad";
+    case INSN_CLASS_XARCVMXMB:
+      return "xarcvmxmb";
+    case INSN_CLASS_XARCVMXMC:
+      return "xarcvmxmc";
+    case INSN_CLASS_XARCVMXMD:
+      return "xarcvmxmd";
     default:
       rps->error_handler
         (_("internal: unreachable INSN_CLASS_*"));
