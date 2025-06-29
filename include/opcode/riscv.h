@@ -118,9 +118,13 @@ static inline unsigned int riscv_insn_length (insn_t insn)
 #define EXTRACT_ZCMT_INDEX(x) \
   (RV_X(x, 2, 8))
 #define EXTRACT_PLI_IMM(x) \
-  (RV_X(x, 15, 10) | (RV_IMM_SIGN_N(x, 15, 10) << 10))
+  (RV_X(x, 15, 9) | (RV_IMM_SIGN_N(x, 24, 1) << 10))
 #define EXTRACT_PLI_B_IMM(x) \
   (RV_X(x, 16, 8) | (RV_IMM_SIGN_N(x, 16, 8) << 8))
+#define EXTRACT_PLUI_IMM(x) \
+  (RV_X(x, 15, 9) << 23 | RV_X(x, 24, 1) << 22 | (RV_IMM_SIGN_N(x, 15, 9) << 31)) >> 22
+#define EXTRACT_PLUI_H_IMM(x) \
+  (RV_X(x, 15, 9) << 7 | RV_X(x, 24, 1) << 6 | (RV_IMM_SIGN_N(x, 15, 9) << 15)) >> 6
 /* Vendor-specific (CORE-V) extract macros.  */
 #define EXTRACT_CV_IS2_UIMM5(x) \
   (RV_X(x, 20, 5))
@@ -201,9 +205,13 @@ static inline unsigned int riscv_insn_length (insn_t insn)
 #define ENCODE_ZCMT_INDEX(x) \
   (RV_X(x, 0, 8) << 2)
 #define ENCODE_PLI_IMM(x) \
-  (RV_X(x, 0, 9) << 15 | RV_X(x, 10, 1) << 24)
+  (RV_X(x, 0, 9) << 15 | RV_X(x, 9, 1) << 24)
 #define ENCODE_PLI_B_IMM(x) \
   (RV_X(x, 0, 8) << 16)
+#define ENCODE_PLUI_IMM(x) \
+  ((RV_X(x, 23, 9) << 15) | (RV_X(x, 22, 1) << 24))
+#define ENCODE_PLUI_H_IMM(x) \
+  ((RV_X(x, 7, 9) << 15) | (RV_X(x, 6, 1) << 24))
 /* Vendor-specific (CORE-V) encode macros.  */
 #define ENCODE_CV_IS2_UIMM5(x) \
   (RV_X(x, 0, 5) << 20)
@@ -256,6 +264,8 @@ static inline unsigned int riscv_insn_length (insn_t insn)
 #define VALID_ZCMP_SPIMM(x) (EXTRACT_ZCMP_SPIMM(ENCODE_ZCMP_SPIMM(x)) == (x))
 #define VALID_PLI_IMM(x) (EXTRACT_PLI_IMM(ENCODE_PLI_IMM(x)) == (x))
 #define VALID_PLI_B_IMM(x) (EXTRACT_PLI_B_IMM(ENCODE_PLI_B_IMM(x)) == (x))
+#define VALID_PLUI_IMM(x) (EXTRACT_PLUI_IMM(ENCODE_PLUI_IMM(x)) == (x))
+#define VALID_PLUI_H_IMM(x) (EXTRACT_PLUI_H_IMM(ENCODE_PLUI_H_IMM(x)) == (x))
 
 #define RISCV_RTYPE(insn, rd, rs1, rs2) \
   ((MATCH_ ## insn) | ((rd) << OP_SH_RD) | ((rs1) << OP_SH_RS1) | ((rs2) << OP_SH_RS2))
@@ -293,6 +303,8 @@ static inline unsigned int riscv_insn_length (insn_t insn)
 #define RISCV_BRANCH_ALIGN_BITS RISCV_JUMP_ALIGN_BITS
 #define RISCV_BRANCH_ALIGN (1 << RISCV_BRANCH_ALIGN_BITS)
 #define RISCV_BRANCH_REACH (RISCV_IMM_REACH * RISCV_BRANCH_ALIGN)
+#define RISCV_PIMM_BITS 22
+#define RISCV_PIMM_H_BITS 6
 
 /* RV fields.  */
 

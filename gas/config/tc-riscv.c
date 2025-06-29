@@ -1675,10 +1675,14 @@ validate_riscv_insn (const struct riscv_opcode *opc, int length)
 		case 'B': USE_BITS (OP_MASK_SHAMTB, OP_SH_SHAMTB); break;
 		/* shift amount, 0 - 15.  */
 		case 'H': USE_BITS (OP_MASK_SHAMTH, OP_SH_SHAMTH); break;
-		/* load imm.  */
+		/* load word imm.  */
 		case 'I': used_bits |= ENCODE_PLI_IMM (-1U); break;
 		/* load byte imm.  */
 		case 'b': used_bits |= ENCODE_PLI_B_IMM (-1U); break;
+		/* load half word unsigned imm.  */
+		case 'h': used_bits |= ENCODE_PLUI_H_IMM (-1U); break;
+		/* load word unsigned imm.  */
+		case 'u': used_bits |= ENCODE_PLUI_IMM (-1U); break;
 		default:
 		  goto unknown_validate_operand;
 		}
@@ -4039,6 +4043,32 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 				"(shoud between -512-511)"),
 				imm_expr->X_add_number);
 		      ip->insn_opcode |= ENCODE_PLI_IMM (imm_expr->X_add_number);
+		      imm_expr->X_op = O_absent;
+		      asarg = expr_parse_end;
+		      continue;
+			case 'h': /* Immediate field for 'plui.h'.  */
+		      my_getExpression (imm_expr, asarg);
+		      check_absolute_expr (ip, imm_expr, false);
+		      if (imm_expr->X_add_number > 511
+			 || imm_expr->X_add_number < -512)
+		      as_bad(_("Improper immediate value for 'plui.h' (%"PRIu64"). "
+			    "(should between -512-512)"),
+			    imm_expr->X_add_number);
+			  imm_expr->X_add_number <<= RISCV_PIMM_H_BITS;
+		      ip->insn_opcode |= ENCODE_PLUI_H_IMM (imm_expr->X_add_number);
+		      imm_expr->X_op = O_absent;
+		      asarg = expr_parse_end;
+		      continue;
+			case 'u': /* Immediate field for 'plui.w'.  */
+		      my_getExpression (imm_expr, asarg);
+		      check_absolute_expr (ip, imm_expr, false);
+		      if (imm_expr->X_add_number > 511
+			 || imm_expr->X_add_number < -512)
+		      as_bad(_("Improper immediate value for 'plui.w' (%"PRIu64"). "
+			    "(should between -512-512)"),
+			    imm_expr->X_add_number);
+			  imm_expr->X_add_number <<= RISCV_PIMM_BITS;
+		      ip->insn_opcode |= ENCODE_PLUI_IMM (imm_expr->X_add_number);
 		      imm_expr->X_op = O_absent;
 		      asarg = expr_parse_end;
 		      continue;

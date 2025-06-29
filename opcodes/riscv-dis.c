@@ -771,6 +771,14 @@ print_insn_args (const char *oparg, insn_t l, bfd_vma pc, disassemble_info *info
 		  print (info->stream, dis_style_immediate, "%d",
 			(int)EXTRACT_PLI_IMM (l));
 		  break;
+		case 'h':
+		  print (info->stream, dis_style_immediate, "%d",
+			(int)EXTRACT_PLUI_H_IMM (l));
+		  break;
+		case 'i':
+		  print (info->stream, dis_style_immediate, "%d",
+			(int)EXTRACT_PLUI_IMM (l));
+		  break;
 		default:
 		  goto undefined_modifier;
 		}
