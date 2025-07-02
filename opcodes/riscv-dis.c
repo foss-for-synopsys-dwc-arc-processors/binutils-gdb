@@ -775,7 +775,7 @@ print_insn_args (const char *oparg, insn_t l, bfd_vma pc, disassemble_info *info
 		  print (info->stream, dis_style_immediate, "%d",
 			(int)EXTRACT_PLUI_H_IMM (l));
 		  break;
-		case 'i':
+		case 'u':
 		  print (info->stream, dis_style_immediate, "%d",
 			(int)EXTRACT_PLUI_IMM (l));
 		  break;
