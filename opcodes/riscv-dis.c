@@ -305,6 +305,7 @@ print_insn_args (const char *oparg, insn_t l, bfd_vma pc, disassemble_info *info
   struct riscv_private_data *pd = info->private_data;
   int rs1 = (l >> OP_SH_RS1) & OP_MASK_RS1;
   int rd = (l >> OP_SH_RD) & OP_MASK_RD;
+  int rdp = (l >> OP_SH_RDP) & OP_MASK_RDP;
   fprintf_styled_ftype print = info->fprintf_styled_func;
   const char *opargStart;
 
@@ -778,6 +779,10 @@ print_insn_args (const char *oparg, insn_t l, bfd_vma pc, disassemble_info *info
 		case 'u':
 		  print (info->stream, dis_style_immediate, "%d",
 			(int)EXTRACT_PLUI_IMM (l));
+		  break;
+		case 'd':
+		  print (info->stream, dis_style_register, "%s",
+			pd->riscv_gpr_names[rdp]);
 		  break;
 		default:
 		  goto undefined_modifier;

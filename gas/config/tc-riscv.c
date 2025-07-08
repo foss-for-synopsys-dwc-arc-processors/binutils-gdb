@@ -1683,6 +1683,9 @@ validate_riscv_insn (const struct riscv_opcode *opc, int length)
 		case 'h': used_bits |= ENCODE_PLUI_H_IMM (-1U); break;
 		/* load word unsigned imm.  */
 		case 'u': used_bits |= ENCODE_PLUI_IMM (-1U); break;
+		case 'd': USE_BITS (OP_MASK_RDP, OP_SH_RDP); break;
+		case 's': USE_BITS (OP_MASK_RS1P, OP_SH_RS1P); break;
+		case 't': USE_BITS (OP_MASK_RS2P, OP_SH_RS2P); break;
 		default:
 		  goto unknown_validate_operand;
 		}
@@ -4046,7 +4049,7 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 		      imm_expr->X_op = O_absent;
 		      asarg = expr_parse_end;
 		      continue;
-			case 'h': /* Immediate field for 'plui.h'.  */
+		    case 'h': /* Immediate field for 'plui.h'.  */
 		      my_getExpression (imm_expr, asarg);
 		      check_absolute_expr (ip, imm_expr, false);
 		      if (imm_expr->X_add_number > 511
@@ -4059,7 +4062,7 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 		      imm_expr->X_op = O_absent;
 		      asarg = expr_parse_end;
 		      continue;
-			case 'u': /* Immediate field for 'plui.w'.  */
+		    case 'u': /* Immediate field for 'plui.w'.  */
 		      my_getExpression (imm_expr, asarg);
 		      check_absolute_expr (ip, imm_expr, false);
 		      if (imm_expr->X_add_number > 511
@@ -4072,6 +4075,32 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 		      imm_expr->X_op = O_absent;
 		      asarg = expr_parse_end;
 		      continue;
+		    case 'd': /* Destination register.  */
+		    case 's': /* Source register.  */
+		    case 'r': /* RS3 */
+		      if (reg_lookup (&asarg, RCLASS_GPR, &regno))
+		      {
+			char c = *oparg;
+			if (is_whitespace (*asarg))
+			  ++asarg;
+
+			/* Now that we have assembled one operand, we use the args
+			 string to figure out where it goes in the instruction.  */
+			switch (c)
+			{
+			  case 's':
+			    INSERT_OPERAND (RS1P, *ip, regno);
+			    break;
+			  case 'd':
+			    INSERT_OPERAND (RDP, *ip, regno);
+			    break;
+			  case 't':
+			    INSERT_OPERAND (RS2P, *ip, regno);
+			    break;
+			}
+			continue;
+		      }
+	      break;
 		    default:
 		      goto unknown_riscv_ip_operand;
 		    }

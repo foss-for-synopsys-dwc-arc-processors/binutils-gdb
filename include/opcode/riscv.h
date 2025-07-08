@@ -418,6 +418,14 @@ static inline unsigned int riscv_insn_length (insn_t insn)
 #define OP_MASK_SREG2		0x7
 #define OP_SH_SREG2		2
 
+/* RVP fields.  */
+#define OP_MASK_RS2P		0xf
+#define OP_SH_RS2P		21
+#define OP_MASK_RS1P		0xf
+#define OP_SH_RS1P		16
+#define OP_MASK_RDP		0xf
+#define OP_SH_RDP		8
+
 #define NVECR 32
 #define NVECM 1
 
