@@ -4077,7 +4077,7 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 		      continue;
 		    case 'd': /* Destination register.  */
 		    case 's': /* Source register.  */
-		    case 'r': /* RS3 */
+		    case 't': /* Source register2.*/
 		      if (reg_lookup (&asarg, RCLASS_GPR, &regno))
 		      {
 			char c = *oparg;
