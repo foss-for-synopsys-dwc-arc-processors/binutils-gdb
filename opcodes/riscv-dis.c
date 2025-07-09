@@ -307,6 +307,7 @@ print_insn_args (const char *oparg, insn_t l, bfd_vma pc, disassemble_info *info
   int rd = (l >> OP_SH_RD) & OP_MASK_RD;
   int rdp = (l >> OP_SH_RDP) & OP_MASK_RDP;
   int rs1p = (l >> OP_SH_RS1P) & OP_MASK_RS1P;
+  int rs2p = (l >> OP_SH_RS2P) & OP_MASK_RS2P;
   fprintf_styled_ftype print = info->fprintf_styled_func;
   const char *opargStart;
 
@@ -788,6 +789,10 @@ print_insn_args (const char *oparg, insn_t l, bfd_vma pc, disassemble_info *info
 		case 's':
 		  print (info->stream, dis_style_register, "%s",
 			pd->riscv_gpr_names[rs1p]);
+		  break;
+		case 't':
+		  print (info->stream, dis_style_register, "%s",
+			pd->riscv_gpr_names[rs2p]);
 		  break;
 		default:
 		  goto undefined_modifier;

@@ -263,9 +263,22 @@ match_rs1p_even (const struct riscv_opcode *op, insn_t insn)
 }
 
 static int
+match_rs2p_even (const struct riscv_opcode *op, insn_t insn)
+{
+  int rs2p = (insn & MASK_RS2P) >> OP_SH_RS2P;
+  return ((rs2p & 1) == 0) && match_opcode (op, insn);
+}
+
+static int
 match_rs1p_rdp_even (const struct riscv_opcode *op ATTRIBUTE_UNUSED, insn_t insn)
 {
   return match_rs1p_even (op, insn) && match_rdp_even (op, insn);
+}
+
+static int
+match_rs1p_rs2p_rdp_even (const struct riscv_opcode *op ATTRIBUTE_UNUSED, insn_t insn)
+{
+  return match_rs1p_even (op, insn) && match_rs2p_even (op, insn) && match_rdp_even (op, insn);
 }
 
 static int
@@ -2845,6 +2858,81 @@ const struct riscv_opcode riscv_opcodes[] =
 {"psra.dbs",     32, INSN_CLASS_P, "Wpd,Wps,t",   MATCH_PSRA_DBS, MASK_PSRA_DBS, match_rs1p_rdp_even, 0 },
 {"psra.dhs",     32, INSN_CLASS_P, "Wpd,Wps,t",   MATCH_PSRA_DHS, MASK_PSRA_DHS, match_rs1p_rdp_even, 0 },
 {"psra.dws",     32, INSN_CLASS_P, "Wpd,Wps,t",   MATCH_PSRA_DWS, MASK_PSRA_DWS, match_rs1p_rdp_even, 0 },
+{"padd.db",      32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PADD_DB, MASK_PADD_DB, match_rs1p_rs2p_rdp_even, 0 },
+{"padd.dh",      32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PADD_DH, MASK_PADD_DH, match_rs1p_rs2p_rdp_even, 0 },
+{"padd.dw",      32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PADD_DW, MASK_PADD_DW, match_rs1p_rs2p_rdp_even, 0 },
+{"addd",         32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_ADDD, MASK_ADDD, match_rs1p_rs2p_rdp_even, 0 },
+{"psadd.db",     32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PSADD_DB, MASK_PSADD_DB, match_rs1p_rs2p_rdp_even, 0 },
+{"psadd.dh",     32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PSADD_DH, MASK_PSADD_DH, match_rs1p_rs2p_rdp_even, 0 },
+{"psadd.dw",     32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PSADD_DW, MASK_PSADD_DW, match_rs1p_rs2p_rdp_even, 0 },
+{"paadd.db",     32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PAADD_DB, MASK_PAADD_DB, match_rs1p_rs2p_rdp_even, 0 },
+{"paadd.dh",     32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PAADD_DH, MASK_PAADD_DH, match_rs1p_rs2p_rdp_even, 0 },
+{"paadd.dw",     32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PAADD_DW, MASK_PAADD_DW, match_rs1p_rs2p_rdp_even, 0 },
+{"psaddu.db",    32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PSADDU_DB, MASK_PSADDU_DB, match_rs1p_rs2p_rdp_even, 0 },
+{"psaddu.dh",    32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PSADDU_DH, MASK_PSADDU_DH, match_rs1p_rs2p_rdp_even, 0 },
+{"psaddu.dw",    32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PSADDU_DW, MASK_PSADDU_DW, match_rs1p_rs2p_rdp_even, 0 },
+{"paaddu.db",    32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PAADDU_DB, MASK_PAADDU_DB, match_rs1p_rs2p_rdp_even, 0 },
+{"paaddu.dh",    32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PAADDU_DH, MASK_PAADDU_DH, match_rs1p_rs2p_rdp_even, 0 },
+{"paaddu.dw",    32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PAADDU_DW, MASK_PAADDU_DW, match_rs1p_rs2p_rdp_even, 0 },
+{"psub.db",      32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PSUB_DB, MASK_PSUB_DB, match_rs1p_rs2p_rdp_even, 0 },
+{"psub.dh",      32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PSUB_DH, MASK_PSUB_DH, match_rs1p_rs2p_rdp_even, 0 },
+{"psub.dw",      32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PSUB_DW, MASK_PSUB_DW, match_rs1p_rs2p_rdp_even, 0 },
+{"subd",         32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_SUBD, MASK_SUBD, match_rs1p_rs2p_rdp_even, 0 },
+{"pdif.db",      32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PDIF_DB, MASK_PDIF_DB, match_rs1p_rs2p_rdp_even, 0 },
+{"pdif.dh",      32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PDIF_DH, MASK_PDIF_DH, match_rs1p_rs2p_rdp_even, 0 },
+{"pssub.db",     32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PSSUB_DB, MASK_PSSUB_DB, match_rs1p_rs2p_rdp_even, 0 },
+{"pssub.dh",     32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PSSUB_DH, MASK_PSSUB_DH, match_rs1p_rs2p_rdp_even, 0 },
+{"pssub.dw",     32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PSSUB_DW, MASK_PSSUB_DW, match_rs1p_rs2p_rdp_even, 0 },
+{"pasub.db",     32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PASUB_DB, MASK_PASUB_DB, match_rs1p_rs2p_rdp_even, 0 },
+{"pasub.dh",     32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PASUB_DH, MASK_PASUB_DH, match_rs1p_rs2p_rdp_even, 0 },
+{"pasub.dw",     32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PASUB_DW, MASK_PASUB_DW, match_rs1p_rs2p_rdp_even, 0 },
+{"pdifu.db",     32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PDIFU_DB, MASK_PDIFU_DB, match_rs1p_rs2p_rdp_even, 0 },
+{"pdifu.dh",     32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PDIFU_DH, MASK_PDIFU_DH, match_rs1p_rs2p_rdp_even, 0 },
+{"pssubu.db",    32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PSSUBU_DB, MASK_PSSUBU_DB, match_rs1p_rs2p_rdp_even, 0 },
+{"pssubu.dh",    32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PSSUBU_DH, MASK_PSSUBU_DH, match_rs1p_rs2p_rdp_even, 0 },
+{"pssubu.dw",    32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PSSUBU_DW, MASK_PSSUBU_DW, match_rs1p_rs2p_rdp_even, 0 },
+{"pasubu.db",    32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PASUBU_DB, MASK_PASUBU_DB, match_rs1p_rs2p_rdp_even, 0 },
+{"pasubu.dh",    32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PASUBU_DH, MASK_PASUBU_DH, match_rs1p_rs2p_rdp_even, 0 },
+{"pasubu.dw",    32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PASUBU_DW, MASK_PASUBU_DW, match_rs1p_rs2p_rdp_even, 0 },
+{"psh1add.dh",   32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PSH1ADD_DH, MASK_PSH1ADD_DH, match_rs1p_rs2p_rdp_even, 0 },
+{"psh1add.dw",   32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PSH1ADD_DW, MASK_PSH1ADD_DW, match_rs1p_rs2p_rdp_even, 0 },
+{"pssh1sadd.dh", 32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PSSH1SADD_DH, MASK_PSSH1SADD_DH, match_rs1p_rs2p_rdp_even, 0 },
+{"pssh1sadd.dw", 32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PSSH1SADD_DW, MASK_PSSH1SADD_DW, match_rs1p_rs2p_rdp_even, 0 },
+{"ppack.dh",     32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PPACK_DH, MASK_PPACK_DH, match_rs1p_rs2p_rdp_even, 0 },
+{"ppack.dw",     32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PPACK_DW, MASK_PPACK_DW, match_rs1p_rs2p_rdp_even, 0 },
+{"ppackbt.dh",   32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PPACKBT_DH, MASK_PPACKBT_DH, match_rs1p_rs2p_rdp_even, 0 },
+{"ppackbt.dw",   32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PPACKBT_DW, MASK_PPACKBT_DW, match_rs1p_rs2p_rdp_even, 0 },
+{"ppacktb.dh",   32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PPACKTB_DH, MASK_PPACKTB_DH, match_rs1p_rs2p_rdp_even, 0 },
+{"ppacktb.dw",   32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PPACKTB_DW, MASK_PPACKTB_DW, match_rs1p_rs2p_rdp_even, 0 },
+{"ppackt.dh",    32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PPACKT_DH, MASK_PPACKT_DH, match_rs1p_rs2p_rdp_even, 0 },
+{"ppackt.dw",    32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PPACKT_DW, MASK_PPACKT_DW, match_rs1p_rs2p_rdp_even, 0 },
+{"pas.dhx",      32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PAS_DHX, MASK_PAS_DHX, match_rs1p_rs2p_rdp_even, 0 },
+{"psa.dhx",      32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PSA_DHX, MASK_PSA_DHX, match_rs1p_rs2p_rdp_even, 0 },
+{"psas.dhx",     32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PSAS_DHX, MASK_PSAS_DHX, match_rs1p_rs2p_rdp_even, 0 },
+{"pssa.dhx",     32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PSSA_DHX, MASK_PSSA_DHX, match_rs1p_rs2p_rdp_even, 0 },
+{"paas.dhx",     32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PAAS_DHX, MASK_PAAS_DHX, match_rs1p_rs2p_rdp_even, 0 },
+{"pasa.dhx",     32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PASA_DHX, MASK_PASA_DHX, match_rs1p_rs2p_rdp_even, 0 },
+{"pmseq.db",     32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PMSEQ_DB, MASK_PMSEQ_DB, match_rs1p_rs2p_rdp_even, 0 },
+{"pmseq.dh",     32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PMSEQ_DH, MASK_PMSEQ_DH, match_rs1p_rs2p_rdp_even, 0 },
+{"pmseq.dw",     32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PMSEQ_DW, MASK_PMSEQ_DW, match_rs1p_rs2p_rdp_even, 0 },
+{"pmslt.db",     32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PMSLT_DB, MASK_PMSLT_DB, match_rs1p_rs2p_rdp_even, 0 },
+{"pmslt.dh",     32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PMSLT_DH, MASK_PMSLT_DH, match_rs1p_rs2p_rdp_even, 0 },
+{"pmslt.dw",     32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PMSLT_DW, MASK_PMSLT_DW, match_rs1p_rs2p_rdp_even, 0 },
+{"pmsltu.db",    32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PMSLTU_DB, MASK_PMSLTU_DB, match_rs1p_rs2p_rdp_even, 0 },
+{"pmsltu.dh",    32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PMSLTU_DH, MASK_PMSLTU_DH, match_rs1p_rs2p_rdp_even, 0 },
+{"pmsltu.dw",    32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PMSLTU_DW, MASK_PMSLTU_DW, match_rs1p_rs2p_rdp_even, 0 },
+{"pmin.db",      32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PMIN_DB, MASK_PMIN_DB, match_rs1p_rs2p_rdp_even, 0 },
+{"pmin.dh",      32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PMIN_DH, MASK_PMIN_DH, match_rs1p_rs2p_rdp_even, 0 },
+{"pmin.dw",      32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PMIN_DW, MASK_PMIN_DW, match_rs1p_rs2p_rdp_even, 0 },
+{"pminu.db",     32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PMINU_DB, MASK_PMINU_DB, match_rs1p_rs2p_rdp_even, 0 },
+{"pminu.dh",     32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PMINU_DH, MASK_PMINU_DH, match_rs1p_rs2p_rdp_even, 0 },
+{"pminu.dw",     32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PMINU_DW, MASK_PMINU_DW, match_rs1p_rs2p_rdp_even, 0 },
+{"pmax.db",      32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PMAX_DB, MASK_PMAX_DB, match_rs1p_rs2p_rdp_even, 0 },
+{"pmax.dh",      32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PMAX_DH, MASK_PMAX_DH, match_rs1p_rs2p_rdp_even, 0 },
+{"pmax.dw",      32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PMAX_DW, MASK_PMAX_DW, match_rs1p_rs2p_rdp_even, 0 },
+{"pmaxu.db",     32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PMAXU_DB, MASK_PMAXU_DB, match_rs1p_rs2p_rdp_even, 0 },
+{"pmaxu.dh",     32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PMAXU_DH, MASK_PMAXU_DH, match_rs1p_rs2p_rdp_even, 0 },
+{"pmaxu.dw",     32, INSN_CLASS_P, "Wpd,Wps,Wpt", MATCH_PMAXU_DW, MASK_PMAXU_DW, match_rs1p_rs2p_rdp_even, 0 },
 
 /* Supervisor instructions.  */
 {"csrr",       0, INSN_CLASS_ZICSR, "d,E",   MATCH_CSRRS, MASK_CSRRS|MASK_RS1, match_opcode, INSN_ALIAS },
