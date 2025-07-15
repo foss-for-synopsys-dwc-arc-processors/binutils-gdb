@@ -1,4 +1,17 @@
 target:
+	cls	a0, a1
+	clz	a0, a1
+	sext.b	a0, a1
+	sext.h	a0, a1
+	abs	a0, a1
+	rev8 	a0, a1
+	rev	a0, a1
+	sh1add	a0, a1, a2
+	pack	a0, a1, a2
+	min	a0, a1, a2
+	max	a0, a1, a2
+	minu	a0, a1, a2
+	maxu	a0, a1, a2
 	pli.b	a0, 3
 	pli.h	a0, 10
 	pslli.b	a0, a1, 1
