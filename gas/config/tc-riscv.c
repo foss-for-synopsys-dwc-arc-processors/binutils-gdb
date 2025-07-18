@@ -5935,11 +5935,49 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
     { 
       opcode_t2->xlen_requirement = 0;
       opcode_t2->insn_class = INSN_CLASS_I;
-      opcode_t2->args = "d,s,t";
+      //opcode_t2->args = "d,s,t";
       opcode_t2->mask = APEX_MASK_XD;
       opcode_t2->match = APEX_MATCH_XD(insn_opcode);
       opcode_t2->match_func = match_opcode_XD;
       opcode_t2->pinfo = 0;
+
+      p = input_line_pointer;
+
+      bool void_p = false;
+      bool no_src0_p = false;
+      bool no_src1_p = false;
+
+      while (*input_line_pointer == ',')
+      {
+	input_line_pointer++; /*  Skip the comma.  */
+
+	p = input_line_pointer;
+	c = get_symbol_name (&p);
+
+	if (streq (p, "void"))
+	  void_p = true;
+	if (streq (p, "no_src0"))
+	  no_src0_p = true;
+	if (streq (p, "no_src1"))
+	  no_src1_p = true;
+
+	restore_line_pointer (c); /* Restore after reading the token.  */
+      }
+
+      /* Set opcode_t2->args based on flags: */
+      if (!void_p && !no_src0_p && !no_src1_p) /* */
+	opcode_t2->args = "d,s,t";
+      else if (!void_p && !no_src0_p && no_src1_p) /* no_src1 */
+	opcode_t2->args = "d,s";
+      else if (!void_p && no_src0_p && no_src1_p) /* no_src0,no_src1*/
+	opcode_t2->args = "d";
+      else if (void_p && no_src0_p && no_src1_p) /* void,no_src0,no_src1  */
+	opcode_t2->args = "";
+      else if (void_p && !no_src0_p && no_src1_p)  /* void,no_src1  */
+	opcode_t2->args = "s";
+      else if (void_p && !no_src0_p && !no_src1_p)  /* void  */
+	opcode_t2->args = "s,t";
+
     }
 //  else if(streq(insn_format,"XS")){
 //      opcode_t2->xlen_requirement = 0;
