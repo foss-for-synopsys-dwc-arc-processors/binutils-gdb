@@ -637,7 +637,7 @@ enum riscv_seg_mstate
 
 #define NRC (4 + 1)     /* Max characters in register names, incl nul.  */
 
-#define APEX_MASK_XD		0xfe002000
+#define APEX_MASK_XD		0xFE004000
 #define APEX_MASK_XS		0x783000
 #define APEX_MASK_XI		0x7C000
 #define APEX_MASK_XC		0x7C000
