@@ -139,6 +139,26 @@ struct riscv_ip_error
   const char* missing_ext;
 };
 
+/* Apex instruction typedef */
+typedef struct ApexInstruction
+{
+  /* Name.  */
+  char *name;
+
+  char* enc0;
+
+  /* Syntax class modifier.  Used by assembler.  */
+  unsigned char modsyn;
+
+  /* Suffix class.  Used by assembler.  */
+  unsigned char suffix;
+
+  /* Pointer to the next extension instruction.  */
+  struct ApexInstruction* next;
+} apexInstruction_t;
+
+#define streq(a, b)	      (strcmp (a, b) == 0)
+
 #ifndef DEFAULT_ARCH
 #define DEFAULT_ARCH "riscv64"
 #endif
@@ -5768,6 +5788,8 @@ riscv_elf_copy_symbol_attributes (symbolS *dest, symbolS *src)
     }
 }
 
+static void riscv_apex_insn(insn);
+
 /* RISC-V pseudo-ops table.  */
 static const pseudo_typeS riscv_pseudo_table[] =
 {
@@ -5783,7 +5805,7 @@ static const pseudo_typeS riscv_pseudo_table[] =
   {"attribute", s_riscv_attribute, 0},
   {"variant_cc", s_variant_cc, 0},
   {"float16", float_cons, 'h'},
-
+  {"extinstruction", riscv_apex_insn, 0},
   { NULL, NULL, 0 },
 };
 
@@ -5793,4 +5815,164 @@ riscv_pop_insert (void)
   extern void pop_insert (const pseudo_typeS *);
 
   pop_insert (riscv_pseudo_table);
+}
+
+int match_opcode_XD (const struct riscv_opcode *op, insn_t insn)
+{
+  return ((insn ^ op->match) & op->mask) == 0;
+}
+
+uint32_t APEX_MATCH_XD(unsigned char opcode) {
+ uint32_t match = 0; 
+ match |= ((uint32_t)(opcode & 0xFE) << 24);
+ match |= ((uint32_t)(opcode & 0x01) << 14);
+ match |= (uint32_t)0xB ;
+ return match; 
+}
+
+uint32_t APEX_MATCH_XS(unsigned char opcode) {
+ uint32_t match = 0; 
+ match |= ((uint32_t)(opcode & 0x3C) << 18);
+ match |= ((uint32_t)(opcode & 0x3) << 11); 
+ return match; 
+}
+
+uint32_t APEX_MATCH_XI(unsigned char opcode) {
+ uint32_t match = 0; 
+ match |= ((uint32_t)(opcode & 0xFE) << 13);
+ return match; 
+}
+
+uint32_t APEX_MATCH_XC(unsigned char opcode) {
+ uint32_t match = 0; 
+ match |= ((uint32_t)(opcode & 0xFE) << 13);
+ return match; 
+}
+
+/* Structure to hold an entry in ARC_OPCODE_HASH.  */
+struct riscv_opcode_hash_entry
+{
+  /* The number of pointers in the OPCODE list.  */
+  size_t count;
+
+  /* Points to a list of opcode pointers.  */
+  const struct riscv_opcode **opcode;
+};
+
+struct riscv_opcode opcode_t1 = {"foo1",       0, INSN_CLASS_I, "d,s,j",     0,0,  0, 0 };
+#if 0
+struct riscv_opcode create_opcode(){
+ struct riscv_opcode opcode_t = {"andxi", 0, INSN_CLASS_I, "d,s,j", MATCH_ANDI, MASK_ANDI, match_opcode, 0 }; 
+ return opcode_t;
+}
+
+static void
+riscv_insert_apex_opcode ()//const struct riscv_opcode *opcode)
+{
+  const char *name;
+  struct riscv_opcode *entry;
+  struct riscv_opcode_hash_entry *ENTRY;
+
+   opcode_t = create_opcode();
+   name = opcode_t.name;
+
+   str_hash_insert (op_hash, opcode_t.name, &opcode_t, 0); 
+
+}
+#endif
+
+
+static void
+riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
+
+  struct riscv_opcode* opcode_t2;
+  char *str = input_line_pointer;
+  char *p,c,*insn_name;
+  char *insn_format;
+  struct riscv_cl_insn insn;
+  unsigned char insn_opcode;
+  SKIP_WHITESPACE ();
+
+  p = input_line_pointer;
+  c = get_symbol_name (&p);
+
+  insn_name = xstrdup (p);
+  restore_line_pointer (c);
+
+  for (p = insn_name; *p; ++p)   
+    *p = TOLOWER (*p);           
+
+  if (*input_line_pointer != ',')
+    {
+      as_bad (_("expected comma after instruction name"));
+      ignore_rest_of_line ();
+      return;
+    }
+  
+  input_line_pointer++;
+  insn_opcode = get_absolute_expression ();
+
+  if (*input_line_pointer != ',')
+   {
+     as_bad (_("expected comma after instruction opcode"));
+     ignore_rest_of_line ();
+     return;
+   }
+
+  input_line_pointer++;
+
+  p = input_line_pointer;
+  c = get_symbol_name (&p);
+
+  insn_format = xstrdup (p);
+  restore_line_pointer (c);
+
+  opcode_t2 = XNEW(struct riscv_opcode);
+  opcode_t2->name = insn_name;
+
+#if 1
+  if(streq(insn_format,"XD"))
+    { 
+      opcode_t2->xlen_requirement = 0;
+      opcode_t2->insn_class = INSN_CLASS_I;
+      opcode_t2->args = "d,s,t";
+      opcode_t2->mask = APEX_MASK_XD;
+      opcode_t2->match = APEX_MATCH_XD(insn_opcode);
+      opcode_t2->match_func = match_opcode;
+      opcode_t2->pinfo = 0;
+    }
+  else if(streq(insn_format,"XS")){
+      opcode_t2->xlen_requirement = 0;
+      opcode_t2->insn_class = INSN_CLASS_I;
+      opcode_t2->args = "d,s,t";
+      opcode_t2->mask = APEX_MASK_XS;
+      opcode_t2->match = APEX_MATCH_XS(insn_opcode);
+      opcode_t2->match_func = match_opcode;
+      opcode_t2->pinfo = 0;
+    }
+  else if(streq(insn_format,"XI")){
+      opcode_t2->xlen_requirement = 0;
+      opcode_t2->insn_class = INSN_CLASS_I;
+      opcode_t2->args = "d,s,t";
+      opcode_t2->mask = APEX_MASK_XI;
+      opcode_t2->match = APEX_MATCH_XI(insn_opcode);
+      opcode_t2->match_func = match_opcode;
+      opcode_t2->pinfo = 0;
+    }
+  else if(streq(insn_format,"XC")){
+      opcode_t2->xlen_requirement = 0;
+      opcode_t2->insn_class = INSN_CLASS_I;
+      opcode_t2->args = "d,s,t";
+      opcode_t2->mask = APEX_MASK_XC;
+      opcode_t2->match = APEX_MATCH_XC(insn_opcode);
+      opcode_t2->match_func = match_opcode;
+      opcode_t2->pinfo = 0;
+    }
+  else {
+      as_bad (_("syntax error"));
+      return;
+    }
+#endif
+
+  str_hash_insert (op_hash, opcode_t2->name, opcode_t2, 0); 
 }
