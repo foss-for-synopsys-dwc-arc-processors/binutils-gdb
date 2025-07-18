@@ -503,6 +503,7 @@ enum riscv_insn_class
   INSN_CLASS_SVINVAL,
   INSN_CLASS_ZICBOM,
   INSN_CLASS_ZICBOP,
+  INSN_CLASS_APEX,
   INSN_CLASS_ZICBOZ,
   INSN_CLASS_ZABHA,
   INSN_CLASS_ZACAS,
@@ -636,6 +637,11 @@ enum riscv_seg_mstate
 
 #define NRC (4 + 1)     /* Max characters in register names, incl nul.  */
 
+#define APEX_MASK_XD		0xfe002000
+#define APEX_MASK_XS		0x783000
+#define APEX_MASK_XI		0x7C000
+#define APEX_MASK_XC		0x7C000
+
 extern const char riscv_gpr_names_numeric[NGPR][NRC];
 extern const char riscv_gpr_names_abi[NGPR][NRC];
 extern const char riscv_fpr_names_numeric[NFPR][NRC];
@@ -652,8 +658,14 @@ extern const char * const riscv_th_vlen[4];
 extern const char * const riscv_th_vediv[4];
 extern const char * const riscv_fli_symval[32];
 extern const float riscv_fli_numval[32];
-
+extern int match_opcode (const struct riscv_opcode *op, insn_t insn);
+extern int match_opcode_XD (const struct riscv_opcode *op, insn_t insn);
+extern uint32_t APEX_MATCH_XD(uint8_t opcode);
+extern uint32_t APEX_MATCH_XS(uint8_t opcode);
+extern uint32_t APEX_MATCH_XI(uint8_t opcode);
+extern uint32_t APEX_MATCH_XC(uint8_t opcode);
 extern const struct riscv_opcode riscv_opcodes[];
+extern struct riscv_opcode opcode_t;
 extern const struct riscv_opcode riscv_insn_types[];
 
 extern unsigned int riscv_get_sp_base (insn_t, unsigned int);
