@@ -5839,7 +5839,9 @@ uint32_t APEX_MATCH_XS(unsigned char opcode) {
 
 uint32_t APEX_MATCH_XI(unsigned char opcode) {
  uint32_t match = 0; 
- match |= ((uint32_t)(opcode & 0xFE) << 13);
+ match |= ((uint32_t)(opcode & 0x1F) << 15);
+ match |= 0b0001011; /* Custom-0. */
+ match |= 0b10000000000000;
  return match; 
 }
 
@@ -5990,15 +5992,15 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
 //      opcode_t2->match_func = match_opcode_XS;
 //      opcode_t2->pinfo = 0;
 //    }
-//  else if(streq(insn_format,"XI")){
-//      opcode_t2->xlen_requirement = 0;
-//      opcode_t2->insn_class = INSN_CLASS_I;
-//      opcode_t2->args = "d,s,t";
-//      opcode_t2->mask = APEX_MASK_XI;
-//      opcode_t2->match = APEX_MATCH_XI(insn_opcode);
-//      opcode_t2->match_func = match_opcode_XI;
-//      opcode_t2->pinfo = 0;
-//    }
+  else if(streq(insn_format,"XI")){
+      opcode_t2->xlen_requirement = 0;
+      opcode_t2->insn_class = INSN_CLASS_I;
+      opcode_t2->args = "d,j";
+      opcode_t2->mask = APEX_MASK_XI;
+      opcode_t2->match = APEX_MATCH_XI(insn_opcode);
+      opcode_t2->match_func = match_opcode;
+      opcode_t2->pinfo = 0;
+    }
   else if(streq(insn_format,"XC")){
       opcode_t2->xlen_requirement = 0;
       opcode_t2->insn_class = INSN_CLASS_I;
