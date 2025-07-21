@@ -640,7 +640,7 @@ enum riscv_seg_mstate
 #define APEX_MASK_XD		0xFE004000
 #define APEX_MASK_XS		0x783000
 #define APEX_MASK_XI		0x7C000
-#define APEX_MASK_XC		0x7C000
+#define APEX_MASK_XC		0xF807F
 
 extern const char riscv_gpr_names_numeric[NGPR][NRC];
 extern const char riscv_gpr_names_abi[NGPR][NRC];
