@@ -3693,6 +3693,17 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 	        *imm_reloc = BFD_RELOC_32;
 	      asarg = expr_parse_end;
 	      continue;
+	    case 'k':
+	      my_getExpression (imm_expr, asarg);
+	      check_absolute_expr (ip, imm_expr, false);
+	      if ((imm_expr->X_add_number & ~0xFF) != 0)
+		as_bad (_("immediate value out of range for "
+			  "8-bit immediate (%ld)"),
+			(long) imm_expr->X_add_number);
+	      ip->insn_opcode
+		|= ((unsigned long)(imm_expr->X_add_number & 0xFF) << 24);
+	      asarg = expr_parse_end;
+	      continue;
 
 	    case 'j': /* Sign-extended immediate.  */
 	      p = percent_op_itype;
@@ -5833,7 +5844,9 @@ uint32_t APEX_MATCH_XD(unsigned char opcode) {
 uint32_t APEX_MATCH_XS(unsigned char opcode) {
  uint32_t match = 0; 
  match |= ((uint32_t)(opcode & 0x3C) << 18);
- match |= ((uint32_t)(opcode & 0x3) << 11); 
+ match |= ((uint32_t)(opcode & 0x3) << 13);
+ match |= 0b0001011; /* Custom-0. */
+ match |= 0b1000000000000;
  return match; 
 }
 
@@ -5983,15 +5996,15 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
 	opcode_t2->args = "s,t";
 
     }
-//  else if(streq(insn_format,"XS")){
-//      opcode_t2->xlen_requirement = 0;
-//      opcode_t2->insn_class = INSN_CLASS_I;
-//      opcode_t2->args = "d,s,t";
-//      opcode_t2->mask = APEX_MASK_XS;
-//      opcode_t2->match = APEX_MATCH_XS(insn_opcode);
-//      opcode_t2->match_func = match_opcode_XS;
-//      opcode_t2->pinfo = 0;
-//    }
+  else if(streq(insn_format,"XS")){
+      opcode_t2->xlen_requirement = 0;
+      opcode_t2->insn_class = INSN_CLASS_I;
+      opcode_t2->args = "d,s,k";
+      opcode_t2->mask = APEX_MASK_XS;
+      opcode_t2->match = APEX_MATCH_XS(insn_opcode);
+      opcode_t2->match_func = match_opcode;
+      opcode_t2->pinfo = 0;
+    }
   else if(streq(insn_format,"XI")){
       opcode_t2->xlen_requirement = 0;
       opcode_t2->insn_class = INSN_CLASS_I;
