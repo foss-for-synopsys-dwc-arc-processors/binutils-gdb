@@ -6000,6 +6000,18 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
       opcode_t2->match = APEX_MATCH_XI(insn_opcode);
       opcode_t2->match_func = match_opcode;
       opcode_t2->pinfo = 0;
+      while (*input_line_pointer == ',')
+      {
+	input_line_pointer++; /*  Skip the comma.  */
+
+	p = input_line_pointer;
+	c = get_symbol_name (&p);
+
+	if (streq (p, "void"))
+	  opcode_t2->args = "j";
+
+	restore_line_pointer (c); /* Restore after reading the token.  */
+      }
     }
   else if(streq(insn_format,"XC")){
       opcode_t2->xlen_requirement = 0;
