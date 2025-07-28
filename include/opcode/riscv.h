@@ -118,7 +118,7 @@ static inline unsigned int riscv_insn_length (insn_t insn)
 #define EXTRACT_ZCMT_INDEX(x) \
   (RV_X(x, 2, 8))
 #define EXTRACT_PLI_IMM(x) \
-  (RV_X(x, 15, 9) | (RV_IMM_SIGN_N(x, 24, 1) << 10))
+  (RV_X(x, 16, 9) | (RV_IMM_SIGN_N(x, 15, 1) << 10))
 #define EXTRACT_PLI_B_IMM(x) \
   (RV_X(x, 16, 8) | (RV_IMM_SIGN_N(x, 16, 8) << 8))
 #define EXTRACT_PLUI_IMM(x) \
@@ -205,7 +205,7 @@ static inline unsigned int riscv_insn_length (insn_t insn)
 #define ENCODE_ZCMT_INDEX(x) \
   (RV_X(x, 0, 8) << 2)
 #define ENCODE_PLI_IMM(x) \
-  (RV_X(x, 0, 9) << 15 | RV_X(x, 9, 1) << 24)
+  (RV_X(x, 0, 9) << 16 | RV_X(x, 9, 1) << 15)
 #define ENCODE_PLI_B_IMM(x) \
   (RV_X(x, 0, 8) << 16)
 #define ENCODE_PLUI_IMM(x) \
