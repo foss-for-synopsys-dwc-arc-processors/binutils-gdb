@@ -3034,20 +3034,10 @@ arcv_apex_validate_insn (char *operands, struct riscv_opcode *insn)
   while (token != NULL)
   {
     operands_[operand_count] = token; 
-//    if (insn->mask == APEX_MASK_XD && ISDIGIT (*token))
-//      error.msg = _("Specified APEX format cannot handle "
-//			"a non-register operand.");
 
     operand_count++;
     token = strtok (NULL, ",");
   }
-
-//  if (insn->mask == APEX_MASK_XC && ISDIGIT (*operands_[1]))
-//  {
-//    error.msg = _("Specified APEX format cannot handle "
-//		"a non-register operand.");
-//    return error;
-//  }
 
   int count = 0;
   char *operands_2[3] = {"", "", ""};
@@ -3087,8 +3077,7 @@ arcv_apex_validate_insn (char *operands, struct riscv_opcode *insn)
     }
 
     if ((*token_2 != 'k' && *token_2 != 'j')
-	 /* Instead, it should check if its a valid register operand.  */
-//	 && ISDIGIT(*operands_[count - 1]))
+	 /* Check if its a valid register operand.  */
 	&& !str_hash_find (reg_names_hash, operands_[count - 1]))
     {
       error.msg = _("Specified APEX format cannot handle "
@@ -3096,24 +3085,8 @@ arcv_apex_validate_insn (char *operands, struct riscv_opcode *insn)
       return error;
     }
 
-//    void *r = str_hash_find (reg_names_hash, operands_[count - 1]);
-
     token_2 = strtok (NULL, ",");
   }
-
-//  if (count != operand_count)
-//  {
-//    error.msg = xasprintf( _("Expected %d operands but %d were specified"), count, operand_count);
-//    return error;
-//  }
-//  if (insn->mask == APEX_MASK_XC && operand_count != 3)
-//    error.msg = _("Expected 3 operands but 2 were specified");
-
-//  if (!ISALPHA(*operands_[0]) || !ISALPHA(*operands_[1]))
-//  {
-//    error.msg = _("Operand must be an general register reference");
-//    return error;
-//  }
 
   return error;
 }
