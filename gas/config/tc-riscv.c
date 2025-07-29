@@ -2904,6 +2904,154 @@ static symbolS *deferred_sym_lastP;
 static symbolS *orphan_sym_rootP;
 static symbolS *orphan_sym_lastP;
 
+
+uint32_t
+extract_opcode_from_match(uint32_t match, char *to)
+{
+  unsigned char opcode = 0;
+
+  if (streq (to,"XC") && ((match & 0x6000) != 0x6000))
+  {
+    uint32_t ret = 0;
+
+    /* Extract (opcode & 0x3C) from bits [23:18]  */
+    opcode |= (match >> 18) & 0x3C;
+
+    /* Extract (opcode & 0x03) from bits [14:13]  */
+    opcode |= (match >> 13) & 0x03;
+
+    ret |= ((uint32_t)(opcode & 0x1F) << 15);
+    ret |= 0b0001011; /* Custom-0. */
+    ret |= 0b110000000000000;
+
+    return ret;
+  } else if (streq (to,"XS") && ((match & 0x1000) != 0x1000))
+  {
+    opcode |= ((match >> 15) & 0x1F); /* Extract bits [19:15]  */
+    uint32_t ret = 0;
+    ret |= ((uint32_t)(opcode & 0x3C) << 18);
+    ret |= ((uint32_t)(opcode & 0x3) << 13);
+    ret |= 0b0001011; /* Custom-0.  */
+    ret |= 0b1000000000000;
+
+    return ret;
+  }
+  return match;
+}
+
+struct riscv_opcode *
+foo (char *operands, struct riscv_opcode *insn)
+{
+  if (insn == NULL || insn->mask == NULL
+      || insn->mask != (APEX_MASK_XS | APEX_MASK_XC))
+    return insn;
+
+  char *copy = strdup (operands);
+  if (!copy) return insn;
+
+  /* Split operands.  */
+  char *tokens[3] = { NULL, NULL, NULL };
+  int i = 0;
+  char *token = strtok(copy, ",");
+
+  while (token && i < 3) {
+    /* Trim leading whitespace  */
+    while (*token && ISSPACE(*token)) token++;
+
+    tokens[i++] = token;
+    token = strtok(NULL, ",");
+  }
+
+//  if (i < 3) {
+//    as_warn (_("Expected 3 operands, got %d"), i);
+//    free(copy);
+//    return insn;
+//  }
+
+  /* Parse the immediate.  */
+  char *endptr;
+  long imm = strtol(tokens[2], &endptr, 10);
+  if (*endptr != '\0') {
+    as_warn (_("Invalid immediate operand: %s"), tokens[2]);
+    free(copy);
+    return insn;
+  }
+
+  /* Optional: detect if dest == src (for XC)  */
+  bool is_same_reg = (tokens[0] && tokens[1]
+			&& strcmp(tokens[0], tokens[1]) == 0);
+
+  /* Allocate and copy instruction.
+     So that we dont change the match of the original.  */
+  struct riscv_opcode *new_insn = XNEW(struct riscv_opcode);
+  memcpy(new_insn, insn, sizeof(struct riscv_opcode));
+
+  if (imm <= 255 && !is_same_reg) {
+    /* Use XS  .*/
+    new_insn->xlen_requirement = 0;
+    new_insn->insn_class = INSN_CLASS_I;
+    new_insn->args = "d,s,k";
+    new_insn->mask = APEX_MASK_XS;
+    new_insn->match = extract_opcode_from_match (insn->match, "XS");
+    new_insn->match_func = match_opcode;
+    new_insn->pinfo = 0;
+    as_warn(_("Using XS format (8-bit immediate)"));
+  } else {
+    /* Use XC  .*/
+    new_insn->xlen_requirement = 0;
+    new_insn->insn_class = INSN_CLASS_I;
+    new_insn->args = "d,d,j";
+    new_insn->mask = APEX_MASK_XC;
+    new_insn->match = extract_opcode_from_match (insn->match, "XC");
+    new_insn->match_func = match_opcode;
+    new_insn->pinfo = 0;
+    as_warn(_("Using XC format (12-bit immediate or d == s)"));
+  }
+
+  free(copy);
+  return new_insn;
+}
+
+static struct riscv_ip_error
+arcv_apex_validate_insn (char *operands, struct riscv_opcode *insn)
+{
+  struct riscv_ip_error error;
+  error.msg = NULL;
+  int operand_count = 0;
+
+  if (insn == NULL || insn->mask == NULL
+      || (insn->mask != APEX_MASK_XD
+      && insn->mask != APEX_MASK_XS
+      && insn->mask != APEX_MASK_XI
+      && insn->mask != APEX_MASK_XC))
+    return error;
+
+
+  char *copy = strdup (operands);
+  if (!copy) return error;
+
+  char *operands_[3] = {"", "", ""};
+  char *token = strtok (copy, ",");
+  while (token != NULL)
+  {
+    operands_[operand_count] = token; 
+    if (insn->mask == APEX_MASK_XD && ISDIGIT (*token))
+      error.msg = _("Specified APEX format cannot handle "
+			"a non-register operand.");
+
+    operand_count++;
+    token = strtok (NULL, ",");
+  }
+
+  if (insn->mask == APEX_MASK_XC && operand_count != 3)
+    error.msg = _("Expected 3 operands but 2 were specified");
+
+  if (!ISALPHA(*operands_[0]) || !ISALPHA(*operands_[1]))
+    error.msg = _("Operand must be an general register reference");
+
+  return error;
+}
+
 /* This routine assembles an instruction into its binary format.  As a
    side effect, it sets the global variable imm_reloc to the type of
    relocation to do if one of the operands is an address expression.  */
@@ -2938,6 +3086,16 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
       }
 
   insn = (struct riscv_opcode *) str_hash_find (hash, str);
+
+  insn = foo (asarg, insn);
+
+  struct riscv_ip_error apex_error = arcv_apex_validate_insn (asarg, insn);
+  if (apex_error.msg)
+  {
+    apex_error.statement = str; /* We dont want this.. but..  */
+    apex_error.missing_ext = NULL;
+    return apex_error;
+  }
 
   probing_insn_operands = true;
 
@@ -6013,6 +6171,11 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
 
 	if (streq (p, "void"))
 	  opcode_t2->args = "s,k";
+	if (streq (p, "XC"))
+	{
+	    opcode_t2->mask |= APEX_MASK_XC;
+	}
+
 
 	restore_line_pointer (c); /* Restore after reading the token.  */
       }
@@ -6046,7 +6209,25 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
       opcode_t2->match = APEX_MATCH_XC(insn_opcode);
       opcode_t2->match_func = match_opcode_XD;
       opcode_t2->pinfo = 0;
-    }
+      while (*input_line_pointer == ',')
+      {
+	input_line_pointer++; /*  Skip the comma.  */
+
+	p = input_line_pointer;
+	c = get_symbol_name (&p);
+
+	if (streq (p, "XS"))
+	{
+	  opcode_t2->mask |= APEX_MASK_XS;
+	}
+	else if (streq (p, "void"))
+	{
+	  as_bad (_("Specified APEX format cannot "
+		    "handle a non-register operand"));
+	  exit (1);
+	}
+      }
+  }
   else {
       as_bad (_("syntax error"));
       return;

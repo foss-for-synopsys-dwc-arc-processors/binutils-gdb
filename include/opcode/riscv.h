@@ -637,10 +637,18 @@ enum riscv_seg_mstate
 
 #define NRC (4 + 1)     /* Max characters in register names, incl nul.  */
 
-#define APEX_MASK_XD		0xFE004000
-#define APEX_MASK_XS		0x783000
-#define APEX_MASK_XI		0xF807F
-#define APEX_MASK_XC		0xF807F
+// #define APEX_MASK_XD		0xFE004000
+// #define APEX_MASK_XS		0x783000
+// #define APEX_MASK_XI		0xF807F
+// #define APEX_MASK_XC		0xF807F
+#define APEX_MASK_XD		0xB
+/* 000 00000 0001011  */
+#define APEX_MASK_XS		0x100B
+/* 001 00000 0001011  */
+#define APEX_MASK_XI		0x200B
+/* 010 00000 0001011  */
+#define APEX_MASK_XC		0x600B
+/* 110 00000 0001011  */
 
 extern const char riscv_gpr_names_numeric[NGPR][NRC];
 extern const char riscv_gpr_names_abi[NGPR][NRC];
