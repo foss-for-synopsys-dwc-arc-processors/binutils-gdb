@@ -3015,80 +3015,78 @@ foo (char *operands, struct riscv_opcode *insn)
 static struct riscv_ip_error
 arcv_apex_validate_insn (char *operands, struct riscv_opcode *insn)
 {
-  struct riscv_ip_error error;
-  error.msg = NULL;
-  int operand_count = 0;
+  struct riscv_ip_error error = { .msg = NULL };
 
-  if (insn == NULL || insn->mask == NULL
+  if (insn == NULL
       || (insn->mask != APEX_MASK_XD
       && insn->mask != APEX_MASK_XS
       && insn->mask != APEX_MASK_XI
       && insn->mask != APEX_MASK_XC))
     return error;
 
-  char *copy = strdup (operands);
-  if (!copy) return error;
+  char *operands_copy = strdup (operands);
+  gas_assert (operands_copy);
 
-  char *operands_[3] = {"", "", ""};
-  char *token = strtok (copy, ",");
-  while (token != NULL)
+  char *args_copy = strdup (insn->args);
+  gas_assert (args_copy);
+
+  char *operand_tokens[3] = { NULL };
+  char *arg_types[3] = { NULL };
+
+  int operand_count = 0;
+
+  char *token = strtok (operands_copy, ",");
+  while (token)
   {
-    operands_[operand_count] = token; 
-
-    operand_count++;
+    operand_tokens[operand_count++] = token;
     token = strtok (NULL, ",");
   }
 
-  int count = 0;
-  char *operands_2[3] = {"", "", ""};
-
-  /* Make a modifiable copy of the operand types.  */
-  char *copy_2 = strdup (insn->args);
-  char *token_2 = strtok (copy_2, ",");
-
-  /* First, collect all operand types in order.  */
-  while (token_2 != NULL)
+  int arg_count = 0;
+  token = strtok (args_copy, ",");
+  while (token)
   {
-    operands_2[count++] = token_2;
-    token_2 = strtok (NULL, ",");
+    arg_types[arg_count++] = token;
+    token = strtok (NULL, ",");
   }
 
   /* Now check if operand count is valud.  */
-  if (count != operand_count)
+  if (arg_count != operand_count)
   {
     error.msg = xasprintf( _("Expected %d operands but %d were specified -"),
-			  count, operand_count);
+			  arg_count, operand_count);
     return error;
   }
 
   /* Now, traverse in reverse order.  */
-  for (int i = count - 1; i >= 0; --i)
+  for (int i = arg_count - 1; i >= 0; --i)
   {
-    char *operand = operands_2[i];
+    const char *arg_type = arg_types[i];
+    const char *operand = operand_tokens[i];
 
-    if ((*operand == 'k' || operand[0] == 'j')
-	&& !ISDIGIT (*operands_[i]))
+    if ((*arg_type == 'k' || *arg_type == 'j')
+	&& !ISDIGIT (*operand))
     {
       error.msg = _("Operands do not conform to the specified APEX format -");
       return error;
     }
 
-    if (*operand == 's'
-	&& !str_hash_find (reg_names_hash, operands_[i]))
+    if (*arg_type == 's'
+	&& !str_hash_find (reg_names_hash, operand))
     {
       error.msg = _("Operand must be an general register reference -");
       return error;
     }
 
-    if (*operand == 'd'
-	&& !str_hash_find (reg_names_hash, operands_[i]))
+    if (*arg_type == 'd'
+	&& !str_hash_find (reg_names_hash, operands))
     {
       error.msg = _("Destination operand must be a general register reference -");
       return error;
     }
 
-    if ((*operand != 'k' && operand[0] != 'j')
-	&& !str_hash_find(reg_names_hash, operands_[i]))
+    if ((*arg_type != 'k' && *arg_type != 'j')
+	&& !str_hash_find(reg_names_hash, operand))
     {
       error.msg = _("Specified APEX format cannot handle a non-register operand -");
       return error;
