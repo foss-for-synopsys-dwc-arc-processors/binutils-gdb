@@ -3079,7 +3079,7 @@ arcv_apex_validate_insn (char *operands, struct riscv_opcode *insn)
     }
 
     if (*arg_type == 'd'
-	&& !str_hash_find (reg_names_hash, operands))
+	&& !str_hash_find (reg_names_hash, operand))
     {
       error.msg = _("Destination operand must be a general register reference -");
       return error;
