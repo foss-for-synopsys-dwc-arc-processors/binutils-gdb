@@ -3041,51 +3041,58 @@ arcv_apex_validate_insn (char *operands, struct riscv_opcode *insn)
 
   int count = 0;
   char *operands_2[3] = {"", "", ""};
+
+  /* Make a modifiable copy of the operand types.  */
   char *copy_2 = strdup (insn->args);
   char *token_2 = strtok (copy_2, ",");
+
+  /* First, collect all operand types in order.  */
   while (token_2 != NULL)
   {
     operands_2[count++] = token_2;
+    token_2 = strtok (NULL, ",");
+  }
 
-    if (count > operand_count)
-    {
-      error.msg = xasprintf( _("Expected %d operands but %d were specified -"),
-				count, operand_count);
-      return error;
-    }
+  /* Now check if operand count is valud.  */
+  if (count != operand_count)
+  {
+    error.msg = xasprintf( _("Expected %d operands but %d were specified -"),
+			  count, operand_count);
+    return error;
+  }
 
-    if ((*token_2 == 'k' || *token_2 == 'j')
-	 && !ISDIGIT(*operands_[count - 1]))
+  /* Now, traverse in reverse order.  */
+  for (int i = count - 1; i >= 0; --i)
+  {
+    char *operand = operands_2[i];
+
+    if ((*operand == 'k' || operand[0] == 'j')
+	&& !ISDIGIT (*operands_[i]))
     {
       error.msg = _("Operands do not conform to the specified APEX format -");
       return error;
     }
 
-
-    if (*token_2 == 's'
-	&& !str_hash_find (reg_names_hash, operands_[count - 1]))
+    if (*operand == 's'
+	&& !str_hash_find (reg_names_hash, operands_[i]))
     {
       error.msg = _("Operand must be an general register reference -");
       return error;
     }
 
-    if (*token_2 == 'd'
-	&& !str_hash_find (reg_names_hash, operands_[count - 1]))
+    if (*operand == 'd'
+	&& !str_hash_find (reg_names_hash, operands_[i]))
     {
       error.msg = _("Destination operand must be a general register reference -");
       return error;
     }
 
-    if ((*token_2 != 'k' && *token_2 != 'j')
-	 /* Check if its a valid register operand.  */
-	&& !str_hash_find (reg_names_hash, operands_[count - 1]))
+    if ((*operand != 'k' && operand[0] != 'j')
+	&& !str_hash_find(reg_names_hash, operands_[i]))
     {
-      error.msg = _("Specified APEX format cannot handle "
-		"a non-register operand -");
+      error.msg = _("Specified APEX format cannot handle a non-register operand -");
       return error;
     }
-
-    token_2 = strtok (NULL, ",");
   }
 
   return error;
