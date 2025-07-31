@@ -6158,17 +6158,62 @@ riscv_insert_apex_opcode ()//const struct riscv_opcode *opcode)
 #endif
 
 static int
-apex_set_ext_seg (void)
+apex_set_ext_seg (unsigned int insn_format, unsigned int insn_opcode)
 {
-  if (!apex_section)
-    {
-      apex_section = subseg_new (".riscvextmap", 0);
-      bfd_set_section_flags (apex_section, SEC_READONLY | SEC_HAS_CONTENTS);
-    }
-  else
-    subseg_set (apex_section, 0);
+
+  char *prefix = ".riscvapex.";
+  char *custom_0 = "11";
+
+  /* 0xF + null = 4 chars max.  */
+  char insn_format_str[5];
+  /* Mask to 4 bits.  */
+  sprintf (insn_format_str, "%u", insn_format);
+
+  char insn_opcode_str[12];
+  sprintf (insn_opcode_str, "%u", insn_opcode);
+
+  char *result = malloc (
+    strlen(prefix)
+    + strlen (insn_format_str)
+    + 1 /* dot.  */
+    + strlen (custom_0)
+    + 1 /* dot.  */
+    + strlen (insn_opcode_str));
+
+  strcpy (result, prefix);
+  strcat (result, insn_format_str);
+  strcat (result, ".");
+  strcat (result, custom_0);
+  strcat (result, ".");
+  strcat (result, insn_opcode_str);
+
+  segT apex_section1 = subseg_new (result, 0);
+  bfd_set_section_flags (apex_section1, SEC_READONLY | SEC_HAS_CONTENTS);
+  subseg_set (apex_section1, 0); /* switch to this new section.  */
   return 1;
 }
+
+
+enum apex_flags {
+  None = 0,
+  XD = 1 << 0,
+  XS = 1 << 1,
+  XI = 1 << 2,
+  XC = 1 << 3,
+  VOID = 1 << 4,
+  NO_SRC0 = 1 << 5,
+  NO_SRC1 = 1 << 6,
+};
+
+struct apex_insn
+{
+  uint8_t len;
+  uint8_t type;
+  uint8_t opcode;
+  uint8_t func_t;
+  uint8_t flags;
+  char name[1];
+};
 
 
 static void
@@ -6179,7 +6224,7 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
   char *p,*t,c,*insn_name;
   char *insn_format;
   struct riscv_cl_insn insn;
-  unsigned char insn_opcode;
+  unsigned int insn_opcode;
   SKIP_WHITESPACE ();
 
   p = input_line_pointer;
@@ -6218,10 +6263,12 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
 
   opcode_t2 = XNEW(struct riscv_opcode);
   opcode_t2->name = insn_name;
+  uint8_t flags = 0;
 
 #if 1
   if(streq(insn_format,"XD"))
     { 
+      flags |= 1;
       opcode_t2->xlen_requirement = 0;
       opcode_t2->insn_class = INSN_CLASS_I;
       //opcode_t2->args = "d,s,t";
@@ -6232,10 +6279,6 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
 
       p = input_line_pointer;
 
-      bool void_p = false;
-      bool no_src0_p = false;
-      bool no_src1_p = false;
-
       while (*input_line_pointer == ',')
       {
 	input_line_pointer++; /*  Skip the comma.  */
@@ -6244,31 +6287,43 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
 	c = get_symbol_name (&p);
 
 	if (streq (p, "void"))
-	  void_p = true;
+	  flags |= 1 << 4;
 	if (streq (p, "no_src0"))
-	  no_src0_p = true;
+	  flags |= 1 << 5;
 	if (streq (p, "no_src1"))
-	  no_src1_p = true;
+	  flags |= 1 << 6;
 
 	restore_line_pointer (c); /* Restore after reading the token.  */
       }
 
-      /* Set opcode_t2->args based on flags: */
-      if (!void_p && !no_src0_p && !no_src1_p) /* */
-	opcode_t2->args = "d,s,t";
-      else if (!void_p && !no_src0_p && no_src1_p) /* no_src1 */
-	opcode_t2->args = "d,s";
-      else if (!void_p && no_src0_p && no_src1_p) /* no_src0,no_src1*/
-	opcode_t2->args = "d";
-      else if (void_p && no_src0_p && no_src1_p) /* void,no_src0,no_src1  */
-	opcode_t2->args = "";
-      else if (void_p && !no_src0_p && no_src1_p)  /* void,no_src1  */
-	opcode_t2->args = "s";
-      else if (void_p && !no_src0_p && !no_src1_p)  /* void  */
-	opcode_t2->args = "s,t";
+      switch ((flags & (VOID | NO_SRC0 | NO_SRC1)))
+      {
+	case 0:
+	  opcode_t2->args = "d,s,t";
+	  break;
+	case NO_SRC1:
+	  opcode_t2->args = "d,s";
+	  break;
+	case NO_SRC0 | NO_SRC1:
+	  opcode_t2->args = "d";
+	  break;
+	case VOID | NO_SRC0 | NO_SRC1:
+	  opcode_t2->args = "";
+	  break;
+	case VOID | NO_SRC1:
+	  opcode_t2->args = "s";
+	  break;
+	case VOID:
+	  opcode_t2->args = "s,t";
+	  break;
+	default:
+	  opcode_t2->args = NULL;
+	  break;
+      }
 
     }
   else if(streq(insn_format,"XS")){
+      flags |= 1 << 1;
       opcode_t2->xlen_requirement = 0;
       opcode_t2->insn_class = INSN_CLASS_I;
       opcode_t2->args = "d,s,k";
@@ -6284,9 +6339,13 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
 	c = get_symbol_name (&p);
 
 	if (streq (p, "void"))
+	{
 	  opcode_t2->args = "s,k";
+	  flags |= 1 << 4;
+	}
 	if (streq (p, "XC"))
 	{
+	    flags |= 1 << 3;
 	    opcode_t2->mask |= APEX_MASK_XC;
 	}
 
@@ -6295,6 +6354,7 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
       }
     }
   else if(streq(insn_format,"XI")){
+      flags |= 1 << 2;
       opcode_t2->xlen_requirement = 0;
       opcode_t2->insn_class = INSN_CLASS_I;
       opcode_t2->args = "d,j";
@@ -6310,12 +6370,16 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
 	c = get_symbol_name (&p);
 
 	if (streq (p, "void"))
+	{
 	  opcode_t2->args = "j";
+	  flags |= 1 << 4;
+	}
 
 	restore_line_pointer (c); /* Restore after reading the token.  */
       }
     }
   else if(streq(insn_format,"XC")){
+      flags |= 1 << 3;
       opcode_t2->xlen_requirement = 0;
       opcode_t2->insn_class = INSN_CLASS_I;
       opcode_t2->args = "d,d,j";
@@ -6332,6 +6396,7 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
 
 	if (streq (p, "XS"))
 	{
+	  flags |= 1 << 1;
 	  opcode_t2->mask |= APEX_MASK_XS;
 	}
 	else if (streq (p, "void"))
@@ -6350,22 +6415,52 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
 
   str_hash_insert (op_hash, opcode_t2->name, opcode_t2, 0); 
  
-  apex_set_ext_seg(); 
+  apex_set_ext_seg(flags & 0xF, insn_opcode);
 
-  segT old_sec    = now_seg;
-  int old_subsec  = now_subseg;
+  struct apex_insn apex;
+  size_t size_1 = offsetof (struct apex_insn, name) + strlen (insn_name) + 2;
+  unsigned null_padding = 1;
+  if (size_1 & 1)
+  {
+    size_1++;
+    null_padding++;
+  }
 
-  t = frag_more (1);
-  *t = 1 + strlen (insn_name) + 1;
-  t = frag_more (1);
-  *t = 0;
-  t = frag_more (1);
-  *t = insn_opcode;
-  t = frag_more (1);
-  *t = opcode_t2->args; 
-  t = frag_more (strlen(insn_name) + 1);
-  strcpy (t, insn_name);
+  apex.len = size_1;
+  apex.type = 1;
+  apex.opcode = 11;
+  apex.func_t = insn_opcode;
+  apex.flags = flags;
 
-  subseg_set (old_sec, old_subsec);
+  size_t size;
+  char *where;
+  size_t len;
+
+  size = 1;
+  where = frag_more (size);
+  md_number_to_chars (where, apex.len, size);
+
+  where = frag_more (size);
+  md_number_to_chars (where, apex.type, size);
+
+  where = frag_more (size);
+  md_number_to_chars (where, apex.opcode, size);
+
+  where = frag_more (size);
+  md_number_to_chars (where, apex.func_t, size);
+
+  where = frag_more (size);
+  md_number_to_chars (where, apex.flags, size);
+
+  /* none.  */
+  where = frag_more (size);
+  md_number_to_chars (where, 0 ,size);
+
+  size = strlen (insn_name);
+  where = frag_more (size);
+  memcpy (where, insn_name, size);
+
+  where = frag_more (null_padding);
+  md_number_to_chars (where, 0x0, null_padding);
 
 }
