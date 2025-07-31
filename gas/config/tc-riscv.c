@@ -6085,17 +6085,43 @@ riscv_insert_apex_opcode ()//const struct riscv_opcode *opcode)
 #endif
 
 static int
-apex_set_ext_seg (void)
+apex_set_ext_seg (unsigned int insn_format, unsigned char* insn_opcode)
 {
-  if (!apex_section)
-    {
-      apex_section = subseg_new (".riscvextmap", 0);
-      bfd_set_section_flags (apex_section, SEC_READONLY | SEC_HAS_CONTENTS);
-    }
-  else
-    subseg_set (apex_section, 0);
+//  if (!apex_section)
+//    {
+    /* tmp:  */ char buf[64];
+    /* tmp:  */ snprintf (buf, sizeof (buf), ".riscvapex.%d.11.%d", insn_format, insn_opcode);
+      char *name = xstrdup (buf);
+      segT apex_section1 = subseg_new (name, 0);
+      bfd_set_section_flags (apex_section1, SEC_READONLY | SEC_HAS_CONTENTS);
+      subseg_set (apex_section1, 0); /* switch to this new section.  */
+//    }
+//  else
+//    subseg_set (apex_section, 0);
   return 1;
 }
+
+
+enum apex_flags {
+  None = 0,
+  XD = 1 << 0,
+  XS = 1 << 1,
+  XI = 1 << 2,
+  XC = 1 << 3,
+  VOID = 1 << 4,
+  NO_SRC0 = 1 << 5,
+  NO_SRC1 = 1 << 6,
+};
+
+struct apex_insn
+{
+  uint8_t len;
+  uint8_t type;
+  uint8_t opcode;
+  uint8_t func_t;
+  enum apex_flags flags;
+  char name[1];
+};
 
 
 static void
@@ -6146,9 +6172,12 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
   opcode_t2 = XNEW(struct riscv_opcode);
   opcode_t2->name = insn_name;
 
+  enum apex_flags flags = 0;
+
 #if 1
   if(streq(insn_format,"XD"))
     { 
+      flags |= 1;
       opcode_t2->xlen_requirement = 0;
       opcode_t2->insn_class = INSN_CLASS_I;
       //opcode_t2->args = "d,s,t";
@@ -6171,11 +6200,20 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
 	c = get_symbol_name (&p);
 
 	if (streq (p, "void"))
+	{
+	  flags |= 1 << 4;
 	  void_p = true;
+	}
 	if (streq (p, "no_src0"))
+        {
+	  flags |= 1 << 5;
 	  no_src0_p = true;
+        }
 	if (streq (p, "no_src1"))
+        {
+	  flags |= 1 << 6;
 	  no_src1_p = true;
+        }
 
 	restore_line_pointer (c); /* Restore after reading the token.  */
       }
@@ -6196,6 +6234,7 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
 
     }
   else if(streq(insn_format,"XS")){
+      flags |= 1 << 1;
       opcode_t2->xlen_requirement = 0;
       opcode_t2->insn_class = INSN_CLASS_I;
       opcode_t2->args = "d,s,k";
@@ -6211,7 +6250,10 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
 	c = get_symbol_name (&p);
 
 	if (streq (p, "void"))
+	{
 	  opcode_t2->args = "s,k";
+	  flags |= 1 << 4;
+	}
 	if (streq (p, "XC"))
 	{
 	    opcode_t2->mask |= APEX_MASK_XC;
@@ -6222,6 +6264,7 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
       }
     }
   else if(streq(insn_format,"XI")){
+      flags |= 1 << 2;
       opcode_t2->xlen_requirement = 0;
       opcode_t2->insn_class = INSN_CLASS_I;
       opcode_t2->args = "d,j";
@@ -6237,12 +6280,16 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
 	c = get_symbol_name (&p);
 
 	if (streq (p, "void"))
+	{
 	  opcode_t2->args = "j";
+	  flags |= 1 << 4;
+	}
 
 	restore_line_pointer (c); /* Restore after reading the token.  */
       }
     }
   else if(streq(insn_format,"XC")){
+      flags |= 1 << 3;
       opcode_t2->xlen_requirement = 0;
       opcode_t2->insn_class = INSN_CLASS_I;
       opcode_t2->args = "d,d,j";
@@ -6277,22 +6324,70 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
 
   str_hash_insert (op_hash, opcode_t2->name, opcode_t2, 0); 
  
-  apex_set_ext_seg(); 
+  apex_set_ext_seg(flags & 0xF, insn_opcode); 
 
-  segT old_sec    = now_seg;
-  int old_subsec  = now_subseg;
+  unsigned int value;
+  int size = 1;
+  char* where;
 
-  t = frag_more (1);
-  *t = 1 + strlen (insn_name) + 1;
-  t = frag_more (1);
-  *t = 0;
-  t = frag_more (1);
-  *t = insn_opcode;
-  t = frag_more (1);
-  *t = opcode_t2->args; 
-  t = frag_more (strlen(insn_name) + 1);
-  strcpy (t, insn_name);
+  /*length. */
+  where = frag_more (size);
+  //md_number_to_chars (where, strlen (insn_name), size); /* not sure if its correct.  */
+  md_number_to_chars (where, 0b1010, size); /* not sure if its correct.  */
+ 
+  /* type = 1  */ 
+  where = frag_more (size);
+  md_number_to_chars (where, 1, size);
+ 
+  /* opcode. CUSTOM-0 */
+  where = frag_more (size);
+  md_number_to_chars (where, 11, size);
 
-  subseg_set (old_sec, old_subsec);
+  /* subcode.  */
+  where = frag_more (size);
+  md_number_to_chars (where, insn_opcode, size);
+ 
+  /* flags.  */
+  where = frag_more (size);
+//  md_number_to_chars (where, 0b00010001,size);
+  md_number_to_chars (where, flags,size);
+
+  /* none.  */
+  where = frag_more (size);
+  md_number_to_chars (where, 0 ,size);
+ 
+//  where = frag_more (size);
+//  md_number_to_chars (where, 0x66, size);
+//
+//  where = frag_more (size);
+//  md_number_to_chars (where, 0x6f, size);
+//
+//  where = frag_more (size);
+//  md_number_to_chars (where, 0x6f, size);
+
+  size_t len = strlen (insn_name);
+  where = frag_more (len);
+  memcpy (where, insn_name, len);
+
+  /* why?  */
+  where = frag_more (size);
+  md_number_to_chars (where, 0x0, size);
+
+
+//  segT old_sec    = now_seg;
+//  int old_subsec  = now_subseg;
+//
+//  t = frag_more (1);
+//  *t = 1 + strlen (insn_name) + 1;
+//  t = frag_more (1);
+//  *t = 0;
+//  t = frag_more (1);
+//  *t = insn_opcode;
+//  t = frag_more (1);
+//  *t = opcode_t2->args; 
+//  t = frag_more (strlen(insn_name) + 1);
+//  strcpy (t, insn_name);
+//
+//  subseg_set (old_sec, old_subsec);
 
 }
