@@ -80,6 +80,30 @@ static const char (*riscv_fpr_names)[NRC];
 /* If set, disassemble as most general instruction.  */
 static bool no_aliases = false;
 
+/* Apex instruction typedef */
+typedef struct ApexInstruction
+{
+  /* Name.  */
+  char *name;
+
+  char opcode;
+
+  char args;
+   
+  unsigned char syntax;
+
+  /* Syntax class modifier.  Used by assembler.  */
+  unsigned char modsyn;
+
+  /* Suffix class.  Used by assembler.  */
+  unsigned char suffix;
+
+  /* Pointer to the next extension instruction.  */
+  struct ApexInstruction* next;
+} apexInstruction_t;
+
+/**/
+struct ApexInstruction* instructions[1<<6];
 
 /* Set default RISC-V disassembler options.  */
 
@@ -1418,10 +1442,158 @@ print_insn_riscv (bfd_vma memaddr, struct disassemble_info *info)
   return (*riscv_disassembler) (memaddr, insn, packet, info);
 }
 
+
+static void
+create_map (unsigned char *block,
+	    unsigned long length)
+{
+  unsigned char *p = block;
+
+  while (p && p < (block + length))
+    {
+      /* p[0] == length of record
+	 p[1] == type of record
+	 For instructions:
+	   p[2]  = opcode
+	   p[3]  = minor opcode (if opcode == 3)
+	   p[4]  = flags
+	   p[5]+ = name
+	 For core regs and condition codes:
+	   p[2]  = value
+	   p[3]+ = name
+	 For auxiliary regs:
+	   p[2..5] = value
+	   p[6]+   = name
+	     (value is p[2]<<24|p[3]<<16|p[4]<<8|p[5]).  */
+
+      /* The sequence of records is temrinated by an "empty"
+	 record.  */
+      if (p[0] == 0)
+	break;
+
+      switch (p[1])
+	{
+	case 0:
+	  {
+	    struct ApexInstruction  *insn = XNEW (struct ApexInstruction);
+	    struct ApexInstruction **bucket = &instructions[p[2]];
+	    insn->name  = xstrdup ((char *) (p + 5));
+	    insn->opcode = p[2];
+	    insn->args = p[3];
+	    insn->next  = *bucket;
+	    insn->suffix = 0;
+	    insn->syntax = 0;
+	    insn->modsyn = 0;
+	    *bucket = insn;
+	    break;
+	  }
+
+	default:
+	  break;
+	}
+
+      p += p[0]; /* Move on to next record.  */
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 disassembler_ftype
 riscv_get_disassembler (bfd *abfd)
 {
   const char *default_arch = "rv64gc";
+  asection *sect;
+
+ for (sect = abfd->sections; sect != NULL; sect = sect->next)
+    if (!strncmp (sect->name,
+		  ".riscvextmap.",
+	  sizeof (".riscvextmap.") - 1)
+	|| !strcmp (sect->name,".riscvextmap"))
+      {
+	bfd_size_type  count  = bfd_section_size (sect);
+	unsigned char* buffer = xmalloc (count);
+
+	if (buffer)
+	  {
+	    if (bfd_get_section_contents (abfd, sect, buffer, 0, count))
+	      create_map (buffer, count);
+	    free (buffer);
+	  }
+      }
 
   if (abfd && bfd_get_flavour (abfd) == bfd_target_elf_flavour)
     {
