@@ -139,24 +139,6 @@ struct riscv_ip_error
   const char* missing_ext;
 };
 
-/* Apex instruction typedef */
-typedef struct ApexInstruction
-{
-  /* Name.  */
-  char *name;
-
-  char* enc0;
-
-  /* Syntax class modifier.  Used by assembler.  */
-  unsigned char modsyn;
-
-  /* Suffix class.  Used by assembler.  */
-  unsigned char suffix;
-
-  /* Pointer to the next extension instruction.  */
-  struct ApexInstruction* next;
-} apexInstruction_t;
-
 #define streq(a, b)	      (strcmp (a, b) == 0)
 
 #ifndef DEFAULT_ARCH
@@ -483,6 +465,8 @@ static bool explicit_attr = false;
 static bool explicit_priv_attr = false;
 
 static char *expr_parse_end;
+
+static segT apex_section;
 
 /* Macros for encoding relaxation state for RVC branches and far jumps.  */
 #define RELAX_BRANCH_ENCODE(uncond, rvc, length)	\
@@ -6100,13 +6084,26 @@ riscv_insert_apex_opcode ()//const struct riscv_opcode *opcode)
 }
 #endif
 
+static int
+apex_set_ext_seg (void)
+{
+  if (!apex_section)
+    {
+      apex_section = subseg_new (".riscvextmap", 0);
+      bfd_set_section_flags (apex_section, SEC_READONLY | SEC_HAS_CONTENTS);
+    }
+  else
+    subseg_set (apex_section, 0);
+  return 1;
+}
+
 
 static void
 riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
 
   struct riscv_opcode* opcode_t2;
   char *str = input_line_pointer;
-  char *p,c,*insn_name;
+  char *p,*t,c,*insn_name;
   char *insn_format;
   struct riscv_cl_insn insn;
   unsigned char insn_opcode;
@@ -6279,4 +6276,23 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
 #endif
 
   str_hash_insert (op_hash, opcode_t2->name, opcode_t2, 0); 
+ 
+  apex_set_ext_seg(); 
+
+  segT old_sec    = now_seg;
+  int old_subsec  = now_subseg;
+
+  t = frag_more (1);
+  *t = 1 + strlen (insn_name) + 1;
+  t = frag_more (1);
+  *t = 0;
+  t = frag_more (1);
+  *t = insn_opcode;
+  t = frag_more (1);
+  *t = opcode_t2->args; 
+  t = frag_more (strlen(insn_name) + 1);
+  strcpy (t, insn_name);
+
+  subseg_set (old_sec, old_subsec);
+
 }
