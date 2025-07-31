@@ -646,6 +646,35 @@ enum riscv_seg_mstate
 #define APEX_MASK_XC		0xFE00B
 /*  000000000000 11111 110 00000 0001011  */
 
+#define APEX_OP_MASK_RS2	0x1f
+#define APEX_OP_SH_RS2		20
+#define APEX_OP_MASK_RS1	0x1f
+#define APEX_OP_SH_RS1		15
+#define APEX_OP_MASK_RD         0x1f
+#define APEX_OP_SH_RD		7
+
+/* Apex instruction typedef */
+typedef struct ApexInstruction
+{
+  /* Name.  */
+  char *name;
+
+  char opcode;
+
+  char args;
+   
+  unsigned char syntax;
+
+  /* Syntax class modifier.  Used by assembler.  */
+  unsigned char modsyn;
+
+  /* Suffix class.  Used by assembler.  */
+  unsigned char suffix;
+
+  /* Pointer to the next extension instruction.  */
+  struct ApexInstruction* next;
+} apexInstruction_t;
+
 extern const char riscv_gpr_names_numeric[NGPR][NRC];
 extern const char riscv_gpr_names_abi[NGPR][NRC];
 extern const char riscv_fpr_names_numeric[NFPR][NRC];

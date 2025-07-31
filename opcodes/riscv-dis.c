@@ -80,30 +80,10 @@ static const char (*riscv_fpr_names)[NRC];
 /* If set, disassemble as most general instruction.  */
 static bool no_aliases = false;
 
-/* Apex instruction typedef */
-typedef struct ApexInstruction
-{
-  /* Name.  */
-  char *name;
-
-  char opcode;
-
-  char args;
-   
-  unsigned char syntax;
-
-  /* Syntax class modifier.  Used by assembler.  */
-  unsigned char modsyn;
-
-  /* Suffix class.  Used by assembler.  */
-  unsigned char suffix;
-
-  /* Pointer to the next extension instruction.  */
-  struct ApexInstruction* next;
-} apexInstruction_t;
-
 /**/
 struct ApexInstruction* instructions[1<<6];
+struct riscv_opcode* instructions_spec[1<<6];
+
 
 /* Set default RISC-V disassembler options.  */
 
@@ -113,6 +93,18 @@ set_default_riscv_dis_options (void)
   riscv_gpr_names = riscv_gpr_names_abi;
   riscv_fpr_names = riscv_fpr_names_abi;
   no_aliases = false;
+}
+
+bool isXDType(insn_t num) {
+  uint64_t mask = 0x3 << 11;
+  int opcode = (num & mask) >> 11;
+  return opcode == 0;
+}
+
+int opcodeExtractXDType(uint64_t num) {
+  uint64_t bits_31_25 = (num >> 25) & 0x7F; 
+  uint64_t bit_14 = (num >> 14) & 1; 
+  return (bits_31_25 << 1) | bit_14;
 }
 
 /* Parse RISC-V disassembler option (without arguments).  */
@@ -436,6 +428,24 @@ print_insn_args (const char *oparg, insn_t l, bfd_vma pc, disassemble_info *info
 	      break;
 	    }
 	  break;
+
+ 	case 'A': /* apex XD type */
+	  switch (*++oparg)
+	    {
+           case 'd':
+              print (info->stream, dis_style_register, "%s", 
+			      riscv_gpr_names[(l >> APEX_OP_SH_RD) & APEX_OP_MASK_RD]);
+	      break;
+           case 's':
+	      print (info->stream, dis_style_register, "%s", 
+			      riscv_gpr_names[(l >> APEX_OP_SH_RS1) & APEX_OP_MASK_RS1]);
+              break;
+           case 't':
+              print (info->stream, dis_style_register, "%s", 
+			      riscv_gpr_names[(l >> APEX_OP_SH_RS2) & APEX_OP_MASK_RS2]);
+  	   break;
+	    }
+         break;       
 
 	case 'V': /* RVV */
 	  switch (*++oparg)
@@ -918,6 +928,8 @@ print_insn_args (const char *oparg, insn_t l, bfd_vma pc, disassemble_info *info
     }
 }
 
+
+
 /* Print the RISC-V instruction at address MEMADDR in debugged memory,
    on using INFO.  Returns length of the instruction, in bytes.
    BIGENDIAN must be 1 if this is big-endian code, 0 if
@@ -929,14 +941,16 @@ riscv_disassemble_insn (bfd_vma memaddr,
 			const bfd_byte *packet,
 			disassemble_info *info)
 {
-  const struct riscv_opcode *op;
+  struct riscv_opcode *op;
   static bool init = false;
   static const struct riscv_opcode *riscv_hash[OP_MASK_OP + 1];
   struct riscv_private_data *pd = info->private_data;
   int insnlen, i;
   bool printed;
+  struct ApexInstruction* apexInsn;
+  int opcode, sopcode;
 
-#define OP_HASH_IDX(i) ((i) & (riscv_insn_length (i) == 2 ? 0x3 : OP_MASK_OP))
+  #define OP_HASH_IDX(i) ((i) & (riscv_insn_length (i) == 2 ? 0x3 : OP_MASK_OP))
 
   /* Build a hash table to shorten the search time.  */
   if (! init)
@@ -964,7 +978,23 @@ riscv_disassemble_insn (bfd_vma memaddr,
   info->target = 0;
   info->target2 = 0;
 
-  op = riscv_hash[OP_HASH_IDX (word)];
+  if(((int)word & 15) == 11){
+
+//     if(isXDType(word)){
+//      opcode = opcodeExtractXDType(word);	     
+//      apexInsn = instructions[opcode];
+//      op = recreate_riscv_opcode(apexInsn);
+//      int a=1;
+//      a++;
+//  }
+    opcode = opcodeExtractXDType(word);
+    op = instructions_spec[opcode];
+  }
+   else{
+    op = riscv_hash[OP_HASH_IDX (word)];
+  }
+
+
   if (op != NULL)
     {
       /* If XLEN is not known, get its value from the ELF class.  */
@@ -1442,6 +1472,13 @@ print_insn_riscv (bfd_vma memaddr, struct disassemble_info *info)
   return (*riscv_disassembler) (memaddr, insn, packet, info);
 }
 
+uint32_t APEX_MATCH_XD(unsigned char opcode) {
+ uint32_t match = 0; 
+ match |= ((uint32_t)(opcode & 0xFE) << 24);
+ match |= ((uint32_t)(opcode & 0x01) << 14);
+ match |= (uint32_t)0xB ;
+ return match; 
+}
 
 static void
 create_map (unsigned char *block,
@@ -1485,6 +1522,20 @@ create_map (unsigned char *block,
 	    insn->syntax = 0;
 	    insn->modsyn = 0;
 	    *bucket = insn;
+
+	    struct riscv_opcode  *insn1 = XNEW (struct riscv_opcode);
+	    struct riscv_opcode **bucket_spec = &instructions_spec[p[2]];
+	    insn1->name  = xstrdup ((char *) (p + 4));
+	    insn1->match = APEX_MATCH_XD(p[2]);
+
+            /*make changes for the new arg naming*/
+	    insn1->args = "Ad,As,At";
+	    insn1->insn_class  = INSN_CLASS_I;
+	    insn1->mask = APEX_MASK_XD;
+	    insn1->match_func = match_opcode;
+	    insn1->xlen_requirement = 0;
+	    *bucket_spec = insn1;
+
 	    break;
 	  }
 
