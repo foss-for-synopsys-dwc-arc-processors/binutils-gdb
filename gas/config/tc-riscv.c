@@ -139,24 +139,6 @@ struct riscv_ip_error
   const char* missing_ext;
 };
 
-/* Apex instruction typedef */
-typedef struct ApexInstruction
-{
-  /* Name.  */
-  char *name;
-
-  char* enc0;
-
-  /* Syntax class modifier.  Used by assembler.  */
-  unsigned char modsyn;
-
-  /* Suffix class.  Used by assembler.  */
-  unsigned char suffix;
-
-  /* Pointer to the next extension instruction.  */
-  struct ApexInstruction* next;
-} apexInstruction_t;
-
 #define streq(a, b)	      (strcmp (a, b) == 0)
 
 #ifndef DEFAULT_ARCH
@@ -483,6 +465,8 @@ static bool explicit_attr = false;
 static bool explicit_priv_attr = false;
 
 static char *expr_parse_end;
+
+static segT apex_section;
 
 /* Macros for encoding relaxation state for RVC branches and far jumps.  */
 #define RELAX_BRANCH_ENCODE(uncond, rvc, length)	\
@@ -1572,7 +1556,7 @@ validate_riscv_insn (const struct riscv_opcode *opc, int length)
 	case '}': break;
 	case '<': USE_BITS (OP_MASK_SHAMTW, OP_SH_SHAMTW); break;
 	case '>': USE_BITS (OP_MASK_SHAMT, OP_SH_SHAMT); break;
-	case 'A': break; /* Macro operand, must be symbol.  */
+//	case 'A': break; /* Macro operand, must be symbol.  */
 	case 'B': break; /* Macro operand, must be symbol or constant.  */
 	case 'c': break; /* Macro operand, must be symbol or constant.  */
 	case 'I': break; /* Macro operand, must be constant.  */
@@ -1605,6 +1589,18 @@ validate_riscv_insn (const struct riscv_opcode *opc, int length)
 	case ']': break; /* Unused operand.  */
 	case '0': break; /* AMO displacement, must to zero.  */
 	case '1': break; /* Relaxation operand.  */
+
+	case 'A': /* APEX  */
+	  switch (*++oparg)
+	    {
+            case 'd': USE_BITS (OP_MASK_RD, OP_SH_RD); break;
+            case 's': USE_BITS (OP_MASK_RS1, OP_SH_RS1); break;
+	    case 't': USE_BITS (OP_MASK_RS2, OP_SH_RS2); break;
+            default:
+	      goto unknown_validate_operand;
+	    }
+	  break;
+
 	case 'F': /* Funct for .insn directive.  */
 	  switch (*++oparg)
 	    {
@@ -2037,6 +2033,24 @@ macro_build (expressionS *ep, const char *name, const char *fmt, ...)
       fmtStart = fmt;
       switch (*fmt)
 	{
+
+       case 'A': /* Apex XD args*/
+         switch (*++fmt)
+	    {
+             case 'd':
+               INSERT_OPERAND (RD, insn, va_arg (args, int));
+               continue;
+	     case 's':
+               INSERT_OPERAND (RS1, insn, va_arg (args, int));
+	       continue;
+	     case 't':
+   	       INSERT_OPERAND (RS2, insn, va_arg (args, int));
+	       continue;
+             default:
+	      goto unknown_macro_argument;
+	    }
+	  break;
+
 	case 'V': /* RVV */
 	  switch (*++fmt)
 	    {
@@ -3599,6 +3613,49 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 		}
 	      break;
 
+	case 'A': /* APEX  */
+	  switch (*++oparg)
+	    {
+	    case 'd': /* Destination register.  */
+	    case 's': /* Source register.  */
+	    case 't': /* Target register.  */
+	    case 'r': /* RS3 */
+	      if (reg_lookup (&asarg, RCLASS_GPR, &regno))
+		{
+		  char c = *oparg;
+		  if (*asarg == ' ')
+		    ++asarg;
+
+		  /* Now that we have assembled one operand, we use the args
+		     string to figure out where it goes in the instruction.  */
+		  switch (c)
+		    {
+		    case 's':
+		      INSERT_OPERAND (RS1, *ip, regno);
+		      break;
+		    case 'd':
+		      INSERT_OPERAND (RD, *ip, regno);
+		      break;
+		    case 't':
+		      INSERT_OPERAND (RS2, *ip, regno);
+		      break;
+		    case 'r':
+		      INSERT_OPERAND (RS3, *ip, regno);
+		      break;
+		    }
+		  continue;
+		}
+              }
+
+	      my_getExpression (imm_expr, asarg);
+	      normalize_constant_expr (imm_expr);
+	      /* The 'A' format specifier must be a symbol.  */
+	      if (imm_expr->X_op != O_symbol)
+	        break;
+	      *imm_reloc = BFD_RELOC_32;
+	      asarg = expr_parse_end;
+	      continue;
+
 	    case 'd': /* Destination register.  */
 	    case 's': /* Source register.  */
 	    case 't': /* Target register.  */
@@ -3672,8 +3729,8 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 	      normalize_constant_expr (imm_expr);
 	      asarg = expr_parse_end;
 	      continue;
-
-	    case 'A':
+#if 0	    
+	      case 'A':
 	      my_getExpression (imm_expr, asarg);
 	      normalize_constant_expr (imm_expr);
 	      /* The 'A' format specifier must be a symbol.  */
@@ -3682,7 +3739,7 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 	      *imm_reloc = BFD_RELOC_32;
 	      asarg = expr_parse_end;
 	      continue;
-
+#endif
 	    case 'B':
 	      my_getExpression (imm_expr, asarg);
 	      normalize_constant_expr (imm_expr);
@@ -5881,13 +5938,26 @@ riscv_insert_apex_opcode ()//const struct riscv_opcode *opcode)
 }
 #endif
 
+static int
+apex_set_ext_seg (void)
+{
+  if (!apex_section)
+    {
+      apex_section = subseg_new (".riscvextmap", 0);
+      bfd_set_section_flags (apex_section, SEC_READONLY | SEC_HAS_CONTENTS);
+    }
+  else
+    subseg_set (apex_section, 0);
+  return 1;
+}
+
 
 static void
 riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
 
   struct riscv_opcode* opcode_t2;
   char *str = input_line_pointer;
-  char *p,c,*insn_name;
+  char *p,*t,c,*insn_name;
   char *insn_format;
   struct riscv_cl_insn insn;
   unsigned char insn_opcode;
@@ -5935,7 +6005,7 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
     { 
       opcode_t2->xlen_requirement = 0;
       opcode_t2->insn_class = INSN_CLASS_I;
-      opcode_t2->args = "d,s,t";
+      opcode_t2->args = "Ad,As,At";
       opcode_t2->mask = APEX_MASK_XD;
       opcode_t2->match = APEX_MATCH_XD(insn_opcode);
       opcode_t2->match_func = match_opcode;
@@ -5975,4 +6045,23 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
 #endif
 
   str_hash_insert (op_hash, opcode_t2->name, opcode_t2, 0); 
+ 
+  apex_set_ext_seg(); 
+
+  segT old_sec    = now_seg;
+  int old_subsec  = now_subseg;
+
+  t = frag_more (1);
+  *t = 1 + strlen (insn_name) + 1;
+  t = frag_more (1);
+  *t = 0;
+  t = frag_more (1);
+  *t = insn_opcode;
+  t = frag_more (1);
+  *t = opcode_t2->args; 
+  t = frag_more (strlen(insn_name) + 1);
+  strcpy (t, insn_name);
+
+  subseg_set (old_sec, old_subsec);
+
 }

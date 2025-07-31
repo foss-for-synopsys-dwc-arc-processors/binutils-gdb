@@ -638,9 +638,39 @@ enum riscv_seg_mstate
 #define NRC (4 + 1)     /* Max characters in register names, incl nul.  */
 
 #define APEX_MASK_XD		0xfe002000
+
+#define APEX_OP_MASK_RS2	0x1f
+#define APEX_OP_SH_RS2		20
+#define APEX_OP_MASK_RS1	0x1f
+#define APEX_OP_SH_RS1		15
+#define APEX_OP_MASK_RD         0x1f
+#define APEX_OP_SH_RD		7
+
 #define APEX_MASK_XS		0x783000
 #define APEX_MASK_XI		0x7C000
 #define APEX_MASK_XC		0x7C000
+
+/* Apex instruction typedef */
+typedef struct ApexInstruction
+{
+  /* Name.  */
+  char *name;
+
+  char opcode;
+
+  char args;
+   
+  unsigned char syntax;
+
+  /* Syntax class modifier.  Used by assembler.  */
+  unsigned char modsyn;
+
+  /* Suffix class.  Used by assembler.  */
+  unsigned char suffix;
+
+  /* Pointer to the next extension instruction.  */
+  struct ApexInstruction* next;
+} apexInstruction_t;
 
 extern const char riscv_gpr_names_numeric[NGPR][NRC];
 extern const char riscv_gpr_names_abi[NGPR][NRC];
