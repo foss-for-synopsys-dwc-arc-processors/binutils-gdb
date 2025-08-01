@@ -6256,6 +6256,7 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
 	}
 	if (streq (p, "XC"))
 	{
+	    flags |= 1 << 3;
 	    opcode_t2->mask |= APEX_MASK_XC;
 	}
 
@@ -6306,6 +6307,7 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
 
 	if (streq (p, "XS"))
 	{
+	  flags |= 1 << 1;
 	  opcode_t2->mask |= APEX_MASK_XS;
 	}
 	else if (streq (p, "void"))
