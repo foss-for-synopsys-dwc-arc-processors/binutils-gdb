@@ -6085,19 +6085,38 @@ riscv_insert_apex_opcode ()//const struct riscv_opcode *opcode)
 #endif
 
 static int
-apex_set_ext_seg (unsigned int insn_format, unsigned char* insn_opcode)
+apex_set_ext_seg (unsigned int insn_format, unsigned int insn_opcode)
 {
-//  if (!apex_section)
-//    {
-    /* tmp:  */ char buf[64];
-    /* tmp:  */ snprintf (buf, sizeof (buf), ".riscvapex.%d.11.%d", insn_format, insn_opcode);
-      char *name = xstrdup (buf);
-      segT apex_section1 = subseg_new (name, 0);
-      bfd_set_section_flags (apex_section1, SEC_READONLY | SEC_HAS_CONTENTS);
-      subseg_set (apex_section1, 0); /* switch to this new section.  */
-//    }
-//  else
-//    subseg_set (apex_section, 0);
+
+  char *prefix = ".riscvapex.";
+  char *custom_0 = "11";
+
+  /* 0xF + null = 4 chars max.  */
+  char insn_format_str[5];
+  /* Mask to 4 bits.  */
+  sprintf (insn_format_str, "%u", insn_format);
+
+  char insn_opcode_str[12];
+  sprintf (insn_opcode_str, "%u", insn_opcode);
+
+  char *result = malloc (
+    strlen(prefix)
+    + strlen (insn_format_str)
+    + 1 /* dot.  */
+    + strlen (custom_0)
+    + 1 /* dot.  */
+    + strlen (insn_opcode_str));
+
+  strcpy (result, prefix);
+  strcat (result, insn_format_str);
+  strcat (result, ".");
+  strcat (result, custom_0);
+  strcat (result, ".");
+  strcat (result, insn_opcode_str);
+
+  segT apex_section1 = subseg_new (result, 0);
+  bfd_set_section_flags (apex_section1, SEC_READONLY | SEC_HAS_CONTENTS);
+  subseg_set (apex_section1, 0); /* switch to this new section.  */
   return 1;
 }
 
@@ -6132,7 +6151,7 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
   char *p,*t,c,*insn_name;
   char *insn_format;
   struct riscv_cl_insn insn;
-  unsigned char insn_opcode;
+  unsigned int insn_opcode;
   SKIP_WHITESPACE ();
 
   p = input_line_pointer;
@@ -6173,12 +6192,6 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
   opcode_t2->name = insn_name;
   uint8_t flags = 0;
 
-//  size_t insn_len = strlen (insn_name);
-//  struct apex_insn* apex = malloc (sizeof (struct apex_insn) + insn_len);
-//  strcpy (apex->name, insn_name);
-//  apex->func_t = insn_opcode;
-//  apex->type = 1;
-//  apex->opcode = 11; /* Custom-0  */
 #if 1
   if(streq(insn_format,"XD"))
     { 
@@ -6346,10 +6359,6 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
   apex.func_t = insn_opcode;
   apex.flags = flags;
 
-/*  size_t size = offsetof (struct apex_insn, name);
-  char *where = frag_more (size);
-  memcpy (where, (const char *)&apex, size);  
-*/
   size_t size;
   char *where;
   size_t len;
@@ -6358,19 +6367,15 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
   where = frag_more (size);
   md_number_to_chars (where, apex.len, size);
 
-  size = 1;
   where = frag_more (size);
   md_number_to_chars (where, apex.type, size);
 
-  size = 1;
   where = frag_more (size);
   md_number_to_chars (where, apex.opcode, size);
 
-  size = 1;
   where = frag_more (size);
   md_number_to_chars (where, apex.func_t, size);
  
-  size = 1;
   where = frag_more (size);
   md_number_to_chars (where, apex.flags, size);
 
@@ -6383,71 +6388,6 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
   memcpy (where, insn_name, size);
 
   where = frag_more (null_padding);
-  md_number_to_chars (where, 0x0, null_padding); /* not sure if its correct.  */
-
-//  unsigned int value;
-//  int size = 1;
-//  char* where;
-
-  /*length. */
-//  where = frag_more (size);
-//  //md_number_to_chars (where, strlen (insn_name), size); /* not sure if its correct.  */
-//  size_t tmp = 6 + strlen (insn_name) + 1 /* null terminator.  */;
-//  md_number_to_chars (where, tmp, size); /* not sure if its correct.  */
-// 
-//  /* type = 1  */ 
-//  where = frag_more (size);
-//  md_number_to_chars (where, 1, size);
-// 
-//  /* opcode. CUSTOM-0 */
-//  where = frag_more (size);
-//  md_number_to_chars (where, 11, size);
-//
-//  /* subcode.  */
-//  where = frag_more (size);
-//  md_number_to_chars (where, insn_opcode, size);
-// 
-//  /* flags.  */
-//  where = frag_more (size);
-////  md_number_to_chars (where, 0b00010001,size);
-//  md_number_to_chars (where, apex->flags,size);
-//
-//  /* none.  */
-//  where = frag_more (size);
-//  md_number_to_chars (where, 0 ,size);
- 
-//  where = frag_more (size);
-//  md_number_to_chars (where, 0x66, size);
-//
-//  where = frag_more (size);
-//  md_number_to_chars (where, 0x6f, size);
-//
-//  where = frag_more (size);
-//  md_number_to_chars (where, 0x6f, size);
-
-//  size_t len = strlen (insn_name);
-//  where = frag_more (len);
-//  memcpy (where, insn_name, len);
-
-  /* null terminator?  */
-//  where = frag_more (size);
-//  md_number_to_chars (where, 0x0, size);
-
-
-//  segT old_sec    = now_seg;
-//  int old_subsec  = now_subseg;
-//
-//  t = frag_more (1);
-//  *t = 1 + strlen (insn_name) + 1;
-//  t = frag_more (1);
-//  *t = 0;
-//  t = frag_more (1);
-//  *t = insn_opcode;
-//  t = frag_more (1);
-//  *t = opcode_t2->args; 
-//  t = frag_more (strlen(insn_name) + 1);
-//  strcpy (t, insn_name);
-//
-//  subseg_set (old_sec, old_subsec);
+  md_number_to_chars (where, 0x0, null_padding);
 
 }
