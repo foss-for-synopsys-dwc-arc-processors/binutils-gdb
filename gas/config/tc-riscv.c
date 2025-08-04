@@ -6119,7 +6119,7 @@ struct apex_insn
   uint8_t type;
   uint8_t opcode;
   uint8_t func_t;
-  enum apex_flags flags;
+  uint8_t flags;
   char name[1];
 };
 
@@ -6171,9 +6171,14 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
 
   opcode_t2 = XNEW(struct riscv_opcode);
   opcode_t2->name = insn_name;
+  uint8_t flags = 0;
 
-  enum apex_flags flags = 0;
-
+//  size_t insn_len = strlen (insn_name);
+//  struct apex_insn* apex = malloc (sizeof (struct apex_insn) + insn_len);
+//  strcpy (apex->name, insn_name);
+//  apex->func_t = insn_opcode;
+//  apex->type = 1;
+//  apex->opcode = 11; /* Custom-0  */
 #if 1
   if(streq(insn_format,"XD"))
     { 
@@ -6188,10 +6193,6 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
 
       p = input_line_pointer;
 
-      bool void_p = false;
-      bool no_src0_p = false;
-      bool no_src1_p = false;
-
       while (*input_line_pointer == ',')
       {
 	input_line_pointer++; /*  Skip the comma.  */
@@ -6200,37 +6201,39 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
 	c = get_symbol_name (&p);
 
 	if (streq (p, "void"))
-	{
 	  flags |= 1 << 4;
-	  void_p = true;
-	}
 	if (streq (p, "no_src0"))
-        {
 	  flags |= 1 << 5;
-	  no_src0_p = true;
-        }
 	if (streq (p, "no_src1"))
-        {
 	  flags |= 1 << 6;
-	  no_src1_p = true;
-        }
 
 	restore_line_pointer (c); /* Restore after reading the token.  */
       }
 
-      /* Set opcode_t2->args based on flags: */
-      if (!void_p && !no_src0_p && !no_src1_p) /* */
-	opcode_t2->args = "d,s,t";
-      else if (!void_p && !no_src0_p && no_src1_p) /* no_src1 */
-	opcode_t2->args = "d,s";
-      else if (!void_p && no_src0_p && no_src1_p) /* no_src0,no_src1*/
-	opcode_t2->args = "d";
-      else if (void_p && no_src0_p && no_src1_p) /* void,no_src0,no_src1  */
-	opcode_t2->args = "";
-      else if (void_p && !no_src0_p && no_src1_p)  /* void,no_src1  */
-	opcode_t2->args = "s";
-      else if (void_p && !no_src0_p && !no_src1_p)  /* void  */
-	opcode_t2->args = "s,t";
+      switch ((flags & (VOID | NO_SRC0 | NO_SRC1)))
+      {
+	case 0:
+	  opcode_t2->args = "d,s,t";
+	  break;
+	case NO_SRC1:
+	  opcode_t2->args = "d,s";
+	  break;
+	case NO_SRC0 | NO_SRC1:
+	  opcode_t2->args = "d";
+	  break;
+	case VOID | NO_SRC0 | NO_SRC1:
+	  opcode_t2->args = "";
+	  break;
+	case VOID | NO_SRC1:
+	  opcode_t2->args = "s";
+	  break;
+	case VOID:
+	  opcode_t2->args = "s,t";
+	  break;
+	default:
+	  opcode_t2->args = NULL;
+	  break;
+      }
 
     }
   else if(streq(insn_format,"XS")){
@@ -6326,37 +6329,92 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
 
   str_hash_insert (op_hash, opcode_t2->name, opcode_t2, 0); 
  
-  apex_set_ext_seg(flags & 0xF, insn_opcode); 
+  apex_set_ext_seg(flags & 0xF, insn_opcode);
 
-  unsigned int value;
-  int size = 1;
-  char* where;
+  struct apex_insn apex;
+  size_t size_1 = offsetof (struct apex_insn, name) + strlen (insn_name) + 2;
+  unsigned null_padding = 1;
+  if (size_1 & 1)
+  {
+    size_1++;
+    null_padding++;
+  }
 
-  /*length. */
-  where = frag_more (size);
-  //md_number_to_chars (where, strlen (insn_name), size); /* not sure if its correct.  */
-  md_number_to_chars (where, 0b1010, size); /* not sure if its correct.  */
- 
-  /* type = 1  */ 
-  where = frag_more (size);
-  md_number_to_chars (where, 1, size);
- 
-  /* opcode. CUSTOM-0 */
-  where = frag_more (size);
-  md_number_to_chars (where, 11, size);
+  apex.len = size_1;
+  apex.type = 1;
+  apex.opcode = 11;
+  apex.func_t = insn_opcode;
+  apex.flags = flags;
 
-  /* subcode.  */
+/*  size_t size = offsetof (struct apex_insn, name);
+  char *where = frag_more (size);
+  memcpy (where, (const char *)&apex, size);  
+*/
+  size_t size;
+  char *where;
+  size_t len;
+
+  size = 1;
   where = frag_more (size);
-  md_number_to_chars (where, insn_opcode, size);
+  md_number_to_chars (where, apex.len, size);
+
+  size = 1;
+  where = frag_more (size);
+  md_number_to_chars (where, apex.type, size);
+
+  size = 1;
+  where = frag_more (size);
+  md_number_to_chars (where, apex.opcode, size);
+
+  size = 1;
+  where = frag_more (size);
+  md_number_to_chars (where, apex.func_t, size);
  
-  /* flags.  */
+  size = 1;
   where = frag_more (size);
-//  md_number_to_chars (where, 0b00010001,size);
-  md_number_to_chars (where, flags,size);
+  md_number_to_chars (where, apex.flags, size);
 
   /* none.  */
   where = frag_more (size);
   md_number_to_chars (where, 0 ,size);
+ 
+  size = strlen (insn_name);
+  where = frag_more (size);
+  memcpy (where, insn_name, size);
+
+  where = frag_more (null_padding);
+  md_number_to_chars (where, 0x0, null_padding); /* not sure if its correct.  */
+
+//  unsigned int value;
+//  int size = 1;
+//  char* where;
+
+  /*length. */
+//  where = frag_more (size);
+//  //md_number_to_chars (where, strlen (insn_name), size); /* not sure if its correct.  */
+//  size_t tmp = 6 + strlen (insn_name) + 1 /* null terminator.  */;
+//  md_number_to_chars (where, tmp, size); /* not sure if its correct.  */
+// 
+//  /* type = 1  */ 
+//  where = frag_more (size);
+//  md_number_to_chars (where, 1, size);
+// 
+//  /* opcode. CUSTOM-0 */
+//  where = frag_more (size);
+//  md_number_to_chars (where, 11, size);
+//
+//  /* subcode.  */
+//  where = frag_more (size);
+//  md_number_to_chars (where, insn_opcode, size);
+// 
+//  /* flags.  */
+//  where = frag_more (size);
+////  md_number_to_chars (where, 0b00010001,size);
+//  md_number_to_chars (where, apex->flags,size);
+//
+//  /* none.  */
+//  where = frag_more (size);
+//  md_number_to_chars (where, 0 ,size);
  
 //  where = frag_more (size);
 //  md_number_to_chars (where, 0x66, size);
@@ -6367,13 +6425,13 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
 //  where = frag_more (size);
 //  md_number_to_chars (where, 0x6f, size);
 
-  size_t len = strlen (insn_name);
-  where = frag_more (len);
-  memcpy (where, insn_name, len);
+//  size_t len = strlen (insn_name);
+//  where = frag_more (len);
+//  memcpy (where, insn_name, len);
 
-  /* why?  */
-  where = frag_more (size);
-  md_number_to_chars (where, 0x0, size);
+  /* null terminator?  */
+//  where = frag_more (size);
+//  md_number_to_chars (where, 0x0, size);
 
 
 //  segT old_sec    = now_seg;
