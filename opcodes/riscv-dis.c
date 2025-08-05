@@ -1480,6 +1480,69 @@ uint32_t APEX_MATCH_XD(unsigned char opcode) {
  return match; 
 }
 
+/* tmp  */
+
+enum apex_flags
+{
+  None = 0,
+  XD = 1 << 0,
+  XS = 1 << 1,
+  XI = 1 << 2,
+  XC = 1 << 3,
+  VOID = 1 << 4,
+  NO_SRC0 = 1 << 5,
+  NO_SRC1 = 1 << 6,
+};
+
+struct apex_insn
+{
+  uint8_t len;
+  uint8_t type;
+  uint8_t opcode;
+  uint8_t func_t;
+  uint8_t flags;
+  char name[1];
+};
+
+static void
+arcv_apex_create_map (unsigned char *block,
+		      unsigned long length)
+{
+  unsigned char *p = block;
+
+  while (p && p < (block + length))
+  {
+    size_t name_length = length - (sizeof (struct apex_insn) - 1) /* Ignore size of "char name[1]" */;
+    struct apex_insn *insn = malloc (sizeof (struct apex_insn) + name_length);
+    insn->len = p[0];
+    insn->type = p[1];
+    insn->opcode = p[2];
+    insn->func_t = p[3];
+    insn->flags = p[4];
+
+
+    memcpy (insn->name, p + 6, name_length);
+    insn->name[name_length] = '\0';
+
+
+    struct riscv_opcode  *insn1 = XNEW (struct riscv_opcode);
+    struct riscv_opcode **bucket_spec = &instructions_spec[p[3]];
+    insn1->name  = insn->name;
+    insn1->match = APEX_MATCH_XD(p[3]);
+
+    /*make changes for the new arg naming*/
+    insn1->args = "d,s,t";
+    insn1->insn_class  = INSN_CLASS_I;
+    insn1->mask = APEX_MASK_XD;
+    insn1->match_func = match_opcode;
+    insn1->xlen_requirement = 0;
+    *bucket_spec = insn1;
+
+
+    p += p[0]; /* Move on to next record.  */
+  }
+}
+
 static void
 create_map (unsigned char *block,
 	    unsigned long length)
@@ -1630,10 +1693,11 @@ riscv_get_disassembler (bfd *abfd)
   asection *sect;
 
  for (sect = abfd->sections; sect != NULL; sect = sect->next)
-    if (!strncmp (sect->name,
-		  ".riscvextmap.",
-	  sizeof (".riscvextmap.") - 1)
-	|| !strcmp (sect->name,".riscvextmap"))
+//    if (!strncmp (sect->name,
+//		  ".riscvextmap.",
+//	  sizeof (".riscvextmap.") - 1)
+//	|| !strcmp (sect->name,".riscvextmap"))
+      if (strstr (sect->name, ".riscvapex."))
       {
 	bfd_size_type  count  = bfd_section_size (sect);
 	unsigned char* buffer = xmalloc (count);
@@ -1641,7 +1705,11 @@ riscv_get_disassembler (bfd *abfd)
 	if (buffer)
 	  {
 	    if (bfd_get_section_contents (abfd, sect, buffer, 0, count))
-	      create_map (buffer, count);
+	    {
+//	      create_map (buffer, count);
+	      arcv_apex_create_map (buffer, count);
+	      
+	    }
 	    free (buffer);
 	  }
       }
