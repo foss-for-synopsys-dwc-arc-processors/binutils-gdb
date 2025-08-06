@@ -93,7 +93,6 @@ struct ApexInstruction* instructions[1<<6];
 #define ARCV_APEX_OFFSET_XS  (ARCV_APEX_OFFSET_XD + 256) /* 256 + 0 = 256  */
 #define ARCV_APEX_OFFSET_XI  (ARCV_APEX_OFFSET_XS + 64)  /* 256 + 64 = 320  */
 #define ARCV_APEX_OFFSET_XC  (ARCV_APEX_OFFSET_XI + 32)  /* 320 + 32 = 352  */
-static int arcv_apex_insn_index = 0;
 struct riscv_opcode* instructions_spec[ARCV_APEX_INSN_LIMIT];
 
 
@@ -940,22 +939,6 @@ print_insn_args (const char *oparg, insn_t l, bfd_vma pc, disassemble_info *info
     }
 }
 
-struct riscv_opcode*
-arcv_apex_get_insn (unsigned int opcode, unsigned int offset)
-{
-  int i;
-  for (i = offset; i < ARCV_APEX_INSN_LIMIT; i++)
-  {
-    struct riscv_opcode *insn = instructions_spec[i];
-    if (!insn)
-      break;
-
-    if (offset == 0 && (insn->match & APEX_MASK_XD) == opcode)
-      return insn;
-  }
-  return NULL;
-}
-
 /* Print the RISC-V instruction at address MEMADDR in debugged memory,
    on using INFO.  Returns length of the instruction, in bytes.
    BIGENDIAN must be 1 if this is big-endian code, 0 if
@@ -1013,9 +996,9 @@ riscv_disassemble_insn (bfd_vma memaddr,
 //      int a=1;
 //      a++;
 //  }
-    opcode = word & APEX_MASK_XD;
+    opcode = opcodeExtractXDType (word);
     unsigned int offset = ARCV_APEX_OFFSET_XD;
-    op = arcv_apex_get_insn (opcode, offset);
+    op = instructions_spec[opcode + offset];
   }
    else{
     op = riscv_hash[OP_HASH_IDX (word)];
@@ -1605,7 +1588,7 @@ arcv_apex_create_map (unsigned char *block,
   insn->match_func = match_opcode;
   insn->xlen_requirement = 0;
 
-  instructions_spec[arcv_apex_insn_index++ + offset] = insn;
+  instructions_spec[func_t + offset] = insn;
 }
 
 disassembler_ftype
