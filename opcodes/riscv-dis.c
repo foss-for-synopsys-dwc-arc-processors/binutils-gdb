@@ -82,7 +82,15 @@ static bool no_aliases = false;
 
 /**/
 struct ApexInstruction* instructions[1<<6];
-struct riscv_opcode* instructions_spec[1<<6];
+
+/* The XD-type has 8 function bits encoding up to 256 instructions.
+   The XS-type has 6 function bits encoding up to 64 instructions.
+   Both the XI-type and the XC-type have 5 function bits each encoding up
+   to 32 instructions respectively.  Thus giving a total of 384 possible
+   different instructions.  */
+#define ARCV_APEX_INSN_LIMIT 384
+static int arcv_apex_insn_index = 0;
+struct riscv_opcode* instructions_spec[ARCV_APEX_INSN_LIMIT];
 
 
 /* Set default RISC-V disassembler options.  */
@@ -928,7 +936,21 @@ print_insn_args (const char *oparg, insn_t l, bfd_vma pc, disassemble_info *info
     }
 }
 
+struct riscv_opcode*
+arcv_apex_get_insn (unsigned int opcode, unsigned int offset)
+{
+  int i;
+  for (i = offset; i < ARCV_APEX_INSN_LIMIT; i++)
+  {
+    struct riscv_opcode *insn = instructions_spec[i];
+    if (!insn)
+      break;
 
+    if (offset == 0 && (insn->match & APEX_MASK_XD) == opcode)
+      return insn;
+  }
+  return NULL;
+}
 
 /* Print the RISC-V instruction at address MEMADDR in debugged memory,
    on using INFO.  Returns length of the instruction, in bytes.
@@ -987,8 +1009,8 @@ riscv_disassemble_insn (bfd_vma memaddr,
 //      int a=1;
 //      a++;
 //  }
-    opcode = opcodeExtractXDType(word);
-    op = instructions_spec[opcode];
+    opcode = word & APEX_MASK_XD;
+    op = arcv_apex_get_insn (opcode, 0 /* offset.  */);
   }
    else{
     op = riscv_hash[OP_HASH_IDX (word)];
@@ -1564,10 +1586,12 @@ arcv_apex_create_map (unsigned char *block,
   struct riscv_opcode *insn = XNEW (struct riscv_opcode);
   unsigned int flags = block[4];
 
+  unsigned int offset = 0;
   switch (flags & 0xF)
   {
     case XD:
       arcv_apex_get_xd_data (insn, flags, func_t);
+      offset = 0;
       break;
   }
 
@@ -1576,7 +1600,7 @@ arcv_apex_create_map (unsigned char *block,
   insn->match_func = match_opcode;
   insn->xlen_requirement = 0;
 
-  instructions_spec[func_t] = insn;
+  instructions_spec[arcv_apex_insn_index++ + offset] = insn;
 }
 
 disassembler_ftype
