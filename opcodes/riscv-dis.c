@@ -1505,6 +1505,37 @@ struct apex_insn
 };
 
 static void
+arcv_apex_get_xd_data (struct riscv_opcode *insn,
+		       unsigned int flags,
+		       unsigned int func_t)
+{
+  switch ((flags & (VOID | NO_SRC0 | NO_SRC1)))
+  {
+    case NO_SRC1:
+      insn->args = "d,s";
+      break;
+    case NO_SRC0 | NO_SRC1:
+      insn->args = "d";
+      break;
+    case VOID | NO_SRC0 | NO_SRC1:
+      insn->args = "";
+      break;
+    case VOID | NO_SRC1:
+      insn->args = "s";
+      break;
+    case VOID:
+      insn->args = "s,t";
+      break;
+    default:
+      insn->args = "d,s,t";
+      break;
+  }
+
+  insn->match = APEX_MATCH_XD (func_t);
+  insn->mask = APEX_MASK_XD;
+}
+
+static void
 arcv_apex_create_map (unsigned char *block,
 		      unsigned long length)
 {
@@ -1531,11 +1562,17 @@ arcv_apex_create_map (unsigned char *block,
 
   unsigned int func_t /* opcode.  */ = block[3];
   struct riscv_opcode *insn = XNEW (struct riscv_opcode);
+  unsigned int flags = block[4];
+
+  switch (flags & 0xF)
+  {
+    case XD:
+      arcv_apex_get_xd_data (insn, flags, func_t);
+      break;
+  }
+
   insn->name = name;
-  insn->match = APEX_MATCH_XD (func_t);
-  insn->args = "d,s,t";
   insn->insn_class = INSN_CLASS_I;
-  insn->mask = APEX_MASK_XD;
   insn->match_func = match_opcode;
   insn->xlen_requirement = 0;
 
