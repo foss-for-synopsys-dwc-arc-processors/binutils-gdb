@@ -1512,22 +1512,22 @@ arcv_apex_get_xd_data (struct riscv_opcode *insn,
   switch ((flags & (VOID | NO_SRC0 | NO_SRC1)))
   {
     case NO_SRC1:
-      insn->args = "d,s";
+      insn->args = "Ad,As";
       break;
     case NO_SRC0 | NO_SRC1:
-      insn->args = "d";
+      insn->args = "Ad";
       break;
     case VOID | NO_SRC0 | NO_SRC1:
       insn->args = "";
       break;
     case VOID | NO_SRC1:
-      insn->args = "s";
+      insn->args = "As";
       break;
     case VOID:
-      insn->args = "s,t";
+      insn->args = "As,At";
       break;
     default:
-      insn->args = "d,s,t";
+      insn->args = "Ad,As,At";
       break;
   }
 
