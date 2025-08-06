@@ -1480,148 +1480,67 @@ uint32_t APEX_MATCH_XD(unsigned char opcode) {
  return match; 
 }
 
-static void
-create_map (unsigned char *block,
-	    unsigned long length)
+/* tmp  */
+
+enum apex_flags
 {
-  unsigned char *p = block;
+  None = 0,
+  XD = 1 << 0,
+  XS = 1 << 1,
+  XI = 1 << 2,
+  XC = 1 << 3,
+  VOID = 1 << 4,
+  NO_SRC0 = 1 << 5,
+  NO_SRC1 = 1 << 6,
+};
 
-  while (p && p < (block + length))
-    {
-      /* p[0] == length of record
-	 p[1] == type of record
-	 For instructions:
-	   p[2]  = opcode
-	   p[3]  = minor opcode (if opcode == 3)
-	   p[4]  = flags
-	   p[5]+ = name
-	 For core regs and condition codes:
-	   p[2]  = value
-	   p[3]+ = name
-	 For auxiliary regs:
-	   p[2..5] = value
-	   p[6]+   = name
-	     (value is p[2]<<24|p[3]<<16|p[4]<<8|p[5]).  */
+struct apex_insn
+{
+  uint8_t len;
+  uint8_t type;
+  uint8_t opcode;
+  uint8_t func_t;
+  uint8_t flags;
+  char name[1];
+};
 
-      /* The sequence of records is temrinated by an "empty"
-	 record.  */
-      if (p[0] == 0)
-	break;
+static void
+arcv_apex_create_map (unsigned char *block,
+		      unsigned long length)
+{
+  /* Assert that the total length of this
+     record is aligned to that GAS produced
+     and passed on position 0.  */
+  unsigned int record_len = block[0];
+  if (length != record_len)
+    return; /* FIXME  */
 
-      switch (p[1])
-	{
-	case 0:
-	  {
-	    struct ApexInstruction  *insn = XNEW (struct ApexInstruction);
-	    struct ApexInstruction **bucket = &instructions[p[2]];
-	    insn->name  = xstrdup ((char *) (p + 5));
-	    insn->opcode = p[2];
-	    insn->args = p[3];
-	    insn->next  = *bucket;
-	    insn->suffix = 0;
-	    insn->syntax = 0;
-	    insn->modsyn = 0;
-	    *bucket = insn;
+  size_t name_length = record_len
+    - sizeof (struct apex_insn) - 1 /* Ignore size of "char name[1]"  */;
 
-	    struct riscv_opcode  *insn1 = XNEW (struct riscv_opcode);
-	    struct riscv_opcode **bucket_spec = &instructions_spec[p[2]];
-	    insn1->name  = xstrdup ((char *) (p + 4));
-	    insn1->match = APEX_MATCH_XD(p[2]);
+  /* Allocate space for the instruction name and
+     null-terminate it.  */
+  char *name = malloc (name_length + 1);
+  if (!name)
+    return; /* FIXME  */
 
-            /*make changes for the new arg naming*/
-	    insn1->args = "Ad,As,At";
-	    insn1->insn_class  = INSN_CLASS_I;
-	    insn1->mask = APEX_MASK_XD;
-	    insn1->match_func = match_opcode;
-	    insn1->xlen_requirement = 0;
-	    *bucket_spec = insn1;
+  memcpy (name,
+	  block + sizeof (struct apex_insn) /* Where the insn. name starts.  */,
+	  name_length);
+  name[name_length] = '\0';
 
-	    break;
-	  }
+  unsigned int func_t /* opcode.  */ = block[3];
+  struct riscv_opcode *insn = XNEW (struct riscv_opcode);
+  insn->name = name;
+  insn->match = APEX_MATCH_XD (func_t);
+  insn->args = "d,s,t";
+  insn->insn_class = INSN_CLASS_I;
+  insn->mask = APEX_MASK_XD;
+  insn->match_func = match_opcode;
+  insn->xlen_requirement = 0;
 
-	default:
-	  break;
-	}
-
-      p += p[0]; /* Move on to next record.  */
-    }
+  instructions_spec[func_t] = insn;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 disassembler_ftype
 riscv_get_disassembler (bfd *abfd)
@@ -1630,10 +1549,7 @@ riscv_get_disassembler (bfd *abfd)
   asection *sect;
 
  for (sect = abfd->sections; sect != NULL; sect = sect->next)
-    if (!strncmp (sect->name,
-		  ".riscvextmap.",
-	  sizeof (".riscvextmap.") - 1)
-	|| !strcmp (sect->name,".riscvextmap"))
+      if (strstr (sect->name, ".riscvapex."))
       {
 	bfd_size_type  count  = bfd_section_size (sect);
 	unsigned char* buffer = xmalloc (count);
@@ -1641,7 +1557,7 @@ riscv_get_disassembler (bfd *abfd)
 	if (buffer)
 	  {
 	    if (bfd_get_section_contents (abfd, sect, buffer, 0, count))
-	      create_map (buffer, count);
+	      arcv_apex_create_map (buffer, count);
 	    free (buffer);
 	  }
       }
