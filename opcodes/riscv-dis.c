@@ -89,6 +89,10 @@ struct ApexInstruction* instructions[1<<6];
    to 32 instructions respectively.  Thus giving a total of 384 possible
    different instructions.  */
 #define ARCV_APEX_INSN_LIMIT 384
+#define ARCV_APEX_OFFSET_XD  0                           /* 256 entries.  */
+#define ARCV_APEX_OFFSET_XS  (ARCV_APEX_OFFSET_XD + 256) /* 256 + 0 = 256  */
+#define ARCV_APEX_OFFSET_XI  (ARCV_APEX_OFFSET_XS + 64)  /* 256 + 64 = 320  */
+#define ARCV_APEX_OFFSET_XC  (ARCV_APEX_OFFSET_XI + 32)  /* 320 + 32 = 352  */
 static int arcv_apex_insn_index = 0;
 struct riscv_opcode* instructions_spec[ARCV_APEX_INSN_LIMIT];
 
@@ -1010,7 +1014,8 @@ riscv_disassemble_insn (bfd_vma memaddr,
 //      a++;
 //  }
     opcode = word & APEX_MASK_XD;
-    op = arcv_apex_get_insn (opcode, 0 /* offset.  */);
+    unsigned int offset = ARCV_APEX_OFFSET_XD;
+    op = arcv_apex_get_insn (opcode, offset);
   }
    else{
     op = riscv_hash[OP_HASH_IDX (word)];
@@ -1591,7 +1596,7 @@ arcv_apex_create_map (unsigned char *block,
   {
     case XD:
       arcv_apex_get_xd_data (insn, flags, func_t);
-      offset = 0;
+      offset = ARCV_APEX_OFFSET_XD;
       break;
   }
 
