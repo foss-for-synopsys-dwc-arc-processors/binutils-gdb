@@ -6408,7 +6408,8 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
       }
   }
   else {
-      as_bad (_("syntax error"));
+      as_bad (_("Unrecognized attribute; must be one of "
+		"XD, XS, XI, XC, void, no_src0, no_src1"));
       return;
     }
 #endif
