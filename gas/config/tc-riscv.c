@@ -3956,9 +3956,9 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 	      my_getExpression (imm_expr, asarg);
 	      check_absolute_expr (ip, imm_expr, false);
 	      if ((imm_expr->X_add_number & ~0xFF) != 0)
-		as_bad (_("immediate value out of range for "
-			  "8-bit immediate (%ld)"),
-			(long) imm_expr->X_add_number);
+		as_bad (_("Integer operand out of range; should "
+			  "be between 0 and %ld, inclusive"),
+			(long) imm_expr->X_add_number - 1);
 	      ip->insn_opcode
 		|= ((unsigned long)(imm_expr->X_add_number & 0xFF) << 24);
 	      asarg = expr_parse_end;
