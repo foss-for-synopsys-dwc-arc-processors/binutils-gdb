@@ -6414,7 +6414,12 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
 #endif
 
   str_hash_insert (op_hash, opcode_t2->name, opcode_t2, 0); 
- 
+
+  /* Save current section and subsection
+     so that we can restore them later.  */
+  segT saved_seg = now_seg;
+  subsegT saved_subseg = now_subseg;
+
   apex_set_ext_seg(flags & 0xF, insn_opcode);
 
   struct apex_insn apex;
@@ -6463,4 +6468,6 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
   where = frag_more (null_padding);
   md_number_to_chars (where, 0x0, null_padding);
 
+  /* Restore original section */
+  subseg_set (saved_seg, saved_subseg);
 }
