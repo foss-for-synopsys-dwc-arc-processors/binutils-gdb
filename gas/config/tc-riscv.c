@@ -6424,48 +6424,37 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
   apex_set_ext_seg(flags & 0xF, insn_opcode);
 
   struct apex_insn apex;
-  size_t size_1 = offsetof (struct apex_insn, name) + strlen (insn_name) + 2;
+  size_t total_size = offsetof (struct apex_insn, name)
+		      + strlen (insn_name) + 2;
   unsigned null_padding = 1;
-  if (size_1 & 1)
+  if (total_size & 1)
   {
-    size_1++;
+    total_size++;
     null_padding++;
   }
 
-  apex.len = size_1;
+  apex.len = total_size;
   apex.type = 1;
   apex.opcode = 11;
   apex.func_t = insn_opcode;
   apex.flags = flags;
 
-  size_t size;
-  char *where;
-  size_t len;
+  /* Copy instruction metadata to the section.  */
+  size_t size = offsetof (struct apex_insn, name);
+  char *where = frag_more (size);
+  memcpy (where, &apex, size);
 
+  /* None.  */
   size = 1;
   where = frag_more (size);
-  md_number_to_chars (where, apex.len, size);
+  md_number_to_chars (where, 0x0, size);
 
-  where = frag_more (size);
-  md_number_to_chars (where, apex.type, size);
-
-  where = frag_more (size);
-  md_number_to_chars (where, apex.opcode, size);
-
-  where = frag_more (size);
-  md_number_to_chars (where, apex.func_t, size);
-
-  where = frag_more (size);
-  md_number_to_chars (where, apex.flags, size);
-
-  /* none.  */
-  where = frag_more (size);
-  md_number_to_chars (where, 0 ,size);
-
+  /* Copy instruction name to the section.  */
   size = strlen (insn_name);
   where = frag_more (size);
   memcpy (where, insn_name, size);
 
+  /* Add extra padding if necessary.  */
   where = frag_more (null_padding);
   md_number_to_chars (where, 0x0, null_padding);
 
