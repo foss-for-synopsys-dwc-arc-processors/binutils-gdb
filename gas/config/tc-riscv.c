@@ -2918,43 +2918,43 @@ static symbolS *deferred_sym_lastP;
 static symbolS *orphan_sym_rootP;
 static symbolS *orphan_sym_lastP;
 
+uint32_t
+arcv_apex_extract_opcode_from_xs (uint32_t match)
+{
+  uint32_t ret = 0;
+  unsigned char opcode = 0;
+  /* Extract (opcode & 0x3C) from bits [23:18]  */
+  opcode |= (match >> 18) & 0x3C;
+
+  /* Extract (opcode & 0x03) from bits [14:13]  */
+  opcode |= (match >> 13) & 0x03;
+
+  ret |= ((uint32_t)(opcode & 0x1F) << 15);
+  ret |= 0xB; /* Custom-0. */
+  ret |= 0x6000;
+
+  return ret;
+}
 
 uint32_t
-extract_opcode_from_match(uint32_t match, char *to)
+arcv_apex_extract_opcode_from_xc (uint32_t match)
 {
+  uint32_t ret = 0;
   unsigned char opcode = 0;
+  /* Extract bits [19:15]  */
+  opcode |= ((match >> 15) & 0x1F);
 
-  if (streq (to,"XC") && ((match & 0x6000) != 0x6000))
-  {
-    uint32_t ret = 0;
+  ret |= ((uint32_t)(opcode & 0x3C) << 18);
+  ret |= ((uint32_t)(opcode & 0x3) << 13);
+  ret |= 0xB; /* Custom-0.  */
+  ret |= 0x1000;
 
-    /* Extract (opcode & 0x3C) from bits [23:18]  */
-    opcode |= (match >> 18) & 0x3C;
-
-    /* Extract (opcode & 0x03) from bits [14:13]  */
-    opcode |= (match >> 13) & 0x03;
-
-    ret |= ((uint32_t)(opcode & 0x1F) << 15);
-    ret |= 0b0001011; /* Custom-0. */
-    ret |= 0b110000000000000;
-
-    return ret;
-  } else if (streq (to,"XS") && ((match & 0x1000) != 0x1000))
-  {
-    opcode |= ((match >> 15) & 0x1F); /* Extract bits [19:15]  */
-    uint32_t ret = 0;
-    ret |= ((uint32_t)(opcode & 0x3C) << 18);
-    ret |= ((uint32_t)(opcode & 0x3) << 13);
-    ret |= 0b0001011; /* Custom-0.  */
-    ret |= 0b1000000000000;
-
-    return ret;
-  }
-  return match;
+  return ret;
 }
 
 struct riscv_opcode *
-foo (char *operands, struct riscv_opcode *insn)
+arcv_apex_convert_between_xs_xc (char *operands,
+				 struct riscv_opcode *insn)
 {
   if (insn == NULL || insn->mask == NULL
       || insn->mask != (APEX_MASK_XS | APEX_MASK_XC))
@@ -2976,12 +2976,6 @@ foo (char *operands, struct riscv_opcode *insn)
     token = strtok(NULL, ",");
   }
 
-//  if (i < 3) {
-//    as_warn (_("Expected 3 operands, got %d"), i);
-//    free(copy);
-//    return insn;
-//  }
-
   /* Parse the immediate.  */
   char *endptr;
   long imm = strtol(tokens[2], &endptr, 10);
@@ -3000,26 +2994,20 @@ foo (char *operands, struct riscv_opcode *insn)
   struct riscv_opcode *new_insn = XNEW(struct riscv_opcode);
   memcpy(new_insn, insn, sizeof(struct riscv_opcode));
 
-  if (imm <= 255 && !is_same_reg) {
+  if (imm <= 255 && !is_same_reg && (insn->match & 0x1000) != 0x1000)
+  {
     /* Use XS  .*/
-    new_insn->xlen_requirement = 0;
-    new_insn->insn_class = INSN_CLASS_I;
     new_insn->args = "d,s,k";
     new_insn->mask = APEX_MASK_XS;
-    new_insn->match = extract_opcode_from_match (insn->match, "XS");
-    new_insn->match_func = match_opcode;
-    new_insn->pinfo = 0;
-    as_warn(_("Using XS format (8-bit immediate)"));
-  } else {
+    new_insn->match
+	= arcv_apex_extract_opcode_from_xc (insn->match);
+  } else if (is_same_reg && (insn->match & 0x6000) != 0x6000)
+  {
     /* Use XC  .*/
-    new_insn->xlen_requirement = 0;
-    new_insn->insn_class = INSN_CLASS_I;
     new_insn->args = "d,d,j";
     new_insn->mask = APEX_MASK_XC;
-    new_insn->match = extract_opcode_from_match (insn->match, "XC");
-    new_insn->match_func = match_opcode;
-    new_insn->pinfo = 0;
-    as_warn(_("Using XC format (12-bit immediate or d == s)"));
+    new_insn->match
+	= arcv_apex_extract_opcode_from_xs (insn->match);
   }
 
   free(copy);
@@ -3147,7 +3135,7 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 
   insn = (struct riscv_opcode *) str_hash_find (hash, str);
 
-  insn = foo (asarg, insn);
+  insn = arcv_apex_convert_between_xs_xc (asarg, insn);
 
   if (arcv_apex_validate_insn (asarg, insn));
     return error;
