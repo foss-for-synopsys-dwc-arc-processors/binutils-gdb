@@ -6202,13 +6202,12 @@ struct apex_insn
 
 
 static void
-riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
-
-  struct riscv_opcode* opcode_t2;
+riscv_apex_insn (int ignore ATTRIBUTE_UNUSED)
+{
+  struct riscv_opcode *insn;
   char *str = input_line_pointer;
-  char *p,*t,c,*insn_name;
+  char *p, *t, c, *insn_name;
   char *insn_format;
-  struct riscv_cl_insn insn;
   unsigned int insn_opcode;
   SKIP_WHITESPACE ();
 
@@ -6218,8 +6217,8 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
   insn_name = xstrdup (p);
   restore_line_pointer (c);
 
-  for (p = insn_name; *p; ++p)   
-    *p = TOLOWER (*p);           
+  for (p = insn_name; *p; ++p)
+    *p = TOLOWER (*p);
 
   if (*input_line_pointer != ',')
     {
@@ -6227,7 +6226,7 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
       ignore_rest_of_line ();
       return;
     }
-  
+
   input_line_pointer++;
   insn_opcode = get_absolute_expression ();
 
@@ -6399,7 +6398,7 @@ riscv_apex_insn(int ignore ATTRIBUTE_UNUSED){
     }
 #endif
 
-  str_hash_insert (op_hash, opcode_t2->name, opcode_t2, 0); 
+  str_hash_insert (op_hash, opcode_t2->name, opcode_t2, 0);
 
   /* Save current section and subsection
      so that we can restore them later.  */
