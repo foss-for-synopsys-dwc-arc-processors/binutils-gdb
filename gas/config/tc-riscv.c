@@ -6326,21 +6326,21 @@ riscv_apex_insn (int ignore ATTRIBUTE_UNUSED)
     *p = TOLOWER (*p);
 
   if (*input_line_pointer != ',')
-    {
-      as_bad (_("expected comma after instruction name"));
-      ignore_rest_of_line ();
-      return;
-    }
+  {
+    as_bad (_("expected comma after instruction name"));
+    ignore_rest_of_line ();
+    return;
+  }
 
   input_line_pointer++;
   insn_opcode = get_absolute_expression ();
 
   if (*input_line_pointer != ',')
-   {
-     as_bad (_("expected comma after instruction opcode"));
-     ignore_rest_of_line ();
-     return;
-   }
+  {
+    as_bad (_("expected comma after instruction opcode"));
+    ignore_rest_of_line ();
+    return;
+  }
 
   restore_line_pointer (c);
 
