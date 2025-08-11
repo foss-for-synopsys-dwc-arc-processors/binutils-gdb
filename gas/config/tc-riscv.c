@@ -6202,6 +6202,111 @@ struct apex_insn
 
 
 static void
+arcv_apex_init_xd (struct riscv_opcode *insn,
+		       unsigned int flags,
+		       unsigned int insn_opcode)
+{
+  if ((flags & XD) != XD)
+    return;
+
+  insn->mask = APEX_MASK_XD;
+  insn->match = APEX_MATCH_XD(insn_opcode);
+  insn->match_func = match_opcode_XD;
+  switch ((flags & (VOID | NO_SRC0 | NO_SRC1)))
+  {
+    case NO_SRC1:
+      insn->args = "d,s";
+      break;
+    case NO_SRC0 | NO_SRC1:
+      insn->args = "d";
+      break;
+    case VOID | NO_SRC0 | NO_SRC1:
+      insn->args = "";
+      break;
+    case VOID | NO_SRC1:
+      insn->args = "s";
+      break;
+    case VOID:
+      insn->args = "s,t";
+      break;
+    default:
+      insn->args = "d,s,t";
+      break;
+  }
+}
+
+static void
+arcv_apex_init_xs (struct riscv_opcode *insn,
+		       unsigned int flags,
+		       unsigned int insn_opcode)
+{
+  if ((flags & XS) != XS)
+    return;
+
+  insn->mask = APEX_MASK_XS;
+  if (flags & XC)
+    insn->mask = APEX_MASK_XC;
+  insn->match = APEX_MATCH_XS(insn_opcode);
+  insn->match_func = match_opcode;
+  switch ((flags & (VOID)))
+  {
+    case VOID:
+      insn->args = "s,k";
+      break;
+    default:
+      insn->args = "d,s,k";
+      break;
+  }
+}
+
+static void
+arcv_apex_init_xi (struct riscv_opcode *insn,
+		       unsigned int flags,
+		       unsigned int insn_opcode)
+{
+  if ((flags & XI) != XI)
+    return;
+
+  insn->mask = APEX_MASK_XI;
+  insn->match = APEX_MATCH_XI(insn_opcode);
+  insn->match_func = match_opcode;
+  switch ((flags & (VOID)))
+  {
+    case VOID:
+      insn->args = "j";
+      break;
+    default:
+      insn->args = "d,j";
+      break;
+  }
+}
+
+static void
+arcv_apex_init_xc (struct riscv_opcode *insn,
+		       unsigned int flags,
+		       unsigned int insn_opcode)
+{
+  if ((flags & XC) != XC)
+    return;
+
+  insn->mask = APEX_MASK_XC;
+  if (flags & XS)
+    insn->mask |= APEX_MASK_XS;
+  insn->match = APEX_MATCH_XC(insn_opcode);
+  insn->match_func = match_opcode_XD;
+  switch ((flags & (VOID)))
+  {
+    case VOID:
+      as_bad (_("Specified APEX format cannot "
+		"handle a non-register operand"));
+      exit (1);
+    default:
+      insn->args = "d,d,j";
+      break;
+  }
+}
+
+static void
 riscv_apex_insn (int ignore ATTRIBUTE_UNUSED)
 {
   struct riscv_opcode *insn;
@@ -6237,168 +6342,62 @@ riscv_apex_insn (int ignore ATTRIBUTE_UNUSED)
      return;
    }
 
-  input_line_pointer++;
-
-  p = input_line_pointer;
-  c = get_symbol_name (&p);
-
-  insn_format = xstrdup (p);
   restore_line_pointer (c);
 
-  opcode_t2 = XNEW(struct riscv_opcode);
-  opcode_t2->name = insn_name;
+  insn = XNEW(struct riscv_opcode);
+  insn->name = insn_name;
+  insn->xlen_requirement = 0;
+  insn->insn_class = INSN_CLASS_I;
+  insn->pinfo = 0;
+
   uint8_t flags = 0;
+  while (*input_line_pointer == ',')
+  {
+    /*  Skip the comma.  */
+    input_line_pointer++;
 
-#if 1
-  if(streq(insn_format,"XD"))
-    { 
-      flags |= 1;
-      opcode_t2->xlen_requirement = 0;
-      opcode_t2->insn_class = INSN_CLASS_I;
-      //opcode_t2->args = "d,s,t";
-      opcode_t2->mask = APEX_MASK_XD;
-      opcode_t2->match = APEX_MATCH_XD(insn_opcode);
-      opcode_t2->match_func = match_opcode_XD;
-      opcode_t2->pinfo = 0;
+    p = input_line_pointer;
+    c = get_symbol_name (&p);
+    insn_format = xstrdup (p);
 
-      p = input_line_pointer;
-
-      while (*input_line_pointer == ',')
-      {
-	input_line_pointer++; /*  Skip the comma.  */
-
-	p = input_line_pointer;
-	c = get_symbol_name (&p);
-
-	if (streq (p, "void"))
-	  flags |= 1 << 4;
-	if (streq (p, "no_src0"))
-	  flags |= 1 << 5;
-	if (streq (p, "no_src1"))
-	  flags |= 1 << 6;
-
-	restore_line_pointer (c); /* Restore after reading the token.  */
-      }
-
-      switch ((flags & (VOID | NO_SRC0 | NO_SRC1)))
-      {
-	case 0:
-	  opcode_t2->args = "d,s,t";
-	  break;
-	case NO_SRC1:
-	  opcode_t2->args = "d,s";
-	  break;
-	case NO_SRC0 | NO_SRC1:
-	  opcode_t2->args = "d";
-	  break;
-	case VOID | NO_SRC0 | NO_SRC1:
-	  opcode_t2->args = "";
-	  break;
-	case VOID | NO_SRC1:
-	  opcode_t2->args = "s";
-	  break;
-	case VOID:
-	  opcode_t2->args = "s,t";
-	  break;
-	default:
-	  opcode_t2->args = NULL;
-	  break;
-      }
-
-    }
-  else if(streq(insn_format,"XS")){
-      flags |= 1 << 1;
-      opcode_t2->xlen_requirement = 0;
-      opcode_t2->insn_class = INSN_CLASS_I;
-      opcode_t2->args = "d,s,k";
-      opcode_t2->mask = APEX_MASK_XS;
-      opcode_t2->match = APEX_MATCH_XS(insn_opcode);
-      opcode_t2->match_func = match_opcode;
-      opcode_t2->pinfo = 0;
-      while (*input_line_pointer == ',')
-      {
-	input_line_pointer++; /*  Skip the comma.  */
-
-	p = input_line_pointer;
-	c = get_symbol_name (&p);
-
-	if (streq (p, "void"))
-	{
-	  opcode_t2->args = "s,k";
-	  flags |= 1 << 4;
-	}
-	if (streq (p, "XC"))
-	{
-	    flags |= 1 << 3;
-	    opcode_t2->mask |= APEX_MASK_XC;
-	}
-
-
-	restore_line_pointer (c); /* Restore after reading the token.  */
-      }
-    }
-  else if(streq(insn_format,"XI")){
-      flags |= 1 << 2;
-      opcode_t2->xlen_requirement = 0;
-      opcode_t2->insn_class = INSN_CLASS_I;
-      opcode_t2->args = "d,j";
-      opcode_t2->mask = APEX_MASK_XI;
-      opcode_t2->match = APEX_MATCH_XI(insn_opcode);
-      opcode_t2->match_func = match_opcode;
-      opcode_t2->pinfo = 0;
-      while (*input_line_pointer == ',')
-      {
-	input_line_pointer++; /*  Skip the comma.  */
-
-	p = input_line_pointer;
-	c = get_symbol_name (&p);
-
-	if (streq (p, "void"))
-	{
-	  opcode_t2->args = "j";
-	  flags |= 1 << 4;
-	}
-
-	restore_line_pointer (c); /* Restore after reading the token.  */
-      }
-    }
-  else if(streq(insn_format,"XC")){
-      flags |= 1 << 3;
-      opcode_t2->xlen_requirement = 0;
-      opcode_t2->insn_class = INSN_CLASS_I;
-      opcode_t2->args = "d,d,j";
-      opcode_t2->mask = APEX_MASK_XC;
-      opcode_t2->match = APEX_MATCH_XC(insn_opcode);
-      opcode_t2->match_func = match_opcode_XD;
-      opcode_t2->pinfo = 0;
-      while (*input_line_pointer == ',')
-      {
-	input_line_pointer++; /*  Skip the comma.  */
-
-	p = input_line_pointer;
-	c = get_symbol_name (&p);
-
-	if (streq (p, "XS"))
-	{
-	  flags |= 1 << 1;
-	  opcode_t2->mask |= APEX_MASK_XS;
-	}
-	else if (streq (p, "void"))
-	{
-	  as_bad (_("Specified APEX format cannot "
-		    "handle a non-register operand"));
-	  exit (1);
-	}
-      }
-  }
-  else {
+    if (streq (insn_format, "XD"))
+      flags |= XD;
+    else if (streq (insn_format, "XS"))
+      flags |= XS;
+    else if (streq (insn_format, "XI"))
+      flags |= XI;
+    else if (streq (insn_format, "XC"))
+      flags |= XC;
+    else if (streq (p, "void"))
+      flags |= VOID;
+    else if (streq (p, "no_src0"))
+      flags |= NO_SRC0;
+    else if (streq (p, "no_src1"))
+      flags |= NO_SRC1;
+    else
+    {
       as_bad (_("Unrecognized attribute; must be one of "
 		"XD, XS, XI, XC, void, no_src0, no_src1"));
       return;
     }
-#endif
 
-  str_hash_insert (op_hash, opcode_t2->name, opcode_t2, 0);
+    if (flags & XD && (flags & (XS | XI | XC)))
+    {
+      as_bad (_("XD and non-XD formats may not be "
+		"specified for the same instruction"));
+      return;
+    }
+
+    /* Restore after reading the token.  */
+    restore_line_pointer (c);
+  }
+
+  arcv_apex_init_xd (insn, flags, insn_opcode);
+  arcv_apex_init_xs (insn, flags, insn_opcode);
+  arcv_apex_init_xi (insn, flags, insn_opcode);
+  arcv_apex_init_xc (insn, flags, insn_opcode);
+
+  str_hash_insert (op_hash, insn->name, insn, 0);
 
   /* Save current section and subsection
      so that we can restore them later.  */
