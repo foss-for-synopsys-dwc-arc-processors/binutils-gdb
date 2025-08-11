@@ -1,3 +1,3 @@
 .*: Assembler messages:
-.*: Error: Expected 3 operands but 2 were specified - `foo'
-
+.*: Error: Expected 3 operands but 2 were specified
+.*
