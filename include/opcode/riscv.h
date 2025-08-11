@@ -653,6 +653,9 @@ enum riscv_seg_mstate
 #define APEX_OP_MASK_RD         0x1f
 #define APEX_OP_SH_RD		7
 
+#define APEX_EXTRACT_XS_ITYPE_IMM(x) \
+  (RV_X(x, 24, 8) | (RV_IMM_SIGN(x) << 8))
+
 /* Apex instruction typedef */
 typedef struct ApexInstruction
 {

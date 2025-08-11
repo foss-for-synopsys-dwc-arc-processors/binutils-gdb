@@ -107,9 +107,27 @@ set_default_riscv_dis_options (void)
 }
 
 bool isXDType(insn_t num) {
-  uint64_t mask = 0x3 << 11;
-  int opcode = (num & mask) >> 11;
+  uint64_t mask = 0x3 << 12;
+  int opcode = (num & mask) >> 12;
   return opcode == 0;
+}
+
+bool isXSType(insn_t num) {
+  uint64_t mask = 0x1 << 12;
+  int opcode = (num & mask) >> 12;
+  return opcode == 1;
+}
+
+bool isXIType(insn_t num) {
+  uint64_t mask = 0x7 << 12;
+  int opcode = (num & mask) >> 12;
+  return opcode == 2;
+}
+
+bool isXCType(insn_t num) {
+  uint64_t mask = 0x7 << 12;
+  int opcode = (num & mask) >> 12;
+  return opcode == 6;
 }
 
 int opcodeExtractXDType(uint64_t num) {
@@ -440,7 +458,7 @@ print_insn_args (const char *oparg, insn_t l, bfd_vma pc, disassemble_info *info
 	    }
 	  break;
 
- 	case 'A': /* apex XD type */
+	case 'A': /* apex XS type */
 	  switch (*++oparg)
 	    {
            case 'd':
@@ -450,6 +468,9 @@ print_insn_args (const char *oparg, insn_t l, bfd_vma pc, disassemble_info *info
            case 's':
 	      print (info->stream, dis_style_register, "%s", 
 			      riscv_gpr_names[(l >> APEX_OP_SH_RS1) & APEX_OP_MASK_RS1]);
+              break;
+	   case 'k':
+	      print (info->stream, dis_style_immediate, "%d", (int)APEX_EXTRACT_XS_ITYPE_IMM (l));
               break;
            case 't':
               print (info->stream, dis_style_register, "%s", 
@@ -939,6 +960,25 @@ print_insn_args (const char *oparg, insn_t l, bfd_vma pc, disassemble_info *info
     }
 }
 
+struct riscv_opcode*
+arcv_apex_get_insn (unsigned int opcode, unsigned int offset)
+{
+  int i;
+  for (i = offset; i < ARCV_APEX_INSN_LIMIT; i++)
+  {
+    struct riscv_opcode *insn = instructions_spec[i];
+    if (!insn)
+      break;
+
+    if (offset == 0 && (insn->match & APEX_MASK_XD) == opcode)
+      return insn;
+
+    if (offset == 0 && (insn->match & APEX_MASK_XS) == opcode)
+      return insn;
+  }
+  return NULL;
+}
+
 /* Print the RISC-V instruction at address MEMADDR in debugged memory,
    on using INFO.  Returns length of the instruction, in bytes.
    BIGENDIAN must be 1 if this is big-endian code, 0 if
@@ -988,17 +1028,16 @@ riscv_disassemble_insn (bfd_vma memaddr,
   info->target2 = 0;
 
   if(((int)word & 15) == 11){
-
-//     if(isXDType(word)){
-//      opcode = opcodeExtractXDType(word);	     
-//      apexInsn = instructions[opcode];
-//      op = recreate_riscv_opcode(apexInsn);
-//      int a=1;
-//      a++;
-//  }
-    opcode = opcodeExtractXDType (word);
-    unsigned int offset = ARCV_APEX_OFFSET_XD;
-    op = instructions_spec[opcode + offset];
+//    opcode = opcodeExtractXDType (word);
+//    unsigned int offset = ARCV_APEX_OFFSET_XD;
+//    op = instructions_spec[opcode + offset];
+    if(isXDType(word)){
+      opcode = word & APEX_MASK_XD;
+      op = arcv_apex_get_insn (opcode, 0 /* offset.  */);
+    } else if(isXSType(word)) {
+       opcode = word & APEX_MASK_XS;                       
+       op = arcv_apex_get_insn (opcode, 0 /* offset.  */); 
+    }  
   }
    else{
     op = riscv_hash[OP_HASH_IDX (word)];
@@ -1490,6 +1529,19 @@ uint32_t APEX_MATCH_XD(unsigned char opcode) {
  return match; 
 }
 
+uint32_t APEX_MATCH_XS(unsigned char opcode) {
+ uint32_t match = 0; 
+ match |= ((uint32_t)(opcode & 0x3C) << 18);
+ match |= ((uint32_t)(opcode & 0x3) << 13);
+ match |= 0b0001011; /* Custom-0. */
+ match |= 0b1000000000000;
+ return match; 
+}
+
+
+
+
+
 /* tmp  */
 
 enum apex_flags
@@ -1515,6 +1567,37 @@ struct apex_insn
 };
 
 static void
+arcv_apex_get_xs_data (struct riscv_opcode *insn,
+		       unsigned int flags,
+		       unsigned int func_t)
+{
+  switch ((flags & (VOID | NO_SRC0 | NO_SRC1)))
+  {
+    case NO_SRC1:
+      insn->args = "Ad,As";
+      break;
+    case NO_SRC0 | NO_SRC1:
+      insn->args = "Ad";
+      break;
+    case VOID | NO_SRC0 | NO_SRC1:
+      insn->args = "";
+      break;
+    case VOID | NO_SRC1:
+      insn->args = "As";
+      break;
+    case VOID:
+      insn->args = "As,Ak";
+      break;
+    default:
+      insn->args = "Ad,As,Ak";
+      break;
+  }
+
+  insn->match = APEX_MATCH_XS (func_t);
+  insn->mask = APEX_MASK_XS;
+}
+
+static void
 arcv_apex_get_xd_data (struct riscv_opcode *insn,
 		       unsigned int flags,
 		       unsigned int func_t)
@@ -1534,10 +1617,10 @@ arcv_apex_get_xd_data (struct riscv_opcode *insn,
       insn->args = "As";
       break;
     case VOID:
-      insn->args = "As,At";
+      insn->args = "As,Ad";
       break;
     default:
-      insn->args = "Ad,As,At";
+      insn->args = "Ad,As,Ad";
       break;
   }
 
@@ -1545,8 +1628,9 @@ arcv_apex_get_xd_data (struct riscv_opcode *insn,
   insn->mask = APEX_MASK_XD;
 }
 
+
 static void
-arcv_apex_create_map (unsigned char *block,
+riscv_apex_create_map (unsigned char *block,
 		      unsigned long length)
 {
   /* Assert that the total length of this
@@ -1581,6 +1665,12 @@ arcv_apex_create_map (unsigned char *block,
       arcv_apex_get_xd_data (insn, flags, func_t);
       offset = ARCV_APEX_OFFSET_XD;
       break;
+
+    case XS:
+      arcv_apex_get_xs_data (insn, flags, func_t);
+      offset = 0;
+      break;
+
   }
 
   insn->name = name;
@@ -1606,7 +1696,7 @@ riscv_get_disassembler (bfd *abfd)
 	if (buffer)
 	  {
 	    if (bfd_get_section_contents (abfd, sect, buffer, 0, count))
-	      arcv_apex_create_map (buffer, count);
+	      riscv_apex_create_map (buffer, count);
 	    free (buffer);
 	  }
       }
