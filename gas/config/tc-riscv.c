@@ -3026,17 +3026,15 @@ foo (char *operands, struct riscv_opcode *insn)
   return new_insn;
 }
 
-static struct riscv_ip_error
+static int
 arcv_apex_validate_insn (char *operands, struct riscv_opcode *insn)
 {
-  struct riscv_ip_error error = { .msg = NULL };
-
   if (insn == NULL
       || (insn->mask != APEX_MASK_XD
       && insn->mask != APEX_MASK_XS
       && insn->mask != APEX_MASK_XI
       && insn->mask != APEX_MASK_XC))
-    return error;
+    return 0;
 
   char *operands_copy = strdup (operands);
   gas_assert (operands_copy);
@@ -3067,9 +3065,9 @@ arcv_apex_validate_insn (char *operands, struct riscv_opcode *insn)
   /* Now check if operand count is valud.  */
   if (arg_count != operand_count)
   {
-    error.msg = xasprintf( _("Expected %d operands but %d were specified -"),
-			  arg_count, operand_count);
-    return error;
+    as_bad (_("Expected %d operands but %d were specified"),
+	      arg_count, operand_count);
+    return 1;
   }
 
   /* Now, traverse in reverse order.  */
@@ -3081,33 +3079,37 @@ arcv_apex_validate_insn (char *operands, struct riscv_opcode *insn)
     if ((*arg_type == 'k' || *arg_type == 'j')
 	&& !ISDIGIT (*operand))
     {
-      error.msg = _("Operands do not conform to the specified APEX format -");
-      return error;
+      as_bad (_("Operands do not conform to the "
+		"specified APEX format"));
+      return 1;
     }
 
     if (*arg_type == 's'
 	&& !str_hash_find (reg_names_hash, operand))
     {
-      error.msg = _("Operand must be an general register reference -");
-      return error;
+      as_bad (_("Operand must be an general register "
+		"reference"));
+      return 1;
     }
 
     if (*arg_type == 'd'
 	&& !str_hash_find (reg_names_hash, operand))
     {
-      error.msg = _("Destination operand must be a general register reference -");
-      return error;
+      as_bad (_("Destination operand must be a general "
+		"register reference"));
+      return 1;
     }
 
     if ((*arg_type != 'k' && *arg_type != 'j')
 	&& !str_hash_find(reg_names_hash, operand))
     {
-      error.msg = _("Specified APEX format cannot handle a non-register operand -");
-      return error;
+      as_bad (_("Specified APEX format cannot handle "
+		"a non-register operand"));
+      return 1;
     }
   }
 
-  return error;
+  return 0;
 }
 
 /* This routine assembles an instruction into its binary format.  As a
@@ -3147,13 +3149,8 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 
   insn = foo (asarg, insn);
 
-  struct riscv_ip_error apex_error = arcv_apex_validate_insn (asarg, insn);
-  if (apex_error.msg)
-  {
-    apex_error.statement = str; /* We dont want this.. but..  */
-    apex_error.missing_ext = NULL;
-    return apex_error;
-  }
+  if (arcv_apex_validate_insn (asarg, insn));
+    return error;
 
   probing_insn_operands = true;
 
