@@ -3014,7 +3014,7 @@ arcv_apex_convert_between_xs_xc (char *operands,
   return new_insn;
 }
 
-static int
+static bool
 arcv_apex_validate_insn (char *operands, struct riscv_opcode *insn)
 {
   if (insn == NULL
@@ -3022,7 +3022,7 @@ arcv_apex_validate_insn (char *operands, struct riscv_opcode *insn)
       && insn->mask != APEX_MASK_XS
       && insn->mask != APEX_MASK_XI
       && insn->mask != APEX_MASK_XC))
-    return 0;
+    return true;
 
   char *operands_copy = strdup (operands);
   gas_assert (operands_copy);
@@ -3055,7 +3055,7 @@ arcv_apex_validate_insn (char *operands, struct riscv_opcode *insn)
   {
     as_bad (_("Expected %d operands but %d were specified"),
 	      arg_count, operand_count);
-    return 1;
+    return false;
   }
 
   /* Now, traverse in reverse order.  */
@@ -3069,7 +3069,7 @@ arcv_apex_validate_insn (char *operands, struct riscv_opcode *insn)
     {
       as_bad (_("Operands do not conform to the "
 		"specified APEX format"));
-      return 1;
+      return false;
     }
 
     if (*arg_type == 's'
@@ -3077,7 +3077,7 @@ arcv_apex_validate_insn (char *operands, struct riscv_opcode *insn)
     {
       as_bad (_("Operand must be an general register "
 		"reference"));
-      return 1;
+      return false;
     }
 
     if (*arg_type == 'd'
@@ -3085,7 +3085,7 @@ arcv_apex_validate_insn (char *operands, struct riscv_opcode *insn)
     {
       as_bad (_("Destination operand must be a general "
 		"register reference"));
-      return 1;
+      return false;
     }
 
     if ((*arg_type != 'k' && *arg_type != 'j')
@@ -3093,11 +3093,11 @@ arcv_apex_validate_insn (char *operands, struct riscv_opcode *insn)
     {
       as_bad (_("Specified APEX format cannot handle "
 		"a non-register operand"));
-      return 1;
+      return false;
     }
   }
 
-  return 0;
+  return true;
 }
 
 /* This routine assembles an instruction into its binary format.  As a
@@ -3137,7 +3137,7 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 
   insn = arcv_apex_convert_between_xs_xc (asarg, insn);
 
-  if (arcv_apex_validate_insn (asarg, insn));
+  if (!arcv_apex_validate_insn (asarg, insn))
     return error;
 
   probing_insn_operands = true;
