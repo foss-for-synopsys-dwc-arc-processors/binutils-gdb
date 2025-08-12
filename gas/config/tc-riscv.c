@@ -3063,6 +3063,8 @@ arcv_apex_validate_insn (char *operands, struct riscv_opcode *insn)
   {
     const char *arg_type = arg_types[i];
     const char *operand = operand_tokens[i];
+    /* Skip APEX identifier - 'A'.  */
+    arg_type++;
 
     expressionS expr;
     my_getExpression (&expr, operand);
