@@ -3940,10 +3940,10 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 	    case 'k':
 	      my_getExpression (imm_expr, asarg);
 	      check_absolute_expr (ip, imm_expr, false);
-	      if ((imm_expr->X_add_number & ~0xFF) != 0)
+	      if (imm_expr->X_add_number < -128
+		  || imm_expr->X_add_number > 127)
 		as_bad (_("Integer operand out of range; should "
-			  "be between 0 to %ld, inclusive"),
-			(long) imm_expr->X_add_number - 1);
+			  "be between -128 to 127, inclusive"));
 	      ip->insn_opcode
 		|= ((unsigned long)(imm_expr->X_add_number & 0xFF) << 24);
 	      asarg = expr_parse_end;
