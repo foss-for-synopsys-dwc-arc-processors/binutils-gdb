@@ -136,6 +136,14 @@ int opcodeExtractXDType(uint64_t num) {
   return (bits_31_25 << 1) | bit_14;
 }
 
+int
+opcode_extract_xs_type (uint32_t num)
+{
+  uint32_t bits_14_13 = ((num >> 13) & 0x3);
+  uint32_t bits_23_20 = ((num >> 20) & 0xF);
+  return (bits_23_20 << 2) | bits_14_13;
+}
+
 /* Parse RISC-V disassembler option (without arguments).  */
 
 static bool
@@ -960,25 +968,6 @@ print_insn_args (const char *oparg, insn_t l, bfd_vma pc, disassemble_info *info
     }
 }
 
-struct riscv_opcode*
-arcv_apex_get_insn (unsigned int opcode, unsigned int offset)
-{
-  int i;
-  for (i = offset; i < ARCV_APEX_INSN_LIMIT; i++)
-  {
-    struct riscv_opcode *insn = instructions_spec[i];
-    if (!insn)
-      continue;
-
-    if (offset == 0 /*ARCV_APEX_OFFSET_XD*/ && (insn->match & APEX_MASK_XD) == opcode)
-      return insn;
-
-    if (offset == 0 /*ARCV_APEX_OFFSET_XS*/ && (insn->match & APEX_MASK_XS) == opcode)
-      return insn;
-  }
-  return NULL;
-}
-
 /* Print the RISC-V instruction at address MEMADDR in debugged memory,
    on using INFO.  Returns length of the instruction, in bytes.
    BIGENDIAN must be 1 if this is big-endian code, 0 if
@@ -1032,14 +1021,15 @@ riscv_disassemble_insn (bfd_vma memaddr,
 // opcode = opcodeExtractXDType (word);
 // unsigned int offset = ARCV_APEX_OFFSET_XD;
 // op = instructions_spec[opcode + offset];
-
+    unsigned int offset;
     if(isXDType(word)){
-      opcode = word & APEX_MASK_XD;
-      op = arcv_apex_get_insn (opcode, 0 /*ARCV_APEX_OFFSET_XD*/);
+      opcode = opcodeExtractXDType (word);
+      offset = ARCV_APEX_OFFSET_XD;
     } else if(isXSType(word)) {
-       opcode = word & APEX_MASK_XS;                       
-       op = arcv_apex_get_insn (opcode, 0 /*ARCV_APEX_OFFSET_XS*/); 
+      opcode = opcode_extract_xs_type (word);
+      offset = ARCV_APEX_OFFSET_XS;
     }  
+    op = instructions_spec[opcode + offset];
   }
    else{
     op = riscv_hash[OP_HASH_IDX (word)];
@@ -1670,7 +1660,7 @@ riscv_apex_create_map (unsigned char *block,
 
     case XS:
       arcv_apex_get_xs_data (insn, flags, func_t);
-      offset = 0;
+      offset = ARCV_APEX_OFFSET_XS;
       break;
 
   }
