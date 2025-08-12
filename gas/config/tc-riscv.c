@@ -3817,6 +3817,18 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 		|= ((unsigned long)(imm_expr->X_add_number & 0xFF) << 24);
 	      asarg = expr_parse_end;
 	      continue;
+	    case 'j':
+	      my_getExpression (imm_expr, asarg);
+	      check_absolute_expr (ip, imm_expr, false);
+	      /* FIXME: Should these validations be done in the arcv_apex_validate_insn () ?*/
+	      if (imm_expr->X_add_number < -2048
+		  || imm_expr->X_add_number > 2047)
+		as_bad (_("Integer operand out of range; should "
+			  "be between -2048 to 2047, inclusive"));
+	      ip->insn_opcode
+		|= ((unsigned long)(imm_expr->X_add_number & 0xFFF) << 20);
+	      asarg = expr_parse_end;
+	      continue;
 	    case 'd': /* Destination register.  */
 	    case 's': /* Source register.  */
 	    case 't': /* Target register.  */
