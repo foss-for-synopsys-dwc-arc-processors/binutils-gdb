@@ -1035,10 +1035,10 @@ riscv_disassemble_insn (bfd_vma memaddr,
 
     if(isXDType(word)){
       opcode = word & APEX_MASK_XD;
-      op = arcv_apex_get_insn (opcode, ARCV_APEX_OFFSET_XD);
+      op = arcv_apex_get_insn (opcode, 0 /*ARCV_APEX_OFFSET_XD*/);
     } else if(isXSType(word)) {
        opcode = word & APEX_MASK_XS;                       
-       op = arcv_apex_get_insn (opcode, ARCV_APEX_OFFSET_XS); 
+       op = arcv_apex_get_insn (opcode, 0 /*ARCV_APEX_OFFSET_XS*/); 
     }  
   }
    else{
@@ -1619,10 +1619,10 @@ arcv_apex_get_xd_data (struct riscv_opcode *insn,
       insn->args = "As";
       break;
     case VOID:
-      insn->args = "As,Ad";
+      insn->args = "As,At";
       break;
     default:
-      insn->args = "Ad,As,Ad";
+      insn->args = "Ad,As,At";
       break;
   }
 
