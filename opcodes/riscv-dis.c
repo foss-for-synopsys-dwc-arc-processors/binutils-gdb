@@ -968,12 +968,12 @@ arcv_apex_get_insn (unsigned int opcode, unsigned int offset)
   {
     struct riscv_opcode *insn = instructions_spec[i];
     if (!insn)
-      break;
+      continue;
 
-    if (offset == 0 && (insn->match & APEX_MASK_XD) == opcode)
+    if (offset == 0 /*ARCV_APEX_OFFSET_XD*/ && (insn->match & APEX_MASK_XD) == opcode)
       return insn;
 
-    if (offset == 0 && (insn->match & APEX_MASK_XS) == opcode)
+    if (offset == 0 /*ARCV_APEX_OFFSET_XS*/ && (insn->match & APEX_MASK_XS) == opcode)
       return insn;
   }
   return NULL;
@@ -1028,15 +1028,17 @@ riscv_disassemble_insn (bfd_vma memaddr,
   info->target2 = 0;
 
   if(((int)word & 15) == 11){
-//    opcode = opcodeExtractXDType (word);
-//    unsigned int offset = ARCV_APEX_OFFSET_XD;
-//    op = instructions_spec[opcode + offset];
+
+// opcode = opcodeExtractXDType (word);
+// unsigned int offset = ARCV_APEX_OFFSET_XD;
+// op = instructions_spec[opcode + offset];
+
     if(isXDType(word)){
       opcode = word & APEX_MASK_XD;
-      op = arcv_apex_get_insn (opcode, 0 /* offset.  */);
+      op = arcv_apex_get_insn (opcode, ARCV_APEX_OFFSET_XD);
     } else if(isXSType(word)) {
        opcode = word & APEX_MASK_XS;                       
-       op = arcv_apex_get_insn (opcode, 0 /* offset.  */); 
+       op = arcv_apex_get_insn (opcode, ARCV_APEX_OFFSET_XS); 
     }  
   }
    else{
