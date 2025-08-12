@@ -3805,6 +3805,18 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 	case 'A': /* APEX  */
 	  switch (*++oparg)
 	    {
+	    case 'k':
+	      my_getExpression (imm_expr, asarg);
+	      check_absolute_expr (ip, imm_expr, false);
+	      /* FIXME: Should these validations be done in the arcv_apex_validate_insn () ?*/
+	      if (imm_expr->X_add_number < -128
+		  || imm_expr->X_add_number > 127)
+		as_bad (_("Integer operand out of range; should "
+			  "be between -128 to 127, inclusive"));
+	      ip->insn_opcode
+		|= ((unsigned long)(imm_expr->X_add_number & 0xFF) << 24);
+	      asarg = expr_parse_end;
+	      continue;
 	    case 'd': /* Destination register.  */
 	    case 's': /* Source register.  */
 	    case 't': /* Target register.  */
@@ -3939,18 +3951,6 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 	        *imm_reloc = BFD_RELOC_32;
 	      asarg = expr_parse_end;
 	      continue;
-	    case 'k':
-	      my_getExpression (imm_expr, asarg);
-	      check_absolute_expr (ip, imm_expr, false);
-	      if (imm_expr->X_add_number < -128
-		  || imm_expr->X_add_number > 127)
-		as_bad (_("Integer operand out of range; should "
-			  "be between -128 to 127, inclusive"));
-	      ip->insn_opcode
-		|= ((unsigned long)(imm_expr->X_add_number & 0xFF) << 24);
-	      asarg = expr_parse_end;
-	      continue;
-
 	    case 'j': /* Sign-extended immediate.  */
 	      p = percent_op_itype;
 	      *imm_reloc = BFD_RELOC_RISCV_LO12_I;
