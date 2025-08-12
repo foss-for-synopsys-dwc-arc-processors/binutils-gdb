@@ -3064,8 +3064,10 @@ arcv_apex_validate_insn (char *operands, struct riscv_opcode *insn)
     const char *arg_type = arg_types[i];
     const char *operand = operand_tokens[i];
 
+    expressionS expr;
+    my_getExpression (&expr, operand);
     if ((*arg_type == 'k' || *arg_type == 'j')
-	&& !ISDIGIT (*operand))
+	&& expr.X_op != O_constant)
     {
       as_bad (_("Operands do not conform to the "
 		"specified APEX format"));
