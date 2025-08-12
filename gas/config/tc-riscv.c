@@ -6229,22 +6229,22 @@ arcv_apex_init_xd (struct riscv_opcode *insn,
   switch ((flags & (VOID | NO_SRC0 | NO_SRC1)))
   {
     case NO_SRC1:
-      insn->args = "d,s";
+      insn->args = "Ad,As";
       break;
     case NO_SRC0 | NO_SRC1:
-      insn->args = "d";
+      insn->args = "Ad";
       break;
     case VOID | NO_SRC0 | NO_SRC1:
       insn->args = "";
       break;
     case VOID | NO_SRC1:
-      insn->args = "s";
+      insn->args = "As";
       break;
     case VOID:
-      insn->args = "s,t";
+      insn->args = "As,At";
       break;
     default:
-      insn->args = "d,s,t";
+      insn->args = "Ad,As,At";
       break;
   }
 }
@@ -6265,10 +6265,10 @@ arcv_apex_init_xs (struct riscv_opcode *insn,
   switch ((flags & (VOID)))
   {
     case VOID:
-      insn->args = "s,k";
+      insn->args = "As,Ak";
       break;
     default:
-      insn->args = "d,s,k";
+      insn->args = "Ad,As,Ak";
       break;
   }
 }
@@ -6287,10 +6287,10 @@ arcv_apex_init_xi (struct riscv_opcode *insn,
   switch ((flags & (VOID)))
   {
     case VOID:
-      insn->args = "j";
+      insn->args = "Aj";
       break;
     default:
-      insn->args = "d,j";
+      insn->args = "Ad,Aj";
       break;
   }
 }
@@ -6315,7 +6315,7 @@ arcv_apex_init_xc (struct riscv_opcode *insn,
 		"handle a non-register operand"));
       exit (1);
     default:
-      insn->args = "d,d,j";
+      insn->args = "Ad,Ad,Aj";
       break;
   }
 }
