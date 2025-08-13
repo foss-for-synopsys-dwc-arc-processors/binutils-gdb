@@ -1709,6 +1709,11 @@ riscv_apex_create_map (unsigned char *block,
   struct riscv_opcode *insn = XNEW (struct riscv_opcode);
   unsigned int flags = block[4];
 
+  insn->name = name;
+  insn->insn_class = INSN_CLASS_I;
+  insn->match_func = match_opcode;
+  insn->xlen_requirement = 0;
+
   unsigned int offset = 0;
   switch (flags & 0xF)
   {
@@ -1731,12 +1736,29 @@ riscv_apex_create_map (unsigned char *block,
       arcv_apex_get_xc_data (insn, flags, func_t);
       offset = ARCV_APEX_OFFSET_XC;
       break;
-  }
 
-  insn->name = name;
-  insn->insn_class = INSN_CLASS_I;
-  insn->match_func = match_opcode;
-  insn->xlen_requirement = 0;
+    /* If an instruction supports both XS and XC formats
+       (e.g., "extInstruction foo,123,XS,XC"), we create a separate
+       instruction for each format.  This is safe because no other XS
+       or XC instruction can use the same opcode (=123).  */
+    case (XS | XC):
+      /* XS copy.  */
+      arcv_apex_get_xs_data (insn, flags, func_t);
+      offset = ARCV_APEX_OFFSET_XS;
+      struct riscv_opcode *xs_copy = malloc (sizeof (*xs_copy));
+      /* Copy struct contents.  */
+      *xs_copy = *insn;
+      instructions_spec[func_t + offset] = xs_copy;
+
+      /* XC copy.  */
+      arcv_apex_get_xc_data (insn, flags, func_t);
+      offset = ARCV_APEX_OFFSET_XC;
+      struct riscv_opcode *xc_copy = malloc (sizeof (*xc_copy));
+      /* Copy struct contents.  */
+      *xc_copy = *insn;
+      instructions_spec[func_t + offset] = xc_copy;
+      return;
+  }
 
   instructions_spec[func_t + offset] = insn;
 }
