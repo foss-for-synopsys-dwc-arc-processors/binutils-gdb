@@ -144,6 +144,20 @@ opcode_extract_xs_type (uint32_t num)
   return (bits_23_20 << 2) | bits_14_13;
 }
 
+int
+opcode_extract_xi_type (uint32_t num)
+{
+  uint32_t bits_19_15 = ((num >> 15) & 0x1F);
+  return bits_19_15;
+}
+
+int
+opcode_extract_xc_type (uint32_t num)
+{
+  uint32_t bits_19_15 = ((num >> 15) & 0x1F);
+  return bits_19_15;
+}
+
 /* Parse RISC-V disassembler option (without arguments).  */
 
 static bool
@@ -479,6 +493,9 @@ print_insn_args (const char *oparg, insn_t l, bfd_vma pc, disassemble_info *info
               break;
 	   case 'k':
 	      print (info->stream, dis_style_immediate, "%d", (int)APEX_EXTRACT_XS_ITYPE_IMM (l));
+              break;
+	   case 'j':
+	      print (info->stream, dis_style_immediate, "%d", (int)APEX_EXTRACT_XI_XC_ITYPE_IMM (l));
               break;
            case 't':
               print (info->stream, dis_style_register, "%s", 
@@ -1017,24 +1034,30 @@ riscv_disassemble_insn (bfd_vma memaddr,
   info->target2 = 0;
 
   if(((int)word & 15) == 11){
-
-// opcode = opcodeExtractXDType (word);
-// unsigned int offset = ARCV_APEX_OFFSET_XD;
-// op = instructions_spec[opcode + offset];
     unsigned int offset;
-    if(isXDType(word)){
+    if(isXDType(word))
+    {
       opcode = opcodeExtractXDType (word);
       offset = ARCV_APEX_OFFSET_XD;
-    } else if(isXSType(word)) {
+    } else if(isXSType(word)) 
+    {
       opcode = opcode_extract_xs_type (word);
       offset = ARCV_APEX_OFFSET_XS;
-    }  
+    } else if(isXIType(word)) 
+    {
+      opcode = opcode_extract_xi_type (word);
+      offset = ARCV_APEX_OFFSET_XI;
+    } else if(isXCType(word)) 
+    {
+      opcode = opcode_extract_xc_type (word);
+      offset = ARCV_APEX_OFFSET_XC;
+    }
+
     op = instructions_spec[opcode + offset];
   }
    else{
     op = riscv_hash[OP_HASH_IDX (word)];
   }
-
 
   if (op != NULL)
     {
@@ -1530,11 +1553,21 @@ uint32_t APEX_MATCH_XS(unsigned char opcode) {
  return match; 
 }
 
+uint32_t APEX_MATCH_XI(unsigned char opcode) {
+ uint32_t match = 0; 
+ match |= ((uint32_t)(opcode & 0x1F) << 15);
+ match |= 0b0001011; /* Custom-0. */
+ match |= 0b10000000000000;
+ return match; 
+}
 
-
-
-
-/* tmp  */
+uint32_t APEX_MATCH_XC(unsigned char opcode) {
+ uint32_t match = 0; 
+ match |= ((uint32_t)(opcode & 0x1F) << 15);
+ match |= 0b0001011; /* Custom-0. */
+ match |= 0b110000000000000;
+ return match; 
+}
 
 enum apex_flags
 {
@@ -1565,18 +1598,6 @@ arcv_apex_get_xs_data (struct riscv_opcode *insn,
 {
   switch ((flags & (VOID | NO_SRC0 | NO_SRC1)))
   {
-    case NO_SRC1:
-      insn->args = "Ad,As";
-      break;
-    case NO_SRC0 | NO_SRC1:
-      insn->args = "Ad";
-      break;
-    case VOID | NO_SRC0 | NO_SRC1:
-      insn->args = "";
-      break;
-    case VOID | NO_SRC1:
-      insn->args = "As";
-      break;
     case VOID:
       insn->args = "As,Ak";
       break;
@@ -1587,6 +1608,44 @@ arcv_apex_get_xs_data (struct riscv_opcode *insn,
 
   insn->match = APEX_MATCH_XS (func_t);
   insn->mask = APEX_MASK_XS;
+}
+
+static void
+arcv_apex_get_xi_data (struct riscv_opcode *insn,
+		       unsigned int flags,
+		       unsigned int func_t)
+{
+  switch ((flags & (VOID | NO_SRC0 | NO_SRC1)))
+  {
+    case VOID:
+      insn->args = "Aj";
+      break;
+    default:
+      insn->args = "Ad,Aj";
+      break;
+  }
+
+  insn->match = APEX_MATCH_XI (func_t);
+  insn->mask = APEX_MASK_XI;
+}
+
+static void
+arcv_apex_get_xc_data (struct riscv_opcode *insn,
+		       unsigned int flags,
+		       unsigned int func_t)
+{
+  switch ((flags & (VOID | NO_SRC0 | NO_SRC1)))
+  {
+    case VOID:
+      insn->args = "Aj";
+      break;
+    default:
+      insn->args = "Ad,Ad,Aj";
+      break;
+  }
+
+  insn->match = APEX_MATCH_XC (func_t);
+  insn->mask = APEX_MASK_XC;
 }
 
 static void
@@ -1663,6 +1722,15 @@ riscv_apex_create_map (unsigned char *block,
       offset = ARCV_APEX_OFFSET_XS;
       break;
 
+    case XI:
+      arcv_apex_get_xi_data (insn, flags, func_t);
+      offset = ARCV_APEX_OFFSET_XI;
+      break;
+
+    case XC:
+      arcv_apex_get_xc_data (insn, flags, func_t);
+      offset = ARCV_APEX_OFFSET_XC;
+      break;
   }
 
   insn->name = name;

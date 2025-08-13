@@ -6136,28 +6136,6 @@ struct riscv_opcode_hash_entry
   const struct riscv_opcode **opcode;
 };
 
-struct riscv_opcode opcode_t1 = {"foo1",       0, INSN_CLASS_I, "d,s,j",     0,0,  0, 0 };
-#if 0
-struct riscv_opcode create_opcode(){
- struct riscv_opcode opcode_t = {"andxi", 0, INSN_CLASS_I, "d,s,j", MATCH_ANDI, MASK_ANDI, match_opcode, 0 }; 
- return opcode_t;
-}
-
-static void
-riscv_insert_apex_opcode ()//const struct riscv_opcode *opcode)
-{
-  const char *name;
-  struct riscv_opcode *entry;
-  struct riscv_opcode_hash_entry *ENTRY;
-
-   opcode_t = create_opcode();
-   name = opcode_t.name;
-
-   str_hash_insert (op_hash, opcode_t.name, &opcode_t, 0); 
-
-}
-#endif
-
 static int
 apex_set_ext_seg (unsigned int insn_format, unsigned int insn_opcode)
 {
@@ -6258,7 +6236,6 @@ arcv_apex_init_xs (struct riscv_opcode *insn,
 {
   if ((flags & XS) != XS)
     return;
-
   insn->mask = APEX_MASK_XS;
   if (flags & XC)
     insn->mask = APEX_MASK_XC;
