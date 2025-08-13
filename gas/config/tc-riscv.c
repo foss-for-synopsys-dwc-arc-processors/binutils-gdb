@@ -2936,22 +2936,6 @@ arcv_apex_extract_opcode_from_xs (uint32_t match)
   return ret;
 }
 
-uint32_t
-arcv_apex_extract_opcode_from_xc (uint32_t match)
-{
-  uint32_t ret = 0;
-  unsigned char opcode = 0;
-  /* Extract bits [19:15]  */
-  opcode |= ((match >> 15) & 0x1F);
-
-  ret |= ((uint32_t)(opcode & 0x3C) << 18);
-  ret |= ((uint32_t)(opcode & 0x3) << 13);
-  ret |= 0xB; /* Custom-0.  */
-  ret |= 0x1000;
-
-  return ret;
-}
-
 struct riscv_opcode *
 arcv_apex_convert_between_xs_xc (char *operands,
 				 struct riscv_opcode *insn)
@@ -2996,26 +2980,15 @@ arcv_apex_convert_between_xs_xc (char *operands,
 
   if (imm <= 255 && !is_same_reg)
   {
+    /* Default: XS form, no conversion needed.  */
     new_insn->mask = APEX_MASK_XS;
-    if ((insn->match & 0x1000) != 0x1000)
-    {
-      /* Use XS  .*/
-      new_insn->args = "Ad,As,Ak";
-      new_insn->mask = APEX_MASK_XS;
-      new_insn->match
-    = arcv_apex_extract_opcode_from_xc (insn->match);
-    }
-
   } else if (is_same_reg)
   {
+    /* Use XC  .*/
     new_insn->mask = APEX_MASK_XC;
-    if ((insn->match & 0x6000) != 0x6000)
-    {
-      /* Use XC  .*/
-      new_insn->args = "Ad,Ad,Aj";
-      new_insn->match
+    new_insn->args = "Ad,Ad,Aj";
+    new_insn->match
     = arcv_apex_extract_opcode_from_xs (insn->match);
-    }
   }
 
   free(copy);
