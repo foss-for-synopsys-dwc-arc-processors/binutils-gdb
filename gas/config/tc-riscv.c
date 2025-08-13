@@ -6200,9 +6200,6 @@ arcv_apex_init_xd (struct riscv_opcode *insn,
 		       unsigned int flags,
 		       unsigned int insn_opcode)
 {
-  if ((flags & XD) != XD)
-    return;
-
   insn->mask = APEX_MASK_XD;
   insn->match = APEX_MATCH_XD(insn_opcode);
   insn->match_func = match_opcode_XD;
@@ -6234,11 +6231,9 @@ arcv_apex_init_xs (struct riscv_opcode *insn,
 		       unsigned int flags,
 		       unsigned int insn_opcode)
 {
-  if ((flags & XS) != XS)
-    return;
   insn->mask = APEX_MASK_XS;
   if (flags & XC)
-    insn->mask = APEX_MASK_XC;
+    insn->mask |= APEX_MASK_XC;
   insn->match = APEX_MATCH_XS(insn_opcode);
   insn->match_func = match_opcode;
   switch ((flags & (VOID)))
@@ -6257,9 +6252,6 @@ arcv_apex_init_xi (struct riscv_opcode *insn,
 		       unsigned int flags,
 		       unsigned int insn_opcode)
 {
-  if ((flags & XI) != XI)
-    return;
-
   insn->mask = APEX_MASK_XI;
   insn->match = APEX_MATCH_XI(insn_opcode);
   insn->match_func = match_opcode;
@@ -6279,14 +6271,11 @@ arcv_apex_init_xc (struct riscv_opcode *insn,
 		       unsigned int flags,
 		       unsigned int insn_opcode)
 {
-  if ((flags & XC) != XC)
-    return;
-
   insn->mask = APEX_MASK_XC;
   if (flags & XS)
     insn->mask |= APEX_MASK_XS;
   insn->match = APEX_MATCH_XC(insn_opcode);
-  insn->match_func = match_opcode_XD;
+  insn->match_func = match_opcode;
   switch ((flags & (VOID)))
   {
     case VOID:
@@ -6385,10 +6374,14 @@ riscv_apex_insn (int ignore ATTRIBUTE_UNUSED)
     restore_line_pointer (c);
   }
 
-  arcv_apex_init_xd (insn, flags, insn_opcode);
-  arcv_apex_init_xs (insn, flags, insn_opcode);
-  arcv_apex_init_xi (insn, flags, insn_opcode);
-  arcv_apex_init_xc (insn, flags, insn_opcode);
+  if ((flags & XD) == XD)
+    arcv_apex_init_xd (insn, flags, insn_opcode);
+  else if ((flags & XS) == XS)
+    arcv_apex_init_xs (insn, flags, insn_opcode);
+  else if ((flags & XI) == XI)
+    arcv_apex_init_xi (insn, flags, insn_opcode);
+  else if ((flags & XC) == XC)
+    arcv_apex_init_xc (insn, flags, insn_opcode);
 
   str_hash_insert (op_hash, insn->name, insn, 0);
 
