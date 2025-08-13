@@ -2994,20 +2994,28 @@ arcv_apex_convert_between_xs_xc (char *operands,
   struct riscv_opcode *new_insn = XNEW(struct riscv_opcode);
   memcpy(new_insn, insn, sizeof(struct riscv_opcode));
 
-  if (imm <= 255 && !is_same_reg && (insn->match & 0x1000) != 0x1000)
+  if (imm <= 255 && !is_same_reg)
   {
-    /* Use XS  .*/
-    new_insn->args = "d,s,k";
     new_insn->mask = APEX_MASK_XS;
-    new_insn->match
-	= arcv_apex_extract_opcode_from_xc (insn->match);
-  } else if (is_same_reg && (insn->match & 0x6000) != 0x6000)
+    if ((insn->match & 0x1000) != 0x1000)
+    {
+      /* Use XS  .*/
+      new_insn->args = "Ad,As,Ak";
+      new_insn->mask = APEX_MASK_XS;
+      new_insn->match
+    = arcv_apex_extract_opcode_from_xc (insn->match);
+    }
+
+  } else if (is_same_reg)
   {
-    /* Use XC  .*/
-    new_insn->args = "d,d,j";
     new_insn->mask = APEX_MASK_XC;
-    new_insn->match
-	= arcv_apex_extract_opcode_from_xs (insn->match);
+    if ((insn->match & 0x6000) != 0x6000)
+    {
+      /* Use XC  .*/
+      new_insn->args = "Ad,Ad,Aj";
+      new_insn->match
+    = arcv_apex_extract_opcode_from_xs (insn->match);
+    }
   }
 
   free(copy);
