@@ -6269,6 +6269,18 @@ arcv_apex_init_xc (struct riscv_opcode *insn,
   }
 }
 
+/* The XD-type has 8 function bits encoding up to 256 instructions.
+   The XS-type has 6 function bits encoding up to 64 instructions.
+   Both the XI-type and the XC-type have 5 function bits each encoding up
+   to 32 instructions respectively.  Thus giving a total of 384 possible
+   different instructions.  */
+#define ARCV_APEX_INSN_LIMIT 384
+#define ARCV_APEX_OFFSET_XD  0                           /* 256 entries.  */
+#define ARCV_APEX_OFFSET_XS  (ARCV_APEX_OFFSET_XD + 256) /* 256 + 0 = 256  */
+#define ARCV_APEX_OFFSET_XI  (ARCV_APEX_OFFSET_XS + 64)  /* 256 + 64 = 320  */
+#define ARCV_APEX_OFFSET_XC  (ARCV_APEX_OFFSET_XI + 32)  /* 320 + 32 = 352  */
+struct riscv_opcode* arcv_apex_insns[ARCV_APEX_INSN_LIMIT];
+
 static void
 riscv_apex_insn (int ignore ATTRIBUTE_UNUSED)
 {
@@ -6355,14 +6367,44 @@ riscv_apex_insn (int ignore ATTRIBUTE_UNUSED)
     restore_line_pointer (c);
   }
 
+  int offset = 0;
   if ((flags & XD) == XD)
+  {
     arcv_apex_init_xd (insn, flags, insn_opcode);
+    offset = ARCV_APEX_OFFSET_XD;
+  }
   else if ((flags & XS) == XS)
+  {
     arcv_apex_init_xs (insn, flags, insn_opcode);
+    offset = ARCV_APEX_OFFSET_XS;
+  }
   else if ((flags & XI) == XI)
+  {
     arcv_apex_init_xi (insn, flags, insn_opcode);
+    offset = ARCV_APEX_OFFSET_XI;
+  }
   else if ((flags & XC) == XC)
+  {
     arcv_apex_init_xc (insn, flags, insn_opcode);
+    offset = ARCV_APEX_OFFSET_XC;
+  }
+
+  /* If an APEX instruction is defined with both XS and XC
+     (e.g., `extInstruction foo, 1, XS, XC`), the opcode
+     limit is taken from XC (=31).  By default, such an
+     instruction is stored in the XC range.  */
+  if (flags & (XS | XC))
+    offset = ARCV_APEX_OFFSET_XC;
+
+  /* An APEX instruction cannot be duplicated with both
+     the same format and opcode.  */
+  if (arcv_apex_insns[offset + insn_opcode])
+  {
+    as_bad (_(".extInstruction '%s' duplicates opcode used by '%s'"),
+	       insn->name, arcv_apex_insns[offset + insn_opcode]->name);
+    return;
+  }
+  arcv_apex_insns[offset + insn_opcode] = insn;
 
   str_hash_insert (op_hash, insn->name, insn, 0);
 
