@@ -6390,21 +6390,42 @@ riscv_apex_insn (int ignore ATTRIBUTE_UNUSED)
   }
 
   /* If an APEX instruction is defined with both XS and XC
-     (e.g., `extInstruction foo, 1, XS, XC`), the opcode
-     limit is taken from XC (=31).  By default, such an
-     instruction is stored in the XC range.  */
-  if (flags & (XS | XC))
-    offset = ARCV_APEX_OFFSET_XC;
-
-  /* An APEX instruction cannot be duplicated with both
-     the same format and opcode.  */
-  if (arcv_apex_insns[offset + insn_opcode])
+     (e.g., `extInstruction foo, 1, XS, XC`) the
+     instruction is stored in both XS and XC ranges.  */
+  if ((flags & (XS | XC)) == (XS | XC))
   {
-    as_bad (_(".extInstruction '%s' duplicates opcode used by '%s'"),
-	       insn->name, arcv_apex_insns[offset + insn_opcode]->name);
-    return;
+    if (arcv_apex_insns[ARCV_APEX_OFFSET_XS + insn_opcode])
+    {
+      as_bad(_(".extInstruction '%s' duplicates opcode used by '%s'"),
+		insn->name,
+		arcv_apex_insns[ARCV_APEX_OFFSET_XS + insn_opcode]->name);
+      return;
+    }
+    else
+      arcv_apex_insns[ARCV_APEX_OFFSET_XS + insn_opcode] = insn;
+
+    if (arcv_apex_insns[ARCV_APEX_OFFSET_XC + insn_opcode])
+    {
+      as_bad(_(".extInstruction '%s' duplicates opcode used by '%s'"),
+		insn->name,
+		arcv_apex_insns[ARCV_APEX_OFFSET_XC + insn_opcode]->name);
+      return;
+    }
+    else
+      arcv_apex_insns[ARCV_APEX_OFFSET_XC + insn_opcode] = insn;
   }
-  arcv_apex_insns[offset + insn_opcode] = insn;
+  else
+  {
+    /* An APEX instruction cannot be duplicated with both
+      the same format and opcode.  */
+    if (arcv_apex_insns[offset + insn_opcode])
+    {
+      as_bad (_(".extInstruction '%s' duplicates opcode used by '%s'"),
+		insn->name, arcv_apex_insns[offset + insn_opcode]->name);
+      return;
+    }
+    arcv_apex_insns[offset + insn_opcode] = insn;
+  }
 
   str_hash_insert (op_hash, insn->name, insn, 0);
 
