@@ -6281,6 +6281,21 @@ arcv_apex_init_xc (struct riscv_opcode *insn,
 #define ARCV_APEX_OFFSET_XC  (ARCV_APEX_OFFSET_XI + 32)  /* 320 + 32 = 352  */
 struct riscv_opcode* arcv_apex_insns[ARCV_APEX_INSN_LIMIT];
 
+static bool
+arcv_apex_check_and_set_insn (struct riscv_opcode *insn,
+			      unsigned int opcode,
+			      unsigned int offset)
+{
+  if (arcv_apex_insns[offset + opcode])
+  {
+    as_bad (_(".extInstruction '%s' duplicates opcode used by '%s'"),
+    insn->name, arcv_apex_insns[offset + opcode]->name);
+    return false;
+  }
+  arcv_apex_insns[offset + opcode] = insn;
+  return true;
+}
+
 static void
 riscv_apex_insn (int ignore ATTRIBUTE_UNUSED)
 {
@@ -6394,37 +6409,14 @@ riscv_apex_insn (int ignore ATTRIBUTE_UNUSED)
      instruction is stored in both XS and XC ranges.  */
   if ((flags & (XS | XC)) == (XS | XC))
   {
-    if (arcv_apex_insns[ARCV_APEX_OFFSET_XS + insn_opcode])
-    {
-      as_bad(_(".extInstruction '%s' duplicates opcode used by '%s'"),
-		insn->name,
-		arcv_apex_insns[ARCV_APEX_OFFSET_XS + insn_opcode]->name);
+    if (!arcv_apex_check_and_set_insn (insn, insn_opcode, ARCV_APEX_OFFSET_XS))
       return;
-    }
-    else
-      arcv_apex_insns[ARCV_APEX_OFFSET_XS + insn_opcode] = insn;
-
-    if (arcv_apex_insns[ARCV_APEX_OFFSET_XC + insn_opcode])
-    {
-      as_bad(_(".extInstruction '%s' duplicates opcode used by '%s'"),
-		insn->name,
-		arcv_apex_insns[ARCV_APEX_OFFSET_XC + insn_opcode]->name);
+    if (!arcv_apex_check_and_set_insn (insn, insn_opcode, ARCV_APEX_OFFSET_XC))
       return;
-    }
-    else
-      arcv_apex_insns[ARCV_APEX_OFFSET_XC + insn_opcode] = insn;
-  }
-  else
+  } else
   {
-    /* An APEX instruction cannot be duplicated with both
-      the same format and opcode.  */
-    if (arcv_apex_insns[offset + insn_opcode])
-    {
-      as_bad (_(".extInstruction '%s' duplicates opcode used by '%s'"),
-		insn->name, arcv_apex_insns[offset + insn_opcode]->name);
+    if (!arcv_apex_check_and_set_insn (insn, insn_opcode, offset))
       return;
-    }
-    arcv_apex_insns[offset + insn_opcode] = insn;
   }
 
   str_hash_insert (op_hash, insn->name, insn, 0);
