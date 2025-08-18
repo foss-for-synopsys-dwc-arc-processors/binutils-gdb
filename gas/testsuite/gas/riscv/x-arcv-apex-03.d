@@ -20,9 +20,9 @@ Contents of section \.riscvapex\.2\.11\.5:
 Contents of section \.riscvapex\.2\.11\.6:
  0000 0c010b06 1200666f 6f350000.*
 Contents of section \.riscvapex\.4\.11\.7:
- 0000 0c010b07 0400666f 6f360000.*
+ 0000 0c010b07 4400666f 6f360000.*
 Contents of section \.riscvapex\.4\.11\.8:
- 0000 0c010b08 1400666f 6f370000.*
+ 0000 0c010b08 5400666f 6f370000.*
 Contents of section \.riscvapex\.8\.11\.9:
  0000 0c010b09 0800666f 6f380000.*
 .*
