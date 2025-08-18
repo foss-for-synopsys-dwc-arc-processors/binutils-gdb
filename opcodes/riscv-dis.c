@@ -1596,7 +1596,7 @@ arcv_apex_get_xs_data (struct riscv_opcode *insn,
 		       unsigned int flags,
 		       unsigned int func_t)
 {
-  switch ((flags & (VOID | NO_SRC0 | NO_SRC1)))
+  switch (flags & (VOID))
   {
     case VOID:
       insn->args = "As,Ak";
@@ -1615,7 +1615,7 @@ arcv_apex_get_xi_data (struct riscv_opcode *insn,
 		       unsigned int flags,
 		       unsigned int func_t)
 {
-  switch ((flags & (VOID | NO_SRC0 | NO_SRC1)))
+  switch (flags & (VOID))
   {
     case VOID:
       insn->args = "Aj";
@@ -1634,7 +1634,7 @@ arcv_apex_get_xc_data (struct riscv_opcode *insn,
 		       unsigned int flags,
 		       unsigned int func_t)
 {
-  switch ((flags & (VOID | NO_SRC0 | NO_SRC1)))
+  switch (flags & (VOID))
   {
     case VOID:
       insn->args = "Aj";
