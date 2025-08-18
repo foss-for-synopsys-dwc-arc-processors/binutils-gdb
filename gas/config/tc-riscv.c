@@ -6355,7 +6355,7 @@ riscv_apex_insn (int ignore ATTRIBUTE_UNUSED)
     else if (streq (insn_format, "XS"))
       flags |= XS;
     else if (streq (insn_format, "XI"))
-      flags |= XI;
+      flags |= (XI | NO_SRC1);
     else if (streq (insn_format, "XC"))
       flags |= XC;
     else if (streq (p, "void"))
