@@ -6148,8 +6148,20 @@ apex_set_ext_seg (unsigned int insn_format, unsigned int insn_opcode)
   strcat (result, insn_opcode_str);
 
   segT apex_section1 = subseg_new (result, 0);
-  bfd_set_section_flags (apex_section1, SEC_READONLY | SEC_HAS_CONTENTS);
+  bfd_set_section_flags (apex_section1, SEC_READONLY | SEC_HAS_CONTENTS
+				      | SEC_LINK_ONCE);
   subseg_set (apex_section1, 0); /* switch to this new section.  */
+
+  /* Build the COMDAT group name .apex.* (remove "riscv").  */
+  char *group_name = malloc (strlen (result) - strlen ("riscv"));
+
+  /* keep the leading dot.  */
+  group_name[0] = '.';
+  strcpy (group_name + 1, result + strlen (".riscv"));
+
+  /* Attach the group name to the section.  */
+  elf_set_group_name (apex_section1, group_name);
+
   return 1;
 }
 
