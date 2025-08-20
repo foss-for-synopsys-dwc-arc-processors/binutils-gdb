@@ -3,6 +3,24 @@
 
 .*:[ 	]+file format .*
 
+Contents of section \.group:
+ 0000 01000000 0d000000.*
+Contents of section \.group:
+ 0000 01000000 0e000000.*
+Contents of section \.group:
+ 0000 01000000 0f000000.*
+Contents of section \.group:
+ 0000 01000000 10000000.*
+Contents of section \.group:
+ 0000 01000000 11000000.*
+Contents of section \.group:
+ 0000 01000000 12000000.*
+Contents of section \.group:
+ 0000 01000000 13000000.*
+Contents of section \.group:
+ 0000 01000000 14000000.*
+Contents of section \.group:
+ 0000 01000000 15000000.*
 Contents of section \.text:
  0000 0bc5c500 0b80c502 0bc00502 0b000004.*
  0010 0bb5150b 0bd0150b 0ba56301 0b206401.*
