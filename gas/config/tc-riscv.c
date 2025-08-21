@@ -3924,7 +3924,6 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 	      normalize_constant_expr (imm_expr);
 	      asarg = expr_parse_end;
 	      continue;
-#if 0	    
 	      case 'A':
 	      my_getExpression (imm_expr, asarg);
 	      normalize_constant_expr (imm_expr);
@@ -3934,7 +3933,6 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 	      *imm_reloc = BFD_RELOC_32;
 	      asarg = expr_parse_end;
 	      continue;
-#endif
 	    case 'B':
 	      my_getExpression (imm_expr, asarg);
 	      normalize_constant_expr (imm_expr);
