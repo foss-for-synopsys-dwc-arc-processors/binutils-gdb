@@ -428,6 +428,62 @@ arcv_apex_setup_xd_insn (struct riscv_opcode *insn,
   }
 }
 
+/* Encode the APEX XS instruction match field from the function code.
+
+   Encodes the function code bits into the instruction word format for
+   XS instructions, placing bits into the correct positions, setting
+   the fixed Custom-0 field, and including XS-specific fixed bits.  */
+
+static uint32_t
+arcv_apex_get_match_xs (unsigned char funct_code)
+{
+  uint32_t match = 0;
+  /* Place bits [5:2] of the function code into bits [23:18] of
+     the instruction.  */
+  match |= ((uint32_t)(funct_code & 0x3C) << 18);
+  /* Place bits [1:0] of the function code into bits [14:13] of
+     the instruction.  */
+  match |= ((uint32_t)(funct_code & 0x3) << 13);
+  match |= 0xb; /* Set the fixed Custom-0 field.  */
+  match |= 0x1000; /* Set XS-specific fixed bit in the instruction word.  */
+  return match;
+}
+
+/* Initialize an APEX instruction in XS format.
+   Sets mask, match, and operand argument string based on flags.
+   If the XC flag is set, the instruction is marked as XS/XC combined.
+   The VOID flag controls whether the destination operand is included.  */
+
+void
+arcv_apex_setup_xs_insn (struct riscv_opcode *insn,
+		       unsigned int flags,
+		       unsigned int funct_code)
+{
+  /* Mark instruction as XS format.  */
+  insn->mask = APEX_MASK_XS;
+  /* Combine XS with XC if requested.  */
+  if (flags & XC)
+    insn->mask |= APEX_MASK_XC;
+  /* Encode functin code into match bits.  */
+  insn->match = arcv_apex_get_match_xs (funct_code);
+  /* Use default opcode matcher.  */
+  insn->match_func = match_opcode;
+
+  /* Select operand pattern based on VOID flag.
+     Operands: d = dest, s = src1, k = 8-bit immediate.  */
+  switch (flags & (VOID))
+  {
+    /* src0, imm only.  */
+    case VOID:
+      insn->args = "Ms,Mk";
+      break;
+    /* dest, src0, imm (default XS form).  */
+    default:
+      insn->args = "Md,Ms,Mk";
+      break;
+  }
+}
+
 /* The order of overloaded instructions matters.  Label arguments and
    register arguments look the same. Instructions that can have either
    for arguments must apear in the correct order in this table for the
