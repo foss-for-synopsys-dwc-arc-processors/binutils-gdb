@@ -1556,7 +1556,7 @@ validate_riscv_insn (const struct riscv_opcode *opc, int length)
 	case '}': break;
 	case '<': USE_BITS (OP_MASK_SHAMTW, OP_SH_SHAMTW); break;
 	case '>': USE_BITS (OP_MASK_SHAMT, OP_SH_SHAMT); break;
-//	case 'A': break; /* Macro operand, must be symbol.  */
+	case 'A': break; /* Macro operand, must be symbol.  */
 	case 'B': break; /* Macro operand, must be symbol or constant.  */
 	case 'c': break; /* Macro operand, must be symbol or constant.  */
 	case 'I': break; /* Macro operand, must be constant.  */
@@ -1589,8 +1589,7 @@ validate_riscv_insn (const struct riscv_opcode *opc, int length)
 	case ']': break; /* Unused operand.  */
 	case '0': break; /* AMO displacement, must to zero.  */
 	case '1': break; /* Relaxation operand.  */
-
-	case 'A': /* APEX  */
+	case 'M': /* APEX  */
 	  switch (*++oparg)
 	    {
             case 'd': USE_BITS (OP_MASK_RD, OP_SH_RD); break;
@@ -1599,7 +1598,7 @@ validate_riscv_insn (const struct riscv_opcode *opc, int length)
             default:
 	      goto unknown_validate_operand;
 	    }
-	  break;
+	  break; 
 
 	case 'F': /* Funct for .insn directive.  */
 	  switch (*++oparg)
@@ -2034,7 +2033,7 @@ macro_build (expressionS *ep, const char *name, const char *fmt, ...)
       switch (*fmt)
 	{
 
-       case 'A': /* Apex XD args*/
+       case 'M': /* Apex XD args*/
          switch (*++fmt)
 	    {
              case 'd':
@@ -2986,7 +2985,7 @@ arcv_apex_convert_between_xs_xc (char *operands,
   {
     /* Use XC  .*/
     new_insn->mask = APEX_MASK_XC;
-    new_insn->args = "Ad,Ad,Aj";
+    new_insn->args = "Md,Md,Mj";
     new_insn->match
     = arcv_apex_extract_opcode_from_xs (insn->match);
   }
@@ -3044,7 +3043,7 @@ arcv_apex_validate_insn (char *operands, struct riscv_opcode *insn)
   {
     const char *arg_type = arg_types[i];
     const char *operand = operand_tokens[i];
-    /* Skip APEX identifier - 'A'.  */
+    /* Skip APEX identifier - 'M'.  */
     arg_type++;
 
     expressionS expr;
@@ -3785,7 +3784,7 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 		}
 	      break;
 
-	case 'A': /* APEX  */
+	case 'M': /* APEX  */
 	  switch (*++oparg)
 	    {
 	    case 'k':
@@ -6199,22 +6198,22 @@ arcv_apex_init_xd (struct riscv_opcode *insn,
   switch ((flags & (VOID | NO_SRC0 | NO_SRC1)))
   {
     case NO_SRC1:
-      insn->args = "Ad,As";
+      insn->args = "Md,Ms";
       break;
     case NO_SRC0 | NO_SRC1:
-      insn->args = "Ad";
+      insn->args = "Md";
       break;
     case VOID | NO_SRC0 | NO_SRC1:
       insn->args = "";
       break;
     case VOID | NO_SRC1:
-      insn->args = "As";
+      insn->args = "Ms";
       break;
     case VOID:
-      insn->args = "As,At";
+      insn->args = "Ms,Mt";
       break;
     default:
-      insn->args = "Ad,As,At";
+      insn->args = "Md,Ms,Mt";
       break;
   }
 }
@@ -6232,10 +6231,10 @@ arcv_apex_init_xs (struct riscv_opcode *insn,
   switch ((flags & (VOID)))
   {
     case VOID:
-      insn->args = "As,Ak";
+      insn->args = "Ms,Mk";
       break;
     default:
-      insn->args = "Ad,As,Ak";
+      insn->args = "Md,Ms,Mk";
       break;
   }
 }
@@ -6251,10 +6250,10 @@ arcv_apex_init_xi (struct riscv_opcode *insn,
   switch ((flags & (VOID)))
   {
     case VOID:
-      insn->args = "Aj";
+      insn->args = "Mj";
       break;
     default:
-      insn->args = "Ad,Aj";
+      insn->args = "Md,Mj";
       break;
   }
 }
@@ -6276,7 +6275,7 @@ arcv_apex_init_xc (struct riscv_opcode *insn,
 		"handle a non-register operand"));
       exit (1);
     default:
-      insn->args = "Ad,Ad,Aj";
+      insn->args = "Md,Md,Mj";
       break;
   }
 }

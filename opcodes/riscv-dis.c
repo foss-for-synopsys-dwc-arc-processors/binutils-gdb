@@ -480,7 +480,7 @@ print_insn_args (const char *oparg, insn_t l, bfd_vma pc, disassemble_info *info
 	    }
 	  break;
 
-	case 'A': /* apex XS type */
+	case 'M': /* apex XS type */
 	  switch (*++oparg)
 	    {
            case 'd':
@@ -1599,10 +1599,10 @@ arcv_apex_get_xs_data (struct riscv_opcode *insn,
   switch (flags & (VOID))
   {
     case VOID:
-      insn->args = "As,Ak";
+      insn->args = "Ms,Mk";
       break;
     default:
-      insn->args = "Ad,As,Ak";
+      insn->args = "Md,Ms,Mk";
       break;
   }
 
@@ -1618,10 +1618,10 @@ arcv_apex_get_xi_data (struct riscv_opcode *insn,
   switch (flags & (VOID))
   {
     case VOID:
-      insn->args = "Aj";
+      insn->args = "Mj";
       break;
     default:
-      insn->args = "Ad,Aj";
+      insn->args = "Md,Mj";
       break;
   }
 
@@ -1637,10 +1637,10 @@ arcv_apex_get_xc_data (struct riscv_opcode *insn,
   switch (flags & (VOID))
   {
     case VOID:
-      insn->args = "Aj";
+      insn->args = "Mj";
       break;
     default:
-      insn->args = "Ad,Ad,Aj";
+      insn->args = "Md,Md,Mj";
       break;
   }
 
@@ -1656,22 +1656,22 @@ arcv_apex_get_xd_data (struct riscv_opcode *insn,
   switch ((flags & (VOID | NO_SRC0 | NO_SRC1)))
   {
     case NO_SRC1:
-      insn->args = "Ad,As";
+      insn->args = "Md,Ms";
       break;
     case NO_SRC0 | NO_SRC1:
-      insn->args = "Ad";
+      insn->args = "Md";
       break;
     case VOID | NO_SRC0 | NO_SRC1:
       insn->args = "";
       break;
     case VOID | NO_SRC1:
-      insn->args = "As";
+      insn->args = "Ms";
       break;
     case VOID:
-      insn->args = "As,At";
+      insn->args = "Ms,Mt";
       break;
     default:
-      insn->args = "Ad,As,At";
+      insn->args = "Md,Ms,Mt";
       break;
   }
 
