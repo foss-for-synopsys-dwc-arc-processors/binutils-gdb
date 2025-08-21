@@ -362,6 +362,72 @@ match_sreg1_not_eq_sreg2 (const struct riscv_opcode *op, insn_t insn)
       && (EXTRACT_OPERAND (SREG1, insn) != EXTRACT_OPERAND (SREG2, insn));
 }
 
+/* Encode the APEX XD instruction match field from the user-defined
+   function code into the instruction word format, placing bits into the
+   correct positions and setting the fixed Custom-0 field.  */
+
+static uint32_t
+arcv_apex_get_match_xd (unsigned char funct_code)
+{
+  uint32_t match = 0;
+  /* Place bits [7:1] of the function code into bits [31:25] of
+     the instruction.  */
+  match |= ((uint32_t)(funct_code & 0xFE) << 24);
+  /* Place bit [0] of the function code into bit [14] of
+     the instruction.  */
+  match |= ((uint32_t)(funct_code & 0x1) << 14);
+  match |= 0xb; /* Set the fixed Custom-0 field.  */
+  return match;
+}
+
+/* Initialize an APEX instruction in XD format.
+   Sets mask, match, and operand argument string based on flags.
+   The flags VOID, NO_SRC0, and NO_SRC1 control which operands
+   are present in the instruction definition.  */
+
+void
+arcv_apex_setup_xd_insn (struct riscv_opcode *insn,
+		       unsigned int flags,
+		       unsigned int funct_code)
+{
+  /* Mark instruction as XD format.  */
+  insn->mask = APEX_MASK_XD;
+  /* Encode function code into match bits.  */
+  insn->match = arcv_apex_get_match_xd (funct_code);
+  /* Use default opcode matcher.  */
+  insn->match_func = match_opcode;
+
+  /* Select operand pattern based on flags.
+     Operands: d = dest, s = src1, t = src2.  */
+  switch (flags & (VOID | NO_SRC0 | NO_SRC1))
+  {
+    /* dest, src0 only.  */
+    case NO_SRC1:
+      insn->args = "Md,Ms";
+      break;
+    /* dest only.  */
+    case NO_SRC0 | NO_SRC1:
+      insn->args = "Md";
+      break;
+    /* no operands.  */
+    case VOID | NO_SRC0 | NO_SRC1:
+      insn->args = "";
+      break;
+    /* src0 only.  */
+    case VOID | NO_SRC1:
+      insn->args = "Ms";
+      break;
+    /* src0, src1 only.  */
+    case VOID:
+      insn->args = "Ms,Mt";
+      break;
+    /* dest, src0, src1 (default XD form).  */
+    default:
+      insn->args = "Md,Ms,Mt";
+      break;
+  }
+}
+
 /* The order of overloaded instructions matters.  Label arguments and
    register arguments look the same. Instructions that can have either
    for arguments must apear in the correct order in this table for the
