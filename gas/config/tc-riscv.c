@@ -6132,6 +6132,49 @@ riscv_pop_insert (void)
   pop_insert (riscv_pseudo_table);
 }
 
+/* Create and get a read-only COMDAT section for an APEX instruction.
+
+   Section names encode the instruction format flags (XD=1<<0, XS=1<<1,
+   XI=1<<2, XC=1<<3), followed by the fixed Custom-0 value (11) and the
+   instruction opcode.
+
+   For example, an instruction declared as:
+     .extInstruction foo,7,XS,XC
+   maps to:
+     .riscvapex.<XS|XC>.11.<function_code>
+   and concretely:
+     .riscvapex.10.11.7
+
+   The section is placed in a COMDAT group so that the linker keeps only
+   one copy when multiple compilation units define the same section.
+   The COMDAT group name is derived from the section name, prefixed with
+   ".apex.".  */
+
+static segT
+arcv_apex_get_metadata_section (unsigned int insn_format,
+				unsigned int sub_opcode)
+{
+  unsigned int custom_0 = 0xb;
+
+  /* Allocate buffer for full section name.  */
+  const char *section_name = xasprintf (".riscvapex.%u.%u.%u",
+				insn_format, custom_0, sub_opcode);
+
+  /* Create a new section with appropriate flags.  */
+  segT apex_section = subseg_new (section_name, 0);
+  bfd_set_section_flags (apex_section,
+			 SEC_READONLY | SEC_HAS_CONTENTS | SEC_LINK_ONCE);
+
+  /* Build the COMDAT group name for the section, prefixed with ".apex.".  */
+  const char *group_name = xasprintf (".apex.%u.%u.%u",
+				insn_format, custom_0, sub_opcode);
+
+  /* Attach the group name to the section.  */
+  elf_set_group_name (apex_section, group_name);
+
+  return apex_section;
+}
+
 /* Allocate and register an APEX instruction.
 
    Allocates a riscv_opcode structure, initializes it according to the
