@@ -742,4 +742,15 @@ extern const struct riscv_opcode riscv_insn_types[];
 
 extern unsigned int riscv_get_sp_base (insn_t, unsigned int);
 
+enum apex_flags {
+  None = 0,
+  XD = 1 << 0,
+  XS = 1 << 1,
+  XI = 1 << 2,
+  XC = 1 << 3,
+  VOID = 1 << 4,
+  NO_SRC0 = 1 << 5,
+  NO_SRC1 = 1 << 6,
+};
+
 #endif /* _RISCV_H_ */
