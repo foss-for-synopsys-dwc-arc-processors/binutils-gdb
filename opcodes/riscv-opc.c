@@ -559,6 +559,35 @@ arcv_apex_setup_xi_insn (struct riscv_opcode *insn,
   }
 }
 
+/* Encode sub-opcode into the XC instruction format.  */
+
+static uint32_t
+arcv_apex_get_match_xc (unsigned char sub_opcode)
+{
+  uint32_t match = 0;
+  match |= ((uint32_t)(sub_opcode & 0x1F) << 15); /* Bits [4:0] to [19:15].  */
+  match |= 0xb;					  /* Fixed Custom-0 field.  */
+  match |= 0x6000;				  /* Set XC fixed bits.  */
+  return match;
+}
+
+/* Initialize an APEX instruction in XC format.
+   Sets mask and match.  Set fixed operand argument string.
+   The XC form represents instructions where dest == src.  */
+
+void
+arcv_apex_setup_xc_insn (struct riscv_opcode *insn,
+		       unsigned int sub_opcode)
+{
+  insn->mask = APEX_MASK_XC;
+  insn->match = arcv_apex_get_match_xc (sub_opcode);
+  insn->match_func = match_opcode;
+
+  /* Fixed operand pattern for XC instructions:
+     dest, dest, 8-bit immediate.  */
+  insn->args = "Md,Md,Mj";
+}
+
 /* The order of overloaded instructions matters.  Label arguments and
    register arguments look the same. Instructions that can have either
    for arguments must apear in the correct order in this table for the
