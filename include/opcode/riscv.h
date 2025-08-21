@@ -762,5 +762,6 @@ enum apex_flags {
 
 #define APEX_MASK_XD	0xFE00407F
 #define APEX_MASK_XS	0xF0707F
+#define APEX_MASK_XI	0xFA07F
 
 #endif /* _RISCV_H_ */
