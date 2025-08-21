@@ -471,6 +471,47 @@ arcv_apex_setup_xd_insn (struct riscv_opcode *insn,
   }
 }
 
+/* Encode sub-opcode into the XS instruction format.  */
+
+static uint32_t
+arcv_apex_get_match_xs (unsigned char sub_opcode)
+{
+  uint32_t match = 0;
+  match |= ((uint32_t)(sub_opcode & 0x3C) << 18); /* Bits [5:2] to [23:18].  */
+  match |= ((uint32_t)(sub_opcode & 0x3) << 13);  /* Bits [1:0] to [14:13].  */
+  match |= 0xb;					  /* Fixed Custom-0 field.  */
+  match |= 0x1000;	   			  /* Set XS fixed bits.  */
+  return match;
+}
+
+/* Initialize an APEX instruction in XS format.
+   Sets mask, match, and operand argument string based on flags.
+   The VOID flag controls whether the destination operand is included.  */
+
+void
+arcv_apex_setup_xs_insn (struct riscv_opcode *insn,
+		       unsigned int flags,
+		       unsigned int sub_opcode)
+{
+  insn->mask |= APEX_MASK_XS;
+  insn->match = arcv_apex_get_match_xs (sub_opcode);
+  insn->match_func = match_opcode;
+
+  /* Select operand pattern based on VOID flag.
+     Operands: d = dest, s = src1, k = 8-bit immediate.  */
+  switch (flags & (VOID))
+  {
+    /* src0, imm only.  */
+    case VOID:
+      insn->args = "Ms,Mk";
+      break;
+    /* dest, src0, imm (default XS form).  */
+    default:
+      insn->args = "Md,Ms,Mk";
+      break;
+  }
+}
+
 /* The order of overloaded instructions matters.  Label arguments and
    register arguments look the same. Instructions that can have either
    for arguments must apear in the correct order in this table for the
