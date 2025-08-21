@@ -533,6 +533,49 @@ arcv_apex_setup_xi_insn (struct riscv_opcode *insn,
   }
 }
 
+/* Encode the APEX XC instruction match field from the function code.
+
+   Encodes the function code bits into the instruction word format for
+   XC instructions, placing them into the correct position, setting the
+   fixed Custom-0 field, and including XC-specific fixed bits.  */
+
+static uint32_t
+arcv_apex_get_match_xc (unsigned char funct_code)
+{
+  uint32_t match = 0;
+  /* Place bits [4:0] of the function code into bits [19:15] of
+     the instruction.  */
+  match |= ((uint32_t)(funct_code & 0x1F) << 15);
+  match |= 0xb;    /* Set the fixed Custom-0 field.  */
+  match |= 0x6000; /* Set XC-specific fixed bits in the instruction word.  */
+  return match;
+}
+
+/* Initialize an APEX instruction in XC format.
+   Sets mask, match, and operand argument string based on flags.
+   If the XS flag is set, the instruction is marked as XS/XC combined.
+   Operands: d = destination register, j = 12-bit immediate.
+   The XC form represents instructions where dest == src.  */
+
+void
+arcv_apex_setup_xc_insn (struct riscv_opcode *insn,
+		       unsigned int flags,
+		       unsigned int funct_code)
+{
+  /* Mark instruction as XC format.  */
+  insn->mask = APEX_MASK_XC;
+  /* Combine XC with XS if requested.  */
+  if (flags & XS)
+    insn->mask |= APEX_MASK_XS;
+  /* Encode function code into match bits.  */
+  insn->match = arcv_apex_get_match_xc (funct_code);
+  /* Use default opcode matcher.  */
+  insn->match_func = match_opcode;
+
+  /* Fixed operand pattern for XC instructions: dest, dest, immediate.  */
+  insn->args = "Md,Md,Mj";
+}
+
 /* The order of overloaded instructions matters.  Label arguments and
    register arguments look the same. Instructions that can have either
    for arguments must apear in the correct order in this table for the
