@@ -6132,6 +6132,57 @@ riscv_pop_insert (void)
   pop_insert (riscv_pseudo_table);
 }
 
+/* Allocate and register an APEX instruction.
+
+   Allocates a riscv_opcode structure, initializes it according to the
+   instruction format using the appropriate setup function, and inserts
+   it into the opcode hash table for later lookup during assembly.  */
+
+static void
+arcv_apex_register_insn (const char *insn_name,
+			 unsigned int flags,
+			 unsigned int sub_opcode)
+{
+  struct riscv_opcode *insn;
+
+  /* Allocate a new instruction structure. */
+  insn = XNEW (struct riscv_opcode);
+  /* Store instruction mnemonic.  */
+  insn->name = insn_name;
+  /* Initialize instruction defaults.  */
+  insn->xlen_requirement = 0;
+  insn->insn_class = INSN_CLASS_I;
+  insn->pinfo = 0;
+  insn->mask = 0;
+
+  /* Initialize the instruction according to its format.  */
+  switch (flags & (XD | XS | XI | XC))
+  {
+    case XD:
+      arcv_apex_setup_xd_insn (insn, flags, sub_opcode);
+      break;
+    /* When an APEX instruction is defined with both XS and XC
+      (e.g., `extInstruction foo, 1, XS, XC`), the XS format
+      takes precedence and is applied by default.  */
+    case XS | XC:
+      /* Combine XS with XC if requested.  */
+      insn->mask |= APEX_MASK_XC;
+      /* Fall through.  */
+    case XS:
+      arcv_apex_setup_xs_insn (insn, flags, sub_opcode);
+      break;
+    case XI:
+      arcv_apex_setup_xi_insn (insn, flags, sub_opcode);
+      break;
+    case XC:
+      arcv_apex_setup_xc_insn (insn, sub_opcode);
+      break;
+  }
+
+  /* Insert instruction into the opcode hash table.  */
+  str_hash_insert (op_hash, insn->name, insn, 0);
+}
+
 /* Parse an APEX section definition of the form
    ".extInstruction <name>, <sub_opcode>, <attributes>".  The <attributes>
    may include XD, XS, XI, XC, void, no_src0, and no_src1.  Checks for
@@ -6246,4 +6297,6 @@ arcv_apex_section_parser (int ignore ATTRIBUTE_UNUSED)
 		"specified for the same instruction"));
     return;
   }
+
+  arcv_apex_register_insn (insn_name, flags, sub_opcode);
 }
