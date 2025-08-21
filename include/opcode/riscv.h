@@ -662,6 +662,8 @@ extern void arcv_apex_setup_xd_insn (struct riscv_opcode *, unsigned int,
 			       unsigned int);
 extern void arcv_apex_setup_xs_insn (struct riscv_opcode *, unsigned int,
 			       unsigned int);
+extern void arcv_apex_setup_xi_insn (struct riscv_opcode *, unsigned int,
+			       unsigned int);
 
 enum apex_flags {
   None = 0,
@@ -678,5 +680,7 @@ enum apex_flags {
 /* 1111111 00000 00000 100 00000 0001011  */
 #define APEX_MASK_XS		0xF0700B
 /* 00000000 1111 00000 111 00000 0001011  */
+#define APEX_MASK_XI		0xFA00B
+/*  000000000000 11111 010 00000 0001011  */
 
 #endif /* _RISCV_H_ */
