@@ -6055,6 +6055,20 @@ arcv_apex_register_insn (const char *insn_name,
 
   /* Insert instruction into the opcode hash table.  */
   str_hash_insert (op_hash, insn->name, insn, 0);
+
+  /* Save current section and subsection
+     so that we can restore them later.  */
+  segT saved_seg = now_seg;
+  subsegT saved_subseg = now_subseg;
+
+  segT apex_section = arcv_apex_create_ext_seg (flags & 0xF, funct_code);
+  /* switch to this new section.  */
+  subseg_set (apex_section, 0);
+
+  arcv_apex_write_metadata (insn_name, flags, funct_code);
+
+  /* Restore original section.  */
+  subseg_set (saved_seg, saved_subseg);
 }
 
 /* Parse an APEX section definition of the form
