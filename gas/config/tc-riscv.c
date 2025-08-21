@@ -6013,6 +6013,8 @@ s_variant_cc (int ignored ATTRIBUTE_UNUSED)
   elfsym->internal_elf_sym.st_other |= STO_RISCV_VARIANT_CC;
 }
 
+static void arcv_apex_section_parser (int);
+
 /* RISC-V pseudo-ops table.  */
 static const pseudo_typeS riscv_pseudo_table[] =
 {
@@ -6029,6 +6031,7 @@ static const pseudo_typeS riscv_pseudo_table[] =
   {"variant_cc", s_variant_cc, 0},
   {"float16", float_cons, 'h'},
   {"bfloat16", float_cons, 'b'},
+  {"extinstruction", arcv_apex_section_parser, 0},
 
   { NULL, NULL, 0 },
 };
@@ -6039,4 +6042,120 @@ riscv_pop_insert (void)
   extern void pop_insert (const pseudo_typeS *);
 
   pop_insert (riscv_pseudo_table);
+}
+
+/* Parse an APEX section definition of the form
+   ".extInstruction <name>, <sub_opcode>, <attributes>".  The <attributes>
+   may include XD, XS, XI, XC, void, no_src0, and no_src1.  Checks for
+   invalid combinations (e.g., XD with XS/XI/XC) and registers the
+   instruction once parsed.  */
+
+static void
+arcv_apex_section_parser (int ignore ATTRIBUTE_UNUSED)
+{
+  char *p, c, *insn_name;
+  char *insn_format;
+  unsigned int sub_opcode;
+  /* Skip leading whitespace.  */
+  SKIP_WHITESPACE ();
+
+  p = input_line_pointer;
+  c = get_symbol_name (&p);
+
+  insn_name = xstrdup (p);
+  restore_line_pointer (c);
+
+  /* Convert mnemonic to lowercase for canonical form.  */
+  for (p = insn_name; *p; ++p)
+    *p = TOLOWER (*p);
+
+  /* Expect a comma after mnemonic.  */
+  if (*input_line_pointer != ',')
+  {
+    as_bad (_("expected comma after instruction name"));
+    ignore_rest_of_line ();
+    return;
+  }
+
+  input_line_pointer++;
+  /* Parse sub-opcode value.  */
+  sub_opcode = get_absolute_expression ();
+
+  /* Expect a comma after function code.  */
+  if (*input_line_pointer != ',')
+  {
+    as_bad (_("expected comma after instruction opcode"));
+    ignore_rest_of_line ();
+    return;
+  }
+
+  restore_line_pointer (c);
+
+  uint8_t flags = 0;
+  while (*input_line_pointer == ',')
+  {
+    /* Skip the comma before each format token.  */
+    input_line_pointer++;
+
+    p = input_line_pointer;
+    c = get_symbol_name (&p);
+    insn_format = xstrdup (p);
+
+    /* Match format string against supported attributes.  */
+    if (strcmp (insn_format, "XD") == 0)
+      flags |= XD;
+    else if (strcmp (insn_format, "XS") == 0)
+      flags |= XS;
+    else if (strcmp (insn_format, "XI") == 0)
+      flags |= (XI | NO_SRC1);
+    else if (strcmp (insn_format, "XC") == 0)
+      flags |= XC;
+    else if (strcmp (p, "void") == 0)
+      flags |= VOID;
+    else if (strcmp (p, "no_src0") == 0)
+      flags |= NO_SRC0;
+    else if (strcmp (p, "no_src1") == 0)
+      flags |= NO_SRC1;
+    else
+    {
+      as_bad (_("Unrecognized attribute; must be one of "
+		"XD, XS, XI, XC, void, no_src0, no_src1"));
+      return;
+    }
+
+    /* Restore after reading the token.  */
+    restore_line_pointer (c);
+  }
+
+  /* Disallow mixing XD with other formats.  */
+  if (flags & XD && (flags & (XS | XI | XC)))
+  {
+    as_bad (_("XD and non-XD formats may not be "
+	      "specified for the same instruction"));
+    return;
+  }
+
+  /* Disallow mixing VOID with XC.  */
+  if ((flags & VOID) && (flags & XC))
+  {
+    as_bad (_("XC and VOID formats may not be "
+		"specified for the same instruction"));
+    return;
+  }
+
+  /* Disallow mixing NO_SRC0 with other formats.  */
+  if (flags & NO_SRC0 && (flags & (XS | XI | XC)))
+  {
+    as_bad (_("non-XD and NO_SRC0 formats may not be "
+		"specified for the same instruction"));
+    return;
+  }
+
+  /* Disallow mixing NO_SRC1 with other formats.  */
+  if (flags & NO_SRC1 && (flags & (XS | XC)))
+  {
+    as_bad (_("non-XD and NO_SRC1 formats may not be "
+		"specified for the same instruction"));
+    return;
+  }
 }
