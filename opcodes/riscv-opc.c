@@ -422,6 +422,63 @@ match_cm_jalt (const struct riscv_opcode *op, insn_t insn)
     && EXTRACT_ZCMT_INDEX (insn) < 256;
 }
 
+/* Encode sub-opcode into the XD instruction format.  */
+
+static uint32_t
+arcv_apex_get_match_xd (unsigned char sub_opcode)
+{
+  uint32_t match = 0;
+  match |= ((uint32_t)(sub_opcode & 0xFE) << 24);  /* Bits [7:1] - [31:25].  */
+  match |= ((uint32_t)(sub_opcode & 0x1) << 14);   /* Bit  [0]   - [14].  */
+  match |= 0xb;					   /* Fixed Custom-0 field.  */
+  return match;
+}
+
+/* Initialize an APEX instruction in XD format.
+   Sets mask, match, and operand argument string based on flags.
+   The flags VOID, NO_SRC0, and NO_SRC1 control which operands
+   are present in the instruction definition.  */
+
+void
+arcv_apex_setup_xd_insn (struct riscv_opcode *insn,
+		       unsigned int flags,
+		       unsigned int sub_opcode)
+{
+  insn->mask = APEX_MASK_XD;
+  insn->match = arcv_apex_get_match_xd (sub_opcode);
+  insn->match_func = match_opcode;
+
+  /* Select operand pattern based on flags.
+     Operands: d = dest, s = src1, t = src2.  */
+  switch (flags & (VOID | NO_SRC0 | NO_SRC1))
+  {
+    /* dest, src0 only.  */
+    case NO_SRC1:
+      insn->args = "Md,Ms";
+      break;
+    /* dest only.  */
+    case NO_SRC0 | NO_SRC1:
+      insn->args = "Md";
+      break;
+    /* no operands.  */
+    case VOID | NO_SRC0 | NO_SRC1:
+      insn->args = "";
+      break;
+    /* src0 only.  */
+    case VOID | NO_SRC1:
+      insn->args = "Ms";
+      break;
+    /* src0, src1 only.  */
+    case VOID:
+      insn->args = "Ms,Mt";
+      break;
+    /* dest, src0, src1 (default XD form).  */
+    default:
+      insn->args = "Md,Ms,Mt";
+      break;
+  }
+}
+
 /* The order of overloaded instructions matters.  Label arguments and
    register arguments look the same. Instructions that can have either
    for arguments must apear in the correct order in this table for the

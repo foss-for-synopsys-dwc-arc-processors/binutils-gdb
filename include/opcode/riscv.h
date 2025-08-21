@@ -742,6 +742,9 @@ extern const struct riscv_opcode riscv_insn_types[];
 
 extern unsigned int riscv_get_sp_base (insn_t, unsigned int);
 
+extern void arcv_apex_setup_xd_insn (struct riscv_opcode *, unsigned int,
+			       unsigned int);
+
 enum apex_flags {
   None = 0,
   XD = 1 << 0,
@@ -752,5 +755,7 @@ enum apex_flags {
   NO_SRC0 = 1 << 5,
   NO_SRC1 = 1 << 6,
 };
+
+#define APEX_MASK_XD	0xFE00407F
 
 #endif /* _RISCV_H_ */
