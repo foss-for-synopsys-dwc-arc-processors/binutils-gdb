@@ -6175,6 +6175,54 @@ arcv_apex_get_metadata_section (unsigned int insn_format,
   return apex_section;
 }
 
+/* Write APEX instruction metadata into the current section.
+
+   Builds an apex_insn record with fixed fields, function code,
+   flags, and the instruction mnemonic.  The record is padded to
+   maintain 16-bit alignment, ensuring correct layout in the
+   section.  This section is later used by the disassembler to
+   decode the instruction.  */
+
+static void
+arcv_apex_write_metadata (const char *insn_name,
+			  unsigned int flags,
+			  unsigned int sub_opcode)
+{
+  struct apex_insn apex;
+  /* Compute total size including name and padding.  */
+  size_t total_size = offsetof (struct apex_insn, name)
+		      + strlen (insn_name) + 1 /* Null terminator.  */;
+  unsigned null_padding = 1;
+
+  /* Ensure 16-bit alignment due to apex_flags being 16 bits.  */
+  if (total_size & 1)
+  {
+    total_size++;
+    null_padding++;
+  }
+
+  /* Initialize apex_insn fixed fields.  */
+  apex.len = total_size;
+  apex.type = 1;
+  apex.opcode = 11;
+  apex.func_t = sub_opcode;
+  apex.flags = flags;
+
+  /* Copy fixed fields into section.  */
+  size_t size = offsetof (struct apex_insn, name);
+  char *where = frag_more (size);
+  memcpy (where, &apex, size);
+
+  /* Copy instruction mnemonic.  */
+  size = strlen (insn_name);
+  where = frag_more (size);
+  memcpy (where, insn_name, size);
+
+  /* Add padding if needed.  */
+  where = frag_more (null_padding);
+  md_number_to_chars (where, 0x0, null_padding);
+}
+
 /* Allocate and register an APEX instruction.
 
    Allocates a riscv_opcode structure, initializes it according to the
@@ -6224,6 +6272,20 @@ arcv_apex_register_insn (const char *insn_name,
 
   /* Insert instruction into the opcode hash table.  */
   str_hash_insert (op_hash, insn->name, insn, 0);
+
+  /* Save current section and subsection
+     so that we can restore them later.  */
+  segT saved_seg = now_seg;
+  subsegT saved_subseg = now_subseg;
+
+  segT apex_section = arcv_apex_get_metadata_section (flags & 0xF, sub_opcode);
+  /* switch to this new section.  */
+  subseg_set (apex_section, 0);
+
+  arcv_apex_write_metadata (insn_name, flags, sub_opcode);
+
+  /* Restore original section.  */
+  subseg_set (saved_seg, saved_subseg);
 }
 
 /* Parse an APEX section definition of the form
