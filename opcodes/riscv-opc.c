@@ -520,6 +520,45 @@ arcv_apex_setup_xs_insn (struct riscv_opcode *insn,
   }
 }
 
+/* Encode sub-opcode into the XI instruction format.  */
+
+static uint32_t
+arcv_apex_get_match_xi (unsigned char sub_opcode)
+{
+  uint32_t match = 0;
+  match |= ((uint32_t)(sub_opcode & 0x1F) << 15); /* Bits [4:0] to [19:15].  */
+  match |= 0xb;					  /* Fixed Custom-0 field.  */
+  match |= 0x2000; 				  /* Set XI fixed bit.  */
+  return match;
+}
+
+/* Initialize an APEX instruction in XI format.
+   Sets mask, match, and operand argument string based on flags.
+   The VOID flag controls whether the destination operand is included.  */
+
+void
+arcv_apex_setup_xi_insn (struct riscv_opcode *insn,
+		       unsigned int flags,
+		       unsigned int sub_opcode)
+{
+  insn->mask = APEX_MASK_XI;
+  insn->match = arcv_apex_get_match_xi (sub_opcode);
+  insn->match_func = match_opcode;
+
+  /* Select operand pattern based on VOID flag.  */
+  switch (flags & (VOID))
+  {
+    /* Only 12-bit immediate operand.  */
+    case VOID:
+      insn->args = "Mj";
+      break;
+    /* dest, 12-bit imm (default XI form).  */
+    default:
+      insn->args = "Md,Mj";
+      break;
+  }
+}
+
 /* The order of overloaded instructions matters.  Label arguments and
    register arguments look the same. Instructions that can have either
    for arguments must apear in the correct order in this table for the
