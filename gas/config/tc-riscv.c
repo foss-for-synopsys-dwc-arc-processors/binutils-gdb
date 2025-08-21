@@ -5890,6 +5890,54 @@ riscv_pop_insert (void)
   pop_insert (riscv_pseudo_table);
 }
 
+/* Allocate and register an APEX instruction.
+   - insn_name   : instruction mnemonic.
+   - flags       : format and attribute flags (XD, XS, XI, XC, VOID, etc.).
+   - funct_code  : base function code value.
+
+   Allocates a riscv_opcode structure, initializes it according to the
+   instruction format using the appropriate setup function, and inserts
+   it into the opcode hash table for later lookup during assembly.  */
+
+static void
+arcv_apex_register_insn (const char *insn_name,
+			 unsigned int flags,
+			 unsigned int funct_code)
+{
+  struct riscv_opcode *insn;
+
+  /* Allocate a new instruction structure. */
+  insn = XNEW (struct riscv_opcode);
+  /* Store instruction mnemonic.  */
+  insn->name = insn_name;
+  /* No specific XLEN requirement.  */
+  insn->xlen_requirement = 0;
+  /* Default instruction class.  */
+  insn->insn_class = INSN_CLASS_I;
+  /* Clear additional info.  */
+  insn->pinfo = 0;
+
+  /* Initialize the instruction according to its format.  */
+  switch (flags & (XD | XS | XI | XC))
+  {
+    case XD:
+      arcv_apex_setup_xd_insn (insn, flags, funct_code);
+      break;
+    case XS:
+      arcv_apex_setup_xs_insn (insn, flags, funct_code);
+      break;
+    case XI:
+      arcv_apex_setup_xi_insn (insn, flags, funct_code);
+      break;
+    case XC:
+      arcv_apex_setup_xc_insn (insn, flags, funct_code);
+      break;
+  }
+
+  /* Insert instruction into the opcode hash table.  */
+  str_hash_insert (op_hash, insn->name, insn, 0);
+}
+
 /* Parse an APEX section definition of the form
    ".extInstruction <name>, <func_code>, <attributes>".  The <attributes>
    may include XD, XS, XI, XC, void, no_src0, and no_src1.  Checks for
@@ -5980,4 +6028,6 @@ riscv_apex_parser (int ignore ATTRIBUTE_UNUSED)
     /* Restore after reading the token.  */
     restore_line_pointer (c);
   }
+
+  arcv_apex_register_insn (insn_name, flags, funct_code);
 }
