@@ -5890,6 +5890,72 @@ riscv_pop_insert (void)
   pop_insert (riscv_pseudo_table);
 }
 
+/* Create a read-only COMDAT section for an APEX instruction.
+
+   Section names encode the instruction format flags (XD=1<<0, XS=1<<1,
+   XI=1<<2, XC=1<<3), followed by the fixed Custom-0 value (11) and the
+   instruction opcode.
+
+   For example, an instruction declared as:
+     .extInstruction foo,7,XS,XC
+   maps to:
+     .riscvapex.<XS|XC>.11.<function_code>
+   and concretely:
+     .riscvapex.10.11.7
+
+   The section is placed in a COMDAT group so that the linker keeps only
+   one copy when multiple compilation units define the same section.
+   The group name is derived from the section name by removing the "riscv"
+   prefix.  */
+
+static segT
+arcv_apex_create_ext_seg (unsigned int insn_format, unsigned int funct_code)
+{
+  const char *prefix = ".riscvapex.";
+  const char *custom_0 = "11";
+
+  /* Convert insn_format to string (max 4 chars, 0xF + null).  */
+  char insn_format_str[5];
+  sprintf (insn_format_str, "%u", insn_format);
+
+  /* Convert function code to string.  */
+  char funct_code_str[12];
+  sprintf (funct_code_str, "%u", funct_code);
+
+  /* Allocate buffer for full section name.  */
+  char *result = malloc (
+    strlen (prefix)
+    + strlen (insn_format_str)
+    + 1 /* dot.  */
+    + strlen (custom_0)
+    + 1 /* dot.  */
+    + strlen (funct_code_str));
+
+  /* Build the section name.  */
+  strcpy (result, prefix);
+  strcat (result, insn_format_str);
+  strcat (result, ".");
+  strcat (result, custom_0);
+  strcat (result, ".");
+  strcat (result, funct_code_str);
+
+  /* Create a new section with appropriate flags.  */
+  segT apex_section = subseg_new (result, 0);
+  bfd_set_section_flags (apex_section, SEC_READONLY | SEC_HAS_CONTENTS
+				      | SEC_LINK_ONCE);
+
+  /* Build the COMDAT group name ".apex.*" by removing "riscv" prefix.  */
+  char *group_name = malloc (strlen (result) - strlen ("riscv"));
+  /* Keep the leading dot in the group name.  */
+  group_name[0] = '.';
+  strcpy (group_name + 1, result + strlen (".riscv"));
+
+  /* Attach the group name to the section.  */
+  elf_set_group_name (apex_section, group_name);
+
+  return apex_section;
+}
+
 /* Allocate and register an APEX instruction.
    - insn_name   : instruction mnemonic.
    - flags       : format and attribute flags (XD, XS, XI, XC, VOID, etc.).
