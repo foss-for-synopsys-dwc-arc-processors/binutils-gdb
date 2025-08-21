@@ -678,6 +678,16 @@ enum apex_flags {
   NO_SRC1 = 1 << 6,
 };
 
+struct apex_insn
+{
+  uint8_t len;
+  uint8_t type;
+  uint8_t opcode;
+  uint8_t func_t;
+  uint8_t flags;
+  char name[1];
+};
+
 #define APEX_MASK_XD		0xFE00400B
 /* 1111111 00000 00000 100 00000 0001011  */
 #define APEX_MASK_XS		0xF0700B
@@ -686,5 +696,6 @@ enum apex_flags {
 /*  000000000000 11111 010 00000 0001011  */
 #define APEX_MASK_XC		0xFE00B
 /*  000000000000 11111 110 00000 0001011  */
+
 
 #endif /* _RISCV_H_ */

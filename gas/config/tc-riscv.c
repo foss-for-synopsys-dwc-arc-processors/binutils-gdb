@@ -5956,6 +5956,59 @@ arcv_apex_create_ext_seg (unsigned int insn_format, unsigned int funct_code)
   return apex_section;
 }
 
+/* Write APEX instruction metadata into the current section.
+
+   Builds an apex_insn record with fixed fields, function code,
+   flags, and the instruction mnemonic.  The record is padded to
+   maintain 16-bit alignment, ensuring correct layout in the
+   section.  This section is later used by the disassembler to
+   decode the instruction.  */
+
+static void
+arcv_apex_write_metadata (const char *insn_name,
+			  unsigned int flags,
+			  unsigned int funct_code_str)
+{
+  struct apex_insn apex;
+  /* Compute total size including name and padding.  */
+  size_t total_size = offsetof (struct apex_insn, name)
+		      + strlen (insn_name) + 2;
+  unsigned null_padding = 1;
+
+  /* Ensure 16-bit alignment.  */
+  if (total_size & 1)
+  {
+    total_size++;
+    null_padding++;
+  }
+
+  /* Initialize apex_insn fixed fields.  */
+  apex.len = total_size;
+  apex.type = 1;
+  apex.opcode = 11;
+  apex.func_t = funct_code_str;
+  apex.flags = flags;
+
+  /* Copy fixed fields into section.  */
+  size_t size = offsetof (struct apex_insn, name);
+  char *where = frag_more (size);
+  memcpy (where, &apex, size);
+
+  /* Insert placeholder byte.  */
+  size = 1;
+  where = frag_more (size);
+  md_number_to_chars (where, 0x0, size);
+
+  /* Copy instruction mnemonic.  */
+  size = strlen (insn_name);
+  where = frag_more (size);
+  memcpy (where, insn_name, size);
+
+  /* Add padding if needed.  */
+  where = frag_more (null_padding);
+  md_number_to_chars (where, 0x0, null_padding);
+}
+
 /* Allocate and register an APEX instruction.
    - insn_name   : instruction mnemonic.
    - flags       : format and attribute flags (XD, XS, XI, XC, VOID, etc.).
