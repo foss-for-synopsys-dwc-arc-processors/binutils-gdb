@@ -2910,6 +2910,97 @@ static symbolS *deferred_sym_lastP;
 static symbolS *orphan_sym_rootP;
 static symbolS *orphan_sym_lastP;
 
+/* Extract the XS function bits from a 32-bit match value and encode for XC.
+
+   Takes the function bits from an XS instruction and places them into the
+   appropriate XC fields.  */
+
+static uint32_t
+arcv_apex_extract_funct_bits_from_xs (uint32_t match)
+{
+  uint32_t ret = 0;
+  unsigned char funct_code = 0;
+  /* Extract (funct_code & 0x3C) from bits [23:18]  */
+  funct_code |= (match >> 18) & 0x3C;
+
+  /* Extract (funct_code & 0x03) from bits [14:13]  */
+  funct_code |= (match >> 13) & 0x03;
+
+  ret |= ((uint32_t)(funct_code & 0x1F) << 15);
+  ret |= 0xB; /* Custom-0. */
+  /* Set reserved/fixed bits for XC instruction encoding.  */
+  ret |= 0x6000;
+
+  return ret;
+}
+
+/* Convert an XS/XC combined instruction based on its operands.
+
+   XS is the default form for small immediates.
+   If the destination and source registers are the same, converts to XC
+   and updates the function code bits accordingly.
+
+   Returns a new riscv_opcode structure for XC conversions, or the original
+   XS instruction if no conversion is needed.  */
+
+static struct riscv_opcode *
+arcv_apex_convert_between_xs_xc (char *operands,
+				 struct riscv_opcode *insn)
+{
+  /* Only process instructions that are combined XS/XC forms.  */
+  if (insn == NULL || insn->mask == 0
+      || insn->mask != (APEX_MASK_XS | APEX_MASK_XC))
+    return insn;
+
+  char *copy = strdup (operands);
+  if (!copy) return insn;
+
+  /* Split operands into tokens, trimming leading whitespace.  */
+  char *tokens[3] = { NULL, NULL, NULL };
+  int i = 0;
+  char *token = strtok(copy, ",");
+  while (token && i < 3) {
+    while (*token && ISSPACE(*token)) token++;
+    tokens[i++] = token;
+    token = strtok(NULL, ",");
+  }
+
+  /* Parse the immediate operand (third operand).  */
+  char *endptr;
+  long imm = strtol(tokens[2], &endptr, 10);
+  if (*endptr != '\0') {
+    as_warn (_("Invalid immediate operand: %s"), tokens[2]);
+    free(copy);
+    return insn;
+  }
+
+  /* Detect if destination and source registers are
+     the same (XC condition).  */
+  bool is_same_reg = (tokens[0] && tokens[1]
+			&& strcmp(tokens[0], tokens[1]) == 0);
+
+  /* Allocate a new instruction to avoid modifying the
+     original XS match.  */
+  struct riscv_opcode *new_insn = XNEW(struct riscv_opcode);
+  memcpy(new_insn, insn, sizeof(struct riscv_opcode));
+
+  if (imm <= 255 && !is_same_reg)
+  {
+    /* Small immediate, default XS form, no conversion needed.  */
+    new_insn->mask = APEX_MASK_XS;
+  } else if (is_same_reg)
+  {
+    /* Convert to XC form.  */
+    new_insn->mask = APEX_MASK_XC;
+    new_insn->args = "Md,Md,Mj";
+    new_insn->match
+    = arcv_apex_extract_funct_bits_from_xs (insn->match);
+  }
+
+  free(copy);
+  return new_insn;
+}
+
 /* Validate operands of an APEX instruction.
 
    Checks that the operands provided match the expected argument types
@@ -3051,6 +3142,12 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
       }
 
   insn = (struct riscv_opcode *) str_hash_find (hash, str);
+
+  /* Handle APEX XS/XC instructions: convert XS to XC if operands
+   indicate it’s needed.  XS is the default format for a combined
+   XS/XC instruction; XC is used when the destination and source
+   registers are the same and the immediate is greater than 8-bits.  */
+  insn = arcv_apex_convert_between_xs_xc (asarg, insn);
 
   /* Validate the operands of the APEX instruction before assembling.
      Returns an error if they do not conform to the expected APEX format.  */
