@@ -1608,6 +1608,16 @@ validate_riscv_insn (const struct riscv_opcode *opc, int length)
 	case ']': break; /* Unused operand.  */
 	case '0': break; /* AMO displacement, must to zero.  */
 	case '1': break; /* Relaxation operand.  */
+	case 'M': /* APEX.  */
+	  switch (*++oparg)
+	    {
+	      case 'd': USE_BITS (OP_MASK_RD, OP_SH_RD); break;
+	      case 's': USE_BITS (OP_MASK_RS1, OP_SH_RS1); break;
+	      case 't': USE_BITS (OP_MASK_RS2, OP_SH_RS2); break;
+	      default:
+		goto unknown_validate_operand;
+	    }
+	  break;
 	case 'F': /* Funct for .insn directive.  */
 	  switch (*++oparg)
 	    {
@@ -2069,6 +2079,22 @@ macro_build (expressionS *ep, const char *name, const char *fmt, ...)
       fmtStart = fmt;
       switch (*fmt)
 	{
+	case 'M': /* APEX.  */
+	  switch (*++fmt)
+	    {
+	      case 'd':
+		INSERT_OPERAND (RD, insn, va_arg (args, int));
+		continue;
+	      case 's':
+		INSERT_OPERAND (RS1, insn, va_arg (args, int));
+		continue;
+	      case 't':
+		INSERT_OPERAND (RS2, insn, va_arg (args, int));
+		continue;
+	      default:
+		goto unknown_macro_argument;
+	    }
+	  break;
 	case 'V': /* RVV */
 	  switch (*++fmt)
 	    {
@@ -3623,6 +3649,46 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 		  continue;
 		}
 	      break;
+
+	    case 'M': /* APEX.  */
+	      switch (*++oparg)
+		{
+		case 'd': /* Destination register.  */
+		case 's': /* Source register.  */
+		case 't': /* Target register.  */
+		  if (reg_lookup (&asarg, RCLASS_GPR, &regno))
+		  {
+		    char c = *oparg;
+		    if (*asarg == ' ')
+		      ++asarg;
+
+		    /* Now that we have assembled one operand, we use
+		       the args string to figure out where it goes in
+		       the instruction.  */
+		    switch (c)
+		      {
+		      case 's':
+			INSERT_OPERAND (RS1, *ip, regno);
+			break;
+		      case 'd':
+			INSERT_OPERAND (RD, *ip, regno);
+			break;
+		      case 't':
+			INSERT_OPERAND (RS2, *ip, regno);
+			break;
+		      }
+		    continue;
+		  }
+		}
+
+		my_getExpression (imm_expr, asarg);
+		normalize_constant_expr (imm_expr);
+		/* The 'A' format specifier must be a symbol.  */
+		if (imm_expr->X_op != O_symbol)
+		  break;
+		*imm_reloc = BFD_RELOC_32;
+		asarg = expr_parse_end;
+		continue;
 
 	    case 'd': /* Destination register.  */
 	    case 's': /* Source register.  */
