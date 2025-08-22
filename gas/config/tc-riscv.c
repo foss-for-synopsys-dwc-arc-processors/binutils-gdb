@@ -2954,6 +2954,117 @@ static symbolS *deferred_sym_lastP;
 static symbolS *orphan_sym_rootP;
 static symbolS *orphan_sym_lastP;
 
+/* Validate operands of an APEX instruction.
+
+   Checks that the operands provided match the expected argument types
+   for XD, XS, XI, or XC APEX instruction formats.  Ensures that:
+   - Operand count matches the expected number of arguments.
+   - Register operands reference valid general-purpose registers.
+   - Immediate operands conform to the XS/XI 8-bit or 12-bit constraints.
+   Returns true if the instruction is valid, false otherwise.  */
+
+static bool
+arcv_apex_validate_insn (const char *operands, const struct riscv_opcode *insn)
+{
+  /* Skip non-APEX instructions.  */
+  if (insn == NULL
+      || (insn->mask != APEX_MASK_XD
+      && insn->mask != APEX_MASK_XS
+      && insn->mask != APEX_MASK_XI
+      && insn->mask != APEX_MASK_XC
+      && insn->mask != (APEX_MASK_XS | APEX_MASK_XC)))
+    return true;
+
+  /* Make local copies for tokenization.  */
+  char *operands_copy = strdup (operands);
+  gas_assert (operands_copy);
+
+  char *args_copy = strdup (insn->args);
+  gas_assert (args_copy);
+
+  char *operand_tokens[3] = { NULL };
+  char *arg_types[3] = { NULL };
+
+  int operand_count = 0;
+
+  /* Split operands into tokens.  */
+  char *token = strtok (operands_copy, ",");
+  while (token)
+  {
+    operand_tokens[operand_count++] = token;
+    token = strtok (NULL, ",");
+  }
+
+  /* Split expected argument types into tokens.  */
+  int arg_count = 0;
+  token = strtok (args_copy, ",");
+  while (token)
+  {
+    arg_types[arg_count++] = token;
+    token = strtok (NULL, ",");
+  }
+
+  /* Check if operand count matches the expected argument count.  */
+  if (arg_count != operand_count)
+  {
+    as_bad (_("Expected %d operands but %d were specified"),
+	      arg_count, operand_count);
+    return false;
+  }
+
+  /* Traverse operands in reverse order to validate each.  */
+  for (int i = arg_count - 1; i >= 0; --i)
+  {
+    const char *arg_type = arg_types[i];
+    char *operand = operand_tokens[i];
+    /* Skip the APEX format identifier 'M'.  */
+    arg_type++;
+
+    expressionS expr;
+    my_getExpression (&expr, operand);
+    char *endptr;
+    strtol (operand, &endptr, 0);
+    /* Check that immediate operands are constants
+       and valid number string.  */
+    if ((*arg_type == 'k' || *arg_type == 'j')
+	&& (expr.X_op != O_constant || *endptr != '\0'))
+    {
+      as_bad (_("Operands do not conform to the "
+		"specified APEX format"));
+      return false;
+    }
+
+    /* Check that source register operands are valid.  */
+    if (*arg_type == 's'
+	&& !str_hash_find (reg_names_hash, operand))
+    {
+      as_bad (_("Operand must be an general register "
+		"reference"));
+      return false;
+    }
+
+    /* Check that destination register operands are valid.  */
+    if (*arg_type == 'd'
+	&& !str_hash_find (reg_names_hash, operand))
+    {
+      as_bad (_("Destination operand must be a general "
+		"register reference"));
+      return false;
+    }
+
+    /* Non-immediate operands must be registers.  */
+    if ((*arg_type != 'k' && *arg_type != 'j')
+	&& !str_hash_find (reg_names_hash, operand))
+    {
+      as_bad (_("Specified APEX format cannot handle "
+		"a non-register operand"));
+      return false;
+    }
+  }
+
+  return true;
+}
+
 /* This routine assembles an instruction into its binary format.  As a
    side effect, it sets the global variable imm_reloc to the type of
    relocation to do if one of the operands is an address expression.  */
@@ -2988,6 +3099,11 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
       }
 
   insn = str_hash_find (hash, str);
+
+  /* Validate the operands of the APEX instruction before assembling.
+     Returns an error if they do not conform to the expected APEX format.  */
+  if (!arcv_apex_validate_insn (asarg, insn))
+    return error;
 
   probing_insn_operands = true;
 
