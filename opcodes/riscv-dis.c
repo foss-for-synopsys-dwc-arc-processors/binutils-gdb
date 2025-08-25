@@ -74,6 +74,10 @@ struct riscv_private_data
   bool all_ext;
 };
 
+/* Global instruction table for APEX extensions.
+   Indexed by instruction format offset (XD, XS, XI, XC) plus sub-opcode.  */
+struct riscv_opcode* arcv_apex_insns[ARCV_APEX_INSN_LIMIT];
+
 /* Set default RISC-V disassembler options.  */
 
 static void
