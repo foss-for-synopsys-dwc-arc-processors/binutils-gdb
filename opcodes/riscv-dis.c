@@ -74,6 +74,10 @@ struct riscv_private_data
   bool all_ext;
 };
 
+/* Global instruction table for APEX extensions.
+   Indexed by instruction format offset (XD, XS, XI, XC) plus sub-opcode.  */
+struct riscv_opcode* arcv_apex_insns[ARCV_APEX_INSN_LIMIT];
+
 /* Set default RISC-V disassembler options.  */
 
 static void
@@ -1670,29 +1674,40 @@ arcv_apex_read_metadata (unsigned char *block,
   insn->xlen_requirement = 0;
   insn->mask = 0;
 
+  unsigned int offset = 0;
   /* Decode flags and adjust the opcode entry accordingly.  */
   switch (flags & 0xF)
   {
     case XD:
       /* Handle XD instruction format.  */
       arcv_apex_setup_xd_insn (insn, flags, sub_opcode);
+      offset = ARCV_APEX_OFFSET_XD;
       break;
 
     case XS:
       /* Handle XS instruction format.  */
       arcv_apex_setup_xs_insn (insn, flags, sub_opcode);
+      offset = ARCV_APEX_OFFSET_XS;
       break;
 
     case XI:
       /* Handle XI instruction format.  */
       arcv_apex_setup_xi_insn (insn, flags, sub_opcode);
+      offset = ARCV_APEX_OFFSET_XI;
       break;
 
     case XC:
       /* Handle XC instruction format.  */
       arcv_apex_setup_xc_insn (insn, sub_opcode);
+      offset = ARCV_APEX_OFFSET_XC;
       break;
   }
+
+  /* Place the fully initialized APEX instruction in the
+     arcv_apex_insns array at an index determined by its sub-opcode
+     and the format-specific offset.  This ensures each format
+     occupies a distinct array region.  */
+  arcv_apex_insns[sub_opcode + offset] = insn;
 }
 
 /* Prevent use of the fake labels that are generated as part of the DWARF
