@@ -776,4 +776,15 @@ struct apex_insn
 #define APEX_MASK_XI	0xFA07F
 #define APEX_MASK_XC	0xFE07F
 
+/* The XD-type has 8 function bits encoding up to 256 instructions.
+   The XS-type has 6 function bits encoding up to 64 instructions.
+   Both the XI-type and the XC-type have 5 function bits each encoding up
+   to 32 instructions respectively.  Thus giving a total of 384 possible
+   different instructions.  */
+#define ARCV_APEX_INSN_LIMIT 384
+#define ARCV_APEX_OFFSET_XD  0                           /* 256 entries.  */
+#define ARCV_APEX_OFFSET_XS  (ARCV_APEX_OFFSET_XD + 256) /* 0  + 256 = 256  */
+#define ARCV_APEX_OFFSET_XI  (ARCV_APEX_OFFSET_XS + 64)  /* 256 + 64 = 320  */
+#define ARCV_APEX_OFFSET_XC  (ARCV_APEX_OFFSET_XI + 32)  /* 320 + 32 = 352  */
+
 #endif /* _RISCV_H_ */

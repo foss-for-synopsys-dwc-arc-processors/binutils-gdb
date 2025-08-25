@@ -196,6 +196,10 @@ static bool start_assemble = false;
 
 static bool probing_insn_operands;
 
+/* Global instruction table for APEX extensions.
+   Indexed by instruction format offset (XD, XS, XI, XC) plus sub-opcode.  */
+struct riscv_opcode* arcv_apex_insns[ARCV_APEX_INSN_LIMIT];
+
 /* Set the default_isa_spec.  Return 0 if the spec isn't supported.
    Otherwise, return 1.  */
 
@@ -6458,11 +6462,13 @@ arcv_apex_register_insn (const char *insn_name,
   insn->pinfo = 0;
   insn->mask = 0;
 
+  unsigned int offset = 0;
   /* Initialize the instruction according to its format.  */
   switch (flags & (XD | XS | XI | XC))
   {
     case XD:
       arcv_apex_setup_xd_insn (insn, flags, sub_opcode);
+      offset = ARCV_APEX_OFFSET_XD;
       break;
     /* When an APEX instruction is defined with both XS and XC
       (e.g., `extInstruction foo, 1, XS, XC`), the XS format
@@ -6473,14 +6479,25 @@ arcv_apex_register_insn (const char *insn_name,
       /* Fall through.  */
     case XS:
       arcv_apex_setup_xs_insn (insn, flags, sub_opcode);
+      offset = ARCV_APEX_OFFSET_XS;
       break;
     case XI:
       arcv_apex_setup_xi_insn (insn, flags, sub_opcode);
+      offset = ARCV_APEX_OFFSET_XI;
       break;
     case XC:
       arcv_apex_setup_xc_insn (insn, sub_opcode);
+      offset = ARCV_APEX_OFFSET_XC;
       break;
   }
+
+  if (arcv_apex_insns[offset + sub_opcode])
+  {
+    as_bad (_(".extInstruction '%s' duplicates opcode used by '%s'"),
+    insn->name, arcv_apex_insns[offset + sub_opcode]->name);
+    return;
+  }
+  arcv_apex_insns[offset + sub_opcode] = insn;
 
   /* Insert instruction into the opcode hash table.  */
   str_hash_insert (op_hash, insn->name, insn, 0);
