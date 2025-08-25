@@ -794,4 +794,10 @@ struct apex_insn
 #define APEX_OP_MASK_RD	  0x1f
 #define APEX_OP_SH_RD	  7
 
+#define APEX_EXTRACT_XS_ITYPE_IMM(x) \
+  (RV_X(x, 24, 8) | (RV_IMM_SIGN(x) << 8))
+
+#define APEX_EXTRACT_XI_XC_ITYPE_IMM(x) \
+  (RV_X(x, 20, 12) | (RV_IMM_SIGN(x) << 12))
+
 #endif /* _RISCV_H_ */
