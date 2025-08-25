@@ -6439,6 +6439,21 @@ arcv_apex_write_metadata (const char *insn_name,
   md_number_to_chars (where, 0x0, null_padding);
 }
 
+static bool
+arcv_apex_check_and_set_insn (struct riscv_opcode *insn,
+			      unsigned int opcode,
+			      unsigned int offset)
+{
+  if (arcv_apex_insns[offset + opcode])
+  {
+    as_bad (_(".extInstruction '%s' duplicates opcode used by '%s'"),
+    insn->name, arcv_apex_insns[offset + opcode]->name);
+    return false;
+  }
+  arcv_apex_insns[offset + opcode] = insn;
+  return true;
+}
+
 /* Allocate and register an APEX instruction.
 
    Allocates a riscv_opcode structure, initializes it according to the
@@ -6491,13 +6506,20 @@ arcv_apex_register_insn (const char *insn_name,
       break;
   }
 
-  if (arcv_apex_insns[offset + sub_opcode])
+  /* If an APEX instruction is defined with both XS and XC
+     (e.g., `extInstruction foo, 1, XS, XC`) the
+     instruction is stored in both XS and XC ranges.  */
+  if ((flags & (XS | XC)) == (XS | XC))
   {
-    as_bad (_(".extInstruction '%s' duplicates opcode used by '%s'"),
-    insn->name, arcv_apex_insns[offset + sub_opcode]->name);
-    return;
+    if (!arcv_apex_check_and_set_insn (insn, sub_opcode, ARCV_APEX_OFFSET_XS))
+      return;
+    if (!arcv_apex_check_and_set_insn (insn, sub_opcode, ARCV_APEX_OFFSET_XC))
+      return;
+  } else
+  {
+    if (!arcv_apex_check_and_set_insn (insn, sub_opcode, offset))
+      return;
   }
-  arcv_apex_insns[offset + sub_opcode] = insn;
 
   /* Insert instruction into the opcode hash table.  */
   str_hash_insert (op_hash, insn->name, insn, 0);
