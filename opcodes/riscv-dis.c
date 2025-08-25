@@ -1836,6 +1836,22 @@ arcv_apex_read_metadata (unsigned char *block,
       arcv_apex_setup_xc_insn (insn, sub_opcode);
       offset = ARCV_APEX_OFFSET_XC;
       break;
+
+    /* If an instruction supports both XS and XC formats
+       (e.g., "extInstruction foo,123,XS,XC"), we create a separate
+       instruction for each format.  This is safe because no other XS
+       or XC instruction can use the same sub-opcode (e.g., =123).  */
+    case (XS | XC):
+      /* XS variant.  */
+      arcv_apex_setup_xs_insn (insn, flags, sub_opcode);
+      arcv_apex_insns[sub_opcode + ARCV_APEX_OFFSET_XS] = insn;
+
+      /* XC variant.  */
+      struct riscv_opcode *xc_copy = XNEW (struct riscv_opcode);
+      *xc_copy = *insn; /* Copy contents.  */
+	  arcv_apex_setup_xc_insn (xc_copy, sub_opcode);
+      arcv_apex_insns[sub_opcode + ARCV_APEX_OFFSET_XC] = xc_copy;
+      return;
   }
 
   /* Place the fully initialized APEX instruction in the
