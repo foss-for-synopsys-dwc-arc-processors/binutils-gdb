@@ -787,4 +787,11 @@ struct apex_insn
 #define ARCV_APEX_OFFSET_XI  (ARCV_APEX_OFFSET_XS + 64)  /* 256 + 64 = 320  */
 #define ARCV_APEX_OFFSET_XC  (ARCV_APEX_OFFSET_XI + 32)  /* 320 + 32 = 352  */
 
+#define APEX_OP_MASK_RS2  0x1f
+#define APEX_OP_SH_RS2	  20
+#define APEX_OP_MASK_RS1  0x1f
+#define APEX_OP_SH_RS1	  15
+#define APEX_OP_MASK_RD	  0x1f
+#define APEX_OP_SH_RD	  7
+
 #endif /* _RISCV_H_ */
