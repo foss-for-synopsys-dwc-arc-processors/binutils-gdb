@@ -1474,6 +1474,20 @@ riscv_init_disasm_info (struct disassemble_info *info)
       bfd *abfd = info->section->owner;
       if (abfd && bfd_get_flavour (abfd) == bfd_target_elf_flavour)
 	{
+	  asection *sect;
+	  for (sect = abfd->sections; sect != NULL; sect = sect->next)
+	    {
+	      if (strstr (sect->name, ".riscvapex."))
+		{
+		  bfd_size_type  count  = bfd_section_size (sect);
+		  unsigned char* buffer = xmalloc (count);
+
+		  if (bfd_get_section_contents (abfd, sect, buffer, 0, count))
+		    arcv_apex_read_metadata (buffer, count);
+		  free (buffer);
+		}
+	    }
+
 	  const char *sec_name =
 		get_elf_backend_data (abfd)->obj_attrs_section;
 	  if (bfd_get_section_by_name (abfd, sec_name) != NULL)
@@ -1602,6 +1616,83 @@ print_insn_riscv (bfd_vma memaddr, struct disassemble_info *info)
   insn = (insn_t) bfd_get_bits (packet, dump_size * 8, false);
 
   return (*riscv_disassembler) (memaddr, insn, packet, info);
+}
+
+/* Create a mapping between a serialized APEX instruction record
+   (emitted by GAS) and a dynamically allocated riscv_opcode entry.
+
+   Record format (see struct apex_insn):
+     +------+------+--------+--------+-----------+---------+
+     | Len  | Type | Opcode | FuncT  |  Flags    | Name... |
+     +------+------+--------+--------+-----------+---------+
+      1B     1B      1B       1B       2B	  NUL-term
+
+   - 'block' points to the beginning of the serialized record.
+   - 'length' is the size of the block (must match record_len).
+   - The instruction name is stored at the end of the block and
+     is dynamically allocated here.
+   - The resulting riscv_opcode entry is partially initialized;
+     behavior for specific flag cases (XD, XS, XI, XC) is left
+     for later implementation.  */
+
+static void
+arcv_apex_read_metadata (unsigned char *block,
+		      unsigned long length)
+{
+  /* Assert that the provided length matches the record length
+     declared at position 0 (as emitted by GAS).  */
+  unsigned int record_len = block[0];
+  if (length != record_len)
+    return; /* FIXME: should report error instead of silent return.  */
+
+  /* Compute the length of the instruction name by
+     subtracting the base struct size.  */
+  size_t name_length = record_len
+    - offsetof (struct apex_insn, name);
+
+  /* Allocate and null-terminate the instruction mnemonic.  */
+  char *name = xmalloc (name_length + 1);
+  memcpy (name,
+	  block + offsetof (struct apex_insn, name), /* Mnemonic start.  */
+	  name_length);
+  name[name_length] = '\0';
+
+  /* Extract sub-opcode and flags.  */
+  unsigned int sub_opcode = block[3];
+  unsigned int flags = block[4];
+
+  /* Allocate a new riscv_opcode entry.  */
+  struct riscv_opcode *insn = XNEW (struct riscv_opcode);
+
+  /* Initialize opcode entry with defaults.  */
+  insn->name = name;
+  insn->insn_class = INSN_CLASS_I;
+  insn->xlen_requirement = 0;
+  insn->mask = 0;
+
+  /* Decode flags and adjust the opcode entry accordingly.  */
+  switch (flags & 0xF)
+  {
+    case XD:
+      /* Handle XD instruction format.  */
+      arcv_apex_setup_xd_insn (insn, flags, sub_opcode);
+      break;
+
+    case XS:
+      /* Handle XS instruction format.  */
+      arcv_apex_setup_xs_insn (insn, flags, sub_opcode);
+      break;
+
+    case XI:
+      /* Handle XI instruction format.  */
+      arcv_apex_setup_xi_insn (insn, flags, sub_opcode);
+      break;
+
+    case XC:
+      /* Handle XC instruction format.  */
+      arcv_apex_setup_xc_insn (insn, sub_opcode);
+      break;
+  }
 }
 
 /* Prevent use of the fake labels that are generated as part of the DWARF
