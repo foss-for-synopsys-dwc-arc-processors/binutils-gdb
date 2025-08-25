@@ -418,6 +418,24 @@ print_insn_args (const char *oparg, insn_t l, bfd_vma pc, disassemble_info *info
 	    }
 	  break;
 
+	case 'M': /* APEX  */
+	  switch (*++oparg)
+	    {
+	    case 'd':
+	      print (info->stream, dis_style_register, "%s",
+		     pd->riscv_gpr_names[(l >> APEX_OP_SH_RD) & APEX_OP_MASK_RD]);
+	      break;
+	    case 's':
+	      print (info->stream, dis_style_register, "%s",
+		     pd->riscv_gpr_names[(l >> APEX_OP_SH_RS1) & APEX_OP_MASK_RS1]);
+	      break;
+	    case 't':
+	      print (info->stream, dis_style_register, "%s",
+		     pd->riscv_gpr_names[(l >> APEX_OP_SH_RS2) & APEX_OP_MASK_RS2]);
+	      break;
+	    }
+	  break;
+
 	case 'V': /* RVV */
 	  switch (*++oparg)
 	    {
