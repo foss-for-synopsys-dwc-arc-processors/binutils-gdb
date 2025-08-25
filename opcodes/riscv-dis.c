@@ -433,6 +433,14 @@ print_insn_args (const char *oparg, insn_t l, bfd_vma pc, disassemble_info *info
 	      print (info->stream, dis_style_register, "%s",
 		     riscv_gpr_names[(l >> APEX_OP_SH_RS2) & APEX_OP_MASK_RS2]);
 	      break;
+	    case 'k':
+	      print (info->stream, dis_style_immediate, "%d",
+		     (int)APEX_EXTRACT_XS_ITYPE_IMM (l));
+	      break;
+	    case 'j':
+	      print (info->stream, dis_style_immediate, "%d",
+		     (int)APEX_EXTRACT_XI_XC_ITYPE_IMM (l));
+	      break;
 	    }
 	  break;
 
