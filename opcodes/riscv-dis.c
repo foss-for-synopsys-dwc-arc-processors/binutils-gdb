@@ -961,6 +961,74 @@ print_insn_args (const char *oparg, insn_t l, bfd_vma pc, disassemble_info *info
     }
 }
 
+/* Check if instruction is an APEX XD-type.
+   XD is identified by bits [13:12] == 00.  */
+
+static bool
+arcv_apex_xd_type_p (insn_t num)
+{
+  return ((num >> 12) & 0x3) == 0x0;
+}
+
+/* Check if instruction is an APEX XS-type.
+   XS is identified by bit [12] == 1.  */
+
+static bool
+arcv_apex_xs_type_p (insn_t num)
+{
+  return ((num >> 12) & 0x1) == 0x1;
+}
+
+/* Check if instruction is an APEX XI-type.
+   XI is identified by bits [14:12] == 010.  */
+
+static bool
+arcv_apex_xi_type_p (insn_t num)
+{
+  return ((num >> 12) & 0x7) == 0x2;
+}
+
+/* Check if instruction is an APEX XC-type.
+   XC is identified by bits [14:12] == 110.  */
+
+static bool
+arcv_apex_xc_type_p (insn_t num)
+{
+  return ((num >> 12) & 0x7) == 0x6;
+}
+
+/* Extract the sub-opcode for an XD-format instruction.
+   Bits 31..25 are shifted left by 1, bit 14 is OR-ed in.  */
+
+static int
+opcode_extract_xd_type (uint64_t num)
+{
+  uint64_t bits_31_25 = (num >> 25) & 0x7F;
+  uint64_t bit_14 = (num >> 14) & 1;
+  return (bits_31_25 << 1) | bit_14;
+}
+
+/* Extract the sub-opcode for an XS-format instruction.
+   Bits 23..20 form the high part, bits 14..13 form the low part.  */
+
+static int
+opcode_extract_xs_type (uint32_t num)
+{
+  uint32_t bits_14_13 = ((num >> 13) & 0x3);
+  uint32_t bits_23_20 = ((num >> 20) & 0xF);
+  return (bits_23_20 << 2) | bits_14_13;
+}
+
+/* Extract the sub-opcode for XI/XC-format instructions.
+   Bits 19..15 are used directly as the sub-opcode.  */
+
+static int
+opcode_extract_xi_xc_type (uint32_t num)
+{
+  uint32_t bits_19_15 = ((num >> 15) & 0x1F);
+  return bits_19_15;
+}
+
 /* Print the RISC-V instruction at address MEMADDR in debugged memory,
    on using INFO.  Returns length of the instruction, in bytes.
    BIGENDIAN must be 1 if this is big-endian code, 0 if
@@ -1095,6 +1163,47 @@ riscv_disassemble_insn (bfd_vma memaddr,
 	  return insnlen;
 	}
     }
+
+  /* We did not find a match, check if the instruction is a custom APEX
+     Custom-0 instruction (opcode 0xB).  If so, determine the format
+     (XD, XS, XI, XC) using the type predicates, extract the appropriate
+     sub-opcode, calculate the format-specific offset, and look up the
+     instruction in arcv_apex_insns[].  */
+  if ((word & 0xF) == 0xB)
+  {
+    unsigned int offset, sub_opcode;
+    if (arcv_apex_xd_type_p (word))
+    {
+      sub_opcode = opcode_extract_xd_type (word);
+      offset = ARCV_APEX_OFFSET_XD;
+    }
+    else if (arcv_apex_xs_type_p (word))
+    {
+      sub_opcode = opcode_extract_xs_type (word);
+      offset = ARCV_APEX_OFFSET_XS;
+    }
+    else if (arcv_apex_xi_type_p (word))
+    {
+      sub_opcode = opcode_extract_xi_xc_type (word);
+      offset = ARCV_APEX_OFFSET_XI;
+    }
+    else if (arcv_apex_xc_type_p (word))
+    {
+      sub_opcode = opcode_extract_xi_xc_type (word);
+      offset = ARCV_APEX_OFFSET_XC;
+    }
+    op = arcv_apex_insns[sub_opcode + offset];
+
+    /* Does the opcode match?  */
+    if (op && (op->match_func) (op, word))
+    {
+      /* It's a match.  */
+      (*info->fprintf_styled_func) (info->stream, dis_style_mnemonic,
+				    "%s", op->name);
+      print_insn_args (op->args, word, memaddr, info);
+      return insnlen;
+    }
+  }
 
   /* We did not find a match, so just print the instruction bits in
      the shape of an assembler .insn directive.  */
