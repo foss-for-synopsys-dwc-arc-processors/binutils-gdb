@@ -216,7 +216,7 @@ Disassembly of section .text:
 [ 	]+[0-9a-f]+:[ 	]+cac5f53b[ 	]+mhaccsu[ 	]+a0,a1,a2
 [ 	]+[0-9a-f]+:[ 	]+ccc5f53b[ 	]+pmhraccsu.h[ 	]+a0,a1,a2
 [ 	]+[0-9a-f]+:[ 	]+cec5f53b[ 	]+mhraccsu[ 	]+a0,a1,a2
-[ 	]+[0-9a-f]+:[ 	]+d8c5f53b[ 	]+pmulq.h[ 	]+a0,a1,a2
+[ 	]+[0-9a-f]+:[ 	]+d0c5f53b[ 	]+pmulq.h[ 	]+a0,a1,a2
 [ 	]+[0-9a-f]+:[ 	]+dac5f53b[ 	]+mulq[ 	]+a0,a1,a2
 [ 	]+[0-9a-f]+:[ 	]+dcc5f53b[ 	]+pmulqr.h[ 	]+a0,a1,a2
 [ 	]+[0-9a-f]+:[ 	]+dec5f53b[ 	]+mulqr[ 	]+a0,a1,a2
