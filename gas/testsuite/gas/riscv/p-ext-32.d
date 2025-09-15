@@ -218,7 +218,7 @@ Disassembly of section .text:
 [ 	]+[0-9a-f]+:[ 	]+cec5f53b[ 	]+mhraccsu[ 	]+a0,a1,a2
 [ 	]+[0-9a-f]+:[ 	]+d0c5f53b[ 	]+pmulq.h[ 	]+a0,a1,a2
 [ 	]+[0-9a-f]+:[ 	]+dac5f53b[ 	]+mulq[ 	]+a0,a1,a2
-[ 	]+[0-9a-f]+:[ 	]+dcc5f53b[ 	]+pmulqr.h[ 	]+a0,a1,a2
+[ 	]+[0-9a-f]+:[ 	]+d4c5f53b[ 	]+pmulqr.h[ 	]+a0,a1,a2
 [ 	]+[0-9a-f]+:[ 	]+dec5f53b[ 	]+mulqr[ 	]+a0,a1,a2
 [ 	]+[0-9a-f]+:[ 	]+e8c5f53b[ 	]+mqacc.h00[ 	]+a0,a1,a2
 [ 	]+[0-9a-f]+:[ 	]+f8c5f53b[ 	]+mqacc.h11[ 	]+a0,a1,a2

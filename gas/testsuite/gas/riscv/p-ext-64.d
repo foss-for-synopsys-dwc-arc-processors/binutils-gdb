@@ -308,8 +308,8 @@ Disassembly of section .text:
 [ 	]+[0-9a-f]+:[ 	]+cec5f53b[ 	]+pmhraccsu.w[ 	]+a0,a1,a2
 [ 	]+[0-9a-f]+:[ 	]+d0c5f53b[ 	]+pmulq.h[ 	]+a0,a1,a2
 [ 	]+[0-9a-f]+:[ 	]+d2c5f53b[ 	]+pmulq.w[ 	]+a0,a1,a2
-[ 	]+[0-9a-f]+:[ 	]+dcc5f53b[ 	]+pmulqr.h[ 	]+a0,a1,a2
-[ 	]+[0-9a-f]+:[ 	]+d4c5f53b[ 	]+pmulqr.w[ 	]+a0,a1,a2
+[ 	]+[0-9a-f]+:[ 	]+d4c5f53b[ 	]+pmulqr.h[ 	]+a0,a1,a2
+[ 	]+[0-9a-f]+:[ 	]+d6c5f53b[ 	]+pmulqr.w[ 	]+a0,a1,a2
 [ 	]+[0-9a-f]+:[ 	]+e8c5f53b[ 	]+pmqacc.w.h00[ 	]+a0,a1,a2
 [ 	]+[0-9a-f]+:[ 	]+f8c5f53b[ 	]+pmqacc.w.h11[ 	]+a0,a1,a2
 [ 	]+[0-9a-f]+:[ 	]+ecc5f53b[ 	]+pmqracc.w.h00[ 	]+a0,a1,a2
