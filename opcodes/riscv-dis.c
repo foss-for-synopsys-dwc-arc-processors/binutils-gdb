@@ -1608,22 +1608,22 @@ riscv_get_disassembler (bfd *abfd)
 {
   const char *default_arch = "rv64gc";
 
-  asection *sect;
-  for (sect = abfd->sections; sect != NULL; sect = sect->next)
-  {
-    if (strstr (sect->name, ".riscvapex."))
-    {
-      bfd_size_type  count  = bfd_section_size (sect);
-      unsigned char* buffer = xmalloc (count);
-
-	if (bfd_get_section_contents (abfd, sect, buffer, 0, count))
-	  arcv_apex_read_metadata (buffer, count);
-	free (buffer);
-    }
-  }
-
   if (abfd && bfd_get_flavour (abfd) == bfd_target_elf_flavour)
     {
+      asection *sect;
+      for (sect = abfd->sections; sect != NULL; sect = sect->next)
+      {
+	if (strstr (sect->name, ".riscvapex."))
+	{
+	  bfd_size_type  count  = bfd_section_size (sect);
+	  unsigned char* buffer = xmalloc (count);
+
+	  if (bfd_get_section_contents (abfd, sect, buffer, 0, count))
+	    arcv_apex_read_metadata (buffer, count);
+	  free (buffer);
+	}
+      }
+
       const char *sec_name = get_elf_backend_data (abfd)->obj_attrs_section;
       if (bfd_get_section_by_name (abfd, sec_name) != NULL)
 	{
