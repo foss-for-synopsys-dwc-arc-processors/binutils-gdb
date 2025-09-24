@@ -184,9 +184,9 @@ riscv_get_sp_base (insn_t opcode, unsigned int xlen)
 #define MASK_VS1 (OP_MASK_VS1 << OP_SH_VS1)
 #define MASK_VS2 (OP_MASK_VS2 << OP_SH_VS2)
 #define MASK_VMASK (OP_MASK_VMASK << OP_SH_VMASK)
-#define MASK_RS1P (OP_MASK_RS1P << OP_SH_RS1P)
-#define MASK_RS2P (OP_MASK_RS2P << OP_SH_RS2P)
-#define MASK_RDP (OP_MASK_RDP << OP_SH_RDP)
+#define MASK_RS1P ((OP_MASK_RS1P >> 1) << OP_SH_RS1P)
+#define MASK_RS2P ((OP_MASK_RS2P >> 1) << OP_SH_RS2P)
+#define MASK_RDP ((OP_MASK_RDP >> 1) << OP_SH_RDP)
 /* Vendor-specific (CORE-V) masks.  */
 #define MASK_CV_IS3_UIMM5 ENCODE_CV_IS3_UIMM5 (-1U)
 

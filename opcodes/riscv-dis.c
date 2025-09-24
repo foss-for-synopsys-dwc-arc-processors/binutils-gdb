@@ -305,9 +305,9 @@ print_insn_args (const char *oparg, insn_t l, bfd_vma pc, disassemble_info *info
   struct riscv_private_data *pd = info->private_data;
   int rs1 = (l >> OP_SH_RS1) & OP_MASK_RS1;
   int rd = (l >> OP_SH_RD) & OP_MASK_RD;
-  int rdp = (l >> OP_SH_RDP) & OP_MASK_RDP;
-  int rs1p = (l >> OP_SH_RS1P) & OP_MASK_RS1P;
-  int rs2p = (l >> OP_SH_RS2P) & OP_MASK_RS2P;
+  int rdp = ((l >> OP_SH_RDP) & OP_MASK_RDP) << 1;
+  int rs1p = ((l >> OP_SH_RS1P) & OP_MASK_RS1P) << 1;
+  int rs2p = ((l >> OP_SH_RS2P) & OP_MASK_RS2P) << 1;
   fprintf_styled_ftype print = info->fprintf_styled_func;
   const char *opargStart;
 
