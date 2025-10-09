@@ -210,17 +210,17 @@
 	arcv.vwsmac.vv v3,v6,v0
 	arcv.vwsmac.vv v6,v0,v3
 
-	arcv.vwsmac.vx v0,v3,t6
-	arcv.vwsmac.vx v3,v6,t0
-	arcv.vwsmac.vx v6,v0,t3
+	arcv.vwsmac.vx v0,t3,v6
+	arcv.vwsmac.vx v3,t6,v0
+	arcv.vwsmac.vx v6,t0,v3
 
 	arcv.vwsnmsac.vv v0,v3,v6
 	arcv.vwsnmsac.vv v3,v6,v0
 	arcv.vwsnmsac.vv v6,v0,v3
 
-	arcv.vwsnmsac.vx v0,v3,t6
-	arcv.vwsnmsac.vx v3,v6,t0
-	arcv.vwsnmsac.vx v6,v0,t3
+	arcv.vwsnmsac.vx v0,t3,v6
+	arcv.vwsnmsac.vx v3,t6,v0
+	arcv.vwsnmsac.vx v6,t0,v3
 
 	arcv.vwmul.hv v0,v3,v6
 	arcv.vwmul.hv v3,v6,v0
@@ -234,9 +234,9 @@
 	arcv.vwmac.hv v3,v6,v0
 	arcv.vwmac.hv v6,v0,v3
 
-	arcv.vwmac.hx v0,v3,t6
-	arcv.vwmac.hx v3,v6,t0
-	arcv.vwmac.hx v6,v0,t3
+	arcv.vwmac.hx v0,t3,v6
+	arcv.vwmac.hx v3,t6,v0
+	arcv.vwmac.hx v6,t0,v3
 
 	arcv.vwmulu.hv v0,v3,v6
 	arcv.vwmulu.hv v3,v6,v0
@@ -250,9 +250,9 @@
 	arcv.vwmacu.hv v3,v6,v0
 	arcv.vwmacu.hv v6,v0,v3
 
-	arcv.vwmacu.hx v0,v3,t6
-	arcv.vwmacu.hx v3,v6,t0
-	arcv.vwmacu.hx v6,v0,t3
+	arcv.vwmacu.hx v0,t3,v6
+	arcv.vwmacu.hx v3,t6,v0
+	arcv.vwmacu.hx v6,t0,v3
 
 	arcv.vwrdot.hv v0,v3,v6
 	arcv.vwrdot.hv v3,v6,v0
@@ -282,17 +282,17 @@
 	arcv.vwsmacf.hv v3,v6,v0
 	arcv.vwsmacf.hv v6,v0,v3
 
-	arcv.vwsmacf.hx v0,v3,t6
-	arcv.vwsmacf.hx v3,v6,t0
-	arcv.vwsmacf.hx v6,v0,t3
+	arcv.vwsmacf.hx v0,t3,v6
+	arcv.vwsmacf.hx v3,t6,v0
+	arcv.vwsmacf.hx v6,t0,v3
 
 	arcv.vwsnmsacf.hv v0,v3,v6
 	arcv.vwsnmsacf.hv v3,v6,v0
 	arcv.vwsnmsacf.hv v6,v0,v3
 
-	arcv.vwsnmsacf.hx v0,v3,t6
-	arcv.vwsnmsacf.hx v3,v6,t0
-	arcv.vwsnmsacf.hx v6,v0,t3
+	arcv.vwsnmsacf.hx v0,t3,v6
+	arcv.vwsnmsacf.hx v3,t6,v0
+	arcv.vwsnmsacf.hx v6,t0,v3
 
 	arcv.vwsrdotf.hv v0,v3,v6
 	arcv.vwsrdotf.hv v3,v6,v0
