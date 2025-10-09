@@ -61,33 +61,33 @@
 	arcv.vwscmac.vv v3,v6,v0
 	arcv.vwscmac.vv v6,v0,v3
 
-	arcv.vwscmac.vx v0,v3,t6
-	arcv.vwscmac.vx v3,v6,t0
-	arcv.vwscmac.vx v6,v0,t3
+	arcv.vwscmac.vx v0,t3,v6
+	arcv.vwscmac.vx v3,t6,v0
+	arcv.vwscmac.vx v6,t0,v3
 
 	arcv.vwscnmsac.vv v0,v3,v6
 	arcv.vwscnmsac.vv v3,v6,v0
 	arcv.vwscnmsac.vv v6,v0,v3
 
-	arcv.vwscnmsac.vx v0,v3,t6
-	arcv.vwscnmsac.vx v3,v6,t0
-	arcv.vwscnmsac.vx v6,v0,t3
+	arcv.vwscnmsac.vx v0,t3,v6
+	arcv.vwscnmsac.vx v3,t6,v0
+	arcv.vwscnmsac.vx v6,t0,v3
 
 	arcv.vwscjmac.vv v0,v3,v6
 	arcv.vwscjmac.vv v3,v6,v0
 	arcv.vwscjmac.vv v6,v0,v3
 
-	arcv.vwscjmac.vx v0,v3,t6
-	arcv.vwscjmac.vx v3,v6,t0
-	arcv.vwscjmac.vx v6,v0,t3
+	arcv.vwscjmac.vx v0,t3,v6
+	arcv.vwscjmac.vx v3,t6,v0
+	arcv.vwscjmac.vx v6,t0,v3
 
 	arcv.vwscjnmsac.vv v0,v3,v6
 	arcv.vwscjnmsac.vv v3,v6,v0
 	arcv.vwscjnmsac.vv v6,v0,v3
 
-	arcv.vwscjnmsac.vx v0,v3,t6
-	arcv.vwscjnmsac.vx v3,v6,t0
-	arcv.vwscjnmsac.vx v6,v0,t3
+	arcv.vwscjnmsac.vx v0,t3,v6
+	arcv.vwscjnmsac.vx v3,t6,v0
+	arcv.vwscjnmsac.vx v6,t0,v3
 
 	arcv.vwscrdot.vv v0,v3,v6
 	arcv.vwscrdot.vv v3,v6,v0
