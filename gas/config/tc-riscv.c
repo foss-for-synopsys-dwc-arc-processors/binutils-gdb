@@ -4028,11 +4028,9 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 		    case 'b': /* Immediate field for 'pli.b'.  */
 		      my_getExpression (imm_expr, asarg);
 		      check_absolute_expr (ip, imm_expr, false);
-		      if (imm_expr->X_add_number > 127
-			 || imm_expr->X_add_number < -128)
-		      as_bad(_("Improper immediate value for 'pli.b' (%"PRIu64"). "
-			    "(should between -128-127)"),
-			    imm_expr->X_add_number);
+		      if ((unsigned long) imm_expr->X_add_number > 255)
+				as_bad (_("bad value for imm field, "
+				"value must be 0...255"));
 		      ip->insn_opcode |= ENCODE_PLI_B_IMM (imm_expr->X_add_number);
 		      imm_expr->X_op = O_absent;
 		      asarg = expr_parse_end;
@@ -4040,11 +4038,9 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 		    case 'I': /* Immediate field for 'pli.h/w'.  */
 		      my_getExpression (imm_expr, asarg);
 		      check_absolute_expr (ip, imm_expr, false);
-		      if (imm_expr->X_add_number > 511
-			|| imm_expr->X_add_number < -512)
-		      as_bad (_("Improper immediate value for 'pli.h/w' (%"PRIi64"). "
-				"(shoud between -512-511)"),
-				imm_expr->X_add_number);
+		      if ((unsigned long) imm_expr->X_add_number > 1023)
+				as_bad (_("bad value for imm field, "
+				"value must be 0...1023"));
 		      ip->insn_opcode |= ENCODE_PLI_IMM (imm_expr->X_add_number);
 		      imm_expr->X_op = O_absent;
 		      asarg = expr_parse_end;
@@ -4052,11 +4048,9 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 		    case 'h': /* Immediate field for 'plui.h'.  */
 		      my_getExpression (imm_expr, asarg);
 		      check_absolute_expr (ip, imm_expr, false);
-		      if (imm_expr->X_add_number > 511
-			 || imm_expr->X_add_number < -512)
-		      as_bad(_("Improper immediate value for 'plui.h' (%"PRIu64"). "
-			    "(should between -512-512)"),
-			    imm_expr->X_add_number);
+		      if ((unsigned long) imm_expr->X_add_number > 1023)
+				as_bad (_("bad value for imm field, "
+				"value must be 0...1023"));
 			  imm_expr->X_add_number <<= RISCV_PIMM_H_BITS;
 		      ip->insn_opcode |= ENCODE_PLUI_H_IMM (imm_expr->X_add_number);
 		      imm_expr->X_op = O_absent;
@@ -4065,11 +4059,9 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 		    case 'u': /* Immediate field for 'plui.w'.  */
 		      my_getExpression (imm_expr, asarg);
 		      check_absolute_expr (ip, imm_expr, false);
-		      if (imm_expr->X_add_number > 511
-			 || imm_expr->X_add_number < -512)
-		      as_bad(_("Improper immediate value for 'plui.w' (%"PRIu64"). "
-			    "(should between -512-512)"),
-			    imm_expr->X_add_number);
+		      if ((unsigned long) imm_expr->X_add_number > 1023)
+				as_bad (_("bad value for imm field, "
+				"value must be 0...1023"));
 			  imm_expr->X_add_number <<= RISCV_PIMM_BITS;
 		      ip->insn_opcode |= ENCODE_PLUI_IMM (imm_expr->X_add_number);
 		      imm_expr->X_op = O_absent;
