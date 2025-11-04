@@ -3122,7 +3122,7 @@ arcv_apex_validate_insn (const char *operands, const struct riscv_opcode *insn)
     arg_type++;
 
     expressionS expr;
-    my_getExpression (&expr, operand);
+    my_getExpression (&expr, operand, false);
     char *endptr;
     strtol (operand, &endptr, 0);
     /* Check that immediate operands are constants
