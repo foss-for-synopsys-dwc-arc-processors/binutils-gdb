@@ -3927,7 +3927,7 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 		  }
 		}
 
-		my_getExpression (imm_expr, asarg);
+		my_getExpression (imm_expr, asarg, force_reloc);
 		normalize_constant_expr (imm_expr);
 		/* The 'A' format specifier must be a symbol.  */
 		if (imm_expr->X_op != O_symbol)
