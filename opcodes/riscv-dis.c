@@ -423,15 +423,15 @@ print_insn_args (const char *oparg, insn_t l, bfd_vma pc, disassemble_info *info
 	    {
 	    case 'd':
 	      print (info->stream, dis_style_register, "%s",
-		     riscv_gpr_names[(l >> APEX_OP_SH_RD) & APEX_OP_MASK_RD]);
+		     pd->riscv_gpr_names[(l >> APEX_OP_SH_RD) & APEX_OP_MASK_RD]);
 	      break;
 	    case 's':
 	      print (info->stream, dis_style_register, "%s",
-		     riscv_gpr_names[(l >> APEX_OP_SH_RS1) & APEX_OP_MASK_RS1]);
+		     pd->riscv_gpr_names[(l >> APEX_OP_SH_RS1) & APEX_OP_MASK_RS1]);
 	      break;
 	    case 't':
 	      print (info->stream, dis_style_register, "%s",
-		     riscv_gpr_names[(l >> APEX_OP_SH_RS2) & APEX_OP_MASK_RS2]);
+		     pd->riscv_gpr_names[(l >> APEX_OP_SH_RS2) & APEX_OP_MASK_RS2]);
 	      break;
 	    case 'k':
 	      print (info->stream, dis_style_immediate, "%d",
@@ -1575,6 +1575,110 @@ riscv_disassemble_data (bfd_vma memaddr ATTRIBUTE_UNUSED,
   return info->bytes_per_chunk;
 }
 
+/* Create a mapping between a serialized APEX instruction record
+   (emitted by GAS) and a dynamically allocated riscv_opcode entry.
+
+   Record format (see struct apex_insn):
+     +------+------+--------+--------+-----------+---------+
+     | Len  | Type | Opcode | FuncT  |  Flags    | Name... |
+     +------+------+--------+--------+-----------+---------+
+      1B     1B      1B       1B       2B	  NUL-term
+
+   - 'block' points to the beginning of the serialized record.
+   - 'length' is the size of the block (must match record_len).
+   - The instruction name is stored at the end of the block and
+     is dynamically allocated here.
+   - The resulting riscv_opcode entry is partially initialized;
+     behavior for specific flag cases (XD, XS, XI, XC) is left
+     for later implementation.  */
+
+static void
+arcv_apex_read_metadata (unsigned char *block,
+		      unsigned long length)
+{
+  /* Assert that the provided length matches the record length
+     declared at position 0 (as emitted by GAS).  */
+  unsigned int record_len = block[0];
+  if (length != record_len)
+    return; /* FIXME: should report error instead of silent return.  */
+
+  /* Compute the length of the instruction name by
+     subtracting the base struct size.  */
+  size_t name_length = record_len
+    - offsetof (struct apex_insn, name);
+
+  /* Allocate and null-terminate the instruction mnemonic.  */
+  char *name = xmalloc (name_length + 1);
+  memcpy (name,
+	  block + offsetof (struct apex_insn, name), /* Mnemonic start.  */
+	  name_length);
+  name[name_length] = '\0';
+
+  /* Extract sub-opcode and flags.  */
+  unsigned int sub_opcode = block[3];
+  unsigned int flags = block[4];
+
+  /* Allocate a new riscv_opcode entry.  */
+  struct riscv_opcode *insn = XNEW (struct riscv_opcode);
+
+  /* Initialize opcode entry with defaults.  */
+  insn->name = name;
+  insn->insn_class = INSN_CLASS_I;
+  insn->xlen_requirement = 0;
+  insn->mask = 0;
+
+  unsigned int offset = 0;
+  /* Decode flags and adjust the opcode entry accordingly.  */
+  switch (flags & 0xF)
+  {
+    case XD:
+      /* Handle XD instruction format.  */
+      arcv_apex_setup_xd_insn (insn, flags, sub_opcode);
+      offset = ARCV_APEX_OFFSET_XD;
+      break;
+
+    case XS:
+      /* Handle XS instruction format.  */
+      arcv_apex_setup_xs_insn (insn, flags, sub_opcode);
+      offset = ARCV_APEX_OFFSET_XS;
+      break;
+
+    case XI:
+      /* Handle XI instruction format.  */
+      arcv_apex_setup_xi_insn (insn, flags, sub_opcode);
+      offset = ARCV_APEX_OFFSET_XI;
+      break;
+
+    case XC:
+      /* Handle XC instruction format.  */
+      arcv_apex_setup_xc_insn (insn, sub_opcode);
+      offset = ARCV_APEX_OFFSET_XC;
+      break;
+
+    /* If an instruction supports both XS and XC formats
+       (e.g., "extInstruction foo,123,XS,XC"), we create a separate
+       instruction for each format.  This is safe because no other XS
+       or XC instruction can use the same sub-opcode (e.g., =123).  */
+    case (XS | XC):
+      /* XS variant.  */
+      arcv_apex_setup_xs_insn (insn, flags, sub_opcode);
+      arcv_apex_insns[sub_opcode + ARCV_APEX_OFFSET_XS] = insn;
+
+      /* XC variant.  */
+      struct riscv_opcode *xc_copy = XNEW (struct riscv_opcode);
+      *xc_copy = *insn; /* Copy contents.  */
+	  arcv_apex_setup_xc_insn (xc_copy, sub_opcode);
+      arcv_apex_insns[sub_opcode + ARCV_APEX_OFFSET_XC] = xc_copy;
+      return;
+  }
+
+  /* Place the fully initialized APEX instruction in the
+     arcv_apex_insns array at an index determined by its sub-opcode
+     and the format-specific offset.  This ensures each format
+     occupies a distinct array region.  */
+  arcv_apex_insns[sub_opcode + offset] = insn;
+}
+
 static bool
 riscv_init_disasm_info (struct disassemble_info *info)
 {
@@ -1755,110 +1859,6 @@ print_insn_riscv (bfd_vma memaddr, struct disassemble_info *info)
   insn = (insn_t) bfd_get_bits (packet, dump_size * 8, false);
 
   return (*riscv_disassembler) (memaddr, insn, packet, info);
-}
-
-/* Create a mapping between a serialized APEX instruction record
-   (emitted by GAS) and a dynamically allocated riscv_opcode entry.
-
-   Record format (see struct apex_insn):
-     +------+------+--------+--------+-----------+---------+
-     | Len  | Type | Opcode | FuncT  |  Flags    | Name... |
-     +------+------+--------+--------+-----------+---------+
-      1B     1B      1B       1B       2B	  NUL-term
-
-   - 'block' points to the beginning of the serialized record.
-   - 'length' is the size of the block (must match record_len).
-   - The instruction name is stored at the end of the block and
-     is dynamically allocated here.
-   - The resulting riscv_opcode entry is partially initialized;
-     behavior for specific flag cases (XD, XS, XI, XC) is left
-     for later implementation.  */
-
-static void
-arcv_apex_read_metadata (unsigned char *block,
-		      unsigned long length)
-{
-  /* Assert that the provided length matches the record length
-     declared at position 0 (as emitted by GAS).  */
-  unsigned int record_len = block[0];
-  if (length != record_len)
-    return; /* FIXME: should report error instead of silent return.  */
-
-  /* Compute the length of the instruction name by
-     subtracting the base struct size.  */
-  size_t name_length = record_len
-    - offsetof (struct apex_insn, name);
-
-  /* Allocate and null-terminate the instruction mnemonic.  */
-  char *name = xmalloc (name_length + 1);
-  memcpy (name,
-	  block + offsetof (struct apex_insn, name), /* Mnemonic start.  */
-	  name_length);
-  name[name_length] = '\0';
-
-  /* Extract sub-opcode and flags.  */
-  unsigned int sub_opcode = block[3];
-  unsigned int flags = block[4];
-
-  /* Allocate a new riscv_opcode entry.  */
-  struct riscv_opcode *insn = XNEW (struct riscv_opcode);
-
-  /* Initialize opcode entry with defaults.  */
-  insn->name = name;
-  insn->insn_class = INSN_CLASS_I;
-  insn->xlen_requirement = 0;
-  insn->mask = 0;
-
-  unsigned int offset = 0;
-  /* Decode flags and adjust the opcode entry accordingly.  */
-  switch (flags & 0xF)
-  {
-    case XD:
-      /* Handle XD instruction format.  */
-      arcv_apex_setup_xd_insn (insn, flags, sub_opcode);
-      offset = ARCV_APEX_OFFSET_XD;
-      break;
-
-    case XS:
-      /* Handle XS instruction format.  */
-      arcv_apex_setup_xs_insn (insn, flags, sub_opcode);
-      offset = ARCV_APEX_OFFSET_XS;
-      break;
-
-    case XI:
-      /* Handle XI instruction format.  */
-      arcv_apex_setup_xi_insn (insn, flags, sub_opcode);
-      offset = ARCV_APEX_OFFSET_XI;
-      break;
-
-    case XC:
-      /* Handle XC instruction format.  */
-      arcv_apex_setup_xc_insn (insn, sub_opcode);
-      offset = ARCV_APEX_OFFSET_XC;
-      break;
-
-    /* If an instruction supports both XS and XC formats
-       (e.g., "extInstruction foo,123,XS,XC"), we create a separate
-       instruction for each format.  This is safe because no other XS
-       or XC instruction can use the same sub-opcode (e.g., =123).  */
-    case (XS | XC):
-      /* XS variant.  */
-      arcv_apex_setup_xs_insn (insn, flags, sub_opcode);
-      arcv_apex_insns[sub_opcode + ARCV_APEX_OFFSET_XS] = insn;
-
-      /* XC variant.  */
-      struct riscv_opcode *xc_copy = XNEW (struct riscv_opcode);
-      *xc_copy = *insn; /* Copy contents.  */
-	  arcv_apex_setup_xc_insn (xc_copy, sub_opcode);
-      arcv_apex_insns[sub_opcode + ARCV_APEX_OFFSET_XC] = xc_copy;
-      return;
-  }
-
-  /* Place the fully initialized APEX instruction in the
-     arcv_apex_insns array at an index determined by its sub-opcode
-     and the format-specific offset.  This ensures each format
-     occupies a distinct array region.  */
-  arcv_apex_insns[sub_opcode + offset] = insn;
 }
 
 /* Prevent use of the fake labels that are generated as part of the DWARF
