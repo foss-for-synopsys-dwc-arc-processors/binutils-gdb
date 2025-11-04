@@ -3878,7 +3878,7 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 	      switch (*++oparg)
 		{
 		case 'k': /* 8-bit immediate.  */
-		  my_getExpression (imm_expr, asarg);
+		  my_getExpression (imm_expr, asarg, force_reloc);
 		  check_absolute_expr (ip, imm_expr, false);
 		  if (imm_expr->X_add_number < -128
 		      || imm_expr->X_add_number > 127)
@@ -3889,7 +3889,7 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 		  asarg = expr_parse_end;
 		  continue;
 		case 'j': /* 12-bit immediate.  */
-		  my_getExpression (imm_expr, asarg);
+		  my_getExpression (imm_expr, asarg, force_reloc);
 		  check_absolute_expr (ip, imm_expr, false);
 		  if (imm_expr->X_add_number < -2048
 		      || imm_expr->X_add_number > 2047)
