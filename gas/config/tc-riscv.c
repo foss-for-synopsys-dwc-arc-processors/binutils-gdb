@@ -2852,7 +2852,7 @@ my_getArcvVtypeExpression (expressionS *ep, char *str, char *insn)
   if (!vsew_found || !vlmul_found
       || !arcv_udsp_opcode_supports_sew_lmul (insn, sew, lmul))
     {
-      my_getExpression (ep, str);
+      my_getExpression (ep, str, false);
       str = expr_parse_end;
     }
   else
