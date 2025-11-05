@@ -990,14 +990,14 @@ parse_disassembler_options (struct disassemble_info *info)
 	    default:
 	      /* xgettext:c-format */
 	      opcodes_error_handler (_("unrecognised arc64 disassembler variant"));
-	      return -1;
+	      abort ();
 	    }
 	  break;
 
 	default:
 	  /* xgettext:c-format */
 	  opcodes_error_handler (_("unrecognised disassembler architecture"));
-	  return -1;
+	  abort ();
 	}
     }
 
