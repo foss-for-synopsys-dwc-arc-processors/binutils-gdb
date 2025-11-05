@@ -1402,7 +1402,7 @@ print_insn_arc (bfd_vma memaddr,
 	      if (operand->flags & ARC_OPERAND_FP)
 		rname = fpnames[value & 0x1f];
 	      else
-		rname = getregname (value, isa_mask);
+		rname = getregname (value, arc_infop->isa_mask);
 	    }
 	  (*info->fprintf_styled_func) (info->stream, dis_style_register,
 					"%s", rname);
@@ -1416,7 +1416,7 @@ print_insn_arc (bfd_vma memaddr,
 		  if (operand->flags & ARC_OPERAND_FP)
 		    rname = fpnames[(value + 1) & 0x1f];
 		  else
-		    rname = getregname (value + 1, isa_mask);
+		    rname = getregname (value + 1, arc_infop->isa_mask);
 		}
 	      else
 		rname = _("\nWarning: illegal use of double register "
