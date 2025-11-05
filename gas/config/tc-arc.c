@@ -4465,8 +4465,8 @@ arc_handle_align (fragS* fragP)
     }
   else
     {
-      if (size > MAX_MEM_FOR_RS_ALIGN_CODE)
-	size &= MAX_MEM_FOR_RS_ALIGN_CODE;
+      if (size > MAX_MEM_FOR_RS_SPACE_NOP)
+	size &= MAX_MEM_FOR_RS_SPACE_NOP;
 
       /* Insert variable number of 2 bytes NOPs.  */
       arc_make_nops (dest, size);
