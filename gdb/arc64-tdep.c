@@ -817,7 +817,7 @@ arc_push_dummy_code (struct gdbarch *gdbarch, CORE_ADDR sp, CORE_ADDR funaddr,
 		     struct regcache *regcache)
 {
   *real_pc = funaddr;
-  *bp_addr = entry_point_address ();
+  *bp_addr = entry_point_address (current_program_space);
   return sp;
 }
 
@@ -1803,9 +1803,10 @@ arc64_dwarf_reg_to_regnum (struct gdbarch *gdbarch, int regnum)
    the fallback unwinder, we use the default frame sniffer, which always
    accepts the frame.  */
 
-static const struct frame_unwind arc_frame_unwind = {
+static const struct frame_unwind_legacy arc_frame_unwind (
   "arc prologue",
   NORMAL_FRAME,
+  FRAME_UNWIND_ARCH,
   default_frame_unwind_stop_reason,
   arc_frame_this_id,
   arc_frame_prev_register,
@@ -1813,7 +1814,7 @@ static const struct frame_unwind arc_frame_unwind = {
   default_frame_sniffer,
   NULL,
   NULL
-};
+);
 
 
 static const struct frame_base arc_normal_base = {
