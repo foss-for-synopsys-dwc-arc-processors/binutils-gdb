@@ -2220,9 +2220,7 @@ dump_arc_instruction_command (const char *args, int from_tty)
   arc_insn_dump (insn);
 }
 
-void _initialize_arc64_tdep ();
-void
-_initialize_arc64_tdep ()
+INIT_GDB_FILE (arc64_tdep)
 {
   gdbarch_register (bfd_arch_arc64, arc64_gdbarch_init, arc_dump_tdep);
 
