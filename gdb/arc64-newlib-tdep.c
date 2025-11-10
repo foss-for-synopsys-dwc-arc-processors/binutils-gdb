@@ -59,9 +59,7 @@ arc64_newlib_osabi_sniffer (bfd *abfd)
     return GDB_OSABI_UNKNOWN;
 }
 
-void _initialize_arc64_newlib_tdep ();
-void
-_initialize_arc64_newlib_tdep ()
+INIT_GDB_FILE (arc64_newlib_tdep)
 {
   gdbarch_register_osabi_sniffer (bfd_arch_arc64, bfd_target_elf_flavour,
 				  arc64_newlib_osabi_sniffer);

@@ -20,6 +20,7 @@
 /* GDB header files.  */
 #include "defs.h"
 #include "linux-tdep.h"
+#include "solib-svr4-linux.h"
 #include "objfiles.h"
 #include "opcode/arc.h"
 #include "osabi.h"
@@ -241,8 +242,8 @@ arc_linux_skip_solib_resolver (struct gdbarch *gdbarch, CORE_ADDR pc)
 
      So we look for the symbol `_dl_linux_resolver', and if we are there,
      gdb sets a breakpoint at the return address, and continues.  */
-  struct bound_minimal_symbol resolver
-    = lookup_minimal_symbol ("_dl_linux_resolver", NULL, NULL);
+  bound_minimal_symbol resolver
+    = lookup_minimal_symbol (current_program_space, "_dl_linux_resolver");
 
   if (arc_debug)
     {
@@ -510,7 +511,7 @@ arc64_linux_init_osabi (struct gdbarch_info info, struct gdbarch *gdbarch)
 				       arc_linux_sw_breakpoint_from_kind);
   set_gdbarch_fetch_tls_load_module_address (gdbarch,
 					     svr4_fetch_objfile_link_map);
-  set_gdbarch_software_single_step (gdbarch, arc_linux_software_single_step);
+  set_gdbarch_get_next_pcs (gdbarch, arc_linux_software_single_step);
   set_gdbarch_skip_trampoline_code (gdbarch, find_solib_trampoline_target);
   set_gdbarch_skip_solib_resolver (gdbarch, arc_linux_skip_solib_resolver);
 
@@ -522,17 +523,14 @@ arc64_linux_init_osabi (struct gdbarch_info info, struct gdbarch *gdbarch)
     }
 
   /* GNU/Linux uses SVR4-style shared libraries...  */
-  set_solib_svr4_fetch_link_map_offsets (gdbarch,
+  set_solib_svr4_ops (gdbarch,
 					 (arc64_isa_reg_size (gdbarch) == 4
-					 ? linux_ilp32_fetch_link_map_offsets
-					 : linux_lp64_fetch_link_map_offsets));
+					 ? make_linux_ilp32_svr4_solib_ops
+					 : make_linux_lp64_svr4_solib_ops));
 }
 
 /* Suppress warning from -Wmissing-prototypes.  */
-extern initialize_file_ftype _initialize_arc64_linux_tdep;
-
-void
-_initialize_arc64_linux_tdep ()
+INIT_GDB_FILE (arc64_linux_tdep)
 {
   gdbarch_register_osabi (bfd_arch_arc64, 0, GDB_OSABI_LINUX,
 			  arc64_linux_init_osabi);
