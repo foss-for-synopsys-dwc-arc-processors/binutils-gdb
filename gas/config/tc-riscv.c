@@ -4035,7 +4035,7 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 		      ip->insn_opcode |= ENCODE_PLI_B_IMM (imm_expr->X_add_number);
 		      imm_expr->X_op = O_absent;
 		      asarg = expr_parse_end;
-		      continue;
+		    continue;
 		    case 'I': /* Immediate field for 'pli.h/w'.  */
 		      my_getExpression (imm_expr, asarg);
 		      check_absolute_expr (ip, imm_expr, false);
@@ -4046,7 +4046,7 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 		      ip->insn_opcode |= ENCODE_PLI_IMM (imm_expr->X_add_number);
 		      imm_expr->X_op = O_absent;
 		      asarg = expr_parse_end;
-		      continue;
+		    continue;
 		    case 'h': /* Immediate field for 'plui.h'.  */
 		      my_getExpression (imm_expr, asarg);
 		      check_absolute_expr (ip, imm_expr, false);
@@ -4058,7 +4058,7 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 		      ip->insn_opcode |= ENCODE_PLUI_H_IMM (imm_expr->X_add_number);
 		      imm_expr->X_op = O_absent;
 		      asarg = expr_parse_end;
-		      continue;
+		    continue;
 		    case 'u': /* Immediate field for 'plui.w'.  */
 		      my_getExpression (imm_expr, asarg);
 		      check_absolute_expr (ip, imm_expr, false);
@@ -4070,7 +4070,7 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 		      ip->insn_opcode |= ENCODE_PLUI_IMM (imm_expr->X_add_number);
 		      imm_expr->X_op = O_absent;
 		      asarg = expr_parse_end;
-		      continue;
+		    continue;
 		    case 'd': /* Pair destination register.  */
 		    case 's': /* Pair source register.  */
 		    case 't': /* Pair source register2.*/
@@ -4088,21 +4088,21 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 					if(regno % 2 == 1)
 						as_bad (_("pair register rs1 should be even"));
 					INSERT_OPERAND (RS1P, *ip, regno >> 1);
-					break;
+				break;
 				case 'd':
 					if(regno % 2 == 1)
 						as_bad (_("pair register rd should be even"));
 					INSERT_OPERAND (RDP, *ip, regno >> 1);
-					break;
+				break;
 				case 't':
 					if(regno % 2 == 1)
 						as_bad (_("pair register rs2 should be even"));
 					INSERT_OPERAND (RS2P, *ip, regno >> 1);
-					break;
+				break;
 				}
 				continue;
 		      }
-	      break;
+	        break;
 		    default:
 		      goto unknown_riscv_ip_operand;
 		    }
