@@ -47,6 +47,26 @@ proc do_objfile { srcfile } {
     return $objfile
 }
 
+# Create a plain binary file with content of .text section.
+proc do_binary { objfile } {
+    global OBJCOPY
+    global OBJCOPYFLAGS
+
+    set binary "$objfile.bin"
+
+    if {[binutils_run $OBJCOPY "$OBJCOPYFLAGS -O binary -j .text $objfile $binary"] != ""} then {
+	return
+    }
+
+    if [is_remote host] {
+	set binary [remote_download host $binary]
+    } else {
+	set binary $binary
+    }
+
+    return $binary
+}
+
 # Ensure that disassembler output includes EXPECTED lines.
 proc check_assembly { testname objfile expected { disas_flags "" } } {
     global OBJDUMP
@@ -104,3 +124,9 @@ check_assembly "arc hex printing" $thexobj \
     {st\s*r0,\[r1,0xfffffff7\]} "-Mhex"
 check_assembly "arc normal printing" $thexobj \
     {st\s*r0,\[r1,-9\]}
+
+# Check that objdump can disassemble raw binary files.
+set objfile [do_objfile binary.s]
+set binary [do_binary $objfile]
+check_assembly "arc binary" $binary \
+    {mov\s*r0,r1} "-m HS -Mcpu=hs -EL -b binary -D"

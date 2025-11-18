@@ -1086,6 +1086,7 @@ print_insn_arc (bfd_vma memaddr,
   struct arc_operand_iterator iter;
   struct arc_disassemble_info *arc_infop;
   bool rpcl = false, rset = false;
+  bool code_section;
 
   if (info->private_data == NULL)
     {
@@ -1099,6 +1100,18 @@ print_insn_arc (bfd_vma memaddr,
   highbyte = info->endian == BFD_ENDIAN_LITTLE ? 1 : 0;
   lowbyte = info->endian == BFD_ENDIAN_LITTLE ? 0 : 1;
 
+  if (info->section)
+    {
+      struct bfd *abfd = info->section->owner;
+      /* Treat .data section for "binary" format as a code section.  */
+      if (abfd && strcmp (bfd_get_target (abfd), "binary") == 0)
+	  code_section = true;
+      else
+	  code_section = info->section->flags & SEC_CODE;
+    }
+  else
+    code_section = true;
+
   /* This variable may be set by the instruction decoder.  It suggests
      the number of bytes objdump should display on a single line.  If
      the instruction decoder sets this, it should always set it to
@@ -1110,8 +1123,7 @@ print_insn_arc (bfd_vma memaddr,
      8 and bytes_per_chunk is 4, the output will look like this:
      00:   00000000 00000000
      with the chunks displayed according to "display_endian".  */
-  if (info->section
-      && !(info->section->flags & SEC_CODE))
+  if (!code_section)
     {
       /* This is not a CODE section.  */
       switch (info->section->size)
@@ -1144,8 +1156,7 @@ print_insn_arc (bfd_vma memaddr,
       return -1;
     }
 
-  if (info->section
-      && !(info->section->flags & SEC_CODE))
+  if (!code_section)
     {
       /* Data section.  */
       unsigned long data;
