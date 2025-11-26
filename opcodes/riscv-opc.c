@@ -3766,8 +3766,8 @@ const struct riscv_opcode riscv_opcodes[] =
 { "arcv.bitrev", 0, INSN_CLASS_XARCVBITREV, "d,s,t", MATCH_ARCV_BITREV, MASK_ARCV_BITREV, match_opcode, 0 },
 
 /* Vendor-specific (ARC-V) BITSTREAM extension.  */
-{ "arcv.bspeek", 0, INSN_CLASS_XARCVBITSTREAM, "d,t", MATCH_ARCV_BSPEEK, MASK_ARCV_BSPEEK, match_opcode, 0 },
-{ "arcv.bspop", 0, INSN_CLASS_XARCVBITSTREAM, "d,t", MATCH_ARCV_BSPOP, MASK_ARCV_BSPOP, match_opcode, 0 },
+{ "arcv.bspeek", 0, INSN_CLASS_XARCVBITSTREAM, "d,s", MATCH_ARCV_BSPEEK, MASK_ARCV_BSPEEK, match_opcode, 0 },
+{ "arcv.bspop", 0, INSN_CLASS_XARCVBITSTREAM, "d,s", MATCH_ARCV_BSPOP, MASK_ARCV_BSPOP, match_opcode, 0 },
 { "arcv.bspush", 0, INSN_CLASS_XARCVBITSTREAM, "d,s,t", MATCH_ARCV_BSPUSH, MASK_ARCV_BSPUSH, match_opcode, 0 },
 
 /* Vendor-specific (ARC-V) VDSP extension.  */
