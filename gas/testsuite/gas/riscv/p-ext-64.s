@@ -16,7 +16,10 @@ target:
 	max	a0, a1, a2
 	minu	a0, a1, a2
 	maxu	a0, a1, a2
-	pli.b	a0, 3
+	pli.b	a0, 10
+	pli.b	a0, 127
+	pli.b	a0, -128
+	pli.b	a0, 255
 	pli.h	a0, 10
 	pli.w	a0, 31
 	pslli.b	a0, a1, 1

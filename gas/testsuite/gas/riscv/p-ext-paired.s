@@ -1,5 +1,5 @@
 target:
-	pwslli.b	a0, a0, 1
+	pwslli.b	x18, a0, 1
 	pwslli.h	a2, a0, 31
 	wslli	a4, a2, 31
 	pwslai.b	a0, a0, 1
