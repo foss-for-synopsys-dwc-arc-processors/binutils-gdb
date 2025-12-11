@@ -114,13 +114,13 @@ target:
 	pmulsu.h.b11	a0, a1, a2
 	mulsu.h11	a0, a1, a2
 	maccsu.h11	a0, a1, a2
-	ppack.h	a0, a1, a2
-	ppackbt.h	a0, a1, a2
-	packbt	a0, a1, a2
-	ppacktb.h	a0, a1, a2
-	packtb	a0, a1, a2
-	ppackt.h	a0, a1, a2
-	packt	a0, a1, a2
+	ppaire.b	a0, a1, a2
+	ppaireo.b	a0, a1, a2
+	ppaireo.h	a0, a1, a2
+	ppairoe.b	a0, a1, a2
+	ppairoe.h	a0, a1, a2
+	ppairo.b	a0, a1, a2
+	ppairo.h	a0, a1, a2
 	pm2add.h	a0, a1, a2
 	pm4add.b	a0, a1, a2
 	pm2adda.h	a0, a1, a2

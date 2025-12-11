@@ -2962,18 +2962,8 @@ riscv_multi_subset_supports (riscv_parse_subset_t *rps,
       return riscv_subset_supports (rps, "svinval");
     case INSN_CLASS_P:
       return riscv_subset_supports (rps, "p");
-    case INSN_CLASS_P_OR_ZBA:
-      return (riscv_subset_supports (rps, "p")
-	      || riscv_subset_supports (rps, "zba"));
-    case INSN_CLASS_P_OR_ZBB:
-      return (riscv_subset_supports (rps, "p")
-	      || riscv_subset_supports (rps, "zbb"));
     case INSN_CLASS_P_OR_ZBKB:
       return (riscv_subset_supports (rps, "p")
-	      || riscv_subset_supports (rps, "zbkb"));
-    case INSN_CLASS_P_ZBB_OR_ZBKB:
-      return (riscv_subset_supports (rps, "p")
-	      || riscv_subset_supports (rps, "zbb")
 	      || riscv_subset_supports (rps, "zbkb"));
     case INSN_CLASS_H:
       return riscv_subset_supports (rps, "h");
@@ -3298,14 +3288,8 @@ riscv_multi_subset_supports_ext (riscv_parse_subset_t *rps,
       return "svinval";
     case INSN_CLASS_P:
       return "p";
-    case INSN_CLASS_P_OR_ZBA:
-      return _("p' or `zba");
-    case INSN_CLASS_P_OR_ZBB:
-      return _("p' or `zbb");
     case INSN_CLASS_P_OR_ZBKB:
       return _("p' or `zbkb");
-    case INSN_CLASS_P_ZBB_OR_ZBKB:
-      return _("p' or `zbb' or `zbkb");
     case INSN_CLASS_H:
       return _("h");
     case INSN_CLASS_XCVALU:
