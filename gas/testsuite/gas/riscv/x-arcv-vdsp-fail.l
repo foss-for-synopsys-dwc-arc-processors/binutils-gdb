@@ -1,16 +1,16 @@
 .*: Assembler messages:
-.*: Error: unrecognized opcode `arcv.vmv.v.s v0,v3,t6', extension `xarcvvdsp' required
-.*: Error: unrecognized opcode `arcv.vmv.v.s v3,v6,t0', extension `xarcvvdsp' required
-.*: Error: unrecognized opcode `arcv.vmv.v.s v6,v0,t3', extension `xarcvvdsp' required
-.*: Error: unrecognized opcode `arcv.vmv.s.v v0,v3,t6', extension `xarcvvdsp' required
-.*: Error: unrecognized opcode `arcv.vmv.s.v v3,v6,t0', extension `xarcvvdsp' required
-.*: Error: unrecognized opcode `arcv.vmv.s.v v6,v0,t3', extension `xarcvvdsp' required
-.*: Error: unrecognized opcode `arcv.vmvi.v.s v0,v3,6', extension `xarcvvdsp' required
-.*: Error: unrecognized opcode `arcv.vmvi.v.s v3,v6,0', extension `xarcvvdsp' required
-.*: Error: unrecognized opcode `arcv.vmvi.v.s v6,v0,3', extension `xarcvvdsp' required
-.*: Error: unrecognized opcode `arcv.vmvi.s.v v0,v3,6', extension `xarcvvdsp' required
-.*: Error: unrecognized opcode `arcv.vmvi.s.v v3,v6,0', extension `xarcvvdsp' required
-.*: Error: unrecognized opcode `arcv.vmvi.s.v v6,v0,3', extension `xarcvvdsp' required
+.*: Error: unrecognized opcode `arcv.vmv.v.sx v0,v3,t6', extension `xarcvvdsp' required
+.*: Error: unrecognized opcode `arcv.vmv.v.sx v3,v6,t0', extension `xarcvvdsp' required
+.*: Error: unrecognized opcode `arcv.vmv.v.sx v6,v0,t3', extension `xarcvvdsp' required
+.*: Error: unrecognized opcode `arcv.vmv.s.vx v0,v3,t6', extension `xarcvvdsp' required
+.*: Error: unrecognized opcode `arcv.vmv.s.vx v3,v6,t0', extension `xarcvvdsp' required
+.*: Error: unrecognized opcode `arcv.vmv.s.vx v6,v0,t3', extension `xarcvvdsp' required
+.*: Error: unrecognized opcode `arcv.vmv.v.si v0,v3,6', extension `xarcvvdsp' required
+.*: Error: unrecognized opcode `arcv.vmv.v.si v3,v6,0', extension `xarcvvdsp' required
+.*: Error: unrecognized opcode `arcv.vmv.v.si v6,v0,3', extension `xarcvvdsp' required
+.*: Error: unrecognized opcode `arcv.vmv.s.vi v0,v3,6', extension `xarcvvdsp' required
+.*: Error: unrecognized opcode `arcv.vmv.s.vi v3,v6,0', extension `xarcvvdsp' required
+.*: Error: unrecognized opcode `arcv.vmv.s.vi v6,v0,3', extension `xarcvvdsp' required
 .*: Error: unrecognized opcode `arcv.vnorm.v v0,v3', extension `xarcvvdsp' required
 .*: Error: unrecognized opcode `arcv.vnorm.v v3,v6', extension `xarcvvdsp' required
 .*: Error: unrecognized opcode `arcv.vssabs.v v0,v3', extension `xarcvvdsp' required
@@ -223,18 +223,18 @@
 .*: Error: unrecognized opcode `arcv.vwsrdotf.hv v0,v3,v6', extension `xarcvvdsp' required
 .*: Error: unrecognized opcode `arcv.vwsrdotf.hv v3,v6,v0', extension `xarcvvdsp' required
 .*: Error: unrecognized opcode `arcv.vwsrdotf.hv v6,v0,v3', extension `xarcvvdsp' required
-.*: Error: illegal operands `arcv.vmv.v.s v0,v3'
-.*: Error: illegal operands `arcv.vmv.v.s v3,v6'
-.*: Error: illegal operands `arcv.vmv.v.s v6,v0'
-.*: Error: illegal operands `arcv.vmv.s.v v0,v3'
-.*: Error: illegal operands `arcv.vmv.s.v v3,v6'
-.*: Error: illegal operands `arcv.vmv.s.v v6,v0'
-.*: Error: illegal operands `arcv.vmvi.v.s v0,v3'
-.*: Error: illegal operands `arcv.vmvi.v.s v3,v6'
-.*: Error: illegal operands `arcv.vmvi.v.s v6,v0'
-.*: Error: illegal operands `arcv.vmvi.s.v v0,v3'
-.*: Error: illegal operands `arcv.vmvi.s.v v3,v6'
-.*: Error: illegal operands `arcv.vmvi.s.v v6,v0'
+.*: Error: illegal operands `arcv.vmv.v.sx v0,v3'
+.*: Error: illegal operands `arcv.vmv.v.sx v3,v6'
+.*: Error: illegal operands `arcv.vmv.v.sx v6,v0'
+.*: Error: illegal operands `arcv.vmv.s.vx v0,v3'
+.*: Error: illegal operands `arcv.vmv.s.vx v3,v6'
+.*: Error: illegal operands `arcv.vmv.s.vx v6,v0'
+.*: Error: illegal operands `arcv.vmv.v.si v0,v3'
+.*: Error: illegal operands `arcv.vmv.v.si v3,v6'
+.*: Error: illegal operands `arcv.vmv.v.si v6,v0'
+.*: Error: illegal operands `arcv.vmv.s.vi v0,v3'
+.*: Error: illegal operands `arcv.vmv.s.vi v3,v6'
+.*: Error: illegal operands `arcv.vmv.s.vi v6,v0'
 .*: Error: illegal operands `arcv.vnorm.v v0'
 .*: Error: illegal operands `arcv.vnorm.v v3'
 .*: Error: illegal operands `arcv.vssabs.v v0'
@@ -447,18 +447,18 @@
 .*: Error: illegal operands `arcv.vwsrdotf.hv v0,v3'
 .*: Error: illegal operands `arcv.vwsrdotf.hv v3,v6'
 .*: Error: illegal operands `arcv.vwsrdotf.hv v6,v0'
-.*: Error: illegal operands `arcv.vmv.v.s v0,v3,t6,t0'
-.*: Error: illegal operands `arcv.vmv.v.s v3,v6,t0,t0'
-.*: Error: illegal operands `arcv.vmv.v.s v6,v0,t3,t0'
-.*: Error: illegal operands `arcv.vmv.s.v v0,v3,t6,t0'
-.*: Error: illegal operands `arcv.vmv.s.v v3,v6,t0,t0'
-.*: Error: illegal operands `arcv.vmv.s.v v6,v0,t3,t0'
-.*: Error: illegal operands `arcv.vmvi.v.s v0,v3,6,t0'
-.*: Error: illegal operands `arcv.vmvi.v.s v3,v6,0,t0'
-.*: Error: illegal operands `arcv.vmvi.v.s v6,v0,3,t0'
-.*: Error: illegal operands `arcv.vmvi.s.v v0,v3,6,t0'
-.*: Error: illegal operands `arcv.vmvi.s.v v3,v6,0,t0'
-.*: Error: illegal operands `arcv.vmvi.s.v v6,v0,3,t0'
+.*: Error: illegal operands `arcv.vmv.v.sx v0,v3,t6,t0'
+.*: Error: illegal operands `arcv.vmv.v.sx v3,v6,t0,t0'
+.*: Error: illegal operands `arcv.vmv.v.sx v6,v0,t3,t0'
+.*: Error: illegal operands `arcv.vmv.s.vx v0,v3,t6,t0'
+.*: Error: illegal operands `arcv.vmv.s.vx v3,v6,t0,t0'
+.*: Error: illegal operands `arcv.vmv.s.vx v6,v0,t3,t0'
+.*: Error: illegal operands `arcv.vmv.v.si v0,v3,6,t0'
+.*: Error: illegal operands `arcv.vmv.v.si v3,v6,0,t0'
+.*: Error: illegal operands `arcv.vmv.v.si v6,v0,3,t0'
+.*: Error: illegal operands `arcv.vmv.s.vi v0,v3,6,t0'
+.*: Error: illegal operands `arcv.vmv.s.vi v3,v6,0,t0'
+.*: Error: illegal operands `arcv.vmv.s.vi v6,v0,3,t0'
 .*: Error: illegal operands `arcv.vnorm.v v0,v3,t0'
 .*: Error: illegal operands `arcv.vnorm.v v3,v6,t0'
 .*: Error: illegal operands `arcv.vssabs.v v0,v3,t0'
@@ -671,18 +671,18 @@
 .*: Error: illegal operands `arcv.vwsrdotf.hv v0,v3,v6,t0'
 .*: Error: illegal operands `arcv.vwsrdotf.hv v3,v6,v0,t0'
 .*: Error: illegal operands `arcv.vwsrdotf.hv v6,v0,v3,t0'
-.*: Error: illegal operands `arcv.vmv.v.s 0,v3,t6'
-.*: Error: illegal operands `arcv.vmv.v.s v0,3,t6'
-.*: Error: illegal operands `arcv.vmv.v.s v0,v3,6'
-.*: Error: illegal operands `arcv.vmv.s.v 0,v3,t6'
-.*: Error: illegal operands `arcv.vmv.s.v v0,3,t6'
-.*: Error: illegal operands `arcv.vmv.s.v v0,v3,6'
-.*: Error: illegal operands `arcv.vmvi.v.s 0,v3,6'
-.*: Error: illegal operands `arcv.vmvi.v.s v0,3,6'
-.*: Error: instruction arcv.vmvi.v.s requires absolute expression
-.*: Error: illegal operands `arcv.vmvi.s.v 0,v3,6'
-.*: Error: illegal operands `arcv.vmvi.s.v v0,3,6'
-.*: Error: instruction arcv.vmvi.s.v requires absolute expression
+.*: Error: illegal operands `arcv.vmv.v.sx 0,v3,t6'
+.*: Error: illegal operands `arcv.vmv.v.sx v0,3,t6'
+.*: Error: illegal operands `arcv.vmv.v.sx v0,v3,6'
+.*: Error: illegal operands `arcv.vmv.s.vx 0,v3,t6'
+.*: Error: illegal operands `arcv.vmv.s.vx v0,3,t6'
+.*: Error: illegal operands `arcv.vmv.s.vx v0,v3,6'
+.*: Error: illegal operands `arcv.vmv.v.si 0,v3,6'
+.*: Error: illegal operands `arcv.vmv.v.si v0,3,6'
+.*: Error: instruction arcv.vmv.v.si requires absolute expression
+.*: Error: illegal operands `arcv.vmv.s.vi 0,v3,6'
+.*: Error: illegal operands `arcv.vmv.s.vi v0,3,6'
+.*: Error: instruction arcv.vmv.s.vi requires absolute expression
 .*: Error: illegal operands `arcv.vnorm.v 0,v3'
 .*: Error: illegal operands `arcv.vnorm.v v0,3'
 .*: Error: illegal operands `arcv.vssabs.v 0,v3'
