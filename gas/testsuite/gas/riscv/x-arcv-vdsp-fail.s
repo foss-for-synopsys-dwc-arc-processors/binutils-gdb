@@ -6,21 +6,21 @@
 
 	# xarcvvdsp - wrong number of operands
 
-	arcv.vmv.v.s v0,v3
-	arcv.vmv.v.s v3,v6
-	arcv.vmv.v.s v6,v0
+	arcv.vmv.v.sx v0,v3
+	arcv.vmv.v.sx v3,v6
+	arcv.vmv.v.sx v6,v0
 
-	arcv.vmv.s.v v0,v3
-	arcv.vmv.s.v v3,v6
-	arcv.vmv.s.v v6,v0
+	arcv.vmv.s.vx v0,v3
+	arcv.vmv.s.vx v3,v6
+	arcv.vmv.s.vx v6,v0
 
-	arcv.vmvi.v.s v0,v3
-	arcv.vmvi.v.s v3,v6
-	arcv.vmvi.v.s v6,v0
+	arcv.vmv.v.si v0,v3
+	arcv.vmv.v.si v3,v6
+	arcv.vmv.v.si v6,v0
 
-	arcv.vmvi.s.v v0,v3
-	arcv.vmvi.s.v v3,v6
-	arcv.vmvi.s.v v6,v0
+	arcv.vmv.s.vi v0,v3
+	arcv.vmv.s.vi v3,v6
+	arcv.vmv.s.vi v6,v0
 
 	arcv.vnorm.v v0
 	arcv.vnorm.v v3
@@ -306,21 +306,21 @@
 	arcv.vwsrdotf.hv v3,v6
 	arcv.vwsrdotf.hv v6,v0
 
-	arcv.vmv.v.s v0,v3,t6,t0
-	arcv.vmv.v.s v3,v6,t0,t0
-	arcv.vmv.v.s v6,v0,t3,t0
+	arcv.vmv.v.sx v0,v3,t6,t0
+	arcv.vmv.v.sx v3,v6,t0,t0
+	arcv.vmv.v.sx v6,v0,t3,t0
 
-	arcv.vmv.s.v v0,v3,t6,t0
-	arcv.vmv.s.v v3,v6,t0,t0
-	arcv.vmv.s.v v6,v0,t3,t0
+	arcv.vmv.s.vx v0,v3,t6,t0
+	arcv.vmv.s.vx v3,v6,t0,t0
+	arcv.vmv.s.vx v6,v0,t3,t0
 
-	arcv.vmvi.v.s v0,v3,6,t0
-	arcv.vmvi.v.s v3,v6,0,t0
-	arcv.vmvi.v.s v6,v0,3,t0
+	arcv.vmv.v.si v0,v3,6,t0
+	arcv.vmv.v.si v3,v6,0,t0
+	arcv.vmv.v.si v6,v0,3,t0
 
-	arcv.vmvi.s.v v0,v3,6,t0
-	arcv.vmvi.s.v v3,v6,0,t0
-	arcv.vmvi.s.v v6,v0,3,t0
+	arcv.vmv.s.vi v0,v3,6,t0
+	arcv.vmv.s.vi v3,v6,0,t0
+	arcv.vmv.s.vi v6,v0,3,t0
 
 	arcv.vnorm.v v0,v3,t0
 	arcv.vnorm.v v3,v6,t0
@@ -608,21 +608,21 @@
 
 	# xarcvvdsp - wrong operand types
 
-	arcv.vmv.v.s 0,v3,t6
-	arcv.vmv.v.s v0,3,t6
-	arcv.vmv.v.s v0,v3,6
+	arcv.vmv.v.sx 0,v3,t6
+	arcv.vmv.v.sx v0,3,t6
+	arcv.vmv.v.sx v0,v3,6
 
-	arcv.vmv.s.v 0,v3,t6
-	arcv.vmv.s.v v0,3,t6
-	arcv.vmv.s.v v0,v3,6
+	arcv.vmv.s.vx 0,v3,t6
+	arcv.vmv.s.vx v0,3,t6
+	arcv.vmv.s.vx v0,v3,6
 
-	arcv.vmvi.v.s 0,v3,6
-	arcv.vmvi.v.s v0,3,6
-	arcv.vmvi.v.s v0,v3,v6
+	arcv.vmv.v.si 0,v3,6
+	arcv.vmv.v.si v0,3,6
+	arcv.vmv.v.si v0,v3,v6
 
-	arcv.vmvi.s.v 0,v3,6
-	arcv.vmvi.s.v v0,3,6
-	arcv.vmvi.s.v v0,v3,v6
+	arcv.vmv.s.vi 0,v3,6
+	arcv.vmv.s.vi v0,3,6
+	arcv.vmv.s.vi v0,v3,v6
 
 	arcv.vnorm.v 0,v3
 	arcv.vnorm.v v0,3
