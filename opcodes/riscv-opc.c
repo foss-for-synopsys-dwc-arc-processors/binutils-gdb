@@ -3779,10 +3779,10 @@ const struct riscv_opcode riscv_opcodes[] =
 { "arcv.bspush", 0, INSN_CLASS_XARCVBITSTREAM, "d,s,t", MATCH_ARCV_BSPUSH, MASK_ARCV_BSPUSH, match_opcode, 0 },
 
 /* Vendor-specific (ARC-V) VDSP extension.  */
-{ "arcv.vmv.v.s", 0, INSN_CLASS_XARCVVDSP, "Vd,Vt,s", MATCH_ARCV_VMV_V_S, MASK_ARCV_VMV_V_S, match_opcode, 0 },
-{ "arcv.vmv.s.v", 0, INSN_CLASS_XARCVVDSP, "Vd,Vt,s", MATCH_ARCV_VMV_S_V, MASK_ARCV_VMV_S_V, match_opcode, 0 },
-{ "arcv.vmvi.v.s", 0, INSN_CLASS_XARCVVDSP, "Vd,Vt,Z", MATCH_ARCV_VMVI_V_S, MASK_ARCV_VMVI_V_S, match_opcode, 0 },
-{ "arcv.vmvi.s.v", 0, INSN_CLASS_XARCVVDSP, "Vd,Vt,Z", MATCH_ARCV_VMVI_S_V, MASK_ARCV_VMVI_S_V, match_opcode, 0 },
+{ "arcv.vmv.v.sx", 0, INSN_CLASS_XARCVVDSP, "Vd,Vt,s", MATCH_ARCV_VMV_V_S, MASK_ARCV_VMV_V_S, match_opcode, 0 },
+{ "arcv.vmv.s.vx", 0, INSN_CLASS_XARCVVDSP, "Vd,Vt,s", MATCH_ARCV_VMV_S_V, MASK_ARCV_VMV_S_V, match_opcode, 0 },
+{ "arcv.vmv.v.si", 0, INSN_CLASS_XARCVVDSP, "Vd,Vt,Z", MATCH_ARCV_VMVI_V_S, MASK_ARCV_VMVI_V_S, match_opcode, 0 },
+{ "arcv.vmv.s.vi", 0, INSN_CLASS_XARCVVDSP, "Vd,Vt,Z", MATCH_ARCV_VMVI_S_V, MASK_ARCV_VMVI_S_V, match_opcode, 0 },
 { "arcv.vnorm.v", 0, INSN_CLASS_XARCVVDSP, "Vd,VtVm", MATCH_ARCV_VNORM_V, MASK_ARCV_VNORM_V, match_opcode, 0 },
 { "arcv.vssabs.v", 0, INSN_CLASS_XARCVVDSP, "Vd,VtVm", MATCH_ARCV_VSSABS_V, MASK_ARCV_VSSABS_V, match_opcode, 0 },
 { "arcv.vsneg.v", 0, INSN_CLASS_XARCVVDSP, "Vd,VtVm", MATCH_ARCV_VSNEG_V, MASK_ARCV_VSNEG_V, match_opcode, 0 },

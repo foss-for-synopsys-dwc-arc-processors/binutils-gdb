@@ -7,18 +7,18 @@
 Disassembly of section .text:
 
 0+[0-9a-f]+ <.text>:
-[ 	]+[0-9a-f]+:[ 	]+d23fe05b[ 	]+arcv.vmv.v.s[ 	]+v0,v3,t6
-[ 	]+[0-9a-f]+:[ 	]+d262e1db[ 	]+arcv.vmv.v.s[ 	]+v3,v6,t0
-[ 	]+[0-9a-f]+:[ 	]+d20e635b[ 	]+arcv.vmv.v.s[ 	]+v6,v0,t3
-[ 	]+[0-9a-f]+:[ 	]+e23fe05b[ 	]+arcv.vmv.s.v[ 	]+v0,v3,t6
-[ 	]+[0-9a-f]+:[ 	]+e262e1db[ 	]+arcv.vmv.s.v[ 	]+v3,v6,t0
-[ 	]+[0-9a-f]+:[ 	]+e20e635b[ 	]+arcv.vmv.s.v[ 	]+v6,v0,t3
-[ 	]+[0-9a-f]+:[ 	]+d233105b[ 	]+arcv.vmvi.v.s[ 	]+v0,v3,6
-[ 	]+[0-9a-f]+:[ 	]+d26011db[ 	]+arcv.vmvi.v.s[ 	]+v3,v6,0
-[ 	]+[0-9a-f]+:[ 	]+d201935b[ 	]+arcv.vmvi.v.s[ 	]+v6,v0,3
-[ 	]+[0-9a-f]+:[ 	]+e233105b[ 	]+arcv.vmvi.s.v[ 	]+v0,v3,6
-[ 	]+[0-9a-f]+:[ 	]+e26011db[ 	]+arcv.vmvi.s.v[ 	]+v3,v6,0
-[ 	]+[0-9a-f]+:[ 	]+e201935b[ 	]+arcv.vmvi.s.v[ 	]+v6,v0,3
+[ 	]+[0-9a-f]+:[ 	]+d23fe05b[ 	]+arcv.vmv.v.sx[ 	]+v0,v3,t6
+[ 	]+[0-9a-f]+:[ 	]+d262e1db[ 	]+arcv.vmv.v.sx[ 	]+v3,v6,t0
+[ 	]+[0-9a-f]+:[ 	]+d20e635b[ 	]+arcv.vmv.v.sx[ 	]+v6,v0,t3
+[ 	]+[0-9a-f]+:[ 	]+e23fe05b[ 	]+arcv.vmv.s.vx[ 	]+v0,v3,t6
+[ 	]+[0-9a-f]+:[ 	]+e262e1db[ 	]+arcv.vmv.s.vx[ 	]+v3,v6,t0
+[ 	]+[0-9a-f]+:[ 	]+e20e635b[ 	]+arcv.vmv.s.vx[ 	]+v6,v0,t3
+[ 	]+[0-9a-f]+:[ 	]+d233105b[ 	]+arcv.vmv.v.si[ 	]+v0,v3,6
+[ 	]+[0-9a-f]+:[ 	]+d26011db[ 	]+arcv.vmv.v.si[ 	]+v3,v6,0
+[ 	]+[0-9a-f]+:[ 	]+d201935b[ 	]+arcv.vmv.v.si[ 	]+v6,v0,3
+[ 	]+[0-9a-f]+:[ 	]+e233105b[ 	]+arcv.vmv.s.vi[ 	]+v0,v3,6
+[ 	]+[0-9a-f]+:[ 	]+e26011db[ 	]+arcv.vmv.s.vi[ 	]+v3,v6,0
+[ 	]+[0-9a-f]+:[ 	]+e201935b[ 	]+arcv.vmv.s.vi[ 	]+v6,v0,3
 [ 	]+[0-9a-f]+:[ 	]+4a30205b[ 	]+arcv.vnorm.v[ 	]+v0,v3
 [ 	]+[0-9a-f]+:[ 	]+4a6021db[ 	]+arcv.vnorm.v[ 	]+v3,v6
 [ 	]+[0-9a-f]+:[ 	]+4a30a05b[ 	]+arcv.vssabs.v[ 	]+v0,v3
