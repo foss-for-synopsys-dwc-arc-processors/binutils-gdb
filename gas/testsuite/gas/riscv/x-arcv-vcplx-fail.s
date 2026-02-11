@@ -37,65 +37,65 @@
 	arcv.vscmul.vv v3,v6
 	arcv.vscmul.vv v6,v0
 
-	arcv.vscmul.vx v0,v3
-	arcv.vscmul.vx v3,v6
-	arcv.vscmul.vx v6,v0
+	arcv.vscmul.vs v0,v3
+	arcv.vscmul.vs v3,v6
+	arcv.vscmul.vs v6,v0
 
 	arcv.vscjmul.vv v0,v3
 	arcv.vscjmul.vv v3,v6
 	arcv.vscjmul.vv v6,v0
 
-	arcv.vscjmul.vx v0,v3
-	arcv.vscjmul.vx v3,v6
-	arcv.vscjmul.vx v6,v0
+	arcv.vscjmul.vs v0,v3
+	arcv.vscjmul.vs v3,v6
+	arcv.vscjmul.vs v6,v0
 
 	arcv.vwscmul.vv v0,v3
 	arcv.vwscmul.vv v3,v6
 	arcv.vwscmul.vv v6,v0
 
-	arcv.vwscmul.vx v0,v3
-	arcv.vwscmul.vx v3,v6
-	arcv.vwscmul.vx v6,v0
+	arcv.vwscmul.vs v0,v3
+	arcv.vwscmul.vs v3,v6
+	arcv.vwscmul.vs v6,v0
 
 	arcv.vwscjmul.vv v0,v3
 	arcv.vwscjmul.vv v3,v6
 	arcv.vwscjmul.vv v6,v0
 
-	arcv.vwscjmul.vx v0,v3
-	arcv.vwscjmul.vx v3,v6
-	arcv.vwscjmul.vx v6,v0
+	arcv.vwscjmul.vs v0,v3
+	arcv.vwscjmul.vs v3,v6
+	arcv.vwscjmul.vs v6,v0
 
 	arcv.vwscmac.vv v0,v3
 	arcv.vwscmac.vv v3,v6
 	arcv.vwscmac.vv v6,v0
 
-	arcv.vwscmac.vx v0,v3
-	arcv.vwscmac.vx v3,v6
-	arcv.vwscmac.vx v6,v0
+	arcv.vwscmac.vs v0,v3
+	arcv.vwscmac.vs v3,v6
+	arcv.vwscmac.vs v6,v0
 
 	arcv.vwscnmsac.vv v0,v3
 	arcv.vwscnmsac.vv v3,v6
 	arcv.vwscnmsac.vv v6,v0
 
-	arcv.vwscnmsac.vx v0,v3
-	arcv.vwscnmsac.vx v3,v6
-	arcv.vwscnmsac.vx v6,v0
+	arcv.vwscnmsac.vs v0,v3
+	arcv.vwscnmsac.vs v3,v6
+	arcv.vwscnmsac.vs v6,v0
 
 	arcv.vwscjmac.vv v0,v3
 	arcv.vwscjmac.vv v3,v6
 	arcv.vwscjmac.vv v6,v0
 
-	arcv.vwscjmac.vx v0,v3
-	arcv.vwscjmac.vx v3,v6
-	arcv.vwscjmac.vx v6,v0
+	arcv.vwscjmac.vs v0,v3
+	arcv.vwscjmac.vs v3,v6
+	arcv.vwscjmac.vs v6,v0
 
 	arcv.vwscjnmsac.vv v0,v3
 	arcv.vwscjnmsac.vv v3,v6
 	arcv.vwscjnmsac.vv v6,v0
 
-	arcv.vwscjnmsac.vx v0,v3
-	arcv.vwscjnmsac.vx v3,v6
-	arcv.vwscjnmsac.vx v6,v0
+	arcv.vwscjnmsac.vs v0,v3
+	arcv.vwscjnmsac.vs v3,v6
+	arcv.vwscjnmsac.vs v6,v0
 
 	arcv.vwscrdot.vv v0,v3
 	arcv.vwscrdot.vv v3,v6
@@ -144,65 +144,65 @@
 	arcv.vscmul.vv v3,v6,v0,t0
 	arcv.vscmul.vv v6,v0,v3,t0
 
-	arcv.vscmul.vx v0,v3,t6,t0
-	arcv.vscmul.vx v3,v6,t0,t0
-	arcv.vscmul.vx v6,v0,t3,t0
+	arcv.vscmul.vs v0,v3,v6,t0
+	arcv.vscmul.vs v3,v6,v0,t0
+	arcv.vscmul.vs v6,v0,v3,t0
 
 	arcv.vscjmul.vv v0,v3,v6,t0
 	arcv.vscjmul.vv v3,v6,v0,t0
 	arcv.vscjmul.vv v6,v0,v3,t0
 
-	arcv.vscjmul.vx v0,v3,t6,t0
-	arcv.vscjmul.vx v3,v6,t0,t0
-	arcv.vscjmul.vx v6,v0,t3,t0
+	arcv.vscjmul.vs v0,v3,v6,t0
+	arcv.vscjmul.vs v3,v6,v0,t0
+	arcv.vscjmul.vs v6,v0,v3,t0
 
 	arcv.vwscmul.vv v0,v3,v6,t0
 	arcv.vwscmul.vv v3,v6,v0,t0
 	arcv.vwscmul.vv v6,v0,v3,t0
 
-	arcv.vwscmul.vx v0,v3,t6,t0
-	arcv.vwscmul.vx v3,v6,t0,t0
-	arcv.vwscmul.vx v6,v0,t3,t0
+	arcv.vwscmul.vs v0,v3,v6,t0
+	arcv.vwscmul.vs v3,v6,v0,t0
+	arcv.vwscmul.vs v6,v0,v3,t0
 
 	arcv.vwscjmul.vv v0,v3,v6,t0
 	arcv.vwscjmul.vv v3,v6,v0,t0
 	arcv.vwscjmul.vv v6,v0,v3,t0
 
-	arcv.vwscjmul.vx v0,v3,t6,t0
-	arcv.vwscjmul.vx v3,v6,t0,t0
-	arcv.vwscjmul.vx v6,v0,t3,t0
+	arcv.vwscjmul.vs v0,v3,v6,t0
+	arcv.vwscjmul.vs v3,v6,v0,t0
+	arcv.vwscjmul.vs v6,v0,v3,t0
 
 	arcv.vwscmac.vv v0,v3,v6,t0
 	arcv.vwscmac.vv v3,v6,v0,t0
 	arcv.vwscmac.vv v6,v0,v3,t0
 
-	arcv.vwscmac.vx v0,v3,t6,t0
-	arcv.vwscmac.vx v3,v6,t0,t0
-	arcv.vwscmac.vx v6,v0,t3,t0
+	arcv.vwscmac.vs v0,v3,v6,t0
+	arcv.vwscmac.vs v3,v6,v0,t0
+	arcv.vwscmac.vs v6,v0,v3,t0
 
 	arcv.vwscnmsac.vv v0,v3,v6,t0
 	arcv.vwscnmsac.vv v3,v6,v0,t0
 	arcv.vwscnmsac.vv v6,v0,v3,t0
 
-	arcv.vwscnmsac.vx v0,v3,t6,t0
-	arcv.vwscnmsac.vx v3,v6,t0,t0
-	arcv.vwscnmsac.vx v6,v0,t3,t0
+	arcv.vwscnmsac.vs v0,v3,v6,t0
+	arcv.vwscnmsac.vs v3,v6,v0,t0
+	arcv.vwscnmsac.vs v6,v0,v3,t0
 
 	arcv.vwscjmac.vv v0,v3,v6,t0
 	arcv.vwscjmac.vv v3,v6,v0,t0
 	arcv.vwscjmac.vv v6,v0,v3,t0
 
-	arcv.vwscjmac.vx v0,v3,t6,t0
-	arcv.vwscjmac.vx v3,v6,t0,t0
-	arcv.vwscjmac.vx v6,v0,t3,t0
+	arcv.vwscjmac.vs v0,v3,v6,t0
+	arcv.vwscjmac.vs v3,v6,v0,t0
+	arcv.vwscjmac.vs v6,v0,v3,t0
 
 	arcv.vwscjnmsac.vv v0,v3,v6,t0
 	arcv.vwscjnmsac.vv v3,v6,v0,t0
 	arcv.vwscjnmsac.vv v6,v0,v3,t0
 
-	arcv.vwscjnmsac.vx v0,v3,t6,t0
-	arcv.vwscjnmsac.vx v3,v6,t0,t0
-	arcv.vwscjnmsac.vx v6,v0,t3,t0
+	arcv.vwscjnmsac.vs v0,v3,v6,t0
+	arcv.vwscjnmsac.vs v3,v6,v0,t0
+	arcv.vwscjnmsac.vs v6,v0,v3,t0
 
 	arcv.vwscrdot.vv v0,v3,v6,t0
 	arcv.vwscrdot.vv v3,v6,v0,t0
@@ -253,65 +253,65 @@
 	arcv.vscmul.vv v0,3,v6
 	arcv.vscmul.vv v0,v3,6
 
-	arcv.vscmul.vx 0,v3,t6
-	arcv.vscmul.vx v0,3,t6
-	arcv.vscmul.vx v0,v3,6
+	arcv.vscmul.vs 0,v3,t6
+	arcv.vscmul.vs v0,3,t6
+	arcv.vscmul.vs v0,v3,6
 
 	arcv.vscjmul.vv 0,v3,v6
 	arcv.vscjmul.vv v0,3,v6
 	arcv.vscjmul.vv v0,v3,6
 
-	arcv.vscjmul.vx 0,v3,t6
-	arcv.vscjmul.vx v0,3,t6
-	arcv.vscjmul.vx v0,v3,6
+	arcv.vscjmul.vs 0,v3,t6
+	arcv.vscjmul.vs v0,3,t6
+	arcv.vscjmul.vs v0,v3,6
 
 	arcv.vwscmul.vv 0,v3,v6
 	arcv.vwscmul.vv v0,3,v6
 	arcv.vwscmul.vv v0,v3,6
 
-	arcv.vwscmul.vx 0,v3,t6
-	arcv.vwscmul.vx v0,3,t6
-	arcv.vwscmul.vx v0,v3,6
+	arcv.vwscmul.vs 0,v3,t6
+	arcv.vwscmul.vs v0,3,t6
+	arcv.vwscmul.vs v0,v3,6
 
 	arcv.vwscjmul.vv 0,v3,v6
 	arcv.vwscjmul.vv v0,3,v6
 	arcv.vwscjmul.vv v0,v3,6
 
-	arcv.vwscjmul.vx 0,v3,t6
-	arcv.vwscjmul.vx v0,3,t6
-	arcv.vwscjmul.vx v0,v3,6
+	arcv.vwscjmul.vs 0,v3,t6
+	arcv.vwscjmul.vs v0,3,t6
+	arcv.vwscjmul.vs v0,v3,6
 
 	arcv.vwscmac.vv 0,v3,v6
 	arcv.vwscmac.vv v0,3,v6
 	arcv.vwscmac.vv v0,v3,6
 
-	arcv.vwscmac.vx 0,v3,t6
-	arcv.vwscmac.vx v0,3,t6
-	arcv.vwscmac.vx v0,v3,6
+	arcv.vwscmac.vs 0,v3,t6
+	arcv.vwscmac.vs v0,3,t6
+	arcv.vwscmac.vs v0,v3,6
 
 	arcv.vwscnmsac.vv 0,v3,v6
 	arcv.vwscnmsac.vv v0,3,v6
 	arcv.vwscnmsac.vv v0,v3,6
 
-	arcv.vwscnmsac.vx 0,v3,t6
-	arcv.vwscnmsac.vx v0,3,t6
-	arcv.vwscnmsac.vx v0,v3,6
+	arcv.vwscnmsac.vs 0,v3,t6
+	arcv.vwscnmsac.vs v0,3,t6
+	arcv.vwscnmsac.vs v0,v3,6
 
 	arcv.vwscjmac.vv 0,v3,v6
 	arcv.vwscjmac.vv v0,3,v6
 	arcv.vwscjmac.vv v0,v3,6
 
-	arcv.vwscjmac.vx 0,v3,t6
-	arcv.vwscjmac.vx v0,3,t6
-	arcv.vwscjmac.vx v0,v3,6
+	arcv.vwscjmac.vs 0,v3,t6
+	arcv.vwscjmac.vs v0,3,t6
+	arcv.vwscjmac.vs v0,v3,6
 
 	arcv.vwscjnmsac.vv 0,v3,v6
 	arcv.vwscjnmsac.vv v0,3,v6
 	arcv.vwscjnmsac.vv v0,v3,6
 
-	arcv.vwscjnmsac.vx 0,v3,t6
-	arcv.vwscjnmsac.vx v0,3,t6
-	arcv.vwscjnmsac.vx v0,v3,6
+	arcv.vwscjnmsac.vs 0,v3,t6
+	arcv.vwscjnmsac.vs v0,3,t6
+	arcv.vwscjnmsac.vs v0,v3,6
 
 	arcv.vwscrdot.vv 0,v3,v6
 	arcv.vwscrdot.vv v0,3,v6
