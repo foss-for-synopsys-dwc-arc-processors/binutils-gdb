@@ -1,0 +1,3 @@
+.*: Assembler messages:
+.*: Error: instruction `add' is already defined; `\.extInstruction' cannot reuse that name
+#...

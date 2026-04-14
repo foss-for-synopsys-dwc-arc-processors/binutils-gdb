@@ -37,6 +37,14 @@ proc riscv_choose_lp64_emul {} {
     return "elf64lriscv"
 }
 
+proc riscv_choose_64_or_32_emul {} {
+    if { [istarget "riscv64*-*"] } {
+	return [riscv_choose_lp64_emul]
+    } else {
+	return [riscv_choose_ilp32_emul]
+    }
+}
+
 # target: rv32 or rv64.
 # output: Which output you want?  (exe, pie, .so)
 proc run_dump_test_ifunc { name target output} {
@@ -174,6 +182,8 @@ if [istarget "riscv*-*-*"] {
     run_dump_test "uleb128"
     run_dump_test "pr31179"
     run_dump_test "pr31179-r"
+    run_dump_test "x-arcv-apex-01"
+    run_dump_test "x-arcv-apex-02"
     run_ld_link_tests [list \
 	[list "Weak reference 32" "-T weakref.ld -m[riscv_choose_ilp32_emul]" "" \
 	    "-march=rv32i -mabi=ilp32" {weakref32.s} \

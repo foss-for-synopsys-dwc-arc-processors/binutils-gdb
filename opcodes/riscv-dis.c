@@ -74,6 +74,10 @@ struct riscv_private_data
   bool all_ext;
 };
 
+/* Global instruction table for APEX extensions.
+   Indexed by instruction format offset (XD, XS, XI, XC) plus sub-opcode.  */
+static struct riscv_opcode *arcv_apex_insns[ARCV_APEX_INSN_LIMIT];
+
 /* Set default RISC-V disassembler options.  */
 
 static void
@@ -917,6 +921,34 @@ print_insn_args (const char *oparg, insn_t l, bfd_vma pc, disassemble_info *info
 		  goto undefined_modifier;
 		}
 	      break;
+	    case 'a': /* Vendor-specific (ARC-V) operands.  */
+	      switch (*++oparg)
+		{
+		/* ARC-V APEX operands.  */
+		case 'd':
+		  print (info->stream, dis_style_register, "%s",
+			 pd->riscv_gpr_names[(l >> ARCV_APEX_OP_SH_RD) & ARCV_APEX_OP_MASK_RD]);
+		  break;
+		case 's':
+		  print (info->stream, dis_style_register, "%s",
+			 pd->riscv_gpr_names[(l >> ARCV_APEX_OP_SH_RS1) & ARCV_APEX_OP_MASK_RS1]);
+		  break;
+		case 't':
+		  print (info->stream, dis_style_register, "%s",
+			 pd->riscv_gpr_names[(l >> ARCV_APEX_OP_SH_RS2) & ARCV_APEX_OP_MASK_RS2]);
+		  break;
+		case 'k':
+		  print (info->stream, dis_style_immediate, "%d",
+			 (int)ARCV_APEX_EXTRACT_XS_ITYPE_IMM (l));
+		  break;
+		case 'j':
+		  print (info->stream, dis_style_immediate, "%d",
+			 (int)ARCV_APEX_EXTRACT_XI_XC_ITYPE_IMM (l));
+		  break;
+		default:
+		  goto undefined_modifier;
+		}
+	      break;
 	    default:
 	      goto undefined_modifier;
 	    }
@@ -931,6 +963,71 @@ print_insn_args (const char *oparg, insn_t l, bfd_vma pc, disassemble_info *info
 	  return;
 	}
     }
+}
+
+/* Check if instruction is an APEX XD-type.
+   XD is identified by bits [13:12] == 00.  */
+
+static bool
+arcv_apex_xd_type_p (insn_t num)
+{
+  return ((num >> 12) & 0x3) == 0x0;
+}
+
+/* Check if instruction is an APEX XS-type.
+   XS is identified by bit [12] == 1.  */
+
+static bool
+arcv_apex_xs_type_p (insn_t num)
+{
+  return ((num >> 12) & 0x1) == 0x1;
+}
+
+/* Check if instruction is an APEX XI-type.
+   XI is identified by bits [14:12] == 010.  */
+
+static bool
+arcv_apex_xi_type_p (insn_t num)
+{
+  return ((num >> 12) & 0x7) == 0x2;
+}
+
+/* Check if instruction is an APEX XC-type.
+   XC is identified by bits [14:12] == 110.  */
+
+static bool
+arcv_apex_xc_type_p (insn_t num)
+{
+  return ((num >> 12) & 0x7) == 0x6;
+}
+
+/* Extract the sub-opcode for an XD-format instruction.
+   Bits 31..25 are shifted left by 1, bit 14 is OR-ed in.  */
+
+static int
+arcv_apex_extract_xd_type (uint64_t num)
+{
+  uint64_t bits_31_25 = (num >> 25) & 0x7F;
+  uint64_t bit_14 = (num >> 14) & 1;
+  return (bits_31_25 << 1) | bit_14;
+}
+
+/* Extract the sub-opcode for an XS-format instruction.  */
+
+static int
+arcv_apex_extract_xs_type (uint32_t num)
+{
+  return (int) arcv_apex_sub_opcode_from_xs_match (num);
+}
+
+/* Extract the sub-opcode for XI/XC-format instructions.
+   Bits 19..15 are used directly as the sub-opcode.  */
+
+static int
+arcv_apex_extract_xi_xc_type (uint32_t num)
+{
+  uint32_t bits_19_15 = ((num >> 15) & 0x1F);
+  return bits_19_15;
 }
 
 /* Print the RISC-V instruction at address MEMADDR in debugged memory,
@@ -1065,6 +1162,54 @@ riscv_disassemble_insn (bfd_vma memaddr,
 	    }
 
 	  return insnlen;
+	}
+    }
+
+  /* We did not find a match in the static riscv_opcodes table.  Only then
+     consider APEX metadata-driven Custom-0 (opcode 0xB) insns: if a
+     standard opcode pattern were ever to match the same encoding, it would
+     have been chosen above.
+
+     If so, determine the format (XD, XS, XI, XC) using the type predicates,
+     extract the sub-opcode, apply the format-specific offset, and look up
+     the instruction in arcv_apex_insns[].  */
+  if ((word & 0xF) == ARCV_APEX_CUSTOM0_OPCODE)
+    {
+      unsigned int offset = 0, sub_opcode = 0;
+
+      if (arcv_apex_xd_type_p (word))
+	{
+	  sub_opcode = arcv_apex_extract_xd_type (word);
+	  offset = ARCV_APEX_OFFSET_XD;
+	}
+      else if (arcv_apex_xs_type_p (word))
+	{
+	  sub_opcode = arcv_apex_extract_xs_type (word);
+	  offset = ARCV_APEX_OFFSET_XS;
+	}
+      else if (arcv_apex_xi_type_p (word))
+	{
+	  sub_opcode = arcv_apex_extract_xi_xc_type (word);
+	  offset = ARCV_APEX_OFFSET_XI;
+	}
+      else if (arcv_apex_xc_type_p (word))
+	{
+	  sub_opcode = arcv_apex_extract_xi_xc_type (word);
+	  offset = ARCV_APEX_OFFSET_XC;
+	}
+
+      if (sub_opcode + offset < ARCV_APEX_INSN_LIMIT)
+	{
+	  op = arcv_apex_insns[sub_opcode + offset];
+
+	  if (op && (op->match_func) (op, word))
+	    {
+	      (*info->fprintf_styled_func) (info->stream,
+					    dis_style_mnemonic,
+					    "%s", op->name);
+	      print_insn_args (op->args, word, memaddr, info);
+	      return insnlen;
+	    }
 	}
     }
 
@@ -1412,6 +1557,114 @@ riscv_disassemble_data (bfd_vma memaddr ATTRIBUTE_UNUSED,
   return info->bytes_per_chunk;
 }
 
+/* Create a mapping between a serialized APEX instruction record
+   (emitted by GAS) and a dynamically allocated riscv_opcode entry.
+
+   Record format (see struct apex_insn):
+     +------+------+--------+--------+-----------+---------+
+     | Len  | Type | Opcode | FuncT  |  Flags    | Name... |
+     +------+------+--------+--------+-----------+---------+
+      1B     1B      1B       1B       2B	  NUL-term
+
+   - 'block' points to the beginning of the serialized record.
+   - 'length' is the size of the block (must match record_len).
+   - The instruction name is stored at the end of the block and
+     is dynamically allocated here.  */
+
+static void
+arcv_apex_read_metadata (unsigned char *block,
+		      unsigned long length)
+{
+  /* Assert that the provided length matches the record length
+     declared at position 0 (as emitted by GAS).  */
+  unsigned int record_len = block[0];
+  if (length != record_len)
+    {
+      opcodes_error_handler (_("APEX metadata: length mismatch "
+			     "(section contents %lu bytes, "
+			     "record header says %u)"),
+			     (unsigned long) length, record_len);
+      return;
+    }
+
+  /* Compute the length of the instruction name by
+     subtracting the base struct size.  */
+  size_t name_length = record_len
+    - offsetof (struct apex_insn, name);
+
+  /* Allocate and null-terminate the instruction mnemonic.  */
+  char *name = xmalloc (name_length + 1);
+  memcpy (name,
+	  block + offsetof (struct apex_insn, name), /* Mnemonic start.  */
+	  name_length);
+  name[name_length] = '\0';
+
+  /* Extract sub-opcode and flags (flags is 16-bit, little-endian).  */
+  unsigned int sub_opcode = block[3];
+  unsigned int flags = bfd_getl16 (block + 4);
+
+  /* Allocate a new riscv_opcode entry.  */
+  struct riscv_opcode *insn = XNEW (struct riscv_opcode);
+
+  arcv_apex_init_dynamic_insn (insn);
+  insn->name = name;
+
+  unsigned int offset = 0;
+  /* Decode flags and adjust the opcode entry accordingly.  */
+  switch (flags & 0xF)
+    {
+    case APEX_FLAG_XD:
+      arcv_apex_setup_xd_insn (insn, flags, sub_opcode);
+      offset = ARCV_APEX_OFFSET_XD;
+      break;
+
+    case APEX_FLAG_XS:
+      arcv_apex_setup_xs_insn (insn, flags, sub_opcode);
+      offset = ARCV_APEX_OFFSET_XS;
+      break;
+
+    case APEX_FLAG_XI:
+      arcv_apex_setup_xi_insn (insn, flags, sub_opcode);
+      offset = ARCV_APEX_OFFSET_XI;
+      break;
+
+    case APEX_FLAG_XC:
+      arcv_apex_setup_xc_insn (insn, sub_opcode);
+      offset = ARCV_APEX_OFFSET_XC;
+      break;
+
+    /* If an instruction supports both XS and XC formats
+       (e.g., "extInstruction foo,123,XS,XC"), we create a separate
+       instruction for each format.  This is safe because no other XS
+       or XC instruction can use the same sub-opcode (e.g., =123).  */
+    case (APEX_FLAG_XS | APEX_FLAG_XC):
+      {
+	arcv_apex_setup_xs_insn (insn, flags, sub_opcode);
+	arcv_apex_insns[sub_opcode + ARCV_APEX_OFFSET_XS] = insn;
+
+	struct riscv_opcode *xc_copy = XNEW (struct riscv_opcode);
+	arcv_apex_init_dynamic_insn (xc_copy);
+	xc_copy->name = xstrdup (insn->name);
+	arcv_apex_setup_xc_insn (xc_copy, sub_opcode);
+	arcv_apex_insns[sub_opcode + ARCV_APEX_OFFSET_XC] = xc_copy;
+	return;
+      }
+
+    default:
+      opcodes_error_handler (_("APEX metadata: unknown format flags 0x%x"),
+			     flags & 0xF);
+      free (name);
+      free (insn);
+      return;
+    }
+
+  /* Place the fully initialized APEX instruction in the
+     arcv_apex_insns array at an index determined by its sub-opcode
+     and the format-specific offset.  This ensures each format
+     occupies a distinct array region.  */
+  arcv_apex_insns[sub_opcode + offset] = insn;
+}
+
 static bool
 riscv_init_disasm_info (struct disassemble_info *info)
 {
@@ -1450,6 +1703,25 @@ riscv_init_disasm_info (struct disassemble_info *info)
       bfd *abfd = info->section->owner;
       if (abfd && bfd_get_flavour (abfd) == bfd_target_elf_flavour)
 	{
+	  asection *sect;
+	  for (sect = abfd->sections; sect != NULL; sect = sect->next)
+	    {
+	      if (strstr (sect->name, ".riscvapex."))
+		{
+		  bfd_size_type count = bfd_section_size (sect);
+		  unsigned char *buffer = xmalloc (count);
+
+		  if (bfd_get_section_contents (abfd, sect, buffer, 0, count))
+		    arcv_apex_read_metadata (buffer, count);
+		  else
+		    opcodes_error_handler
+		      (_("warning: could not read APEX metadata "
+			 "section `%s'"),
+		       sect->name);
+		  free (buffer);
+		}
+	    }
+
 	  const char *sec_name =
 		get_elf_backend_data (abfd)->obj_attrs_section;
 	  if (bfd_get_section_by_name (abfd, sec_name) != NULL)
