@@ -1,0 +1,3 @@
+.*: Assembler messages:
+.*: Error: instruction `fooapex' is already defined; `\.extInstruction' cannot reuse that name
+#...

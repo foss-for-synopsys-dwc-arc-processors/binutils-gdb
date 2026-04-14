@@ -732,4 +732,72 @@ extern const struct riscv_opcode riscv_insn_types[];
 
 extern unsigned int riscv_get_sp_base (insn_t, unsigned int);
 
+extern int arcv_apex_match_rd_ne_rs1 (const struct riscv_opcode *, insn_t);
+extern void arcv_apex_init_dynamic_insn (struct riscv_opcode *);
+extern void arcv_apex_setup_xd_insn (struct riscv_opcode *, unsigned int,
+				     unsigned int);
+extern void arcv_apex_setup_xs_insn (struct riscv_opcode *, unsigned int,
+				     unsigned int);
+extern void arcv_apex_setup_xi_insn (struct riscv_opcode *, unsigned int,
+				     unsigned int);
+extern void arcv_apex_setup_xc_insn (struct riscv_opcode *, unsigned int);
+
+/* ARC-V APEX instruction format flags.  Used by .extInstruction directive
+   and metadata serialization/deserialization.  */
+enum apex_flags {
+  APEX_FLAG_NONE    = 0,
+  APEX_FLAG_XD      = 1 << 0,
+  APEX_FLAG_XS      = 1 << 1,
+  APEX_FLAG_XI      = 1 << 2,
+  APEX_FLAG_XC      = 1 << 3,
+  APEX_FLAG_VOID    = 1 << 4,
+  APEX_FLAG_NO_SRC0 = 1 << 5,
+  APEX_FLAG_NO_SRC1 = 1 << 6,
+};
+
+/* ARC-V APEX instruction metadata record.  Serialized in ELF .riscvapex.*
+   sections and read by the disassembler.  */
+struct apex_insn
+{
+  uint8_t len;
+  uint8_t type;
+  uint8_t opcode;
+  uint8_t func_t;
+  uint16_t flags;
+  char name[1];
+};
+
+/* The XD-type has 8 function bits encoding up to 256 instructions.
+   The XS-type has 6 function bits encoding up to 64 instructions.
+   Both the XI-type and the XC-type have 5 function bits each encoding up
+   to 32 instructions respectively.  Thus giving a total of 384 possible
+   different instructions.  */
+#define ARCV_APEX_INSN_LIMIT 384
+#define ARCV_APEX_OFFSET_XD  0				 /* 256 entries.  */
+#define ARCV_APEX_OFFSET_XS  (ARCV_APEX_OFFSET_XD + 256) /* 0  + 256 = 256  */
+#define ARCV_APEX_OFFSET_XI  (ARCV_APEX_OFFSET_XS + 64)  /* 256 + 64 = 320  */
+#define ARCV_APEX_OFFSET_XC  (ARCV_APEX_OFFSET_XI + 32)  /* 320 + 32 = 352  */
+
+/* Fixed encoding bits that distinguish XS, XI, and XC formats.  */
+#define ARCV_APEX_XS_FIXED_BITS   0x1000
+#define ARCV_APEX_XI_FIXED_BITS   0x2000
+#define ARCV_APEX_XC_FIXED_BITS   0x6000
+
+#define ARCV_APEX_MASK_XD  0xFE00407F
+#define ARCV_APEX_MASK_XS  0xF0707F
+#define ARCV_APEX_MASK_XI  0xFA07F
+#define ARCV_APEX_MASK_XC  0xFE07F
+
+/* RISC-V Custom-0 major opcode used by ARC-V APEX instructions.  */
+#define ARCV_APEX_CUSTOM0_OPCODE  0xb
+
+/* Metadata record type for APEX instructions.  */
+#define ARCV_APEX_METADATA_TYPE   1
+
+#define ENCODE_ARCV_APEX_8BIT_IMM(x) \
+  (RV_X(x, 0, 8) << 24)
+
+#define ENCODE_ARCV_APEX_12BIT_IMM(x) \
+  (RV_X(x, 0, 12) << 20)
+
 #endif /* _RISCV_H_ */

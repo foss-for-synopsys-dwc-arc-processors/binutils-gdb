@@ -266,6 +266,59 @@ Floating point constructors for the bfloat16 type, example usage:
 	.bfloat16 0b:ffc1
 @end smallexample
 
+@cindex @code{.extInstruction} directive, RISC-V
+@cindex ARC-V APEX instructions
+@item .extInstruction @var{name}, @var{opcode}, @var{attrs}@dots{}
+Define a dynamic APEX instruction that uses the Custom-0 encoding space.
+The @var{name} is the mnemonic used in subsequent assembly.  The
+@var{opcode} is the function code (sub-opcode) whose valid range depends
+on the format.  The @var{attrs} are a comma-separated list drawn from:
+
+@table @code
+@item XD
+XD format (3 register operands, 8-bit sub-opcode, range 0--255).
+@item XS
+XS format (2 registers + 8-bit signed immediate, 6-bit sub-opcode,
+range 0--63).
+@item XI
+XI format (1 register + 12-bit signed immediate, 5-bit sub-opcode,
+range 0--31).
+@item XC
+XC format (1 register acting as both destination and source +
+12-bit signed immediate, 5-bit sub-opcode, range 0--31).
+@item void
+Omit the destination register from the operand list.
+@item no_src0
+Omit the first source register from the operand list.
+@item no_src1
+Omit the second source register (or immediate) from the operand list.
+@end table
+
+Exactly one of @code{XD}, @code{XS}, @code{XI}, or @code{XC} must be
+specified.  @code{XS} and @code{XC} may be combined; in that case the
+assembler uses the XS encoding when the destination and source registers
+differ (and the immediate fits in 8 bits), and the XC encoding when the
+registers are the same or the immediate requires 12 bits.
+
+Examples:
+
+@smallexample
+	.extInstruction myalu, 1, XD
+	myalu a0, a1, a2
+
+	.extInstruction myimm, 5, XS
+	myimm a0, a1, 42
+
+	.extInstruction myflex, 3, XS, XC
+	myflex a0, a1, 10
+	myflex a0, a0, 1000
+@end smallexample
+
+The assembler emits metadata about each @code{.extInstruction} into
+ELF sections named @code{.riscvapex.@var{fmt}.@var{custom0}.@var{opcode}},
+which the disassembler reads to reconstruct instruction names and
+operand formats.
+
 @end table
 
 @node RISC-V-Modifiers

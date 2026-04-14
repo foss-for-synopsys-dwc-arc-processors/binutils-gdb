@@ -448,6 +448,146 @@ match_rd_x1x5_opcode (const struct riscv_opcode *op,
   return match_opcode (op, insn) && (rd == 1 || rd == 5);
 }
 
+/* Invariant fields for dynamically allocated APEX opcodes (GAS / metadata).
+   Per-insn name, match, mask, and args are filled by arcv_apex_setup_* or
+   the XS|XC conversion path.  */
+
+static const struct riscv_opcode arcv_apex_dynamic_insn_proto =
+{
+  NULL,			/* name.  */
+  0,			/* xlen_requirement.  */
+  INSN_CLASS_I,		/* insn_class.  */
+  NULL,			/* args.  */
+  0,			/* match.  */
+  0,			/* mask.  */
+  match_opcode,		/* match_func.  */
+  0			/* pinfo.  */
+};
+
+void
+arcv_apex_init_dynamic_insn (struct riscv_opcode *insn)
+{
+  memcpy (insn, &arcv_apex_dynamic_insn_proto, sizeof (*insn));
+}
+
+/* Match only when rd != rs1.  Used by the XS entry in an XS|XC pair so
+   that same-register operands always fall through to the XC encoding.  */
+
+int
+arcv_apex_match_rd_ne_rs1 (const struct riscv_opcode *op, insn_t insn)
+{
+  int rd  = (insn & MASK_RD) >> OP_SH_RD;
+  int rs1 = (insn & MASK_RS1) >> OP_SH_RS1;
+  return match_opcode (op, insn) && rd != rs1;
+}
+
+/* Initialize an APEX instruction in XD format.
+   Sets mask, match, and operand argument string based on flags.
+   The flags APEX_FLAG_VOID, APEX_FLAG_NO_SRC0, and APEX_FLAG_NO_SRC1
+   control which operands are present in the instruction definition.  */
+
+void
+arcv_apex_setup_xd_insn (struct riscv_opcode *insn,
+		       unsigned int flags,
+		       unsigned int sub_opcode)
+{
+  insn->mask = ARCV_APEX_MASK_XD;
+  insn->match = ((uint32_t)(sub_opcode & 0xFE) << 24)
+		| ((uint32_t)(sub_opcode & 0x1) << 14)
+		| ARCV_APEX_CUSTOM0_OPCODE;
+
+  /* Select operand pattern based on flags.
+     Operands use vendor prefix Xa (ARC-V APEX):
+     d = dest, s = src1, t = src2.  */
+  switch (flags & (APEX_FLAG_VOID | APEX_FLAG_NO_SRC0 | APEX_FLAG_NO_SRC1))
+    {
+    case APEX_FLAG_NO_SRC1:
+      insn->args = "Xad,Xas";
+      break;
+    case APEX_FLAG_NO_SRC0 | APEX_FLAG_NO_SRC1:
+      insn->args = "Xad";
+      break;
+    case APEX_FLAG_VOID | APEX_FLAG_NO_SRC0 | APEX_FLAG_NO_SRC1:
+      insn->args = "";
+      break;
+    case APEX_FLAG_VOID | APEX_FLAG_NO_SRC1:
+      insn->args = "Xas";
+      break;
+    case APEX_FLAG_VOID:
+      insn->args = "Xas,Xat";
+      break;
+    case 0:
+      insn->args = "Xad,Xas,Xat";
+      break;
+    default:
+      insn->args = "Xad,Xas,Xat";
+      break;
+    }
+}
+
+/* Initialize an APEX instruction in XS format.
+   Sets mask, match, and operand argument string based on flags.
+   The APEX_FLAG_VOID flag controls whether the destination operand
+   is included.  */
+
+void
+arcv_apex_setup_xs_insn (struct riscv_opcode *insn,
+		       unsigned int flags,
+		       unsigned int sub_opcode)
+{
+  insn->mask = ARCV_APEX_MASK_XS;
+  insn->match = ((uint32_t)(sub_opcode & 0x3C) << 18)
+		| ((uint32_t)(sub_opcode & 0x3) << 13)
+		| ARCV_APEX_CUSTOM0_OPCODE
+		| ARCV_APEX_XS_FIXED_BITS;
+
+  /* Select operand pattern based on APEX_FLAG_VOID.
+     Operands: d = dest, s = src1, k = 8-bit immediate.  */
+  if (flags & APEX_FLAG_VOID)
+    insn->args = "Xas,Xak";
+  else
+    insn->args = "Xad,Xas,Xak";
+}
+
+/* Initialize an APEX instruction in XI format.
+   Sets mask, match, and operand argument string based on flags.
+   The APEX_FLAG_VOID flag controls whether the destination operand
+   is included.  */
+
+void
+arcv_apex_setup_xi_insn (struct riscv_opcode *insn,
+		       unsigned int flags,
+		       unsigned int sub_opcode)
+{
+  insn->mask = ARCV_APEX_MASK_XI;
+  insn->match = ((uint32_t)(sub_opcode & 0x1F) << 15)
+		| ARCV_APEX_CUSTOM0_OPCODE
+		| ARCV_APEX_XI_FIXED_BITS;
+
+  if (flags & APEX_FLAG_VOID)
+    insn->args = "Xaj";
+  else
+    insn->args = "Xad,Xaj";
+}
+
+/* Initialize an APEX instruction in XC format.
+   Sets mask and match.  Set fixed operand argument string.
+   The XC form represents instructions where dest == src.  */
+
+void
+arcv_apex_setup_xc_insn (struct riscv_opcode *insn,
+		       unsigned int sub_opcode)
+{
+  insn->mask = ARCV_APEX_MASK_XC;
+  insn->match = ((uint32_t)(sub_opcode & 0x1F) << 15)
+		| ARCV_APEX_CUSTOM0_OPCODE
+		| ARCV_APEX_XC_FIXED_BITS;
+
+  /* Fixed operand pattern for XC instructions:
+     dest, dest, 12-bit immediate (same encoding field as XI).  */
+  insn->args = "Xad,Xad,Xaj";
+}
+
 const struct riscv_opcode riscv_opcodes[] =
 {
 /* name, xlen, isa, operands, match, mask, match_func, pinfo.  */
