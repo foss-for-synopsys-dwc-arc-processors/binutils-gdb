@@ -195,6 +195,10 @@ static bool start_assemble = false;
 
 static bool probing_insn_operands;
 
+/* Global instruction table for APEX extensions.
+   Indexed by instruction format offset (XD, XS, XI, XC) plus sub-opcode.  */
+struct riscv_opcode *arcv_apex_insns[ARCV_APEX_INSN_LIMIT];
+
 /* Set the default_isa_spec.  Return 0 if the spec isn't supported.
    Otherwise, return 1.  */
 
@@ -1770,6 +1774,18 @@ validate_riscv_insn (const struct riscv_opcode *opc, int length)
 		    goto unknown_validate_operand;
 		}
 		break;
+	    case 'a': /* Vendor-specific (ARC-V) operands.  */
+	      switch (*++oparg)
+		{
+		case 'd': USE_BITS (OP_MASK_RD, OP_SH_RD); break;
+		case 's': USE_BITS (OP_MASK_RS1, OP_SH_RS1); break;
+		case 't': USE_BITS (OP_MASK_RS2, OP_SH_RS2); break;
+		case 'k': break; /* 8-bit immediate.  */
+		case 'j': break; /* 12-bit immediate.  */
+		default:
+		  goto unknown_validate_operand;
+		}
+	      break;
 	    default:
 	      goto unknown_validate_operand;
 	    }
@@ -2060,6 +2076,28 @@ macro_build (expressionS *ep, const char *name, const char *fmt, ...)
       fmtStart = fmt;
       switch (*fmt)
 	{
+	case 'X':
+	  switch (*++fmt)
+	    {
+	    case 'a':
+	      switch (*++fmt)
+		{
+		case 'd':
+		  INSERT_OPERAND (RD, insn, va_arg (args, int));
+		  continue;
+		case 's':
+		  INSERT_OPERAND (RS1, insn, va_arg (args, int));
+		  continue;
+		case 't':
+		  INSERT_OPERAND (RS2, insn, va_arg (args, int));
+		  continue;
+		default:
+		  goto unknown_macro_argument;
+		}
+	    default:
+	      goto unknown_macro_argument;
+	    }
+	  break;
 	case 'V': /* RVV */
 	  switch (*++fmt)
 	    {
@@ -2835,6 +2873,174 @@ static symbolS *deferred_sym_lastP;
 static symbolS *orphan_sym_rootP;
 static symbolS *orphan_sym_lastP;
 
+/* Return true if INSN is the first entry of an APEX XS|XC pair
+   (i.e. the next contiguous entry has the same name and an XC mask).  */
+
+static bool
+arcv_apex_xs_xc_pair_p (const struct riscv_opcode *insn)
+{
+  return (insn->mask == ARCV_APEX_MASK_XS
+	  && insn[1].name != NULL
+	  && strcmp (insn->name, insn[1].name) == 0
+	  && insn[1].mask == ARCV_APEX_MASK_XC);
+}
+
+/* Validate operands of an APEX instruction.
+
+   Checks that the operands provided match the expected argument types
+   for XD, XS, XI, or XC APEX instruction formats.  Ensures that:
+   - Operand count matches the expected number of arguments.
+   - Register operands reference valid general-purpose registers.
+   - Immediate operands conform to the XS/XI 8-bit or 12-bit constraints.
+   - For XS|XC pairs, an out-of-range immediate requires dest == src
+     (because the XC encoding only has a single register field).
+   Returns true if the instruction is valid, false otherwise.  */
+
+static bool
+arcv_apex_validate_insn (const char *operands, const struct riscv_opcode *insn)
+{
+  /* Skip non-APEX instructions.  */
+  if (insn == NULL
+      || (insn->mask != ARCV_APEX_MASK_XD
+	  && insn->mask != ARCV_APEX_MASK_XS
+	  && insn->mask != ARCV_APEX_MASK_XI
+	  && insn->mask != ARCV_APEX_MASK_XC))
+    return true;
+
+  /* Make local copies for tokenization.  */
+  char *operands_copy = xstrdup (operands);
+  char *args_copy = xstrdup (insn->args);
+  bool ok = true;
+
+  char *operand_tokens[3] = { NULL };
+  char *arg_types[3] = { NULL };
+
+  int operand_count = 0;
+
+  /* Split operands into tokens (at most 3).  */
+  char *token = strtok (operands_copy, ",");
+  while (token && operand_count < 3)
+    {
+      operand_tokens[operand_count++] = token;
+      token = strtok (NULL, ",");
+    }
+  if (token)
+    operand_count++;
+
+  /* Split expected argument types into tokens (at most 3).  */
+  int arg_count = 0;
+  token = strtok (args_copy, ",");
+  while (token && arg_count < 3)
+    {
+      arg_types[arg_count++] = token;
+      token = strtok (NULL, ",");
+    }
+
+  /* Check if operand count matches the expected argument count.  */
+  if (arg_count != operand_count)
+    {
+      as_bad (_("expected %d operands but %d were specified"),
+	      arg_count, operand_count);
+      ok = false;
+    }
+  else
+    {
+      for (int i = 0; i < arg_count && ok; i++)
+	{
+	  const char *arg_type = arg_types[i];
+	  char *operand = operand_tokens[i];
+	  while (ISSPACE (*operand))
+	    operand++;
+	  /* Skip the ARC-V APEX operand prefix "Xa".  */
+	  arg_type += 2;
+
+	  expressionS expr;
+	  my_getExpression (&expr, operand, false);
+	  char *endptr;
+	  strtol (operand, &endptr, 0);
+	  /* Check that immediate operands are constants
+	     and valid number string.  */
+	  if ((*arg_type == 'k' || *arg_type == 'j')
+	      && (expr.X_op != O_constant || *endptr != '\0'))
+	    {
+	      as_bad (_("operands do not conform to the "
+			"specified APEX format"));
+	      ok = false;
+	    }
+	  else if (*arg_type != 'k' && *arg_type != 'j'
+		   && !str_hash_find (reg_names_hash, operand))
+	    {
+	      as_bad (_("operand must be a general-purpose "
+			"register"));
+	      ok = false;
+	    }
+	}
+
+      /* For plain XS instructions (no XC fallback), check the 8-bit
+	 immediate range here so the user gets a specific message
+	 rather than "illegal operands" from the Xak break path.  */
+      if (ok && insn->mask == ARCV_APEX_MASK_XS
+	  && !arcv_apex_xs_xc_pair_p (insn))
+	{
+	  for (int i = 0; i < arg_count && ok; i++)
+	    {
+	      const char *at = arg_types[i];
+	      if (at[0] == 'X' && at[1] == 'a' && at[2] == 'k')
+		{
+		  expressionS imm_val;
+		  my_getExpression (&imm_val, operand_tokens[i], false);
+		  if (imm_val.X_op == O_constant
+		      && (imm_val.X_add_number < -128
+			  || imm_val.X_add_number > 127))
+		    {
+		      as_bad (_("integer operand out of range; "
+				"should be from -128 to 127, "
+				"inclusive"));
+		      ok = false;
+		    }
+		}
+	    }
+	}
+
+      /* For XS|XC pairs: if the immediate exceeds the XS 8-bit range,
+	 the assembler will fall through to the XC encoding which only
+	 has a single register field (dest == src).  Reject early if
+	 the registers differ.  */
+      if (ok && arcv_apex_xs_xc_pair_p (insn) && arg_count == 3)
+	{
+	  const char *arg2 = arg_types[2];
+	  if (arg2[0] == 'X' && arg2[1] == 'a' && arg2[2] == 'k')
+	    {
+	      expressionS imm_val;
+	      my_getExpression (&imm_val, operand_tokens[2], false);
+	      if (imm_val.X_op == O_constant
+		  && (imm_val.X_add_number < -128
+		      || imm_val.X_add_number > 127))
+		{
+		  const char *op0 = operand_tokens[0];
+		  const char *op1 = operand_tokens[1];
+		  while (ISSPACE (*op0))
+		    op0++;
+		  while (ISSPACE (*op1))
+		    op1++;
+		  if (strcmp (op0, op1) != 0)
+		    {
+		      as_bad (_("APEX XS|XC instruction needs identical "
+				"destination and source when the "
+				"immediate is outside the range "
+				"-128..127"));
+		      ok = false;
+		    }
+		}
+	    }
+	}
+    }
+
+  xfree (operands_copy);
+  xfree (args_copy);
+  return ok;
+}
+
 /* This routine assembles an instruction into its binary format.  As a
    side effect, it sets the global variable imm_reloc to the type of
    relocation to do if one of the operands is an address expression.  */
@@ -2870,6 +3076,11 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
       }
 
   insn = str_hash_find (hash, str);
+
+  /* Validate the operands of the APEX instruction before assembling.
+     Returns an error if they do not conform to the expected APEX format.  */
+  if (!arcv_apex_validate_insn (asarg, insn))
+    return error;
 
   probing_insn_operands = true;
 
@@ -4281,6 +4492,62 @@ riscv_ip (char *str, struct riscv_cl_insn *ip, expressionS *imm_expr,
 		      asarg = expr_parse_end;
 		      continue;
 
+		    default:
+		      goto unknown_riscv_ip_operand;
+		    }
+		  break;
+
+		case 'a': /* Vendor-specific (ARC-V) operands.  */
+		  switch (*++oparg)
+		    {
+		    case 'k': /* ARC-V APEX 8-bit immediate.  */
+		      my_getExpression (imm_expr, asarg, false);
+		      check_absolute_expr (ip, imm_expr, false);
+		      if (imm_expr->X_add_number < -128
+			  || imm_expr->X_add_number > 127)
+			break;
+		      ip->insn_opcode
+			|= ((unsigned long)(imm_expr->X_add_number & 0xFF)
+			    << 24);
+		      asarg = expr_parse_end;
+		      continue;
+		    case 'j': /* ARC-V APEX 12-bit immediate.  */
+		      my_getExpression (imm_expr, asarg, false);
+		      check_absolute_expr (ip, imm_expr, false);
+		      if (imm_expr->X_add_number < -2048
+			  || imm_expr->X_add_number > 2047)
+			as_bad (_("integer operand out of range; "
+				  "should be from -2048 to 2047, "
+				  "inclusive"));
+		      ip->insn_opcode
+			|= ((unsigned long)(imm_expr->X_add_number & 0xFFF)
+			    << 20);
+		      asarg = expr_parse_end;
+		      continue;
+		    case 'd': /* ARC-V APEX destination register.  */
+		    case 's': /* ARC-V APEX source register.  */
+		    case 't': /* ARC-V APEX target register.  */
+		      if (reg_lookup (&asarg, RCLASS_GPR, &regno))
+			{
+			  char c = *oparg;
+			  if (*asarg == ' ')
+			    ++asarg;
+
+			  switch (c)
+			    {
+			    case 's':
+			      INSERT_OPERAND (RS1, *ip, regno);
+			      break;
+			    case 'd':
+			      INSERT_OPERAND (RD, *ip, regno);
+			      break;
+			    case 't':
+			      INSERT_OPERAND (RS2, *ip, regno);
+			      break;
+			    }
+			  continue;
+			}
+		      break;
 		    default:
 		      goto unknown_riscv_ip_operand;
 		    }
@@ -5899,6 +6166,8 @@ s_variant_cc (int ignored ATTRIBUTE_UNUSED)
   elfsym->internal_elf_sym.st_other |= STO_RISCV_VARIANT_CC;
 }
 
+static void arcv_apex_section_parser (int);
+
 /* RISC-V pseudo-ops table.  */
 static const pseudo_typeS riscv_pseudo_table[] =
 {
@@ -5915,6 +6184,7 @@ static const pseudo_typeS riscv_pseudo_table[] =
   {"variant_cc", s_variant_cc, 0},
   {"float16", float_cons, 'h'},
   {"bfloat16", float_cons, 'b'},
+  {"extinstruction", arcv_apex_section_parser, 0},
 
   { NULL, NULL, 0 },
 };
@@ -5925,4 +6195,402 @@ riscv_pop_insert (void)
   extern void pop_insert (const pseudo_typeS *);
 
   pop_insert (riscv_pseudo_table);
+}
+
+/* Create and get a read-only COMDAT section for an APEX instruction.
+
+   Section names encode the instruction format flags (XD=1<<0, XS=1<<1,
+   XI=1<<2, XC=1<<3), followed by the fixed Custom-0 value (11) and the
+   instruction opcode.
+
+   For example, an instruction declared as:
+     .extInstruction foo,7,XS,XC
+   maps to:
+     .riscvapex.<XS|XC>.11.<function_code>
+   and concretely:
+     .riscvapex.10.11.7
+
+   The section is placed in a COMDAT group so that the linker keeps only
+   one copy when multiple compilation units define the same section.
+   The COMDAT group name mirrors the section name but uses a ".apex."
+   prefix instead of ".riscvapex.".  */
+
+static segT
+arcv_apex_get_metadata_section (unsigned int insn_format,
+				unsigned int sub_opcode)
+{
+  /* Allocate buffer for full section name.  */
+  const char *section_name
+    = xasprintf (".riscvapex.%u.%u.%u",
+		 insn_format, ARCV_APEX_CUSTOM0_OPCODE, sub_opcode);
+
+  /* Create a new section with appropriate flags.  */
+  segT apex_section = subseg_new (section_name, 0);
+  bfd_set_section_flags (apex_section,
+			 SEC_READONLY | SEC_HAS_CONTENTS | SEC_LINK_ONCE);
+
+  /* Build the COMDAT group name for the section, prefixed with ".apex.".  */
+  const char *group_name
+    = xasprintf (".apex.%u.%u.%u",
+		 insn_format, ARCV_APEX_CUSTOM0_OPCODE, sub_opcode);
+
+  /* Attach the group name to the section.  */
+  elf_set_group_name (apex_section, group_name);
+
+  return apex_section;
+}
+
+/* Write APEX instruction metadata into the current section.
+
+   Builds an apex_insn record with fixed fields, function code,
+   flags, and the instruction mnemonic.  The record is padded to
+   maintain 16-bit alignment, ensuring correct layout in the
+   section.  This section is later used by the disassembler to
+   decode the instruction.  */
+
+static void
+arcv_apex_write_metadata (const char *insn_name,
+			  unsigned int flags,
+			  unsigned int sub_opcode)
+{
+  struct apex_insn apex;
+  /* Compute total size including name and padding.  */
+  size_t total_size = offsetof (struct apex_insn, name)
+		      + strlen (insn_name) + 1 /* Null terminator.  */;
+  unsigned null_padding = 1;
+
+  /* Ensure 16-bit alignment due to apex_flags being 16 bits.  */
+  if (total_size & 1)
+    {
+      total_size++;
+      null_padding++;
+    }
+
+  /* Initialize apex_insn fixed fields.  */
+  apex.len = total_size;
+  apex.type = ARCV_APEX_METADATA_TYPE;
+  apex.opcode = ARCV_APEX_CUSTOM0_OPCODE;
+  apex.func_t = sub_opcode;
+  apex.flags = flags;
+
+  /* Copy fixed fields into section.  */
+  size_t size = offsetof (struct apex_insn, name);
+  char *where = frag_more (size);
+  memcpy (where, &apex, size);
+
+  /* Copy instruction mnemonic.  */
+  size = strlen (insn_name);
+  where = frag_more (size);
+  memcpy (where, insn_name, size);
+
+  /* Add padding if needed.  */
+  where = frag_more (null_padding);
+  md_number_to_chars (where, 0x0, null_padding);
+}
+
+static bool
+arcv_apex_check_and_set_insn (struct riscv_opcode *insn,
+			      unsigned int opcode,
+			      unsigned int offset)
+{
+  if (arcv_apex_insns[offset + opcode])
+    {
+      as_bad (_(".extInstruction '%s' duplicates opcode used by '%s'"),
+	      insn->name, arcv_apex_insns[offset + opcode]->name);
+      return false;
+    }
+  arcv_apex_insns[offset + opcode] = insn;
+  return true;
+}
+
+/* Allocate and register an APEX instruction.
+
+   Allocates riscv_opcode structure(s), initializes them according to the
+   instruction format using the appropriate setup function, and inserts
+   them into the opcode hash table for later lookup during assembly.
+
+   For combined XS|XC instructions, two contiguous entries are allocated
+   (XS first, then XC, followed by a NULL sentinel) so that riscv_ip's
+   opcode iteration loop naturally tries the XS encoding first and falls
+   through to the wider XC encoding when the immediate does not fit.  */
+
+static void
+arcv_apex_register_insn (const char *insn_name,
+			 unsigned int flags,
+			 unsigned int sub_opcode)
+{
+  struct riscv_opcode *insn;
+  unsigned int offset = 0;
+  unsigned int fmt = flags & (APEX_FLAG_XD | APEX_FLAG_XS
+			      | APEX_FLAG_XI | APEX_FLAG_XC);
+  unsigned int max_code;
+  void **hash_slot;
+
+  if (str_hash_find (op_hash, insn_name) != NULL)
+    {
+      as_bad (_("instruction `%s' is already defined; "
+		"`.extInstruction' cannot reuse that name"),
+	      insn_name);
+      xfree ((void *) insn_name);
+      return;
+    }
+
+  if (fmt == APEX_FLAG_XD)
+    max_code = 255;
+  else if (fmt == APEX_FLAG_XS)
+    max_code = 63;
+  else if (fmt == (APEX_FLAG_XS | APEX_FLAG_XC)
+	   || fmt == APEX_FLAG_XI || fmt == APEX_FLAG_XC)
+    max_code = 31;
+  else
+    {
+      as_bad (_("`.extInstruction' requires at least one of XD, XS, XI, XC"));
+      xfree ((void *) insn_name);
+      return;
+    }
+
+  if (sub_opcode > max_code)
+    {
+      as_bad (_("APEX instruction function code out of range"));
+      xfree ((void *) insn_name);
+      return;
+    }
+
+  if (fmt == (APEX_FLAG_XS | APEX_FLAG_XC))
+    {
+      /* Allocate a contiguous pair of entries plus a NULL sentinel so
+	 that riscv_ip's insn++ iteration finds both encodings.  The
+	 XS entry is tried first; its match_func rejects same-register
+	 operands so that they always use the XC encoding (matching the
+	 original preference).  If the 8-bit immediate does not fit,
+	 riscv_ip also falls through to the XC (12-bit) entry.  */
+      struct riscv_opcode *entries = XCNEWVEC (struct riscv_opcode, 3);
+      struct riscv_opcode *xs_insn = &entries[0];
+      struct riscv_opcode *xc_insn = &entries[1];
+
+      arcv_apex_init_dynamic_insn (xs_insn);
+      xs_insn->name = insn_name;
+      arcv_apex_setup_xs_insn (xs_insn, flags, sub_opcode);
+      xs_insn->match_func = arcv_apex_match_rd_ne_rs1;
+
+      arcv_apex_init_dynamic_insn (xc_insn);
+      xc_insn->name = insn_name;
+      arcv_apex_setup_xc_insn (xc_insn, sub_opcode);
+
+      /* entries[2] is zero-initialized (name == NULL) by XCNEWVEC,
+	 which acts as the sentinel for the riscv_ip iteration.  */
+
+      if (!arcv_apex_check_and_set_insn (xs_insn, sub_opcode,
+					 ARCV_APEX_OFFSET_XS))
+	{
+	  xfree (entries);
+	  xfree ((void *) insn_name);
+	  return;
+	}
+      if (!arcv_apex_check_and_set_insn (xc_insn, sub_opcode,
+					 ARCV_APEX_OFFSET_XC))
+	{
+	  arcv_apex_insns[sub_opcode + ARCV_APEX_OFFSET_XS] = NULL;
+	  xfree (entries);
+	  xfree ((void *) insn_name);
+	  return;
+	}
+
+      insn = xs_insn;
+    }
+  else
+    {
+      /* Allocate a 2-entry array: the instruction plus a zero sentinel
+	 (name == NULL) so that riscv_ip's insn++ loop and helpers like
+	 arcv_apex_xs_xc_pair_p can safely read insn[1].  */
+      insn = XCNEWVEC (struct riscv_opcode, 2);
+      arcv_apex_init_dynamic_insn (insn);
+      insn->name = insn_name;
+
+      switch (fmt)
+	{
+	case APEX_FLAG_XD:
+	  arcv_apex_setup_xd_insn (insn, flags, sub_opcode);
+	  offset = ARCV_APEX_OFFSET_XD;
+	  break;
+	case APEX_FLAG_XS:
+	  arcv_apex_setup_xs_insn (insn, flags, sub_opcode);
+	  offset = ARCV_APEX_OFFSET_XS;
+	  break;
+	case APEX_FLAG_XI:
+	  arcv_apex_setup_xi_insn (insn, flags, sub_opcode);
+	  offset = ARCV_APEX_OFFSET_XI;
+	  break;
+	case APEX_FLAG_XC:
+	  arcv_apex_setup_xc_insn (insn, sub_opcode);
+	  offset = ARCV_APEX_OFFSET_XC;
+	  break;
+	default:
+	  as_bad (_("internal error in APEX instruction registration"));
+	  xfree (insn);
+	  xfree ((void *) insn_name);
+	  return;
+	}
+
+      if (!arcv_apex_check_and_set_insn (insn, sub_opcode, offset))
+	{
+	  xfree (insn);
+	  xfree ((void *) insn_name);
+	  return;
+	}
+    }
+
+  hash_slot = str_hash_insert (op_hash, insn->name, insn, 0);
+  if (hash_slot != NULL)
+    {
+      as_bad (_("internal error: could not register APEX instruction `%s'"),
+	      insn_name);
+      if (fmt == (APEX_FLAG_XS | APEX_FLAG_XC))
+	{
+	  arcv_apex_insns[sub_opcode + ARCV_APEX_OFFSET_XS] = NULL;
+	  arcv_apex_insns[sub_opcode + ARCV_APEX_OFFSET_XC] = NULL;
+	}
+      else
+	arcv_apex_insns[sub_opcode + offset] = NULL;
+      xfree (insn);
+      xfree ((void *) insn_name);
+      return;
+    }
+
+  segT saved_seg = now_seg;
+  subsegT saved_subseg = now_subseg;
+
+  segT apex_section = arcv_apex_get_metadata_section (flags & 0xF, sub_opcode);
+  subseg_set (apex_section, 0);
+
+  arcv_apex_write_metadata (insn_name, flags, sub_opcode);
+
+  subseg_set (saved_seg, saved_subseg);
+}
+
+/* Parse an APEX section definition of the form
+   ".extInstruction <name>, <sub_opcode>, <attributes>".  The <attributes>
+   may include XD, XS, XI, XC, void, no_src0, and no_src1.  Checks for
+   invalid combinations (e.g., XD with XS/XI/XC) and registers the
+   instruction once parsed.  */
+
+static void
+arcv_apex_section_parser (int ignore ATTRIBUTE_UNUSED)
+{
+  char *p, c, *insn_name;
+  char *insn_format;
+  unsigned int sub_opcode;
+  /* Skip leading whitespace.  */
+  SKIP_WHITESPACE ();
+
+  p = input_line_pointer;
+  c = get_symbol_name (&p);
+
+  insn_name = xstrdup (p);
+  restore_line_pointer (c);
+
+  /* Convert mnemonic to lowercase for canonical form.  */
+  for (p = insn_name; *p; ++p)
+    *p = TOLOWER (*p);
+
+  /* Expect a comma after mnemonic.  */
+  if (*input_line_pointer != ',')
+  {
+    as_bad (_("expected comma after instruction name"));
+    ignore_rest_of_line ();
+    xfree (insn_name);
+    return;
+  }
+
+  input_line_pointer++;
+  /* Parse sub-opcode value.  */
+  sub_opcode = get_absolute_expression ();
+
+  /* Expect a comma after function code.  */
+  if (*input_line_pointer != ',')
+  {
+    as_bad (_("expected comma after instruction opcode"));
+    ignore_rest_of_line ();
+    xfree (insn_name);
+    return;
+  }
+
+  uint8_t flags = 0;
+  while (*input_line_pointer == ',')
+    {
+      input_line_pointer++;
+
+      p = input_line_pointer;
+      c = get_symbol_name (&p);
+      insn_format = xstrdup (p);
+
+      if (strcmp (insn_format, "XD") == 0)
+	flags |= APEX_FLAG_XD;
+      else if (strcmp (insn_format, "XS") == 0)
+	flags |= APEX_FLAG_XS;
+      else if (strcmp (insn_format, "XI") == 0)
+	flags |= (APEX_FLAG_XI | APEX_FLAG_NO_SRC1);
+      else if (strcmp (insn_format, "XC") == 0)
+	flags |= APEX_FLAG_XC;
+      else if (strcmp (insn_format, "void") == 0)
+	flags |= APEX_FLAG_VOID;
+      else if (strcmp (insn_format, "no_src0") == 0)
+	flags |= APEX_FLAG_NO_SRC0;
+      else if (strcmp (insn_format, "no_src1") == 0)
+	flags |= APEX_FLAG_NO_SRC1;
+      else
+	{
+	  as_bad (_("unrecognized attribute; must be one of "
+		    "XD, XS, XI, XC, void, no_src0, no_src1"));
+	  restore_line_pointer (c);
+	  xfree (insn_format);
+	  xfree (insn_name);
+	  ignore_rest_of_line ();
+	  return;
+	}
+
+      restore_line_pointer (c);
+      xfree (insn_format);
+    }
+
+  if (flags & APEX_FLAG_XD
+      && (flags & (APEX_FLAG_XS | APEX_FLAG_XI | APEX_FLAG_XC)))
+    {
+      as_bad (_("XD and non-XD formats may not be "
+		"specified for the same instruction"));
+      xfree (insn_name);
+      ignore_rest_of_line ();
+      return;
+    }
+
+  if ((flags & APEX_FLAG_VOID) && (flags & APEX_FLAG_XC))
+    {
+      as_bad (_("XC and VOID formats may not be "
+		"specified for the same instruction"));
+      xfree (insn_name);
+      ignore_rest_of_line ();
+      return;
+    }
+
+  if (flags & APEX_FLAG_NO_SRC0
+      && (flags & (APEX_FLAG_XS | APEX_FLAG_XI | APEX_FLAG_XC)))
+    {
+      as_bad (_("non-XD and NO_SRC0 formats may not be "
+		"specified for the same instruction"));
+      xfree (insn_name);
+      ignore_rest_of_line ();
+      return;
+    }
+
+  if (flags & APEX_FLAG_NO_SRC1
+      && (flags & (APEX_FLAG_XS | APEX_FLAG_XC)))
+    {
+      as_bad (_("non-XD and NO_SRC1 formats may not be "
+		"specified for the same instruction"));
+      xfree (insn_name);
+      ignore_rest_of_line ();
+      return;
+    }
+
+  arcv_apex_register_insn (insn_name, flags, sub_opcode);
 }
