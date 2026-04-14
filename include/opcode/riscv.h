@@ -794,6 +794,12 @@ struct apex_insn
 /* Metadata record type for APEX instructions.  */
 #define ARCV_APEX_METADATA_TYPE   1
 
+#define EXTRACT_ARCV_APEX_XS_IMM(x) \
+  (RV_X(x, 24, 8) | (RV_IMM_SIGN(x) << 8))
+
+#define EXTRACT_ARCV_APEX_XI_XC_IMM(x) \
+  (RV_X(x, 20, 12) | (RV_IMM_SIGN(x) << 12))
+
 #define ENCODE_ARCV_APEX_8BIT_IMM(x) \
   (RV_X(x, 0, 8) << 24)
 
