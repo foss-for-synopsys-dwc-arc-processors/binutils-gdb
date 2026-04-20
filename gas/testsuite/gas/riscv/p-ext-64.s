@@ -46,6 +46,12 @@ target:
 	psshar.hs	a0, a1, a2
 	psshar.ws	a0, a1, a2
 	shar	a0, a1, a2
+	psshl.hs	a0, a1, a2
+	psshl.ws	a0, a1, a2
+	shl	a0, a1, a2
+	psshlr.hs	a0, a1, a2
+	psshlr.ws	a0, a1, a2
+	shlr	a0, a1, a2
 	psrli.b	a0, a1,1
 	psrli.h	a0, a1,15
 	psrli.w	a0, a1,31

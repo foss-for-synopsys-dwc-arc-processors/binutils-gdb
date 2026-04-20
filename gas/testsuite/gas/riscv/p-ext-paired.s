@@ -137,6 +137,10 @@ target:
 	pssha.dws	a0, a0, a1
 	psshar.dhs	a0, a0, a1
 	psshar.dws	a0, a0, a1
+	psshl.dhs	a0, a0, a1
+	psshl.dws	a0, a0, a1
+	psshlr.dhs	a0, a0, a1
+	psshlr.dws	a0, a0, a1
 	psrl.dbs	a0, a0, a1
 	psrl.dhs	a0, a0, a1
 	psrl.dws	a0, a0, a1

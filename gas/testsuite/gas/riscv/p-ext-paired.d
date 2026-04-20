@@ -146,6 +146,10 @@ Disassembly of section .text:
 [ 	]+[0-9a-f]+:[ 	]+6aba6a1b[ 	]+pssha.dws[ 	]+a0,a0,a1
 [ 	]+[0-9a-f]+:[ 	]+78ba6a1b[ 	]+psshar.dhs[ 	]+a0,a0,a1
 [ 	]+[0-9a-f]+:[ 	]+7aba6a1b[ 	]+psshar.dws[ 	]+a0,a0,a1
+[ 	]+[0-9a-f]+:[ 	]+48ba6a1b[ 	]+psshl.dhs[ 	]+a0,a0,a1
+[ 	]+[0-9a-f]+:[ 	]+4aba6a1b[ 	]+psshl.dws[ 	]+a0,a0,a1
+[ 	]+[0-9a-f]+:[ 	]+38ba6a1b[ 	]+psshlr.dhs[ 	]+a0,a0,a1
+[ 	]+[0-9a-f]+:[ 	]+3aba6a1b[ 	]+psshlr.dws[ 	]+a0,a0,a1
 [ 	]+[0-9a-f]+:[ 	]+0cbaea1b[ 	]+psrl.dbs[ 	]+a0,a0,a1
 [ 	]+[0-9a-f]+:[ 	]+08baea1b[ 	]+psrl.dhs[ 	]+a0,a0,a1
 [ 	]+[0-9a-f]+:[ 	]+0abaea1b[ 	]+psrl.dws[ 	]+a0,a0,a1

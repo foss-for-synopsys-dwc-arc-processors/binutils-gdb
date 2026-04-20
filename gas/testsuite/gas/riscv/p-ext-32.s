@@ -30,6 +30,10 @@ target:
 	pssha.hs	a0, a1, a2
 	psshar.hs	a0, a1, a2
 	sshar	a0, a1, a2
+	sshl	a0, a1, a2
+	psshl.hs	a0, a1, a2
+	psshlr.hs	a0, a1, a2
+	sshlr	a0, a1, a2
 	psrli.b	a0, a1,1
 	psrli.h	a0, a1,15
 	pusati.h	a0, a1,15
