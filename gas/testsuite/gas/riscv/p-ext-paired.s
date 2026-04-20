@@ -68,9 +68,9 @@ target:
 	wmaccsu	a0, a1, a2
 	pm2waddasu.h	a0, a1, a2
 	pmqwacc.h	a0, a1, a2
-	pmqwacc	a0, a1, a2
+	mqwacc	a0, a1, a2
 	pmqrwacc.h	a0, a1, a2
-	pmqrwacc	a0, a1, a2
+	mqrwacc	a0, a1, a2
 	predsum.dbs	a0, a2, a4
 	predsum.dhs	a1, a2, a3
 	predsumu.dbs	a0, a0, a0
