@@ -26,7 +26,8 @@ fragment <<EOF
 #include "elfxx-riscv.h"
 
 static struct riscv_elf_params params = { .relax_gp = 1,
-					  .check_uleb128 = 0};
+					  .check_uleb128 = 0,
+					  .relax_align_decompress = 0};
 EOF
 
 # Define some shell vars to insert bits of code into the standard elf
@@ -36,6 +37,8 @@ PARSE_AND_LIST_LONGOPTS=${PARSE_AND_LIST_LONGOPTS}'
     { "no-relax-gp", no_argument, NULL, OPTION_NO_RELAX_GP },
     { "check-uleb128", no_argument, NULL, OPTION_CHECK_ULEB128 },
     { "no-check-uleb128", no_argument, NULL, OPTION_NO_CHECK_ULEB128 },
+    { "relax-align-decompress", no_argument, NULL, OPTION_RELAX_ALIGN_DECOMPRESS },
+    { "no-relax-align-decompress", no_argument, NULL, OPTION_NO_RELAX_ALIGN_DECOMPRESS },
 '
 
 PARSE_AND_LIST_OPTIONS=${PARSE_AND_LIST_OPTIONS}'
@@ -43,6 +46,8 @@ PARSE_AND_LIST_OPTIONS=${PARSE_AND_LIST_OPTIONS}'
   fprintf (file, _("  --no-relax-gp               Don'\''t perform GP relaxation\n"));
   fprintf (file, _("  --check-uleb128             Check if SUB_ULEB128 has non-zero addend\n"));
   fprintf (file, _("  --no-check-uleb128          Don'\''t check if SUB_ULEB128 has non-zero addend\n"));
+  fprintf (file, _("  --relax-align-decompress    Decompress RVC instructions to satisfy alignment, instead of NOPs\n"));
+  fprintf (file, _("  --no-relax-align-decompress Don'\''t decompress RVC instructions to satisfy alignment\n"));
 '
 
 PARSE_AND_LIST_ARGS_CASES=${PARSE_AND_LIST_ARGS_CASES}'
@@ -60,6 +65,14 @@ PARSE_AND_LIST_ARGS_CASES=${PARSE_AND_LIST_ARGS_CASES}'
 
     case OPTION_NO_CHECK_ULEB128:
       params.check_uleb128 = 0;
+      break;
+
+    case OPTION_RELAX_ALIGN_DECOMPRESS:
+      params.relax_align_decompress = 1;
+      break;
+
+    case OPTION_NO_RELAX_ALIGN_DECOMPRESS:
+      params.relax_align_decompress = 0;
       break;
 '
 

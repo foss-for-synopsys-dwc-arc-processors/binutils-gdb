@@ -4682,6 +4682,320 @@ _bfd_riscv_relax_tls_le (bfd *abfd,
     }
 }
 
+/* If CINSN is a 16-bit compressed integer or move instruction that has an
+   exactly equivalent 32-bit encoding with no relocation, store that encoding
+   in *INSN_OUT and return true.  RV64 selects a 64-bit target (needed for
+   c.addiw and for the 6-bit shift amounts).  Only reloc-free integer and
+   move instructions are handled; loads, stores, branches, jumps, hints and
+   reserved encodings are rejected so that the result is always
+   architecturally identical to the input.  This is the reverse of the RVC
+   compression done by _bfd_riscv_relax_call/jal/lui.  */
+
+static bool
+riscv_decompress_insn (uint16_t cinsn, bool rv64, uint32_t *insn_out)
+{
+  unsigned int rd = (cinsn >> OP_SH_RD) & OP_MASK_RD;
+  unsigned int crs2 = (cinsn >> OP_SH_CRS2) & OP_MASK_CRS2;
+  unsigned int rds = 8 + ((cinsn >> OP_SH_CRS1S) & OP_MASK_CRS1S);
+  unsigned int rs2s = 8 + ((cinsn >> OP_SH_CRS2S) & OP_MASK_CRS2S);
+  int imm = EXTRACT_CITYPE_IMM (cinsn);
+  unsigned int shamt = RV_X (cinsn, 2, 5) | (RV_X (cinsn, 12, 1) << 5);
+
+  /* CR-type: c.add, c.mv.  */
+  if ((cinsn & MASK_C_ADD) == MATCH_C_ADD)
+    {
+      if (rd == 0 || crs2 == 0)
+	return false;			/* HINT / c.jalr / c.ebreak.  */
+      *insn_out = MATCH_ADD | (rd << OP_SH_RD)
+		  | (rd << OP_SH_RS1) | (crs2 << OP_SH_RS2);
+      return true;
+    }
+  if ((cinsn & MASK_C_MV) == MATCH_C_MV)
+    {
+      if (rd == 0 || crs2 == 0)
+	return false;			/* HINT / c.jr.  */
+      /* mv rd, rs2  ==  addi rd, rs2, 0.  */
+      *insn_out = MATCH_ADDI | (rd << OP_SH_RD) | (crs2 << OP_SH_RS1);
+      return true;
+    }
+
+  /* CA-type: c.sub, c.xor, c.or, c.and.  */
+  if ((cinsn & MASK_C_SUB) == MATCH_C_SUB)
+    {
+      *insn_out = MATCH_SUB | (rds << OP_SH_RD)
+		  | (rds << OP_SH_RS1) | (rs2s << OP_SH_RS2);
+      return true;
+    }
+  if ((cinsn & MASK_C_XOR) == MATCH_C_XOR)
+    {
+      *insn_out = MATCH_XOR | (rds << OP_SH_RD)
+		  | (rds << OP_SH_RS1) | (rs2s << OP_SH_RS2);
+      return true;
+    }
+  if ((cinsn & MASK_C_OR) == MATCH_C_OR)
+    {
+      *insn_out = MATCH_OR | (rds << OP_SH_RD)
+		  | (rds << OP_SH_RS1) | (rs2s << OP_SH_RS2);
+      return true;
+    }
+  if ((cinsn & MASK_C_AND) == MATCH_C_AND)
+    {
+      *insn_out = MATCH_AND | (rds << OP_SH_RD)
+		  | (rds << OP_SH_RS1) | (rs2s << OP_SH_RS2);
+      return true;
+    }
+
+  /* CB-type: c.srli, c.srai, c.andi.  */
+  if ((cinsn & MASK_C_SRLI) == MATCH_C_SRLI)
+    {
+      if (shamt == 0 || (!rv64 && shamt >= 32))
+	return false;			/* HINT / reserved on RV32.  */
+      *insn_out = MATCH_SRLI | (rds << OP_SH_RD)
+		  | (rds << OP_SH_RS1) | (shamt << OP_SH_SHAMT);
+      return true;
+    }
+  if ((cinsn & MASK_C_SRAI) == MATCH_C_SRAI)
+    {
+      if (shamt == 0 || (!rv64 && shamt >= 32))
+	return false;			/* HINT / reserved on RV32.  */
+      *insn_out = MATCH_SRAI | (rds << OP_SH_RD)
+		  | (rds << OP_SH_RS1) | (shamt << OP_SH_SHAMT);
+      return true;
+    }
+  if ((cinsn & MASK_C_ANDI) == MATCH_C_ANDI)
+    {
+      *insn_out = MATCH_ANDI | (rds << OP_SH_RD)
+		  | (rds << OP_SH_RS1) | ENCODE_ITYPE_IMM (imm);
+      return true;
+    }
+
+  /* c.addi16sp (CI-type, funct3 == 011, rd == sp).  */
+  if ((cinsn & MASK_C_ADDI16SP) == MATCH_C_ADDI16SP)
+    {
+      int imm16 = EXTRACT_CITYPE_ADDI16SP_IMM (cinsn);
+      if (imm16 == 0)
+	return false;			/* Reserved.  */
+      *insn_out = MATCH_ADDI | (X_SP << OP_SH_RD)
+		  | (X_SP << OP_SH_RS1) | ENCODE_ITYPE_IMM (imm16);
+      return true;
+    }
+
+  /* c.addi4spn (CIW-type, funct3 == 000, op == 00).  */
+  if ((cinsn & MASK_C_ADDI4SPN) == MATCH_C_ADDI4SPN)
+    {
+      unsigned int imm4 = EXTRACT_CIWTYPE_ADDI4SPN_IMM (cinsn);
+      if (imm4 == 0)
+	return false;			/* Reserved / all-zero encoding.  */
+      *insn_out = MATCH_ADDI | (rs2s << OP_SH_RD)
+		  | (X_SP << OP_SH_RS1) | ENCODE_ITYPE_IMM (imm4);
+      return true;
+    }
+
+  /* CI-type: c.addi, c.li, c.slli, c.addiw.  */
+  if ((cinsn & MASK_C_ADDI) == MATCH_C_ADDI)
+    {
+      if (rd == 0)
+	return false;			/* c.nop / HINT.  */
+      *insn_out = MATCH_ADDI | (rd << OP_SH_RD)
+		  | (rd << OP_SH_RS1) | ENCODE_ITYPE_IMM (imm);
+      return true;
+    }
+  if ((cinsn & MASK_C_LI) == MATCH_C_LI)
+    {
+      if (rd == 0)
+	return false;			/* HINT.  */
+      *insn_out = MATCH_ADDI | (rd << OP_SH_RD) | ENCODE_ITYPE_IMM (imm);
+      return true;
+    }
+  if ((cinsn & MASK_C_SLLI) == MATCH_C_SLLI)
+    {
+      if (rd == 0 || shamt == 0 || (!rv64 && shamt >= 32))
+	return false;			/* HINT / reserved.  */
+      *insn_out = MATCH_SLLI | (rd << OP_SH_RD)
+		  | (rd << OP_SH_RS1) | (shamt << OP_SH_SHAMT);
+      return true;
+    }
+  if (rv64 && (cinsn & MASK_C_ADDIW) == MATCH_C_ADDIW)
+    {
+      if (rd == 0)
+	return false;			/* Reserved.  */
+      *insn_out = MATCH_ADDIW | (rd << OP_SH_RD)
+		  | (rd << OP_SH_RS1) | ENCODE_ITYPE_IMM (imm);
+      return true;
+    }
+
+  return false;
+}
+
+/* Return true if any relocation in SEC overlaps the LEN-byte instruction at
+   offset OFF.  */
+
+static bool
+riscv_insn_has_reloc (asection *sec, bfd_vma off, bfd_vma len)
+{
+  struct bfd_elf_section_data *data = elf_section_data (sec);
+  unsigned int i;
+
+  for (i = 0; i < sec->reloc_count; i++)
+    if (data->relocs[i].r_offset >= off && data->relocs[i].r_offset < off + len)
+      return true;
+  return false;
+}
+
+/* Find the section offset of the mapping-symbol boundary at or before
+   ALIGN_OFFSET in SEC, and report whether it marks instructions.  On success
+   store the boundary offset in *BOUNDARY and return true if it is a '$x'
+   (instruction) region, false for '$d' (data).  Return -1 if no mapping
+   symbol is found (in which case we cannot safely decode).  */
+
+static int
+riscv_prev_mapping_state (bfd *abfd, asection *sec, bfd_vma align_offset,
+			  bfd_vma *boundary)
+{
+  Elf_Internal_Shdr *symtab_hdr = &elf_symtab_hdr (abfd);
+  unsigned int sec_shndx = _bfd_elf_section_from_bfd_section (abfd, sec);
+  bool found = false;
+  bfd_vma best = 0;
+  bool best_is_insn = false;
+  unsigned int i;
+
+  for (i = 0; i < symtab_hdr->sh_info; i++)
+    {
+      Elf_Internal_Sym *sym = (Elf_Internal_Sym *) symtab_hdr->contents + i;
+      const char *name;
+
+      if (sym->st_shndx != sec_shndx || sym->st_value > align_offset)
+	continue;
+
+      name = bfd_elf_string_from_elf_section (abfd, symtab_hdr->sh_link,
+					      sym->st_name);
+      if (name == NULL || !riscv_elf_is_mapping_symbols (name))
+	continue;
+
+      if (!found || sym->st_value >= best)
+	{
+	  found = true;
+	  best = sym->st_value;
+	  best_is_insn = strcmp (name, "$d") != 0;
+	}
+    }
+
+  if (!found)
+    return -1;
+  *boundary = best;
+  return best_is_insn;
+}
+
+/* Try to decompress a contiguous run of reloc-free RVC integer/move
+   instructions immediately preceding the alignment point at ALIGN_OFFSET in
+   SEC, expanding at most MAX_INSNS of them (the ones closest to the boundary)
+   into their 32-bit forms.  Each decompressed instruction grows by 2 bytes,
+   consuming 2 bytes that would otherwise become a NOP.  The rewrite happens
+   inside the fixed-length window that also holds the alignment padding, so
+   the section size and everything at or after ALIGN_OFFSET is unchanged;
+   only interior labels within the run are shifted.  Returns the number of
+   instructions decompressed.  */
+
+static unsigned int
+riscv_relax_align_decompress (bfd *abfd, asection *sec,
+			      bfd_vma align_offset, unsigned int max_insns)
+{
+  struct bfd_elf_section_data *data = elf_section_data (sec);
+  Elf_Internal_Shdr *symtab_hdr = &elf_symtab_hdr (abfd);
+  struct elf_link_hash_entry **sym_hashes = elf_sym_hashes (abfd);
+  unsigned int sec_shndx = _bfd_elf_section_from_bfd_section (abfd, sec);
+  bfd_byte *contents = data->this_hdr.contents;
+  bool rv64 = ARCH_SIZE == 64;
+  bfd_vma boundary, off;
+  bfd_vma run_start = align_offset;
+  unsigned int run_count = 0;
+  unsigned int i, k;
+  int state;
+
+  if (max_insns == 0)
+    return 0;
+
+  /* We need a known instruction boundary to decode forward from, because
+     RISC-V is not self-synchronising when scanned backwards.  */
+  state = riscv_prev_mapping_state (abfd, sec, align_offset, &boundary);
+  if (state != 1)
+    return 0;
+
+  /* Decode forward from the boundary, tracking the maximal trailing run of
+     reloc-free decompressible 16-bit instructions.  */
+  for (off = boundary; off < align_offset; )
+    {
+      uint16_t cinsn = bfd_getl16 (contents + off);
+      unsigned int len = riscv_insn_length (cinsn);
+      uint32_t out;
+
+      if (off + len > align_offset)
+	return 0;		/* Misaligned; give up to stay safe.  */
+
+      if (len == 2
+	  && !riscv_insn_has_reloc (sec, off, len)
+	  && riscv_decompress_insn (cinsn, rv64, &out))
+	{
+	  if (run_count == 0)
+	    run_start = off;
+	  run_count++;
+	}
+      else
+	run_count = 0;
+
+      off += len;
+    }
+
+  if (off != align_offset || run_count == 0)
+    return 0;
+
+  /* Only decompress the last K instructions before the boundary.  */
+  k = run_count < max_insns ? run_count : max_insns;
+  run_start = align_offset - 2 * k;
+
+  /* Rewrite the K compressed instructions as 32-bit instructions.  Process
+     from the last instruction to the first: writing the 4-byte form of
+     instruction I at RUN_START + 4*I overlaps the 2-byte source of the next
+     instruction, so we must read each source before the writes reach it.  */
+  for (i = k; i-- > 0; )
+    {
+      uint16_t cinsn = bfd_getl16 (contents + run_start + 2 * i);
+      uint32_t out = 0;
+
+      riscv_decompress_insn (cinsn, rv64, &out);
+      bfd_putl32 (out, contents + run_start + 4 * i);
+    }
+
+  /* Shift any interior labels: an instruction boundary at offset V within the
+     run moves up by (V - run_start), since every 2-byte instruction before it
+     became 4 bytes.  Boundaries at run_start and align_offset do not move.  */
+  for (i = 0; i < symtab_hdr->sh_info; i++)
+    {
+      Elf_Internal_Sym *sym = (Elf_Internal_Sym *) symtab_hdr->contents + i;
+      if (sym->st_shndx == sec_shndx
+	  && sym->st_value > run_start && sym->st_value < align_offset)
+	sym->st_value += sym->st_value - run_start;
+    }
+
+  if (sym_hashes != NULL)
+    {
+      unsigned int symcount = (symtab_hdr->sh_size / sizeof (ElfNN_External_Sym)
+			       - symtab_hdr->sh_info);
+      for (i = 0; i < symcount; i++)
+	{
+	  struct elf_link_hash_entry *h = sym_hashes[i];
+	  if ((h->root.type == bfd_link_hash_defined
+	       || h->root.type == bfd_link_hash_defweak)
+	      && h->root.u.def.section == sec
+	      && h->root.u.def.value > run_start
+	      && h->root.u.def.value < align_offset)
+	    h->root.u.def.value += h->root.u.def.value - run_start;
+	}
+    }
+
+  return k;
+}
+
 /* Implement R_RISCV_ALIGN by deleting excess alignment NOPs.
    Once we've handled an R_RISCV_ALIGN, we can't relax anything else.  */
 
@@ -4728,13 +5042,31 @@ _bfd_riscv_relax_align (bfd *abfd, asection *sec,
   if (nop_bytes == rel->r_addend)
     return true;
 
+  bfd_vma nop_offset = rel->r_offset;
+  bfd_vma nop_fill = nop_bytes;
+
+  /* Optionally decompress RVC instructions immediately before the alignment
+     point, rather than inserting NOPs, so no wasted NOP cycles are executed.
+     Each decompressed instruction consumes 2 bytes of what would be padding
+     and pushes the NOP fill 2 bytes closer to the boundary.  */
+  if (riscv_elf_hash_table (link_info)->params->relax_align_decompress
+      && (elf_elfheader (abfd)->e_flags & EF_RISCV_RVC)
+      && nop_bytes >= 2)
+    {
+      unsigned int decompressed
+	= riscv_relax_align_decompress (abfd, sec, rel->r_offset,
+					nop_bytes / 2);
+      nop_offset += decompressed * 2;
+      nop_fill -= decompressed * 2;
+    }
+
   /* Write as many RISC-V NOPs as we need.  */
-  for (pos = 0; pos < (nop_bytes & -4); pos += 4)
-    bfd_putl32 (RISCV_NOP, contents + rel->r_offset + pos);
+  for (pos = 0; pos < (nop_fill & -4); pos += 4)
+    bfd_putl32 (RISCV_NOP, contents + nop_offset + pos);
 
   /* Write a final RVC NOP if need be.  */
-  if (nop_bytes % 4 != 0)
-    bfd_putl16 (RVC_NOP, contents + rel->r_offset + pos);
+  if (nop_fill % 4 != 0)
+    bfd_putl16 (RVC_NOP, contents + nop_offset + pos);
 
   /* Delete excess bytes.  */
   return riscv_relax_delete_bytes (abfd, sec, rel->r_offset + nop_bytes,

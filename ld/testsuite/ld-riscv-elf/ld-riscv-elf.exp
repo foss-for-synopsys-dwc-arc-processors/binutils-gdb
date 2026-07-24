@@ -120,6 +120,8 @@ proc run_relax_twice_test {} {
 
 if [istarget "riscv*-*-*"] {
     run_dump_test "align-small-region"
+    run_dump_test "relax-align-decompress"
+    run_dump_test "relax-align-decompress-nodecompress"
     run_dump_test "call-relax"
     run_dump_test "jal-to-cjal"
     run_dump_test "j-to-cj-32"
