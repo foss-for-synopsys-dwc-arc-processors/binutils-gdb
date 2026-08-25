@@ -1638,6 +1638,7 @@ static const struct riscv_supported_ext riscv_supported_vendor_x_ext[] =
   {"xmipscmov",		ISA_SPEC_CLASS_DRAFT,	1, 0, 0 },
   {"xmipsexectl",	ISA_SPEC_CLASS_DRAFT,	1, 0, 0 },
   {"xmipslsp",		ISA_SPEC_CLASS_DRAFT,	1, 0, 0 },
+  {"xmipstrig",		ISA_SPEC_CLASS_DRAFT,	1, 0, 0 },
   {"xarcvudsp",		ISA_SPEC_CLASS_DRAFT,	1, 0, 0 },
   {"xarcvbitrev",	ISA_SPEC_CLASS_DRAFT,	1, 0, 0 },
   {"xarcvbitstream",	ISA_SPEC_CLASS_DRAFT,	1, 0, 0 },
@@ -3073,6 +3074,8 @@ riscv_multi_subset_supports (riscv_parse_subset_t *rps,
       return riscv_subset_supports (rps, "xmipsexectl");
     case INSN_CLASS_XMIPSLSP:
       return riscv_subset_supports (rps, "xmipslsp");
+    case INSN_CLASS_XMIPSTRIG:
+      return riscv_subset_supports (rps, "xmipstrig");
     case INSN_CLASS_XARCVUDSP:
       return riscv_subset_supports (rps, "xarcvudsp");
     case INSN_CLASS_XARCVBITREV:
@@ -3375,6 +3378,16 @@ riscv_multi_subset_supports_ext (riscv_parse_subset_t *rps,
       return "xtheadzvamo";
     case INSN_CLASS_XSFCEASE:
       return "xsfcease";
+    case INSN_CLASS_XMIPSCBOP:
+      return "xmipscbop";
+    case INSN_CLASS_XMIPSCMOV:
+      return "xmipscmov";
+    case INSN_CLASS_XMIPSEXECTL:
+      return "xmipsexectl";
+    case INSN_CLASS_XMIPSLSP:
+      return "xmipslsp";
+    case INSN_CLASS_XMIPSTRIG:
+      return "xmipstrig";
     case INSN_CLASS_XARCVUDSP:
       return "xarcvudsp";
     case INSN_CLASS_XARCVBITREV:
