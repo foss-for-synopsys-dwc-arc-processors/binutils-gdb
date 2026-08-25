@@ -1,0 +1,13 @@
+		mips.fsinhz.s    ft0,ft1
+		mips.fcoshz.s    ft2,ft3
+		mips.ftanhz.s    ft4,ft5
+		mips.fversinhz.s     ft6,ft7
+		mips.fatanhz.s   ft8,ft9
+		mips.flti.s  fa0,0
+		mips.flti.s  fa1,31
+		mips.fftanh.s    fs0,fs1
+		mips.fflog2.s    fs2,fs3
+		mips.ffexp2.s    fs4,fs5
+		mips.ffrecip.s   fs6,fs7
+		mips.ffsqrt.s    fs8,fs9
+		mips.ffrsqrt.s   fs10,fs11

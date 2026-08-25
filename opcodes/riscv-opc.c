@@ -3752,6 +3752,19 @@ const struct riscv_opcode riscv_opcodes[] =
 {"mips.pref", 0, INSN_CLASS_XMIPSCBOP, "Xm@,Xm#(s)", MATCH_MIPS_PREF, MASK_MIPS_PREF, match_opcode, 0 },
 {"mips.sdp", 0, INSN_CLASS_XMIPSLSP, "t,r,Xm^(s)", MATCH_MIPS_SDP, MASK_MIPS_SDP, match_opcode, 0 },
 {"mips.swp", 0, INSN_CLASS_XMIPSLSP, "t,r,Xm&(s)", MATCH_MIPS_SWP, MASK_MIPS_SWP, match_opcode, 0 },
+/* MIPS trig instructions.  */
+{"mips.fsinhz.s",   0, INSN_CLASS_XMIPSTRIG, "D,S",    MATCH_MIPS_FSINHZ_S, MASK_MIPS_FSINHZ_S, match_opcode, 0 },
+{"mips.fcoshz.s",   0, INSN_CLASS_XMIPSTRIG, "D,S",    MATCH_MIPS_FCOSHZ_S, MASK_MIPS_FCOSHZ_S, match_opcode, 0 },
+{"mips.ftanhz.s",   0, INSN_CLASS_XMIPSTRIG, "D,S",    MATCH_MIPS_FTANHZ_S, MASK_MIPS_FTANHZ_S, match_opcode, 0 },
+{"mips.fversinhz.s",   0, INSN_CLASS_XMIPSTRIG, "D,S",    MATCH_MIPS_FVERSINHZ_S, MASK_MIPS_FVERSINHZ_S, match_opcode, 0 },
+{"mips.fatanhz.s",   0, INSN_CLASS_XMIPSTRIG, "D,S",    MATCH_MIPS_FATANHZ_S, MASK_MIPS_FATANHZ_S, match_opcode, 0 },
+{"mips.flti.s",   0, INSN_CLASS_XMIPSTRIG, "D,Z",    MATCH_MIPS_FLTI_S, MASK_MIPS_FLTI_S, match_opcode, 0 },
+{"mips.fftanh.s",   0, INSN_CLASS_XMIPSTRIG, "D,S",    MATCH_MIPS_FFTANH_S, MASK_MIPS_FFTANH_S, match_opcode, 0 },
+{"mips.fflog2.s",   0, INSN_CLASS_XMIPSTRIG, "D,S",    MATCH_MIPS_FFLOG2_S, MASK_MIPS_FFLOG2_S, match_opcode, 0 },
+{"mips.ffexp2.s",   0, INSN_CLASS_XMIPSTRIG, "D,S",    MATCH_MIPS_FFEXP2_S, MASK_MIPS_FFEXP2_S, match_opcode, 0 },
+{"mips.ffrecip.s",   0, INSN_CLASS_XMIPSTRIG, "D,S",    MATCH_MIPS_FFRECIP_S, MASK_MIPS_FFRECIP_S, match_opcode, 0 },
+{"mips.ffsqrt.s",   0, INSN_CLASS_XMIPSTRIG, "D,S",    MATCH_MIPS_FFSQRT_S, MASK_MIPS_FFSQRT_S, match_opcode, 0 },
+{"mips.ffrsqrt.s",   0, INSN_CLASS_XMIPSTRIG, "D,S",    MATCH_MIPS_FFRSQRT_S, MASK_MIPS_FFRSQRT_S, match_opcode, 0 },
 
 /* Vendor-specific (ARC-V) Xarcvudsp instructions.  */
 {"arcv.xvadd.vv",      0, INSN_CLASS_XARCVUDSP, "d,s,t,Xav", MATCH_ARCV_UDSP_XVADD_VV, MASK_ARCV_UDSP_XVADD_VV, match_opcode, 0},
