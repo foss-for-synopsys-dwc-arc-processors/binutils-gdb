@@ -26187,7 +26187,7 @@ acceptable commands.
 
 
 @menu
-* ARC::                         Synopsys ARC
+* ARC::                         ARC
 * ARM::                         ARM
 * BPF::                         eBPF
 * M68K::                        Motorola M68K
@@ -26201,8 +26201,8 @@ acceptable commands.
 @end menu
 
 @node ARC
-@subsection Synopsys ARC
-@cindex Synopsys ARC
+@subsection ARC
+@cindex ARC
 @cindex ARC specific commands
 @cindex ARC600
 @cindex ARC700
