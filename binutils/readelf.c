@@ -3434,9 +3434,9 @@ get_machine_name (unsigned e_machine)
     case EM_NFP:		return "Netronome Flow Processor";
     case EM_VE:			return "NEC Vector Engine";
     case EM_CSKY:		return "C-SKY";
-    case EM_ARC_COMPACT3_64:	return "Synopsys ARCv3 64-bit processor";
+    case EM_ARC_COMPACT3_64:	return "ARCv3 64-bit processor";
     case EM_MCS6502:		return "MOS Technology MCS 6502 processor";
-    case EM_ARC_COMPACT3:	return "Synopsys ARCv3 32-bit processor";
+    case EM_ARC_COMPACT3:	return "ARCv3 32-bit processor";
     case EM_KVX:		return "Kalray VLIW core of the MPPA processor family";
     case EM_65816:		return "WDC 65816/65C816";
     case EM_LOONGARCH:		return "LoongArch";
