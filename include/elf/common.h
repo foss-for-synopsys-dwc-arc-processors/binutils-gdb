@@ -310,7 +310,7 @@
 #define EM_CLOUDSHIELD 	192 	/* CloudShield architecture family */
 #define EM_COREA_1ST 	193 	/* KIPO-KAIST Core-A 1st generation processor family */
 #define EM_COREA_2ND 	194 	/* KIPO-KAIST Core-A 2nd generation processor family */
-#define EM_ARC_COMPACT2 195	/* ARCompact V2 */
+#define EM_ARC_COMPACT2 195	/* Synopsys ARCompact V2 */
 #define EM_OPEN8 	196 	/* Open8 8-bit RISC soft processor core */
 #define EM_RL78		197	/* Renesas RL78 family.  */
 #define EM_VIDEOCORE5 	198 	/* Broadcom VideoCore V processor */
@@ -350,9 +350,9 @@
 #define EM_NFP		250	/* Netronome Flow Processor.  */
 #define EM_VE		251	/* NEC Vector Engine */
 #define EM_CSKY		252	/* C-SKY processor family.  */
-#define EM_ARC_COMPACT3_64 253	/* ARCv2.3 64-bit */
+#define EM_ARC_COMPACT3_64 253	/* Synopsys ARCv2.3 64-bit */
 #define EM_MCS6502	254	/* MOS Technology MCS 6502 processor */
-#define EM_ARC_COMPACT3	255	/* ARCv2.3 32-bit */
+#define EM_ARC_COMPACT3	255	/* Synopsys ARCv2.3 32-bit */
 #define EM_KVX		256	/* Kalray VLIW core of the MPPA processor family */
 #define EM_65816	257	/* WDC 65816/65C816 */
 #define EM_LOONGARCH	258	/* LoongArch */
